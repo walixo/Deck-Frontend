@@ -1,0 +1,286 @@
+@import 'tailwindcss';
+
+/*
+ * Self-hosted variable fonts. Bundled by Vite rather than fetched from a CDN, so
+ * there is no third-party request, no render-blocking link, and no FOUT offline.
+ *   Space Grotesk — display voice: headlines, wordmark, big numbers
+ *   Geist         — UI voice: body copy, controls, labels
+ *   Geist Mono    — code, IDs and anything that should look machine-written
+ */
+@import '@fontsource-variable/space-grotesk';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+/* Class-based dark mode — toggled on <html> by ThemeProvider. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Green accent: success states, active votes, spotlight highlights. */
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+  --color-brand-950: #022c22;
+
+  /* Near-black canvas — softer than pure #000 so shadows and borders read. */
+  --color-canvas: #ffffff;
+  --color-canvas-dark: #0a0a0b;
+  --color-surface-dark: #131316;
+
+  --font-sans:
+    'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-display:
+    'Space Grotesk Variable', 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --font-mono:
+    'Geist Mono Variable', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, 'Cascadia Mono',
+    Consolas, monospace;
+
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.12);
+  --shadow-lifted: 0 2px 4px rgb(0 0 0 / 0.04), 0 18px 40px -16px rgb(0 0 0 / 0.22);
+  --shadow-glow: 0 0 0 1px rgb(16 185 129 / 0.35), 0 12px 32px -12px rgb(16 185 129 / 0.45);
+
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-pop: pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-drift: drift 22s linear infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-rise: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-marquee: marquee 70s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 70s linear infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.22);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-14px) rotate(2deg);
+    }
+  }
+
+  @keyframes drift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(28px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /*
+   * Marquee tracks hold two identical copies of their row. Each copy carries a
+   * trailing gutter equal to the internal gap, so shifting by exactly -50%
+   * lands the second copy where the first began — no seam, no jump.
+   */
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    from {
+      transform: translate3d(-50%, 0, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-white text-zinc-900 antialiased;
+    @apply dark:bg-[color:var(--color-canvas-dark)] dark:text-zinc-100;
+    /* Contextual alternates and proportional figures for running text. */
+    font-feature-settings: 'calt', 'ss01';
+  }
+
+  /* One consistent focus ring everywhere, keyboard only. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-zinc-900 dark:outline-zinc-100;
+  }
+
+  ::selection {
+    @apply bg-brand-200 text-brand-950;
+  }
+
+  .dark ::selection {
+    @apply bg-brand-500/30 text-brand-50;
+  }
+
+  /*
+   * Every heading takes the display face automatically, so no component has to
+   * remember to opt in. Space Grotesk sets wide by default, hence the negative
+   * tracking — large type would otherwise feel loose.
+   */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    @apply tracking-tight;
+  }
+
+  /* Respect users who ask for less motion. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/*
+ * Background washes. Authored as real utilities because layered multi-stop
+ * gradients cannot be expressed in arbitrary-value syntax without becoming
+ * unreadable. Each has a -dark counterpart applied through the `dark:` variant.
+ */
+@utility bg-aurora {
+  background-image:
+    radial-gradient(55% 50% at 12% -5%, oklch(87% 0.13 165 / 0.5) 0%, transparent 60%),
+    radial-gradient(45% 45% at 88% 0%, oklch(90% 0.04 250 / 0.55) 0%, transparent 62%),
+    radial-gradient(60% 55% at 50% 110%, oklch(93% 0.06 160 / 0.4) 0%, transparent 65%);
+}
+
+@utility bg-aurora-dark {
+  background-image:
+    radial-gradient(55% 50% at 12% -5%, oklch(58% 0.14 165 / 0.22) 0%, transparent 60%),
+    radial-gradient(45% 45% at 88% 0%, oklch(45% 0.05 250 / 0.3) 0%, transparent 62%),
+    radial-gradient(60% 55% at 50% 110%, oklch(50% 0.1 160 / 0.18) 0%, transparent 65%);
+}
+
+/* Tighter, single-corner wash for page headers. */
+@utility bg-halo {
+  background-image:
+    radial-gradient(70% 100% at 0% 0%, oklch(88% 0.12 165 / 0.42) 0%, transparent 58%),
+    radial-gradient(50% 90% at 100% 0%, oklch(91% 0.035 255 / 0.5) 0%, transparent 60%);
+}
+
+@utility bg-halo-dark {
+  background-image:
+    radial-gradient(70% 100% at 0% 0%, oklch(60% 0.13 165 / 0.18) 0%, transparent 58%),
+    radial-gradient(50% 90% at 100% 0%, oklch(46% 0.045 255 / 0.26) 0%, transparent 60%);
+}
+
+/* Textures. Grid and dots inherit currentColor so they tint with the theme. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(currentColor 1px, transparent 1px),
+    linear-gradient(90deg, currentColor 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@utility bg-dotgrid {
+  background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+/* Film grain, so large gradient fields do not band on wide displays. */
+@utility bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+@layer utilities {
+  /* Horizontal scrollers: hide the bar but keep the scrolling. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Fades the edges of a horizontal scroller so cut-off cards look intentional. */
+  .edge-fade {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 2.5rem,
+      black calc(100% - 2.5rem),
+      transparent
+    );
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}

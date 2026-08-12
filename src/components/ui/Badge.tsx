@@ -1,15 +1,15 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-type Tone = 'neutral' | 'accent' | 'outline' | 'muted';
+type Tone = 'neutral' | 'accent' | 'cobalt' | 'coral' | 'outline';
 
+/* Chips are hard-edged blocks with mono labels — they read as machine values. */
 const TONES: Record<Tone, string> = {
-  neutral: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
-  accent:
-    'bg-brand-50 text-brand-700 ring-1 ring-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/25',
-  outline:
-    'ring-1 ring-zinc-200 text-zinc-600 dark:ring-zinc-800 dark:text-zinc-400',
-  muted: 'bg-zinc-50 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-500',
+  neutral: 'bg-surface-2 text-body',
+  accent: 'bg-acid text-ink',
+  cobalt: 'bg-cobalt text-white',
+  coral: 'bg-coral text-white',
+  outline: 'bg-transparent text-muted',
 };
 
 interface BadgeProps {
@@ -22,7 +22,7 @@ export function Badge({ children, tone = 'neutral', className }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium',
+        'inline-flex items-center gap-1.5 border-2 border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
         TONES[tone],
         className,
       )}

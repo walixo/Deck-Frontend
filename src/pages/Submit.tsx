@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ItemLogo } from '@/components/items/ItemLogo';
-import { PageGlow } from '@/components/ui/Ambient';
+import { PageBanner } from '@/components/ui/Ambient';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -74,16 +74,16 @@ export function Submit() {
 
   return (
     <div className="relative isolate mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-      <PageGlow />
+      <PageBanner />
 
       <header className="mb-8 max-w-2xl">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-400">
+        <p className="mb-3 inline-block border-2 border-edge bg-acid px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
           New launch
         </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+        <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
           Put your product on the board
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-zinc-600 text-pretty dark:text-zinc-400">
+        <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">
           It goes live immediately and joins today&apos;s leaderboard. You can delete it later from
           its page.
         </p>
@@ -94,7 +94,7 @@ export function Submit() {
           {error && !error.fields.length && <InlineAlert>{error.message}</InlineAlert>}
 
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-zinc-400 dark:text-zinc-500">
+            <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               The basics
             </h2>
 
@@ -135,7 +135,7 @@ export function Submit() {
           </Card>
 
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-zinc-400 dark:text-zinc-500">
+            <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               Where it lives
             </h2>
 
@@ -177,7 +177,7 @@ export function Submit() {
           </Card>
 
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-zinc-400 dark:text-zinc-500">
+            <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               Details
             </h2>
 
@@ -212,7 +212,7 @@ export function Submit() {
 
         {/* Live preview of the card as it will appear in listings. */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400 dark:text-zinc-500">
+          <p className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
             Live preview
           </p>
           <Card className="p-4">
@@ -222,31 +222,31 @@ export function Submit() {
                 size="md"
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold">
+                <p className="truncate font-display text-sm uppercase">
                   {form.name || 'Your product name'}
                 </p>
-                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted">
                   {form.tagline || 'Your tagline shows up right here.'}
                 </p>
                 <div className="mt-2.5 flex flex-wrap gap-1.5">
                   <Badge tone="outline">{CATEGORY_LABELS[form.category]}</Badge>
-                  <Badge tone="muted">{PRICING_LABELS[form.pricing]}</Badge>
+                  <Badge tone="neutral">{PRICING_LABELS[form.pricing]}</Badge>
                 </div>
               </div>
-              <span className="flex h-14 w-12 shrink-0 flex-col items-center justify-center rounded-xl border border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600">
+              <span className="flex h-14 w-12 shrink-0 flex-col items-center justify-center border-2 border-edge bg-surface font-mono text-muted">
                 <span aria-hidden="true" className="text-[10px]">
                   ▲
                 </span>
-                <span className="text-sm font-semibold tabular-nums">0</span>
+                <span className="text-sm font-bold tabular-nums">0</span>
               </span>
             </div>
 
             {splitList(form.tags, 6).length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-1.5 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+              <div className="mt-4 flex flex-wrap gap-1.5 border-t-2 border-edge pt-3">
                 {splitList(form.tags, 6).map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full border border-zinc-200 px-2 py-0.5 text-[11px] text-zinc-500 dark:border-zinc-800 dark:text-zinc-400"
+                    className="border-2 border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-muted"
                   >
                     #{tag.toLowerCase()}
                   </span>
@@ -255,9 +255,9 @@ export function Submit() {
             )}
           </Card>
 
-          <div className="mt-5 rounded-2xl border border-dashed border-zinc-300 p-4 dark:border-zinc-800">
-            <h3 className="text-xs font-semibold">What makes a launch land</h3>
-            <ul className="mt-2.5 space-y-1.5 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+          <div className="mt-5 border-2 border-dashed border-edge p-4">
+            <h3 className="font-display text-xs uppercase">What makes a launch land</h3>
+            <ul className="mt-2.5 space-y-1.5 text-xs leading-relaxed text-muted">
               <li>· Lead with the problem you removed.</li>
               <li>· Be specific about what is free and what is not.</li>
               <li>· Reply to the first comments — that is where votes come from.</li>

@@ -32,24 +32,47 @@ export const PRICING_LABELS: Record<PricingModel, string> = {
   'open-source': 'Open source',
 };
 
-/** Deterministic gradient per name — every item gets its own identity without an image. */
-const GRADIENTS = [
-  'from-emerald-400 to-teal-600',
-  'from-zinc-700 to-zinc-900',
-  'from-green-400 to-emerald-700',
-  'from-slate-500 to-zinc-800',
-  'from-teal-300 to-emerald-600',
-  'from-neutral-600 to-stone-900',
-  'from-lime-400 to-emerald-600',
-  'from-stone-400 to-zinc-700',
+/**
+ * Deterministic flat colour per name — every item gets its own identity without
+ * needing an image. Flat fills, never gradients: the style has no depth cues
+ * other than the hard shadow.
+ *
+ * Each entry pairs a background with the ink that stays legible on it, since
+ * acid green needs black type while cobalt needs white.
+ */
+export interface FlatColour {
+  bg: string;
+  ink: string;
+}
+
+const FLAT_COLOURS: FlatColour[] = [
+  { bg: 'bg-cobalt', ink: 'text-white' },
+  { bg: 'bg-acid', ink: 'text-ink' },
+  { bg: 'bg-coral', ink: 'text-white' },
+  { bg: 'bg-ink', ink: 'text-bone' },
+  { bg: 'bg-[#FFD23F]', ink: 'text-ink' },
+  { bg: 'bg-[#8B5CF6]', ink: 'text-white' },
+  { bg: 'bg-[#00C2A8]', ink: 'text-ink' },
+  { bg: 'bg-[#FF8A3D]', ink: 'text-ink' },
 ];
 
-export function gradientFor(seed: string): string {
+function hashOf(seed: string): number {
   let hash = 0;
   for (let i = 0; i < seed.length; i += 1) {
     hash = (hash * 31 + seed.charCodeAt(i)) % 100_000;
   }
-  return GRADIENTS[hash % GRADIENTS.length];
+  return hash;
+}
+
+export function colourFor(seed: string): FlatColour {
+  return FLAT_COLOURS[hashOf(seed) % FLAT_COLOURS.length];
+}
+
+/** Raw hex of the same deterministic colour, for SVG fills and inline styles. */
+const FLAT_HEX = ['#2B4BFF', '#C6FF3D', '#FF5C4D', '#111111', '#FFD23F', '#8B5CF6', '#00C2A8', '#FF8A3D'];
+
+export function hexFor(seed: string): string {
+  return FLAT_HEX[hashOf(seed) % FLAT_HEX.length];
 }
 
 export function initialsOf(name: string): string {
@@ -120,8 +143,9 @@ export function prettyUrl(url: string): string {
   }
 }
 
+/** Flat medal fills for the top three. Rank badges are solid blocks, not metal. */
 export const MEDAL_STYLES: Record<number, string> = {
-  1: 'bg-gradient-to-br from-amber-300 to-amber-500 text-amber-950 ring-amber-400/40',
-  2: 'bg-gradient-to-br from-zinc-200 to-zinc-400 text-zinc-800 ring-zinc-400/40',
-  3: 'bg-gradient-to-br from-orange-300 to-orange-500 text-orange-950 ring-orange-400/40',
+  1: 'bg-acid text-ink',
+  2: 'bg-cobalt text-white',
+  3: 'bg-coral text-white',
 };

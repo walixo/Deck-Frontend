@@ -5,7 +5,7 @@ import { ItemCard } from '@/components/items/ItemCard';
 import { ItemLogo } from '@/components/items/ItemLogo';
 import { VoteButton } from '@/components/items/VoteButton';
 import { Avatar } from '@/components/ui/Avatar';
-import { Ambient } from '@/components/ui/Ambient';
+import { Backdrop } from '@/components/ui/Ambient';
 import { Badge } from '@/components/ui/Badge';
 import { Button, ExternalButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -16,8 +16,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useDeleteItem, useItem } from '@/hooks/useItems';
 import {
   CATEGORY_LABELS,
+  colourFor,
   formatFullDate,
-  gradientFor,
   PRICING_LABELS,
   prettyUrl,
   relativeTime,
@@ -39,7 +39,7 @@ export function ItemDetail() {
         <div className="mt-6 text-center">
           <Link
             to="/discover"
-            className="text-sm font-medium text-zinc-600 underline-offset-4 hover:underline dark:text-zinc-400"
+            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
           >
             ← Back to Discover
           </Link>
@@ -51,78 +51,74 @@ export function ItemDetail() {
   if (!item) return null;
 
   const isOwner = user?.id === item.submittedBy.id || user?.role === 'admin';
+  const colour = colourFor(item.slug);
 
   return (
     <article>
-      {/* Header band: shared wash plus a tint from the item's own gradient. */}
-      <header className="relative isolate overflow-hidden border-b border-zinc-200/80 dark:border-zinc-800">
-        <Ambient variant="halo" />
-        <div
-          aria-hidden="true"
-          className={`pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-gradient-to-br opacity-20 blur-3xl dark:opacity-25 ${gradientFor(item.slug)}`}
-        />
+      <header className="relative isolate overflow-hidden border-b-2 border-edge">
+        <Backdrop pattern="halftone" />
 
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-          <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-500">
-            <Link to="/discover" className="hover:text-zinc-900 dark:hover:text-white">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-6 flex items-center gap-2 font-mono text-[11px] font-bold uppercase text-muted"
+          >
+            <Link to="/discover" className="hover:text-body">
               Discover
             </Link>
             <span aria-hidden="true">/</span>
-            <Link
-              to={`/discover?category=${item.category}`}
-              className="hover:text-zinc-900 dark:hover:text-white"
-            >
+            <Link to={`/discover?category=${item.category}`} className="hover:text-body">
               {CATEGORY_LABELS[item.category]}
             </Link>
           </nav>
 
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-            <ItemLogo item={item} size="xl" className="animate-[var(--animate-fade-in)]" />
+            <ItemLogo item={item} size="xl" className="animate-[var(--animate-slam)] shadow-hard" />
 
-            <div className="min-w-0 flex-1 animate-[var(--animate-fade-up)]">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+            <div className="min-w-0 flex-1 animate-[var(--animate-slide-up)]">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
                   {item.name}
                 </h1>
-                {item.featured && <Badge tone="accent">✦ Spotlight</Badge>}
+                {item.featured && <Badge tone="accent">★ Spotlight</Badge>}
               </div>
 
-              <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600 text-pretty dark:text-zinc-400">
+              <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted text-pretty">
                 {item.tagline}
               </p>
 
-              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-zinc-500 dark:text-zinc-500">
+              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[11px] font-bold uppercase tracking-[0.04em] text-muted">
                 <Link
                   to={`/discover?category=${item.category}`}
-                  className="inline-flex items-center gap-1.5 font-medium text-zinc-600 hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400"
+                  className="inline-flex items-center gap-1.5 text-body hover:text-cobalt"
                 >
-                  <CategoryIcon category={item.category} />
+                  <CategoryIcon category={item.category} className="size-4" />
                   {CATEGORY_LABELS[item.category]}
                 </Link>
-                <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">
-                  ·
+                <span aria-hidden="true" className="text-muted/50">
+                  /
                 </span>
                 <span>{PRICING_LABELS[item.pricing]}</span>
-                <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">
-                  ·
+                <span aria-hidden="true" className="text-muted/50">
+                  /
                 </span>
                 <span>Launched {relativeTime(item.launchDate)}</span>
               </div>
 
               {item.reviewCount > 0 && (
-                <div className="mt-4 inline-flex items-center gap-2.5 rounded-xl border border-zinc-200 bg-white/70 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900/50">
+                <div className="mt-4 inline-flex items-center gap-2.5 border-2 border-edge bg-surface px-3 py-2 shadow-hard-sm">
                   <Stars value={item.ratingAvg} size="md" />
-                  <span className="text-sm font-medium tabular-nums">
+                  <span className="font-display text-sm tabular-nums">
                     {item.ratingAvg.toFixed(1)}
                   </span>
-                  <span className="text-xs text-zinc-500 dark:text-zinc-500">
+                  <span className="font-mono text-[11px] font-bold uppercase text-muted">
                     {item.reviewCount} {item.reviewCount === 1 ? 'review' : 'reviews'}
                   </span>
                 </div>
               )}
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <VoteButton item={item} layout="inline" className="h-11 px-5 text-base" />
+                <VoteButton item={item} layout="inline" className="h-11 px-5" />
                 <ExternalButtonLink href={item.websiteUrl} size="md">
                   Visit {prettyUrl(item.websiteUrl)} ↗
                 </ExternalButtonLink>
@@ -135,19 +131,25 @@ export function ItemDetail() {
             </div>
           </div>
         </div>
+
+        {/* Colour bar keyed to the item, sitting on the header's bottom edge. */}
+        <div className={`h-2 border-t-2 border-edge ${colour.bg}`} />
       </header>
 
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="min-w-0">
             <section aria-labelledby="about-heading">
-              <h2 id="about-heading" className="text-xl font-semibold">
+              <h2 id="about-heading" className="text-xl uppercase">
                 About {item.name}
               </h2>
-              <div className="mt-4 space-y-4 text-sm leading-relaxed text-zinc-700 text-pretty sm:text-base dark:text-zinc-300">
-                {item.description.split('\n').filter(Boolean).map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+              <div className="mt-4 space-y-4 text-sm leading-relaxed text-body text-pretty sm:text-base">
+                {item.description
+                  .split('\n')
+                  .filter(Boolean)
+                  .map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
               </div>
 
               {item.tags.length > 0 && (
@@ -156,7 +158,7 @@ export function ItemDetail() {
                     <Link
                       key={tag}
                       to={`/discover?tag=${encodeURIComponent(tag)}`}
-                      className="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-zinc-600 transition-all hover:border-brand-400 hover:bg-brand-50 hover:text-brand-700 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300"
+                      className="border-2 border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-acid hover:text-ink"
                     >
                       #{tag}
                     </Link>
@@ -170,7 +172,7 @@ export function ItemDetail() {
 
           <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
             <Card className="p-5">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400 dark:text-zinc-500">
+              <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
                 Launched by
               </h2>
               <Link
@@ -179,23 +181,23 @@ export function ItemDetail() {
               >
                 <Avatar user={item.submittedBy} size="md" />
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium group-hover:text-brand-600 dark:group-hover:text-brand-400">
+                  <span className="block truncate font-display text-sm uppercase group-hover:text-cobalt">
                     {item.submittedBy.name}
                   </span>
-                  <span className="block truncate text-xs text-zinc-500 dark:text-zinc-500">
+                  <span className="block truncate font-mono text-[11px] text-muted">
                     @{item.submittedBy.username}
                   </span>
                 </span>
               </Link>
 
               {item.makers.length > 0 && (
-                <div className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400 dark:text-zinc-500">
+                <div className="mt-5">
+                  <h3 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
                     Makers
                   </h3>
                   <ul className="mt-2.5 space-y-1.5">
                     {item.makers.map((maker) => (
-                      <li key={maker} className="text-sm text-zinc-700 dark:text-zinc-300">
+                      <li key={maker} className="text-sm text-body">
                         {maker}
                       </li>
                     ))}
@@ -203,23 +205,23 @@ export function ItemDetail() {
                 </div>
               )}
 
-              <dl className="mt-5 space-y-2.5 border-t border-zinc-100 pt-4 text-sm dark:border-zinc-800">
+              <dl className="mt-5 space-y-2 border-t-2 border-edge pt-4 font-mono text-[11px] font-bold uppercase">
                 <div className="flex justify-between gap-2">
-                  <dt className="text-zinc-500 dark:text-zinc-500">Votes</dt>
-                  <dd className="font-medium tabular-nums">{item.voteCount}</dd>
+                  <dt className="text-muted">Votes</dt>
+                  <dd className="tabular-nums">{item.voteCount}</dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt className="text-zinc-500 dark:text-zinc-500">Comments</dt>
-                  <dd className="font-medium tabular-nums">{item.commentCount}</dd>
+                  <dt className="text-muted">Comments</dt>
+                  <dd className="tabular-nums">{item.commentCount}</dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt className="text-zinc-500 dark:text-zinc-500">Launch date</dt>
-                  <dd className="font-medium">{formatFullDate(item.launchDate)}</dd>
+                  <dt className="text-muted">Launched</dt>
+                  <dd>{formatFullDate(item.launchDate)}</dd>
                 </div>
               </dl>
 
               {isOwner && (
-                <div className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+                <div className="mt-5 border-t-2 border-edge pt-4">
                   <Button
                     variant="danger"
                     size="sm"
@@ -241,7 +243,7 @@ export function ItemDetail() {
             </Card>
 
             <Card className="p-5">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-400 dark:text-zinc-500">
+              <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
                 Links
               </h2>
               <ul className="mt-3 space-y-2">
@@ -250,7 +252,7 @@ export function ItemDetail() {
                     href={item.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-zinc-700 underline-offset-4 hover:text-brand-600 hover:underline dark:text-zinc-300 dark:hover:text-brand-400"
+                    className="text-sm text-body underline-offset-4 hover:text-cobalt hover:underline"
                   >
                     {prettyUrl(item.websiteUrl)} ↗
                   </a>
@@ -261,7 +263,7 @@ export function ItemDetail() {
                       href={item.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-zinc-700 underline-offset-4 hover:text-brand-600 hover:underline dark:text-zinc-300 dark:hover:text-brand-400"
+                      className="text-sm text-body underline-offset-4 hover:text-cobalt hover:underline"
                     >
                       {prettyUrl(item.repoUrl)} ↗
                     </a>
@@ -274,7 +276,7 @@ export function ItemDetail() {
 
         {item.related.length > 0 && (
           <section aria-labelledby="related-heading" className="mt-16">
-            <h2 id="related-heading" className="mb-5 text-xl font-semibold">
+            <h2 id="related-heading" className="mb-5 text-xl uppercase">
               More in {CATEGORY_LABELS[item.category]}
             </h2>
             <div className="space-y-3">
@@ -292,15 +294,15 @@ export function ItemDetail() {
 function ItemDetailSkeleton() {
   return (
     <div>
-      <div className="border-b border-zinc-200/80 dark:border-zinc-800">
+      <div className="border-b-2 border-edge">
         <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6 lg:px-8">
           <div className="flex gap-6">
-            <Skeleton className="size-20 rounded-2xl" />
+            <Skeleton className="size-20" />
             <div className="flex-1 space-y-3">
-              <Skeleton className="h-9 w-2/5" />
+              <Skeleton className="h-10 w-2/5" />
               <Skeleton className="h-4 w-4/5" />
               <Skeleton className="h-4 w-1/3" />
-              <Skeleton className="h-11 w-64 rounded-xl" />
+              <Skeleton className="h-11 w-64" />
             </div>
           </div>
         </div>

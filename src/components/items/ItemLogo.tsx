@@ -1,13 +1,13 @@
-import { cn, gradientFor } from '@/lib/utils';
+import { cn, colourFor } from '@/lib/utils';
 import type { Item } from '@/types';
 
 type Size = 'sm' | 'md' | 'lg' | 'xl';
 
 const SIZES: Record<Size, string> = {
-  sm: 'size-10 rounded-lg text-sm',
-  md: 'size-14 rounded-xl text-lg',
-  lg: 'size-16 rounded-2xl text-xl',
-  xl: 'size-20 rounded-2xl text-2xl',
+  sm: 'size-9 text-[11px]',
+  md: 'size-12 text-sm',
+  lg: 'size-16 text-lg',
+  xl: 'size-20 text-2xl',
 };
 
 interface ItemLogoProps {
@@ -17,30 +17,26 @@ interface ItemLogoProps {
 }
 
 /**
- * Items without a logo get a deterministic gradient monogram, so a fresh
- * launch with no assets still looks deliberate.
+ * Items without a logo get a flat colour monogram keyed to their slug, so a
+ * fresh launch with no assets still looks deliberate.
  */
 export function ItemLogo({ item, size = 'md', className }: ItemLogoProps) {
-  const shared = cn('shrink-0 ring-1 ring-black/5 dark:ring-white/10', SIZES[size], className);
+  const shared = cn('shrink-0 border-2 border-edge', SIZES[size], className);
 
   if (item.logoUrl) {
-    return (
-      <img
-        src={item.logoUrl}
-        alt=""
-        loading="lazy"
-        className={cn(shared, 'object-cover')}
-      />
-    );
+    return <img src={item.logoUrl} alt="" loading="lazy" className={cn(shared, 'object-cover')} />;
   }
+
+  const colour = colourFor(item.slug || item.name);
 
   return (
     <span
       aria-hidden="true"
       className={cn(
         shared,
-        'flex items-center justify-center bg-gradient-to-br font-semibold tracking-tight text-white',
-        gradientFor(item.slug || item.name),
+        'flex items-center justify-center font-display uppercase tracking-tight',
+        colour.bg,
+        colour.ink,
       )}
     >
       {item.name.slice(0, 2)}

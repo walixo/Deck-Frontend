@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { CATEGORY_LABELS, cn, formatNumber, gradientFor, PRICING_LABELS } from '@/lib/utils';
+import { CATEGORY_LABELS, cn, colourFor, formatNumber, PRICING_LABELS } from '@/lib/utils';
 import type { Item } from '@/types';
 
 interface LaunchWallProps {
@@ -16,17 +16,14 @@ interface LaunchWallProps {
 export function LaunchWall({ items, isLoading = false }: LaunchWallProps) {
   if (isLoading) {
     return (
-      <section className="border-y border-zinc-200/80 py-4 dark:border-zinc-800">
+      <section className="border-y-2 border-edge py-3">
         <div className="space-y-3 overflow-hidden">
           {[0, 1].map((row) => (
             <div key={row} className="flex gap-3">
               {Array.from({ length: 6 }, (_, index) => (
                 <Skeleton
                   key={index}
-                  className={cn(
-                    'h-56 shrink-0 rounded-xl sm:h-64 lg:h-72',
-                    index % 3 === 2 ? 'w-52' : 'w-[26rem]',
-                  )}
+                  className={cn('h-52 shrink-0 sm:h-60', index % 3 === 2 ? 'w-48' : 'w-[26rem]')}
                 />
               ))}
             </div>
@@ -40,23 +37,20 @@ export function LaunchWall({ items, isLoading = false }: LaunchWallProps) {
   if (items.length < 4) return null;
 
   const midpoint = Math.ceil(items.length / 2);
-  const topRow = items.slice(0, midpoint);
-  const bottomRow = items.slice(midpoint);
 
   return (
     <section
       aria-labelledby="launch-wall-heading"
-      className="group/wall relative border-y border-zinc-200/80 bg-white py-4 dark:border-zinc-800 dark:bg-[color:var(--color-canvas-dark)]"
+      className="group/wall relative border-y-2 border-edge bg-canvas py-3"
     >
       <h2 id="launch-wall-heading" className="sr-only">
         A wall of launches on Deck
       </h2>
 
       <div className="space-y-3">
-        <MarqueeRow items={topRow} direction="left" />
-        <MarqueeRow items={bottomRow} direction="right" />
+        <MarqueeRow items={items.slice(0, midpoint)} direction="left" />
+        <MarqueeRow items={items.slice(midpoint)} direction="right" />
       </div>
-
     </section>
   );
 }
@@ -109,33 +103,30 @@ function WallCard({
   narrow: boolean;
   focusable: boolean;
 }) {
+  const colour = colourFor(item.slug);
+
   return (
     <Link
       to={`/item/${item.slug}`}
       tabIndex={focusable ? undefined : -1}
       className={cn(
-        'group/card relative block h-56 shrink-0 overflow-hidden rounded-xl ring-1 ring-black/5 transition-all duration-500 sm:h-64 lg:h-72 dark:ring-white/10',
-        'hover:-translate-y-1 hover:ring-2 hover:ring-brand-500/60',
-        narrow ? 'w-40 sm:w-48 lg:w-52' : 'w-64 sm:w-[26rem] lg:w-[30rem]',
+        'group/card relative block h-52 shrink-0 overflow-hidden border-2 border-edge sm:h-60',
+        'transition-transform duration-[140ms] ease-[var(--ease-snap)] hover:-translate-y-1',
+        narrow ? 'w-40 sm:w-48' : 'w-64 sm:w-[24rem] lg:w-[27rem]',
       )}
     >
       {item.coverUrl ? (
-        <img
-          src={item.coverUrl}
-          alt=""
-          loading="lazy"
-          className="size-full object-cover transition-transform duration-700 group-hover/card:scale-[1.03]"
-        />
+        <img src={item.coverUrl} alt="" loading="lazy" className="size-full object-cover" />
       ) : (
-        <GeneratedPreview item={item} narrow={narrow} />
+        <FlatPreview item={item} narrow={narrow} colour={colour} />
       )}
 
-      {/* Identity strip, revealed on hover or focus so the resting state stays clean. */}
-      <div className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/85 to-transparent p-3.5 pt-8 transition-transform duration-300 group-hover/card:translate-y-0 group-focus-visible/card:translate-y-0">
-        <p className="truncate text-sm font-semibold text-white">{item.name}</p>
-        <p className="mt-0.5 flex items-center gap-2 text-[11px] text-white/70">
+      {/* Identity strip, revealed on hover so the resting state stays clean. */}
+      <div className="absolute inset-x-0 bottom-0 translate-y-full border-t-2 border-edge bg-surface px-3 py-2 transition-transform duration-[140ms] ease-[var(--ease-snap)] group-hover/card:translate-y-0 group-focus-visible/card:translate-y-0">
+        <p className="truncate font-display text-[13px] uppercase">{item.name}</p>
+        <p className="mt-0.5 flex items-center gap-2 font-mono text-[10px] font-bold uppercase text-muted">
           <span className="truncate">{CATEGORY_LABELS[item.category]}</span>
-          <span aria-hidden="true">·</span>
+          <span aria-hidden="true">/</span>
           <span className="shrink-0 tabular-nums">▲ {formatNumber(item.voteCount)}</span>
         </p>
       </div>
@@ -144,58 +135,50 @@ function WallCard({
 }
 
 /**
- * Stands in for a screenshot when a launch has no cover art: a stylised
- * mini-landing-page built from the item's own copy, tinted by its slug.
+ * Stands in for a screenshot when a launch has no cover art: a flat colour
+ * panel carrying the item's own pitch, set in display type.
  */
-function GeneratedPreview({ item, narrow }: { item: Item; narrow: boolean }) {
+function FlatPreview({
+  item,
+  narrow,
+  colour,
+}: {
+  item: Item;
+  narrow: boolean;
+  colour: { bg: string; ink: string };
+}) {
   return (
-    <div
-      className={cn(
-        'relative flex size-full flex-col justify-between bg-gradient-to-br p-4 sm:p-5',
-        gradientFor(item.slug),
-      )}
-    >
-      {/* Texture so large flat gradients do not look empty. */}
-      <span
+    <div className={cn('relative flex size-full flex-col justify-between p-4', colour.bg, colour.ink)}>
+      <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.14]"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.9) 1px, transparent 0)',
-          backgroundSize: '14px 14px',
-        }}
-      />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-10 -top-14 size-40 rounded-full bg-white/25 blur-3xl"
+        className="pointer-events-none absolute inset-0 bg-halftone opacity-[0.12]"
       />
 
-      <div className="relative flex items-center gap-1.5">
-        <span className="flex size-5 items-center justify-center rounded-md bg-white/25 text-[9px] font-bold text-white backdrop-blur">
+      <div className="relative flex items-center gap-2">
+        <span className="flex size-5 items-center justify-center border-2 border-current font-mono text-[9px] font-bold">
           {item.name.slice(0, 1)}
         </span>
-        <span className="truncate text-[11px] font-medium tracking-wide text-white/80">
+        <span className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.08em] opacity-90">
           {item.name}
         </span>
       </div>
 
-      {/* Lifts and fades as the hover strip slides in, so the two never collide. */}
-      <div className="relative transition-all duration-300 group-hover/card:-translate-y-2 group-hover/card:opacity-0 group-focus-visible/card:-translate-y-2 group-focus-visible/card:opacity-0">
+      <div className="relative">
         <p
           className={cn(
-            'font-display font-semibold leading-[1.15] tracking-tight text-white text-balance drop-shadow-sm',
-            narrow ? 'line-clamp-4 text-base' : 'line-clamp-3 text-xl sm:text-2xl lg:text-[1.7rem]',
+            'font-display uppercase leading-[1.05] tracking-tight text-balance',
+            narrow ? 'line-clamp-4 text-sm' : 'line-clamp-3 text-lg sm:text-xl lg:text-2xl',
           )}
         >
           {item.tagline}
         </p>
 
         {!narrow && (
-          <div className="mt-4 flex items-center gap-2">
-            <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-zinc-900">
+          <div className="mt-3 flex items-center gap-2">
+            <span className="border-2 border-current px-2 py-0.5 font-mono text-[10px] font-bold uppercase">
               {PRICING_LABELS[item.pricing]}
             </span>
-            <span className="rounded-full border border-white/35 px-3 py-1 text-[11px] font-medium text-white/90">
+            <span className="border-2 border-current px-2 py-0.5 font-mono text-[10px] font-bold uppercase">
               {CATEGORY_LABELS[item.category]}
             </span>
           </div>

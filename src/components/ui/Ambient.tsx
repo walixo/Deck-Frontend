@@ -1,77 +1,59 @@
 import { cn } from '@/lib/utils';
 
-type Variant = 'aurora' | 'halo';
+type Pattern = 'grid' | 'halftone' | 'stripes';
 
-interface AmbientProps {
-  variant?: Variant;
-  /** Adds slow-floating blobs. Off for page headers, on for full-height scenes. */
-  blobs?: boolean;
-  /** Overlays a faint grid, masked to fade downward. */
-  grid?: boolean;
+interface BackdropProps {
+  pattern?: Pattern;
+  /** Flat colour blocks scattered behind the content. */
+  blocks?: boolean;
   className?: string;
 }
 
-/**
- * Decorative background layer: a gradient wash plus optional texture and drifting
- * blobs. Purely presentational — always `aria-hidden` and never interactive, so it
- * can be dropped into any `relative` container without affecting focus or layout.
+/*
+ * Decorative background. The style has no atmosphere — no blur, no glow, no
+ * gradient — so depth comes from flat pattern and hard-edged colour blocks
+ * instead. Always aria-hidden and non-interactive.
  */
-export function Ambient({
-  variant = 'aurora',
-  blobs = false,
-  grid = false,
-  className,
-}: AmbientProps) {
+export function Backdrop({ pattern = 'grid', blocks = false, className }: BackdropProps) {
   return (
-    <div aria-hidden="true" className={cn('pointer-events-none absolute inset-0 overflow-hidden', className)}>
+    <div
+      aria-hidden="true"
+      className={cn('pointer-events-none absolute inset-0 overflow-hidden', className)}
+    >
       <div
         className={cn(
-          'absolute inset-0',
-          variant === 'aurora' ? 'bg-aurora dark:bg-aurora-dark' : 'bg-halo dark:bg-halo-dark',
+          'absolute inset-0 text-edge opacity-[0.07]',
+          pattern === 'grid' && 'bg-gridlines',
+          pattern === 'halftone' && 'bg-halftone',
+          pattern === 'stripes' && 'bg-stripes',
         )}
       />
 
-      {grid && (
-        <div
-          className="absolute inset-0 bg-grid text-zinc-900 opacity-[0.035] dark:text-zinc-100 dark:opacity-[0.07]"
-          style={{ maskImage: 'radial-gradient(ellipse 70% 60% at 50% 0%, black, transparent)' }}
-        />
-      )}
-
-      {blobs && (
+      {blocks && (
         <>
-          <div className="absolute -left-24 -top-32 size-80 animate-[var(--animate-float)] rounded-full bg-gradient-to-br from-brand-300/40 to-brand-500/20 blur-3xl dark:from-brand-500/20 dark:to-brand-700/10" />
-          <div
-            className="absolute -right-20 top-16 size-72 animate-[var(--animate-float)] rounded-full bg-gradient-to-br from-zinc-300/50 to-zinc-500/20 blur-3xl dark:from-zinc-700/40 dark:to-zinc-900/20"
-            style={{ animationDelay: '2.5s' }}
-          />
+          {/* Hard-edged shapes, rotated off-axis so they read as deliberate. */}
+          <div className="absolute -left-10 top-8 size-28 rotate-12 border-2 border-edge bg-acid" />
+          <div className="absolute -right-8 top-24 size-20 -rotate-6 border-2 border-edge bg-cobalt" />
+          <div className="absolute bottom-6 left-[18%] size-14 rotate-[24deg] border-2 border-edge bg-coral" />
+          <div className="absolute bottom-16 right-[22%] size-10 -rotate-12 border-2 border-edge bg-surface" />
         </>
       )}
-
-      {/* Grain sits on top of everything so it breaks up gradient banding. */}
-      <div className="absolute inset-0 bg-grain opacity-[0.15] mix-blend-overlay dark:opacity-[0.2]" />
     </div>
   );
 }
 
-/**
- * Soft gradient wash for the top of a page header, fading into the page.
- * Thinner and calmer than `Ambient` — it should register without being noticed.
- */
-export function PageGlow({ className }: { className?: string }) {
+/** Thin banded strip for the top of a page header. */
+export function PageBanner({ className }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 overflow-hidden',
+        'pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 overflow-hidden',
         className,
       )}
     >
-      <div
-        className="absolute inset-0 bg-halo dark:bg-halo-dark"
-        style={{ maskImage: 'linear-gradient(to bottom, black, transparent)' }}
-      />
-      <div className="absolute inset-0 bg-grain opacity-[0.12] mix-blend-overlay dark:opacity-[0.18]" />
+      <div className="absolute inset-0 bg-halftone text-edge opacity-[0.09]" />
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-cobalt" />
     </div>
   );
 }

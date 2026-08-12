@@ -48,7 +48,7 @@ export function Home() {
         </section>
 
         <section aria-labelledby="categories-heading" className="mb-16">
-          <h2 id="categories-heading" className="mb-5 text-sm font-semibold uppercase tracking-[0.12em] text-zinc-400 dark:text-zinc-500">
+          <h2 id="categories-heading" className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
             Browse by category
           </h2>
           <CategoryStrip />
@@ -82,7 +82,7 @@ export function Home() {
                       key={item.id}
                       item={item}
                       rank={item.rank}
-                      className="animate-[var(--animate-fade-up)]"
+                      className="animate-[var(--animate-slide-up)]"
                       style={{ animationDelay: `${index * 60}ms` }}
                     />
                   ))}
@@ -124,7 +124,7 @@ export function Home() {
                     <ItemCard
                       key={item.id}
                       item={item}
-                      className="animate-[var(--animate-fade-up)]"
+                      className="animate-[var(--animate-slide-up)]"
                       style={{ animationDelay: `${index * 60}ms` }}
                     />
                   ))}
@@ -135,8 +135,8 @@ export function Home() {
 
           <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
             <Card className="p-5">
-              <h2 className="text-sm font-semibold">Top makers</h2>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
+              <h2 className="font-display text-sm uppercase">Top makers</h2>
+              <p className="mt-1 font-mono text-[10px] font-bold uppercase text-muted">
                 By votes received across their launches.
               </p>
               <div className="mt-4">
@@ -146,13 +146,13 @@ export function Home() {
 
             {tags && tags.length > 0 && (
               <Card className="p-5">
-                <h2 className="text-sm font-semibold">Popular tags</h2>
+                <h2 className="font-display text-sm uppercase">Popular tags</h2>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {tags.slice(0, 14).map((tag) => (
                     <Link
                       key={tag.tag}
                       to={`/discover?tag=${encodeURIComponent(tag.tag)}`}
-                      className="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-zinc-600 transition-all hover:border-brand-400 hover:bg-brand-50 hover:text-brand-700 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300"
+                      className="border-2 border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-acid hover:text-ink"
                     >
                       {tag.tag}
                     </Link>
@@ -164,10 +164,10 @@ export function Home() {
             <Card className="relative overflow-hidden p-5">
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute -right-8 -top-8 size-28 rounded-full bg-gradient-to-br from-brand-300/40 to-brand-600/20 blur-2xl dark:from-brand-500/25 dark:to-brand-700/10"
+                className="pointer-events-none absolute -right-6 -top-6 size-24 rotate-12 border-2 border-edge bg-acid"
               />
-              <h2 className="relative text-sm font-semibold">Shipping something?</h2>
-              <p className="relative mt-1.5 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <h2 className="relative font-display text-sm uppercase">Shipping something?</h2>
+              <p className="relative mt-2 text-xs leading-relaxed text-muted">
                 Post it on Deck, get feedback from other makers, and land on the daily board.
               </p>
               <ButtonLink to="/submit" size="sm" className="relative mt-4 w-full">

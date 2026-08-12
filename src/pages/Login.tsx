@@ -50,7 +50,7 @@ export function Login() {
           New to Deck?{' '}
           <Link
             to="/register"
-            className="font-medium text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-100"
+            className="font-bold text-cobalt underline-offset-4 hover:underline"
           >
             Create an account
           </Link>
@@ -87,17 +87,17 @@ export function Login() {
         </Button>
       </form>
 
-      <div className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/70 p-3.5 dark:border-zinc-800 dark:bg-zinc-900/40">
-        <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+      <div className="mt-6 border-2 border-dashed border-edge p-3.5">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
           Trying the demo data?
         </p>
-        <p className="mt-1 text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
+        <p className="mt-1.5 text-xs leading-relaxed text-muted">
           Any seeded account works — for example{' '}
-          <code className="rounded bg-zinc-200/70 px-1 py-0.5 font-mono text-[11px] dark:bg-zinc-800">
+          <code className="border-2 border-edge bg-acid px-1.5 py-0.5 font-mono text-[11px] font-bold text-ink">
             ada@deck.dev
           </code>{' '}
           with password{' '}
-          <code className="rounded bg-zinc-200/70 px-1 py-0.5 font-mono text-[11px] dark:bg-zinc-800">
+          <code className="border-2 border-edge bg-acid px-1.5 py-0.5 font-mono text-[11px] font-bold text-ink">
             deck1234
           </code>
           .

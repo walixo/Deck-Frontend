@@ -10,13 +10,12 @@ import { ThemeToggle } from './ThemeToggle';
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/discover', label: 'Discover' },
-  { to: '/leaderboard', label: 'Leaderboard' },
+  { to: '/leaderboard', label: 'Board' },
 ];
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const [search, setSearch] = useState('');
-  const [scrolled, setScrolled] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,17 +29,9 @@ export function Navbar() {
   const menuOpen = panels.menu && onCurrentRoute;
   const accountOpen = panels.account && onCurrentRoute;
 
-  const setMenuOpen = (open: boolean) =>
-    setPanels({ menu: open, account: false, at: location.key });
+  const setMenuOpen = (open: boolean) => setPanels({ menu: open, account: false, at: location.key });
   const setAccountOpen = (open: boolean) =>
     setPanels({ menu: false, account: open, at: location.key });
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   useEffect(() => {
     if (!accountOpen) return;
@@ -67,18 +58,11 @@ export function Navbar() {
   };
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 border-b transition-all duration-300',
-        scrolled
-          ? 'border-zinc-200/80 bg-white/85 backdrop-blur-xl dark:border-zinc-800 dark:bg-[color:var(--color-canvas-dark)]/85'
-          : 'border-transparent bg-white dark:bg-[color:var(--color-canvas-dark)]',
-      )}
-    >
+    <header className="sticky top-0 z-50 border-b-2 border-edge bg-canvas">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Logo />
 
-        <nav aria-label="Main" className="ml-4 hidden items-center gap-1 md:flex">
+        <nav aria-label="Main" className="ml-5 hidden items-center gap-1 md:flex">
           {NAV_LINKS.map((link) => (
             <NavLink
               key={link.to}
@@ -86,25 +70,14 @@ export function Navbar() {
               end={link.to === '/'}
               className={({ isActive }) =>
                 cn(
-                  'relative rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  'border-2 px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
                   isActive
-                    ? 'text-zinc-900 dark:text-white'
-                    : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white',
+                    ? 'border-edge bg-acid text-ink'
+                    : 'border-transparent text-muted hover:border-edge hover:bg-surface-2 hover:text-body',
                 )
               }
             >
-              {({ isActive }) => (
-                <>
-                  {link.label}
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-zinc-900 transition-all duration-300 dark:bg-zinc-100',
-                      isActive ? 'opacity-100' : 'opacity-0',
-                    )}
-                  />
-                </>
-              )}
+              {link.label}
             </NavLink>
           ))}
         </nav>
@@ -112,29 +85,23 @@ export function Navbar() {
         <form onSubmit={onSearch} className="ml-auto hidden lg:block" role="search">
           <label className="relative block">
             <span className="sr-only">Search launches</span>
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400"
-            >
-              ⌕
-            </span>
             <input
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search launches"
-              className="h-9 w-56 rounded-xl border border-zinc-200 bg-zinc-50/60 pl-8 pr-3 text-sm transition-all placeholder:text-zinc-400 hover:border-zinc-300 focus:w-64 focus:border-zinc-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/5 dark:border-zinc-800 dark:bg-zinc-900/60 dark:placeholder:text-zinc-500 dark:hover:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-white/5"
+              placeholder="SEARCH"
+              className="h-9 w-44 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-[width,box-shadow] duration-[140ms] placeholder:text-muted/70 focus:w-56 focus:border-cobalt focus:outline-none"
             />
           </label>
         </form>
 
-        <div className={cn('flex items-center gap-2', 'ml-auto lg:ml-3')}>
+        <div className="ml-auto flex items-center gap-2 lg:ml-3">
           <ThemeToggle />
 
           {isAuthenticated && user ? (
             <>
-              <ButtonLink to="/submit" size="sm" className="hidden sm:inline-flex">
-                <span aria-hidden="true">+</span> Launch
+              <ButtonLink to="/submit" size="sm" variant="accent" className="hidden sm:inline-flex">
+                + Launch
               </ButtonLink>
 
               <div className="relative" ref={accountRef}>
@@ -143,7 +110,7 @@ export function Navbar() {
                   onClick={() => setAccountOpen(!accountOpen)}
                   aria-expanded={accountOpen}
                   aria-haspopup="menu"
-                  className="flex items-center gap-1.5 rounded-full p-0.5 transition-transform hover:scale-105 active:scale-95"
+                  className="flex transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
                 >
                   <Avatar user={user} size="sm" />
                   <span className="sr-only">Your account</span>
@@ -152,13 +119,11 @@ export function Navbar() {
                 {accountOpen && (
                   <div
                     role="menu"
-                    className="absolute right-0 top-11 w-56 origin-top-right animate-[var(--animate-fade-in)] overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 shadow-[var(--shadow-lifted)] dark:border-zinc-800 dark:bg-[color:var(--color-surface-dark)]"
+                    className="absolute right-0 top-12 w-56 animate-[var(--animate-slam)] border-2 border-edge bg-surface p-1.5 shadow-hard-lg"
                   >
-                    <div className="border-b border-zinc-100 px-3 py-2.5 dark:border-zinc-800">
-                      <p className="truncate text-sm font-medium">{user.name}</p>
-                      <p className="truncate text-xs text-zinc-500 dark:text-zinc-500">
-                        @{user.username}
-                      </p>
+                    <div className="border-b-2 border-edge px-3 py-2.5">
+                      <p className="truncate font-display text-sm uppercase">{user.name}</p>
+                      <p className="truncate font-mono text-[11px] text-muted">@{user.username}</p>
                     </div>
                     <MenuLink to={`/u/${user.username}`}>Your profile</MenuLink>
                     <MenuLink to="/submit">Launch something</MenuLink>
@@ -169,7 +134,7 @@ export function Navbar() {
                         logout();
                         navigate('/');
                       }}
-                      className="mt-0.5 block w-full rounded-lg px-3 py-2 text-left text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+                      className="mt-0.5 block w-full px-3 py-2 text-left font-mono text-[12px] font-bold uppercase text-muted transition-colors hover:bg-coral hover:text-white"
                     >
                       Sign out
                     </button>
@@ -189,34 +154,32 @@ export function Navbar() {
           )}
 
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
-            className="px-2 md:hidden"
+            className="px-2.5 md:hidden"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-expanded={menuOpen}
             aria-label="Toggle navigation menu"
           >
-            <span aria-hidden="true" className="text-base">
-              {menuOpen ? '✕' : '☰'}
-            </span>
+            <span aria-hidden="true">{menuOpen ? '✕' : '☰'}</span>
           </Button>
         </div>
       </div>
 
       {menuOpen && (
-        <div className="animate-[var(--animate-fade-in)] border-t border-zinc-200/80 bg-white px-4 pb-4 pt-3 md:hidden dark:border-zinc-800 dark:bg-[color:var(--color-canvas-dark)]">
+        <div className="animate-[var(--animate-slam)] border-t-2 border-edge bg-surface px-4 pb-4 pt-3 md:hidden">
           <form onSubmit={onSearch} role="search" className="mb-3">
             <input
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search launches"
+              placeholder="SEARCH LAUNCHES"
               aria-label="Search launches"
-              className="h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50/60 px-3.5 text-sm placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900/60 dark:placeholder:text-zinc-500"
+              className="h-11 w-full border-2 border-edge bg-canvas px-3.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-cobalt focus:outline-none"
             />
           </form>
 
-          <nav aria-label="Mobile" className="flex flex-col gap-0.5">
+          <nav aria-label="Mobile" className="flex flex-col gap-1.5">
             {NAV_LINKS.map((link) => (
               <NavLink
                 key={link.to}
@@ -224,10 +187,8 @@ export function Navbar() {
                 end={link.to === '/'}
                 className={({ isActive }) =>
                   cn(
-                    'rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-white'
-                      : 'text-zinc-600 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-900',
+                    'border-2 border-edge px-3 py-2.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em]',
+                    isActive ? 'bg-acid text-ink' : 'bg-canvas text-body',
                   )
                 }
               >
@@ -236,9 +197,9 @@ export function Navbar() {
             ))}
           </nav>
 
-          <div className="mt-3 flex flex-col gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+          <div className="mt-3 flex flex-col gap-2 border-t-2 border-edge pt-3">
             {isAuthenticated ? (
-              <ButtonLink to="/submit" size="md" className="w-full">
+              <ButtonLink to="/submit" variant="accent" size="md" className="w-full">
                 Launch something
               </ButtonLink>
             ) : (
@@ -263,7 +224,7 @@ function MenuLink({ to, children }: { to: string; children: React.ReactNode }) {
     <Link
       to={to}
       role="menuitem"
-      className="mt-0.5 block rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+      className="mt-0.5 block px-3 py-2 font-mono text-[12px] font-bold uppercase text-muted transition-colors hover:bg-acid hover:text-ink"
     >
       {children}
     </Link>

@@ -12,20 +12,15 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, action, illustration }: EmptyStateProps) {
   return (
-    <div className="relative flex flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-zinc-300 px-6 py-14 text-center dark:border-zinc-800">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-halo opacity-60 dark:bg-halo-dark dark:opacity-80"
-      />
-      {/* This wrapper is sized by its widest child (the title), so it centers its
-          own contents rather than letting the narrower illustration sit left. */}
+    <div className="relative overflow-hidden rounded-slab border-2 border-dashed border-edge px-6 py-12 text-center">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-halftone text-edge opacity-[0.06]" />
+
+      {/* Sized by its widest child (the title), so the narrower art still centres. */}
       <div className="relative flex flex-col items-center">
         {illustration ?? <EmptyDeckIllustration />}
-        <h3 className="mt-2 text-base font-semibold">{title}</h3>
+        <h3 className="mt-3 text-lg uppercase">{title}</h3>
         {description && (
-          <p className="mx-auto mt-1.5 max-w-sm text-sm text-zinc-600 text-pretty dark:text-zinc-400">
-            {description}
-          </p>
+          <p className="mx-auto mt-2 max-w-sm text-sm text-muted text-pretty">{description}</p>
         )}
         {action && <div className="mt-5">{action}</div>}
       </div>
@@ -40,17 +35,15 @@ interface ErrorStateProps {
 
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
-    <div className="rounded-2xl border border-red-200 bg-red-50/60 px-6 py-10 text-center dark:border-red-900/50 dark:bg-red-950/20">
-      <div
+    <div className="rounded-slab border-2 border-edge bg-coral px-6 py-9 text-center shadow-hard">
+      <span
         aria-hidden="true"
-        className="mx-auto mb-3 flex size-11 items-center justify-center rounded-2xl bg-red-100 text-lg text-red-600 dark:bg-red-900/40 dark:text-red-400"
+        className="mx-auto mb-3 flex size-12 items-center justify-center border-2 border-edge bg-white font-display text-2xl text-ink"
       >
         !
-      </div>
-      <h3 className="text-base font-semibold text-red-900 dark:text-red-200">
-        That did not load
-      </h3>
-      <p className="mx-auto mt-1.5 max-w-sm text-sm text-red-700/90 text-pretty dark:text-red-300/80">
+      </span>
+      <h3 className="text-lg uppercase text-white">That did not load</h3>
+      <p className="mx-auto mt-2 max-w-sm text-sm text-white/90 text-pretty">
         {message ?? 'Something went wrong while fetching this.'}
       </p>
       {onRetry && (
@@ -62,14 +55,20 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
   );
 }
 
-export function InlineAlert({ children, tone = 'error' }: { children: ReactNode; tone?: 'error' | 'success' }) {
-  const styles =
-    tone === 'error'
-      ? 'border-red-200 bg-red-50 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300'
-      : 'border-brand-200 bg-brand-50 text-brand-800 dark:border-brand-800/50 dark:bg-brand-950/30 dark:text-brand-300';
+export function InlineAlert({
+  children,
+  tone = 'error',
+}: {
+  children: ReactNode;
+  tone?: 'error' | 'success';
+}) {
+  const styles = tone === 'error' ? 'bg-coral text-white' : 'bg-acid text-ink';
 
   return (
-    <div role="alert" className={`rounded-xl border px-4 py-3 text-sm ${styles}`}>
+    <div
+      role="alert"
+      className={`rounded-slab border-2 border-edge px-4 py-3 text-sm font-medium shadow-hard-sm ${styles}`}
+    >
       {children}
     </div>
   );

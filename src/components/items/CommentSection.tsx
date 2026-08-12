@@ -28,17 +28,17 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
   return (
     <section aria-labelledby="discussion-heading" className="mt-12">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <h2 id="discussion-heading" className="text-xl font-semibold">
+        <h2 id="discussion-heading" className="text-xl uppercase">
           Discussion
           {roots.length > 0 && (
-            <span className="ml-2 text-sm font-normal text-zinc-500 tabular-nums dark:text-zinc-500">
+            <span className="ml-2 font-mono text-sm font-bold tabular-nums text-muted">
               {roots.length}
             </span>
           )}
         </h2>
 
         {reviewCount > 0 && (
-          <div className="flex rounded-xl border border-zinc-200 p-0.5 dark:border-zinc-800">
+          <div className="flex gap-1">
             {(['all', 'reviews'] as const).map((option) => (
               <button
                 key={option}
@@ -46,10 +46,10 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
                 onClick={() => setFilter(option)}
                 aria-pressed={filter === option}
                 className={cn(
-                  'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
+                  'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase transition-colors duration-[120ms]',
                   filter === option
-                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-                    : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white',
+                    ? 'bg-cobalt text-white'
+                    : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                 )}
               >
                 {option === 'all' ? 'Everything' : `Reviews (${reviewCount})`}
@@ -62,8 +62,8 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
       {isAuthenticated ? (
         <CommentComposer slug={slug} itemName={itemName} />
       ) : (
-        <div className="rounded-2xl border border-dashed border-zinc-300 px-5 py-6 text-center dark:border-zinc-800">
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="border-2 border-dashed border-edge px-5 py-6 text-center">
+          <p className="text-sm text-muted">
             Sign in to review {itemName} or join the discussion.
           </p>
           <div className="mt-4 flex justify-center gap-2">
@@ -81,7 +81,7 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
         {isLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 3 }, (_, index) => (
-              <Skeleton key={index} className="h-24 w-full rounded-2xl" />
+              <Skeleton key={index} className="h-24 w-full" />
             ))}
           </div>
         ) : isError ? (
@@ -153,7 +153,7 @@ function CommentComposer({
   };
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-zinc-200/80 bg-white p-4 dark:border-zinc-800 dark:bg-[color:var(--color-surface-dark)]">
+    <form onSubmit={submit} className="rounded-slab border-2 border-edge bg-surface p-4 shadow-hard">
       <div className="flex gap-3">
         {user && <Avatar user={user} size="sm" className="mt-1" />}
         <div className="min-w-0 flex-1">
@@ -166,14 +166,14 @@ function CommentComposer({
             onChange={(event) => setBody(event.target.value)}
             rows={parent ? 2 : 3}
             placeholder={parent ? 'Write a reply…' : `What do you think of ${itemName}?`}
-            className="w-full resize-y rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-sm leading-relaxed placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 dark:border-zinc-800 dark:bg-zinc-900/60 dark:placeholder:text-zinc-500 dark:focus:border-zinc-600 dark:focus:ring-white/5"
+            className="w-full resize-y rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-cobalt focus:shadow-none focus:outline-none"
           />
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             {/* Replies are part of a thread, not a rating of the product. */}
             {!parent ? (
               <div className="flex items-center gap-3">
-                <span className="text-xs font-medium text-zinc-500 dark:text-zinc-500">
+                <span className="font-mono text-[11px] font-bold uppercase text-muted">
                   Rate it
                 </span>
                 <StarPicker value={rating} onChange={setRating} />
@@ -185,8 +185,8 @@ function CommentComposer({
             <div className="flex items-center gap-3">
               <span
                 className={cn(
-                  'text-xs tabular-nums',
-                  tooLong ? 'text-red-600 dark:text-red-400' : 'text-zinc-400 dark:text-zinc-600',
+                  'font-mono text-[11px] font-bold tabular-nums',
+                  tooLong ? 'text-coral' : 'text-muted',
                 )}
               >
                 {body.length}/{MAX_LENGTH}
@@ -237,7 +237,7 @@ function CommentRow({
   const deleteComment = useDeleteComment(slug);
 
   return (
-    <article className="rounded-2xl border border-zinc-200/80 bg-white p-4 transition-colors dark:border-zinc-800 dark:bg-[color:var(--color-surface-dark)]">
+    <article className="rounded-slab border-2 border-edge bg-surface p-4 shadow-hard">
       <div className="flex gap-3">
         <Link to={`/u/${comment.user.username}`} className="shrink-0">
           <Avatar user={comment.user} size="sm" />
@@ -247,19 +247,19 @@ function CommentRow({
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <Link
               to={`/u/${comment.user.username}`}
-              className="text-sm font-medium hover:underline"
+              className="font-display text-sm uppercase hover:underline"
             >
               {comment.user.name}
             </Link>
-            <span className="text-xs text-zinc-400 dark:text-zinc-600">
+            <span className="font-mono text-[11px] text-muted">
               @{comment.user.username}
             </span>
-            <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">
+            <span aria-hidden="true" className="text-muted/50">
               ·
             </span>
             <time
               dateTime={comment.createdAt}
-              className="text-xs text-zinc-500 dark:text-zinc-500"
+              className="font-mono text-[11px] font-bold uppercase text-muted"
             >
               {relativeTime(comment.createdAt)}
             </time>
@@ -271,7 +271,7 @@ function CommentRow({
             )}
           </div>
 
-          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-zinc-700 text-pretty dark:text-zinc-300">
+          <p className="mt-2.5 whitespace-pre-line text-sm leading-relaxed text-body text-pretty">
             {comment.body}
           </p>
 
@@ -280,7 +280,7 @@ function CommentRow({
               <button
                 type="button"
                 onClick={() => setReplying((open) => !open)}
-                className="text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                className="font-mono text-[11px] font-bold uppercase text-muted transition-colors hover:text-body"
               >
                 {replying ? 'Cancel' : 'Reply'}
               </button>
@@ -290,7 +290,7 @@ function CommentRow({
                 type="button"
                 onClick={() => deleteComment.mutate(comment.id)}
                 disabled={deleteComment.isPending}
-                className="text-xs font-medium text-zinc-400 transition-colors hover:text-red-600 disabled:opacity-50 dark:text-zinc-500 dark:hover:text-red-400"
+                className="font-mono text-[11px] font-bold uppercase text-muted transition-colors hover:text-coral disabled:opacity-50"
               >
                 Delete
               </button>
@@ -309,7 +309,7 @@ function CommentRow({
           )}
 
           {replies.length > 0 && (
-            <ul className="mt-4 space-y-3 border-l-2 border-zinc-100 pl-4 dark:border-zinc-800">
+            <ul className="mt-4 space-y-3 border-l-2 border-edge pl-4">
               {replies.map((reply) => (
                 <li key={reply.id}>
                   <div className="flex gap-2.5">
@@ -320,13 +320,13 @@ function CommentRow({
                       <div className="flex flex-wrap items-center gap-x-2">
                         <Link
                           to={`/u/${reply.user.username}`}
-                          className="text-xs font-medium hover:underline"
+                          className="font-display text-xs uppercase hover:underline"
                         >
                           {reply.user.name}
                         </Link>
                         <time
                           dateTime={reply.createdAt}
-                          className="text-xs text-zinc-500 dark:text-zinc-500"
+                          className="font-mono text-[11px] font-bold uppercase text-muted"
                         >
                           {relativeTime(reply.createdAt)}
                         </time>
@@ -334,13 +334,13 @@ function CommentRow({
                           <button
                             type="button"
                             onClick={() => deleteComment.mutate(reply.id)}
-                            className="text-xs text-zinc-400 transition-colors hover:text-red-600 dark:text-zinc-500 dark:hover:text-red-400"
+                            className="font-mono text-[10px] font-bold uppercase text-muted transition-colors hover:text-coral"
                           >
                             Delete
                           </button>
                         )}
                       </div>
-                      <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+                      <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-body">
                         {reply.body}
                       </p>
                     </div>

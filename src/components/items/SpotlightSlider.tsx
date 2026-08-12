@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Stars } from '@/components/ui/Stars';
-import { CATEGORY_LABELS, cn, gradientFor, PRICING_LABELS } from '@/lib/utils';
+import { CATEGORY_LABELS, cn, colourFor, PRICING_LABELS } from '@/lib/utils';
 import type { Item } from '@/types';
 import { ItemLogo } from './ItemLogo';
 import { VoteButton } from './VoteButton';
@@ -18,7 +18,6 @@ interface SpotlightSliderProps {
 export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderProps) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const regionRef = useRef<HTMLDivElement>(null);
 
   const total = items.length;
 
@@ -36,9 +35,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
   // Autoplay, paused on hover, focus, or when the tab is hidden.
   useEffect(() => {
     if (paused || total <= 1) return;
-    const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % total);
-    }, AUTOPLAY_MS);
+    const timer = window.setInterval(() => setIndex((current) => (current + 1) % total), AUTOPLAY_MS);
     return () => window.clearInterval(timer);
   }, [paused, total]);
 
@@ -59,17 +56,14 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
     }
   };
 
-  if (isLoading) {
-    return <Skeleton className="h-80 w-full rounded-3xl sm:h-72" />;
-  }
-
+  if (isLoading) return <Skeleton className="h-72 w-full" />;
   if (total === 0) return null;
 
   const active = items[index];
+  const colour = colourFor(active.slug);
 
   return (
     <div
-      ref={regionRef}
       role="region"
       aria-roledescription="carousel"
       aria-label="Spotlighted launches"
@@ -79,46 +73,25 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="group relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white shadow-[var(--shadow-soft)] dark:border-zinc-800 dark:bg-[color:var(--color-surface-dark)]"
+      className="rounded-slab border-2 border-edge bg-surface shadow-hard-lg"
     >
-      {/* Ambient wash keyed to the active item, so the panel shifts colour as it rotates. */}
-      <div
-        aria-hidden="true"
-        className={cn(
-          'pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-gradient-to-br opacity-20 blur-3xl transition-all duration-1000 dark:opacity-25',
-          gradientFor(active.slug),
-        )}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-brand-500/40 to-transparent"
-      />
-
-      <div className="relative grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
-        <div key={active.id} className="animate-[var(--animate-fade-up)]">
+      <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
+        <div key={active.id} className="animate-[var(--animate-slam)]">
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <Badge tone="accent">
-              <span aria-hidden="true" className="mr-0.5">
-                ✦
-              </span>
-              Spotlight
-            </Badge>
+            <Badge tone="accent">★ Spotlight</Badge>
             <Badge tone="outline">{CATEGORY_LABELS[active.category]}</Badge>
-            <Badge tone="muted">{PRICING_LABELS[active.pricing]}</Badge>
+            <Badge tone="outline">{PRICING_LABELS[active.pricing]}</Badge>
           </div>
 
           <div className="flex items-start gap-4">
             <ItemLogo item={active} size="lg" />
             <div className="min-w-0">
-              <h3 className="text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-                <Link
-                  to={`/item/${active.slug}`}
-                  className="underline-offset-4 transition-colors hover:text-brand-600 hover:underline dark:hover:text-brand-400"
-                >
+              <h3 className="display-tight text-2xl uppercase text-balance sm:text-3xl">
+                <Link to={`/item/${active.slug}`} className="underline-offset-4 hover:underline">
                   {active.name}
                 </Link>
               </h3>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-600 text-pretty sm:text-base dark:text-zinc-400">
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted text-pretty sm:text-base">
                 {active.tagline}
               </p>
             </div>
@@ -128,10 +101,10 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
             <VoteButton item={active} layout="inline" />
 
             {active.reviewCount > 0 && (
-              <span className="inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+              <span className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase text-muted">
                 <Stars value={active.ratingAvg} size="md" />
                 <span className="tabular-nums">
-                  {active.ratingAvg.toFixed(1)} · {active.reviewCount}{' '}
+                  {active.ratingAvg.toFixed(1)} / {active.reviewCount}{' '}
                   {active.reviewCount === 1 ? 'review' : 'reviews'}
                 </span>
               </span>
@@ -139,14 +112,14 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
 
             <Link
               to={`/item/${active.slug}`}
-              className="text-sm font-medium text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-100"
+              className="font-mono text-[11px] font-bold uppercase underline-offset-4 hover:underline"
             >
               Read more →
             </Link>
           </div>
         </div>
 
-        {/* Stacked preview of the upcoming items — clickable, and doubles as depth. */}
+        {/* Stacked preview of what is coming up — clickable, and doubles as depth. */}
         <div className="hidden lg:flex lg:flex-col lg:gap-2">
           {items.map((item, itemIndex) => {
             const offset = (itemIndex - index + total) % total;
@@ -156,20 +129,19 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
                 key={item.id}
                 type="button"
                 onClick={() => goTo(itemIndex)}
-                className={cn(
-                  'flex w-64 items-center gap-3 rounded-xl border border-zinc-200/70 bg-white/70 p-2.5 text-left transition-all duration-300 hover:border-zinc-300 hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-zinc-700 dark:hover:bg-zinc-900',
-                  offset === 1 ? 'opacity-100' : offset === 2 ? 'opacity-70' : 'opacity-45',
-                )}
-                style={{ transform: `translateX(${(offset - 1) * 10}px)` }}
+                className="flex w-64 items-center gap-3 border-2 border-edge bg-canvas p-2.5 text-left transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-1"
+                style={{ transform: `translateX(${(offset - 1) * 12}px)` }}
               >
                 <ItemLogo item={item} size="sm" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium">{item.name}</span>
-                  <span className="block truncate text-xs text-zinc-500 dark:text-zinc-500">
+                  <span className="block truncate font-display text-[13px] uppercase">
+                    {item.name}
+                  </span>
+                  <span className="block truncate font-mono text-[10px] uppercase text-muted">
                     {CATEGORY_LABELS[item.category]}
                   </span>
                 </span>
-                <span className="text-xs tabular-nums text-zinc-400 dark:text-zinc-600">
+                <span className="font-mono text-[11px] font-bold tabular-nums text-muted">
                   ▲ {item.voteCount}
                 </span>
               </button>
@@ -178,7 +150,10 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
         </div>
       </div>
 
-      <div className="relative flex items-center justify-between gap-4 border-t border-zinc-200/80 px-6 py-3.5 dark:border-zinc-800 sm:px-8">
+      {/* Colour bar keyed to the active item — the only thing that changes hue. */}
+      <div className={cn('h-1.5 border-y-2 border-edge', colour.bg)} />
+
+      <div className="flex items-center justify-between gap-4 px-5 py-3 sm:px-7">
         <div className="flex items-center gap-2" role="tablist" aria-label="Choose a spotlighted launch">
           {items.map((item, itemIndex) => (
             <button
@@ -189,19 +164,17 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
               aria-label={`Show ${item.name}`}
               onClick={() => goTo(itemIndex)}
               className={cn(
-                'h-1.5 rounded-full transition-all duration-500',
-                itemIndex === index
-                  ? 'w-8 bg-brand-500'
-                  : 'w-1.5 bg-zinc-300 hover:bg-zinc-400 dark:bg-zinc-700 dark:hover:bg-zinc-600',
+                'h-3 border-2 border-edge transition-[width,background-color] duration-[140ms]',
+                itemIndex === index ? 'w-8 bg-cobalt' : 'w-3 bg-surface-2 hover:bg-acid',
               )}
             />
           ))}
-          <span className="ml-2 text-xs tabular-nums text-zinc-400 dark:text-zinc-600">
+          <span className="ml-2 font-mono text-[11px] font-bold tabular-nums text-muted">
             {index + 1}/{total}
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <SliderArrow direction="previous" onClick={previous} />
           <SliderArrow direction="next" onClick={next} />
         </div>
@@ -222,11 +195,9 @@ function SliderArrow({
       type="button"
       onClick={onClick}
       aria-label={direction === 'next' ? 'Next spotlight' : 'Previous spotlight'}
-      className="flex size-8 items-center justify-center rounded-lg border border-zinc-200 text-zinc-500 transition-all hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 active:scale-95 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-white"
+      className="flex size-8 items-center justify-center border-2 border-edge bg-surface text-sm transition-[transform,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:bg-acid hover:text-ink active:translate-y-0"
     >
-      <span aria-hidden="true" className="text-xs">
-        {direction === 'next' ? '→' : '←'}
-      </span>
+      <span aria-hidden="true">{direction === 'next' ? '→' : '←'}</span>
     </button>
   );
 }

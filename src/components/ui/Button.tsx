@@ -2,28 +2,33 @@ import { Link } from 'react-router-dom';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'accent' | 'danger';
+type Variant = 'primary' | 'secondary' | 'accent' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
 
+/*
+ * Every button is a solid block with a 2px edge and a hard offset shadow. Hover
+ * nudges the block toward its shadow's origin and lengthens the shadow; the
+ * active state slams it all the way down, so a press feels physical.
+ */
 const BASE =
-  'inline-flex items-center justify-center gap-2 rounded-xl font-medium whitespace-nowrap transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]';
+  'inline-flex items-center justify-center gap-2 border-2 border-edge font-bold whitespace-nowrap ' +
+  'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] ' +
+  'hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-[3px] active:translate-y-[3px] ' +
+  'active:shadow-none disabled:pointer-events-none disabled:opacity-40 rounded-slab';
 
-// Grey is the primary action colour: graphite in light mode, inverted in dark.
 const VARIANTS: Record<Variant, string> = {
-  primary:
-    'bg-zinc-900 text-white shadow-[var(--shadow-soft)] hover:bg-zinc-800 hover:shadow-[var(--shadow-lifted)] dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white',
-  secondary:
-    'border border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-white',
+  primary: 'bg-cobalt text-white shadow-hard-sm hover:bg-cobalt-deep hover:shadow-hard',
+  secondary: 'bg-surface text-body shadow-hard-sm hover:bg-surface-2 hover:shadow-hard',
+  accent: 'bg-acid text-ink shadow-hard-sm hover:bg-acid-deep hover:shadow-hard',
+  danger: 'bg-coral text-white shadow-hard-sm hover:bg-coral-deep hover:shadow-hard',
+  // The one exception: no block, no shadow — for tertiary actions inside dense UI.
   ghost:
-    'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-white',
-  accent:
-    'bg-brand-500 text-white shadow-[var(--shadow-soft)] hover:bg-brand-600 hover:shadow-[var(--shadow-glow)] dark:bg-brand-500 dark:hover:bg-brand-400',
-  danger:
-    'border border-red-200 bg-white text-red-600 hover:bg-red-50 dark:border-red-900/60 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-950/40',
+    'border-transparent text-muted shadow-none hover:translate-x-0 hover:translate-y-0 ' +
+    'active:translate-x-0 active:translate-y-0 hover:bg-surface-2 hover:text-body',
 };
 
 const SIZES: Record<Size, string> = {
-  sm: 'h-9 px-3.5 text-sm',
+  sm: 'h-9 px-3.5 text-[13px]',
   md: 'h-11 px-5 text-sm',
   lg: 'h-13 px-7 text-base',
 };
@@ -35,7 +40,9 @@ interface CommonProps {
   children: ReactNode;
 }
 
-interface ButtonProps extends CommonProps, Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'className'> {
+interface ButtonProps
+  extends CommonProps,
+    Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'className'> {
   loading?: boolean;
 }
 
@@ -57,7 +64,7 @@ export function Button({
       {loading && (
         <span
           aria-hidden="true"
-          className="size-4 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent opacity-70"
+          className="size-3.5 shrink-0 animate-spin border-2 border-current border-t-transparent"
         />
       )}
       {children}

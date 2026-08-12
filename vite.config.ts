@@ -16,7 +16,7 @@ export default defineConfig({
     proxy: {
       // Keeps the browser on a single origin in development — no CORS round trips.
       '/api': {
-        target: 'http://localhost:4100',
+        target: 'http://localhost:4200',
         changeOrigin: true,
       },
     },

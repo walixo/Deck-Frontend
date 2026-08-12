@@ -1,66 +1,118 @@
 @import 'tailwindcss';
 
 /*
- * Self-hosted variable fonts. Bundled by Vite rather than fetched from a CDN, so
- * there is no third-party request, no render-blocking link, and no FOUT offline.
- *   Space Grotesk — display voice: headlines, wordmark, big numbers
- *   Geist         — UI voice: body copy, controls, labels
- *   Geist Mono    — code, IDs and anything that should look machine-written
+ * Self-hosted fonts, bundled by Vite rather than fetched from a CDN — no
+ * third-party request, no render-blocking link, no FOUT offline.
+ *   Archivo Black — display voice: headlines, wordmark, card titles
+ *   Geist         — UI voice: body copy and long-form text
+ *   Geist Mono    — labels, counts, chips: anything that reads as a machine value
  */
-@import '@fontsource-variable/space-grotesk';
+@import '@fontsource/archivo-black';
 @import '@fontsource-variable/geist';
 @import '@fontsource-variable/geist-mono';
 
 /* Class-based dark mode — toggled on <html> by ThemeProvider. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  /* Green accent: success states, active votes, spotlight highlights. */
-  --color-brand-50: #ecfdf5;
-  --color-brand-100: #d1fae5;
-  --color-brand-200: #a7f3d0;
-  --color-brand-300: #6ee7b7;
-  --color-brand-400: #34d399;
-  --color-brand-500: #10b981;
-  --color-brand-600: #059669;
-  --color-brand-700: #047857;
-  --color-brand-800: #065f46;
-  --color-brand-900: #064e3b;
-  --color-brand-950: #022c22;
+/*
+ * Semantic surface tokens are plain CSS variables redefined under `.dark`,
+ * then exposed to Tailwind through `--color-*` below. That means a component
+ * writes `border-edge` once and it flips automatically — no `dark:` twin on
+ * every border, background and text colour in the app.
+ */
+@layer base {
+  :root {
+    --canvas: #faf9f5;
+    --surface: #ffffff;
+    --surface-2: #efede6;
+    --edge: #111111;
+    --body-ink: #111111;
+    --muted-ink: #55534e;
+  }
 
-  /* Near-black canvas — softer than pure #000 so shadows and borders read. */
-  --color-canvas: #ffffff;
-  --color-canvas-dark: #0a0a0b;
-  --color-surface-dark: #131316;
+  .dark {
+    --canvas: #151515;
+    --surface: #1e1e1e;
+    --surface-2: #262626;
+    --edge: #f7f6f2;
+    --body-ink: #f7f6f2;
+    --muted-ink: #a3a29c;
+  }
+}
+
+@theme {
+  /* Themed surfaces — resolve through the variables above. */
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-edge: var(--edge);
+  --color-body: var(--body-ink);
+  --color-muted: var(--muted-ink);
+
+  /* Fixed brand colours — identical in both themes, which is the whole point
+     of the style: flat ink-on-colour, never tinted or faded. */
+  --color-cobalt: #2b4bff;
+  --color-cobalt-deep: #1b3ae8;
+  --color-acid: #c6ff3d;
+  --color-acid-deep: #a8e01f;
+  --color-coral: #ff5c4d;
+  --color-coral-deep: #e8402f;
+  --color-ink: #111111;
+  --color-bone: #faf9f5;
 
   --font-sans:
     'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, sans-serif;
   --font-display:
-    'Space Grotesk Variable', 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    sans-serif;
+    'Archivo Black', 'Helvetica Neue', Impact, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono:
     'Geist Mono Variable', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, 'Cascadia Mono',
     Consolas, monospace;
 
-  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.12);
-  --shadow-lifted: 0 2px 4px rgb(0 0 0 / 0.04), 0 18px 40px -16px rgb(0 0 0 / 0.22);
-  --shadow-glow: 0 0 0 1px rgb(16 185 129 / 0.35), 0 12px 32px -12px rgb(16 185 129 / 0.45);
+  /*
+   * Hard offset shadows — no blur, no alpha. They read as a second solid edge,
+   * which is what gives the style its weight. Colour comes from --edge, so the
+   * shadow inverts with the theme like everything else.
+   */
+  --shadow-hard-sm: 3px 3px 0 var(--edge);
+  --shadow-hard: 4px 4px 0 var(--edge);
+  --shadow-hard-lg: 7px 7px 0 var(--edge);
+  --shadow-hard-xl: 10px 10px 0 var(--edge);
+  --shadow-acid: 4px 4px 0 var(--color-acid);
+  --shadow-cobalt: 4px 4px 0 var(--color-cobalt);
 
-  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-fade-in: fade-in 0.4s ease-out both;
-  --animate-pop: pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
-  --animate-float: float 7s ease-in-out infinite;
-  --animate-drift: drift 22s linear infinite;
-  --animate-shimmer: shimmer 2s linear infinite;
-  --animate-rise: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --radius-slab: 6px;
+
+  /* Motion is fast and mechanical: things snap, they do not glide. */
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --ease-kick: cubic-bezier(0.3, 1.6, 0.5, 1);
+
+  --animate-slam: slam 0.32s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  --animate-slide-up: slide-up 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.3s linear both;
+  --animate-stamp: stamp 0.28s cubic-bezier(0.3, 1.6, 0.5, 1);
+  --animate-kick: kick 3.2s cubic-bezier(0.3, 1.6, 0.5, 1) infinite;
+  --animate-jitter: jitter 3.6s steps(1) infinite;
+  --animate-blink: blink 1.1s steps(1) infinite;
   --animate-marquee: marquee 70s linear infinite;
   --animate-marquee-reverse: marquee-reverse 70s linear infinite;
+  --animate-ticker: ticker 26s linear infinite;
 
-  @keyframes fade-up {
+  @keyframes slam {
     from {
       opacity: 0;
-      transform: translateY(14px);
+      transform: translateY(-10px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -77,54 +129,53 @@
     }
   }
 
-  @keyframes pop {
+  /* The upvote press: element drops onto its own shadow, then springs back. */
+  @keyframes stamp {
     0% {
-      transform: scale(1);
+      transform: translate(0, 0);
     }
     45% {
-      transform: scale(1.22);
+      transform: translate(4px, 4px);
     }
     100% {
-      transform: scale(1);
+      transform: translate(0, 0);
     }
   }
 
-  @keyframes float {
+  @keyframes kick {
     0%,
+    58%,
     100% {
-      transform: translateY(0) rotate(0deg);
+      transform: translateY(0);
     }
-    50% {
-      transform: translateY(-14px) rotate(2deg);
-    }
-  }
-
-  @keyframes drift {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(-50%, 0, 0);
+    68% {
+      transform: translateY(-6px);
     }
   }
 
-  @keyframes shimmer {
-    from {
-      background-position: -200% 0;
+  /* Steps(1) keeps this snapping between positions instead of easing. */
+  @keyframes jitter {
+    0%,
+    88%,
+    100% {
+      transform: translate(0, 0) rotate(0deg);
     }
-    to {
-      background-position: 200% 0;
+    91% {
+      transform: translate(-2px, 1px) rotate(-1.5deg);
+    }
+    94% {
+      transform: translate(2px, -1px) rotate(1.5deg);
     }
   }
 
-  @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translateY(28px) scale(0.98);
-    }
-    to {
+  @keyframes blink {
+    0%,
+    49% {
       opacity: 1;
-      transform: translateY(0) scale(1);
+    }
+    50%,
+    100% {
+      opacity: 0;
     }
   }
 
@@ -150,39 +201,42 @@
       transform: translate3d(0, 0, 0);
     }
   }
+
+  @keyframes ticker {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
-    text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-white text-zinc-900 antialiased;
-    @apply dark:bg-[color:var(--color-canvas-dark)] dark:text-zinc-100;
-    /* Contextual alternates and proportional figures for running text. */
+    @apply bg-canvas text-body antialiased;
     font-feature-settings: 'calt', 'ss01';
   }
 
-  /* One consistent focus ring everywhere, keyboard only. */
+  /*
+   * Focus is a solid offset block, not a soft ring — same visual language as
+   * the shadows. Keyboard only.
+   */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-zinc-900 dark:outline-zinc-100;
+    outline: 3px solid var(--color-cobalt);
+    outline-offset: 2px;
   }
 
   ::selection {
-    @apply bg-brand-200 text-brand-950;
+    background: var(--color-acid);
+    color: #111111;
   }
 
-  .dark ::selection {
-    @apply bg-brand-500/30 text-brand-50;
-  }
-
-  /*
-   * Every heading takes the display face automatically, so no component has to
-   * remember to opt in. Space Grotesk sets wide by default, hence the negative
-   * tracking — large type would otherwise feel loose.
-   */
+  /* Display type is set tight and never lighter than the face's single weight. */
   h1,
   h2,
   h3,
@@ -191,7 +245,6 @@
     @apply tracking-tight;
   }
 
-  /* Respect users who ask for less motion. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -204,54 +257,25 @@
   }
 }
 
-/*
- * Background washes. Authored as real utilities because layered multi-stop
- * gradients cannot be expressed in arbitrary-value syntax without becoming
- * unreadable. Each has a -dark counterpart applied through the `dark:` variant.
- */
-@utility bg-aurora {
+/* Flat textures. Nothing here blurs or fades — brutalism has no atmosphere. */
+@utility bg-halftone {
+  background-image: radial-gradient(currentColor 1.5px, transparent 1.6px);
+  background-size: 12px 12px;
+}
+
+@utility bg-gridlines {
   background-image:
-    radial-gradient(55% 50% at 12% -5%, oklch(87% 0.13 165 / 0.5) 0%, transparent 60%),
-    radial-gradient(45% 45% at 88% 0%, oklch(90% 0.04 250 / 0.55) 0%, transparent 62%),
-    radial-gradient(60% 55% at 50% 110%, oklch(93% 0.06 160 / 0.4) 0%, transparent 65%);
+    linear-gradient(currentColor 2px, transparent 2px),
+    linear-gradient(90deg, currentColor 2px, transparent 2px);
+  background-size: 64px 64px;
 }
 
-@utility bg-aurora-dark {
-  background-image:
-    radial-gradient(55% 50% at 12% -5%, oklch(58% 0.14 165 / 0.22) 0%, transparent 60%),
-    radial-gradient(45% 45% at 88% 0%, oklch(45% 0.05 250 / 0.3) 0%, transparent 62%),
-    radial-gradient(60% 55% at 50% 110%, oklch(50% 0.1 160 / 0.18) 0%, transparent 65%);
-}
-
-/* Tighter, single-corner wash for page headers. */
-@utility bg-halo {
-  background-image:
-    radial-gradient(70% 100% at 0% 0%, oklch(88% 0.12 165 / 0.42) 0%, transparent 58%),
-    radial-gradient(50% 90% at 100% 0%, oklch(91% 0.035 255 / 0.5) 0%, transparent 60%);
-}
-
-@utility bg-halo-dark {
-  background-image:
-    radial-gradient(70% 100% at 0% 0%, oklch(60% 0.13 165 / 0.18) 0%, transparent 58%),
-    radial-gradient(50% 90% at 100% 0%, oklch(46% 0.045 255 / 0.26) 0%, transparent 60%);
-}
-
-/* Textures. Grid and dots inherit currentColor so they tint with the theme. */
-@utility bg-grid {
-  background-image:
-    linear-gradient(currentColor 1px, transparent 1px),
-    linear-gradient(90deg, currentColor 1px, transparent 1px);
-  background-size: 56px 56px;
-}
-
-@utility bg-dotgrid {
-  background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0);
-  background-size: 22px 22px;
-}
-
-/* Film grain, so large gradient fields do not band on wide displays. */
-@utility bg-grain {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+@utility bg-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    currentColor 0 6px,
+    transparent 6px 14px
+  );
 }
 
 @layer utilities {
@@ -265,22 +289,17 @@
     display: none;
   }
 
-  /* Fades the edges of a horizontal scroller so cut-off cards look intentional. */
-  .edge-fade {
-    mask-image: linear-gradient(
-      to right,
-      transparent,
-      black 2.5rem,
-      black calc(100% - 2.5rem),
-      transparent
-    );
-  }
-
   .text-balance {
     text-wrap: balance;
   }
 
   .text-pretty {
     text-wrap: pretty;
+  }
+
+  /* Display type set in Archivo Black needs looser leading than its metrics give. */
+  .display-tight {
+    line-height: 0.95;
+    letter-spacing: -0.03em;
   }
 }

@@ -1,14 +1,23 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import {
+  useId,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from 'react';
 import { cn } from '@/lib/utils';
 
+/*
+ * Inputs are inset blocks: 2px edge, no radius softening, and an inner hard
+ * shadow so the field reads as a cut-out rather than a raised surface. On focus
+ * the edge turns cobalt and the inset shadow snaps off.
+ */
 const CONTROL =
-  'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-zinc-900 transition-colors placeholder:text-zinc-400 ' +
-  'border-zinc-200 hover:border-zinc-300 focus:border-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 ' +
-  'dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:hover:border-zinc-700 ' +
-  'dark:focus:border-zinc-600 dark:focus:ring-white/5';
+  'w-full rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm text-body ' +
+  'shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] ' +
+  'placeholder:text-muted/70 focus:border-cobalt focus:shadow-none focus:outline-none';
 
-const INVALID =
-  'border-red-400 focus:border-red-500 focus:ring-red-500/10 dark:border-red-800 dark:focus:border-red-700';
+const INVALID = 'border-coral focus:border-coral';
 
 interface FieldShellProps {
   label: string;
@@ -23,18 +32,21 @@ function FieldShell({ label, htmlFor, hint, error, counter, children }: FieldShe
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
-        <label htmlFor={htmlFor} className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+        <label
+          htmlFor={htmlFor}
+          className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-body"
+        >
           {label}
         </label>
         {counter}
       </div>
       {children}
       {error ? (
-        <p role="alert" className="mt-1.5 text-xs font-medium text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-1.5 font-mono text-[11px] font-bold uppercase text-coral">
           {error}
         </p>
       ) : (
-        hint && <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-500">{hint}</p>
+        hint && <p className="mt-1.5 text-xs text-muted">{hint}</p>
       )}
     </div>
   );
@@ -99,9 +111,9 @@ export function Select({ label, hint, error, options, className, ...props }: Sel
         className={cn(CONTROL, 'cursor-pointer appearance-none pr-9', error && INVALID, className)}
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2371717a'%3E%3Cpath d='M4.2 6.2 8 10l3.8-3.8Z'/%3E%3C/svg%3E\")",
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%232B4BFF'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E\")",
           backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'right 0.75rem center',
+          backgroundPosition: 'right 0.7rem center',
           backgroundSize: '1rem',
         }}
         {...props}
@@ -121,12 +133,8 @@ export function CharCount({ value, max }: { value: string; max: number }) {
   return (
     <span
       className={cn(
-        'text-xs tabular-nums',
-        remaining < 0
-          ? 'text-red-600 dark:text-red-400'
-          : remaining < max * 0.15
-            ? 'text-amber-600 dark:text-amber-400'
-            : 'text-zinc-400 dark:text-zinc-600',
+        'font-mono text-[11px] font-bold tabular-nums',
+        remaining < 0 ? 'text-coral' : remaining < max * 0.15 ? 'text-cobalt' : 'text-muted',
       )}
     >
       {value.length}/{max}

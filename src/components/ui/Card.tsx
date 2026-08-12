@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 interface CardProps {
   children: ReactNode;
   className?: string;
+  /** Adds the lift-toward-the-shadow hover. Use for cards that are links. */
   interactive?: boolean;
 }
 
@@ -11,10 +12,9 @@ export function Card({ children, className, interactive = false }: CardProps) {
   return (
     <div
       className={cn(
-        'rounded-2xl border border-zinc-200/80 bg-white shadow-[var(--shadow-soft)]',
-        'dark:border-zinc-800 dark:bg-[color:var(--color-surface-dark)]',
+        'rounded-slab border-2 border-edge bg-surface shadow-hard',
         interactive &&
-          'transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-[var(--shadow-lifted)] dark:hover:border-zinc-700',
+          'transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
         className,
       )}
     >
@@ -38,15 +38,13 @@ export function SectionHeading({
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="max-w-2xl">
         {eyebrow && (
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-400">
+          <p className="mb-3 inline-block border-2 border-edge bg-acid px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
             {eyebrow}
           </p>
         )}
-        <h2 className="text-2xl font-semibold text-balance sm:text-3xl">{title}</h2>
+        <h2 className="display-tight text-2xl uppercase text-balance sm:text-3xl">{title}</h2>
         {description && (
-          <p className="mt-2 text-sm leading-relaxed text-zinc-600 text-pretty dark:text-zinc-400">
-            {description}
-          </p>
+          <p className="mt-2.5 text-sm leading-relaxed text-muted text-pretty">{description}</p>
         )}
       </div>
       {action}

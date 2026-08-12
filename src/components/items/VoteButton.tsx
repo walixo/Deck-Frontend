@@ -15,7 +15,7 @@ export function VoteButton({ item, layout = 'stacked', className }: VoteButtonPr
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const toggleVote = useToggleVote();
-  const [pop, setPop] = useState(false);
+  const [stamping, setStamping] = useState(false);
 
   const handleClick = (event: React.MouseEvent) => {
     // Vote buttons sit inside card links — never navigate on click.
@@ -27,9 +27,10 @@ export function VoteButton({ item, layout = 'stacked', className }: VoteButtonPr
       return;
     }
 
+    // Only stamp on the way up; removing a vote should feel undramatic.
     if (!item.hasVoted) {
-      setPop(true);
-      window.setTimeout(() => setPop(false), 320);
+      setStamping(true);
+      window.setTimeout(() => setStamping(false), 300);
     }
 
     toggleVote.mutate(item);
@@ -44,27 +45,21 @@ export function VoteButton({ item, layout = 'stacked', className }: VoteButtonPr
       aria-pressed={item.hasVoted}
       aria-label={`${item.hasVoted ? 'Remove your upvote from' : 'Upvote'} ${item.name}`}
       className={cn(
-        'group/vote flex shrink-0 items-center justify-center gap-1 border font-semibold transition-all duration-200 active:scale-95',
-        stacked ? 'h-16 w-14 flex-col rounded-xl' : 'h-9 rounded-full px-3.5 text-sm',
+        'group/vote flex shrink-0 items-center justify-center gap-1 rounded-slab border-2 border-edge font-mono font-bold',
+        'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
+        'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+        stacked ? 'h-14 w-12 flex-col' : 'h-9 px-3.5',
         item.hasVoted
-          ? 'border-brand-500/40 bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300'
-          : 'border-zinc-200 bg-white text-zinc-600 hover:border-brand-400 hover:bg-brand-50/60 hover:text-brand-700 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300',
+          ? 'bg-acid text-ink shadow-hard-sm'
+          : 'bg-surface text-body shadow-hard-sm hover:bg-acid hover:text-ink',
+        stamping && 'animate-[var(--animate-stamp)]',
         className,
       )}
     >
-      <span
-        aria-hidden="true"
-        className={cn(
-          'leading-none transition-transform duration-200 group-hover/vote:-translate-y-0.5',
-          stacked ? 'text-[11px]' : 'text-[10px]',
-          pop && 'animate-[var(--animate-pop)]',
-        )}
-      >
+      <span aria-hidden="true" className={cn('leading-none', stacked ? 'text-[10px]' : 'text-[9px]')}>
         ▲
       </span>
-      <span className={cn('tabular-nums leading-none', stacked ? 'text-sm' : 'text-sm')}>
-        {formatNumber(item.voteCount)}
-      </span>
+      <span className="text-sm leading-none tabular-nums">{formatNumber(item.voteCount)}</span>
     </button>
   );
 }

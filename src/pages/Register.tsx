@@ -46,7 +46,7 @@ export function Register() {
           Already have an account?{' '}
           <Link
             to="/login"
-            className="font-medium text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-100"
+            className="font-bold text-cobalt underline-offset-4 hover:underline"
           >
             Sign in
           </Link>

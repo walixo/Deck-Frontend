@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
+import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
 import { Badge } from '@/components/ui/Badge';
 import { Stars } from '@/components/ui/Stars';
-import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
 import { CATEGORY_LABELS, MEDAL_STYLES, cn, PRICING_LABELS } from '@/lib/utils';
 import type { Item } from '@/types';
 import { ItemLogo } from './ItemLogo';
@@ -19,19 +19,18 @@ export function ItemCard({ item, rank, className, style }: ItemCardProps) {
     <article
       style={style}
       className={cn(
-        'group relative rounded-2xl border border-zinc-200/80 bg-white p-4 transition-all duration-300 sm:p-5',
-        'hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-[var(--shadow-lifted)]',
-        'dark:border-zinc-800 dark:bg-[color:var(--color-surface-dark)] dark:hover:border-zinc-700',
+        'group relative rounded-slab border-2 border-edge bg-surface p-4 shadow-hard',
+        'transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)]',
+        'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
         className,
       )}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3.5">
         {rank !== undefined && (
           <span
             className={cn(
-              'mt-1 flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold tabular-nums ring-1',
-              MEDAL_STYLES[rank] ??
-                'bg-zinc-100 text-zinc-500 ring-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:ring-zinc-700',
+              'mt-0.5 flex size-7 shrink-0 items-center justify-center border-2 border-edge font-mono text-xs font-bold tabular-nums',
+              MEDAL_STYLES[rank] ?? 'bg-surface-2 text-muted',
             )}
             aria-label={`Rank ${rank}`}
           >
@@ -43,7 +42,7 @@ export function ItemCard({ item, rank, className, style }: ItemCardProps) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <h3 className="truncate text-base font-semibold">
+            <h3 className="truncate text-base uppercase leading-tight">
               {/* The whole card is clickable via this stretched link. */}
               <Link to={`/item/${item.slug}`} className="hover:underline">
                 <span className="absolute inset-0 z-0" aria-hidden="true" />
@@ -52,33 +51,33 @@ export function ItemCard({ item, rank, className, style }: ItemCardProps) {
             </h3>
             {item.featured && (
               <Badge tone="accent" className="relative z-10">
-                Spotlight
+                ★ Spotlight
               </Badge>
             )}
           </div>
 
-          <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-zinc-600 text-pretty dark:text-zinc-400">
+          <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted text-pretty">
             {item.tagline}
           </p>
 
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-zinc-500 dark:text-zinc-500">
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em] text-muted">
             <Link
               to={`/discover?category=${item.category}`}
-              className="relative z-10 inline-flex items-center gap-1.5 font-medium text-zinc-600 transition-colors hover:text-brand-600 dark:text-zinc-400 dark:hover:text-brand-400"
+              className="relative z-10 inline-flex items-center gap-1.5 text-body transition-colors hover:text-cobalt"
             >
               <CategoryIcon category={item.category} className="size-3.5" />
               {CATEGORY_LABELS[item.category]}
             </Link>
 
-            <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">
-              ·
+            <span aria-hidden="true" className="text-muted/50">
+              /
             </span>
             <span>{PRICING_LABELS[item.pricing]}</span>
 
             {item.reviewCount > 0 && (
               <>
-                <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">
-                  ·
+                <span aria-hidden="true" className="text-muted/50">
+                  /
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <Stars value={item.ratingAvg} />
@@ -89,8 +88,8 @@ export function ItemCard({ item, rank, className, style }: ItemCardProps) {
 
             {item.commentCount > 0 && (
               <>
-                <span aria-hidden="true" className="text-zinc-300 dark:text-zinc-700">
-                  ·
+                <span aria-hidden="true" className="text-muted/50">
+                  /
                 </span>
                 <span className="tabular-nums">
                   {item.commentCount} {item.commentCount === 1 ? 'comment' : 'comments'}

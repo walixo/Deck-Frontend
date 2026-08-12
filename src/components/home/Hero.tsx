@@ -1,4 +1,4 @@
-import { Ambient } from '@/components/ui/Ambient';
+import { Backdrop } from '@/components/ui/Ambient';
 import { ButtonLink } from '@/components/ui/Button';
 import { formatNumber } from '@/lib/utils';
 import type { PlatformStats } from '@/types';
@@ -9,49 +9,35 @@ interface HeroProps {
 
 export function Hero({ stats }: HeroProps) {
   return (
-    <section className="relative isolate overflow-hidden border-b border-zinc-200/80 dark:border-zinc-800">
-      <Ambient blobs grid />
+    <section className="relative isolate overflow-hidden border-b-2 border-edge">
+      <Backdrop pattern="grid" blocks />
 
-      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-6 inline-flex animate-[var(--animate-fade-in)] items-center gap-2 rounded-full border border-zinc-200 bg-white/70 px-3.5 py-1.5 text-xs font-medium text-zinc-600 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400">
-            <span className="relative flex size-1.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-500 opacity-75" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-brand-500" />
-            </span>
+          <p className="mb-7 inline-flex animate-[var(--animate-slam)] items-center gap-2 border-2 border-edge bg-surface px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.1em] shadow-hard-sm">
+            <span className="size-2 bg-coral" aria-hidden="true" />
             {stats?.todayLaunches
               ? `${stats.todayLaunches} ${stats.todayLaunches === 1 ? 'launch' : 'launches'} today`
               : 'New launches every day'}
           </p>
 
           <h1
-            className="text-4xl font-semibold leading-[1.08] tracking-tight text-balance animate-[var(--animate-fade-up)] sm:text-6xl"
+            className="display-tight animate-[var(--animate-slam)] text-[clamp(2.5rem,8vw,4.75rem)] uppercase text-balance"
             style={{ animationDelay: '60ms' }}
           >
             Where new tech gets its{' '}
-            <span className="relative whitespace-nowrap">
-              <span className="relative z-10 bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent dark:from-brand-300 dark:to-brand-500">
-                first fans
-              </span>
-              <svg
+            {/* The highlight is a solid block behind the words, not a gradient. */}
+            <span className="relative inline-block">
+              <span
                 aria-hidden="true"
-                viewBox="0 0 300 12"
-                preserveAspectRatio="none"
-                className="absolute -bottom-1 left-0 h-2.5 w-full text-brand-400/50 dark:text-brand-500/40"
-              >
-                <path
-                  d="M2 8c60-5 120-6 180-4s80 3 116 1"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-              </svg>
+                className="absolute -inset-x-2 inset-y-1 -rotate-1 border-2 border-edge bg-acid"
+              />
+              <span className="relative text-ink">first fans</span>
             </span>
           </h1>
 
           <p
-            className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-zinc-600 text-pretty animate-[var(--animate-fade-up)] sm:text-lg dark:text-zinc-400"
+            className="mx-auto mt-7 max-w-xl animate-[var(--animate-slide-up)] text-base leading-relaxed text-muted text-pretty sm:text-lg"
             style={{ animationDelay: '140ms' }}
           >
             Launch and discover AI models, tools, Claude skills, mobile apps and websites. Vote on
@@ -59,7 +45,7 @@ export function Hero({ stats }: HeroProps) {
           </p>
 
           <div
-            className="mt-9 flex flex-wrap items-center justify-center gap-3 animate-[var(--animate-fade-up)]"
+            className="mt-9 flex animate-[var(--animate-slide-up)] flex-wrap items-center justify-center gap-3"
             style={{ animationDelay: '220ms' }}
           >
             <ButtonLink to="/submit" size="lg">
@@ -72,12 +58,12 @@ export function Hero({ stats }: HeroProps) {
 
           {stats && (
             <dl
-              className="mx-auto mt-14 grid max-w-lg grid-cols-3 gap-4 animate-[var(--animate-fade-up)]"
+              className="mx-auto mt-14 grid max-w-xl animate-[var(--animate-slide-up)] grid-cols-3 gap-3"
               style={{ animationDelay: '300ms' }}
             >
-              <Stat label="Launches" value={formatNumber(stats.launches)} />
-              <Stat label="Makers" value={formatNumber(stats.makers)} />
-              <Stat label="Votes cast" value={formatNumber(stats.votes)} />
+              <Stat label="Launches" value={formatNumber(stats.launches)} tone="bg-surface" />
+              <Stat label="Makers" value={formatNumber(stats.makers)} tone="bg-cobalt text-white" />
+              <Stat label="Votes cast" value={formatNumber(stats.votes)} tone="bg-coral text-white" />
             </dl>
           )}
         </div>
@@ -86,11 +72,13 @@ export function Hero({ stats }: HeroProps) {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/70 bg-white/60 px-4 py-3.5 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/40">
-      <dd className="font-display text-xl font-semibold tabular-nums sm:text-2xl">{value}</dd>
-      <dt className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-500">{label}</dt>
+    <div className={`border-2 border-edge px-3 py-4 shadow-hard ${tone}`}>
+      <dd className="font-display text-2xl tabular-nums sm:text-3xl">{value}</dd>
+      <dt className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
+        {label}
+      </dt>
     </div>
   );
 }

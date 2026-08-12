@@ -1,14 +1,13 @@
 import { useSearchParams } from 'react-router-dom';
+import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
+import { NoResultsIllustration } from '@/components/illustrations/Illustrations';
 import { ItemCard } from '@/components/items/ItemCard';
-import { Badge } from '@/components/ui/Badge';
+import { PageBanner } from '@/components/ui/Ambient';
 import { Button } from '@/components/ui/Button';
 import { ItemCardSkeletonList } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useItems } from '@/hooks/useItems';
 import { useCategories } from '@/hooks/useMeta';
-import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
-import { NoResultsIllustration } from '@/components/illustrations/Illustrations';
-import { PageGlow } from '@/components/ui/Ambient';
 import { cn, CATEGORY_PLURAL, PRICING_LABELS } from '@/lib/utils';
 import type { Category, PricingModel, SortOption } from '@/types';
 
@@ -16,7 +15,7 @@ const SORTS: { value: SortOption; label: string }[] = [
   { value: 'trending', label: 'Trending' },
   { value: 'newest', label: 'Newest' },
   { value: 'top', label: 'Most voted' },
-  { value: 'discussed', label: 'Most discussed' },
+  { value: 'discussed', label: 'Discussed' },
 ];
 
 const PRICING: PricingModel[] = ['free', 'freemium', 'paid', 'open-source'];
@@ -53,13 +52,11 @@ export function Discover() {
 
   return (
     <div className="relative isolate mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-      <PageGlow />
+      <PageBanner />
 
       <header className="mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-          Discover
-        </h1>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-600 text-pretty dark:text-zinc-400">
+        <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">Discover</h1>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
           Every launch on Deck, filterable by category, pricing and tag.
         </p>
       </header>
@@ -73,31 +70,25 @@ export function Discover() {
         }}
         className="mb-6 flex gap-2"
       >
-        <label className="relative flex-1">
+        <label className="flex-1">
           <span className="sr-only">Search launches</span>
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"
-          >
-            ⌕
-          </span>
           {/* Uncontrolled and keyed to the URL: remounts when the query changes elsewhere. */}
           <input
             key={search}
             name="search"
             type="search"
             defaultValue={search}
-            placeholder="Search by name, tagline or tag"
-            className="h-11 w-full rounded-xl border border-zinc-200 bg-white pl-9 pr-3.5 text-sm transition-colors placeholder:text-zinc-400 hover:border-zinc-300 focus:border-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-900/5 dark:border-zinc-800 dark:bg-zinc-900/60 dark:placeholder:text-zinc-500 dark:hover:border-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-white/5"
+            placeholder="SEARCH BY NAME, TAGLINE OR TAG"
+            className="h-12 w-full rounded-slab border-2 border-edge bg-surface px-4 font-mono text-[12px] font-bold uppercase tracking-[0.06em] shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-cobalt focus:shadow-none focus:outline-none"
           />
         </label>
-        <Button type="submit" size="md">
+        <Button type="submit" size="lg">
           Search
         </Button>
       </form>
 
       {/* Category pills */}
-      <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+      <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-2 pt-1 sm:mx-0 sm:px-0">
         <FilterPill active={!category} onClick={() => update({ category: undefined })}>
           All
         </FilterPill>
@@ -107,17 +98,19 @@ export function Discover() {
             active={category === entry.slug}
             onClick={() => update({ category: entry.slug })}
           >
-            <CategoryIcon category={entry.slug} className="mr-1.5 inline size-4 align-[-3px]" />
+            <CategoryIcon category={entry.slug} className="size-4" />
             {CATEGORY_PLURAL[entry.slug]}
-            <span className="ml-1.5 text-xs tabular-nums opacity-60">{entry.count}</span>
+            <span className="tabular-nums opacity-60">{entry.count}</span>
           </FilterPill>
         ))}
       </div>
 
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200/80 pb-4 dark:border-zinc-800">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b-2 border-edge pb-4">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-zinc-500 dark:text-zinc-500">Sort</span>
-          <div className="flex rounded-xl border border-zinc-200 p-0.5 dark:border-zinc-800">
+          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+            Sort
+          </span>
+          <div className="flex gap-1">
             {SORTS.map((option) => (
               <button
                 key={option.value}
@@ -125,10 +118,10 @@ export function Discover() {
                 onClick={() => update({ sort: option.value })}
                 aria-pressed={sort === option.value}
                 className={cn(
-                  'rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                  'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
                   sort === option.value
-                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-                    : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white',
+                    ? 'bg-cobalt text-white'
+                    : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                 )}
               >
                 {option.label}
@@ -138,7 +131,9 @@ export function Discover() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-zinc-500 dark:text-zinc-500">Pricing</span>
+          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+            Pricing
+          </span>
           {PRICING.map((option) => (
             <button
               key={option}
@@ -146,10 +141,10 @@ export function Discover() {
               onClick={() => update({ pricing: pricing === option ? undefined : option })}
               aria-pressed={pricing === option}
               className={cn(
-                'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
+                'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
                 pricing === option
-                  ? 'border-brand-500/40 bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300'
-                  : 'border-zinc-200 text-zinc-600 hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700',
+                  ? 'bg-acid text-ink'
+                  : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
               )}
             >
               {PRICING_LABELS[option]}
@@ -160,13 +155,11 @@ export function Discover() {
 
       {activeFilters > 0 && (
         <div className="mb-5 flex flex-wrap items-center gap-2">
-          <span className="text-xs text-zinc-500 dark:text-zinc-500">
+          <span className="font-mono text-[11px] font-bold uppercase text-muted">
             {query.isLoading ? 'Filtering' : `${total} ${total === 1 ? 'result' : 'results'}`}
           </span>
           {search && (
-            <RemovableChip onRemove={() => update({ search: undefined })}>
-              “{search}”
-            </RemovableChip>
+            <RemovableChip onRemove={() => update({ search: undefined })}>“{search}”</RemovableChip>
           )}
           {category && (
             <RemovableChip onRemove={() => update({ category: undefined })}>
@@ -178,13 +171,11 @@ export function Discover() {
               {PRICING_LABELS[pricing]}
             </RemovableChip>
           )}
-          {tag && (
-            <RemovableChip onRemove={() => update({ tag: undefined })}>#{tag}</RemovableChip>
-          )}
+          {tag && <RemovableChip onRemove={() => update({ tag: undefined })}>#{tag}</RemovableChip>}
           <button
             type="button"
             onClick={() => setParams(new URLSearchParams({ sort }), { preventScrollReset: true })}
-            className="text-xs font-medium text-zinc-500 underline-offset-2 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-white"
+            className="font-mono text-[11px] font-bold uppercase text-muted underline-offset-2 hover:text-body hover:underline"
           >
             Clear all
           </button>
@@ -202,7 +193,7 @@ export function Discover() {
               <ItemCard
                 key={item.id}
                 item={item}
-                className="animate-[var(--animate-fade-up)]"
+                className="animate-[var(--animate-slide-up)]"
                 style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
               />
             ))}
@@ -211,7 +202,7 @@ export function Discover() {
           {pages > 1 && (
             <nav
               aria-label="Pagination"
-              className="mt-10 flex items-center justify-between gap-4 border-t border-zinc-200/80 pt-6 dark:border-zinc-800"
+              className="mt-10 flex items-center justify-between gap-4 border-t-2 border-edge pt-6"
             >
               <Button
                 variant="secondary"
@@ -221,7 +212,7 @@ export function Discover() {
               >
                 ← Previous
               </Button>
-              <span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-500">
+              <span className="font-mono text-[11px] font-bold uppercase tabular-nums text-muted">
                 Page {page} of {pages}
               </span>
               <Button
@@ -266,10 +257,9 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all',
-        active
-          ? 'border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900'
-          : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/40 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-white',
+        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-2 border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
+        'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
+        active ? 'bg-cobalt text-white shadow-hard-sm' : 'bg-surface text-body',
       )}
     >
       {children}
@@ -285,18 +275,18 @@ function RemovableChip({
   onRemove: () => void;
 }) {
   return (
-    <Badge tone="neutral" className="gap-1.5 pr-1.5">
+    <span className="inline-flex items-center gap-1.5 border-2 border-edge bg-surface-2 py-0.5 pl-2 pr-1 font-mono text-[11px] font-bold uppercase">
       {children}
       <button
         type="button"
         onClick={onRemove}
         aria-label="Remove filter"
-        className="flex size-4 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-300/60 hover:text-zinc-900 dark:hover:bg-zinc-700 dark:hover:text-white"
+        className="flex size-4 items-center justify-center text-muted transition-colors hover:bg-coral hover:text-white"
       >
         <span aria-hidden="true" className="text-[10px]">
           ✕
         </span>
       </button>
-    </Badge>
+    </span>
   );
 }

@@ -78,7 +78,7 @@ export function CategoryIcon({ category, className = 'size-4' }: CategoryIconPro
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2.25"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -86,5 +86,26 @@ export function CategoryIcon({ category, className = 'size-4' }: CategoryIconPro
     >
       {PATHS[category]}
     </svg>
+  );
+}
+
+/**
+ * Boxed variant: the icon inside a hard-edged block, for the category strip and
+ * anywhere an icon needs to hold its own next to heavy display type.
+ */
+export function CategoryIconBlock({
+  category,
+  className = '',
+}: {
+  category: Category;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`flex size-10 items-center justify-center border-2 border-edge bg-surface-2 text-body ${className}`}
+    >
+      <CategoryIcon category={category} className="size-5" />
+    </span>
   );
 }

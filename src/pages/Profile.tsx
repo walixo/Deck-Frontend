@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { ItemCard } from '@/components/items/ItemCard';
-import { Ambient } from '@/components/ui/Ambient';
+import { Backdrop } from '@/components/ui/Ambient';
 import { Avatar } from '@/components/ui/Avatar';
 import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -8,7 +8,7 @@ import { ItemCardSkeletonList, Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useMeta';
-import { formatFullDate, formatNumber, gradientFor, prettyUrl } from '@/lib/utils';
+import { colourFor, formatFullDate, formatNumber, prettyUrl } from '@/lib/utils';
 
 export function Profile() {
   const { username = '' } = useParams();
@@ -19,7 +19,7 @@ export function Profile() {
     return (
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex gap-5">
-          <Skeleton className="size-20 rounded-full" />
+          <Skeleton className="size-20" />
           <div className="flex-1 space-y-3">
             <Skeleton className="h-7 w-1/3" />
             <Skeleton className="h-4 w-1/4" />
@@ -40,7 +40,7 @@ export function Profile() {
         <div className="mt-6 text-center">
           <Link
             to="/discover"
-            className="text-sm font-medium text-zinc-600 underline-offset-4 hover:underline dark:text-zinc-400"
+            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
           >
             ← Back to Discover
           </Link>
@@ -56,40 +56,40 @@ export function Profile() {
 
   return (
     <div>
-      <header className="relative isolate overflow-hidden border-b border-zinc-200/80 dark:border-zinc-800">
-        <Ambient variant="halo" />
-        {/* Personal tint on top of the shared wash, keyed to the username. */}
+      <header className="relative isolate overflow-hidden border-b-2 border-edge">
+        <Backdrop pattern="halftone" />
+        {/* Flat colour bar keyed to the username, on the header's bottom edge. */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute -left-10 -top-24 size-64 rounded-full bg-gradient-to-br opacity-20 blur-3xl dark:opacity-25 ${gradientFor(user.username)}`}
+          className={`pointer-events-none absolute inset-x-0 bottom-0 h-2 border-t-2 border-edge ${colourFor(user.username).bg}`}
         />
 
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-            <Avatar user={user} size="xl" className="animate-[var(--animate-fade-in)]" />
+            <Avatar user={user} size="xl" className="animate-[var(--animate-slam)]" />
 
-            <div className="min-w-0 flex-1 animate-[var(--animate-fade-up)]">
-              <h1 className="text-3xl font-semibold tracking-tight">{user.name}</h1>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">@{user.username}</p>
+            <div className="min-w-0 flex-1 animate-[var(--animate-slide-up)]">
+              <h1 className="display-tight text-4xl uppercase">{user.name}</h1>
+              <p className="mt-1.5 font-mono text-[12px] font-bold uppercase text-muted">@{user.username}</p>
 
               {user.headline && (
-                <p className="mt-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <p className="mt-3 font-display text-sm uppercase">
                   {user.headline}
                 </p>
               )}
               {user.bio && (
-                <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-600 text-pretty dark:text-zinc-400">
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted text-pretty">
                   {user.bio}
                 </p>
               )}
 
-              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500 dark:text-zinc-500">
+              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11px] font-bold uppercase text-muted">
                 {user.websiteUrl && (
                   <a
                     href={user.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-zinc-700 underline-offset-4 hover:text-brand-600 hover:underline dark:text-zinc-300 dark:hover:text-brand-400"
+                    className="text-body underline-offset-4 hover:text-cobalt hover:underline"
                   >
                     {prettyUrl(user.websiteUrl)} ↗
                   </a>
@@ -117,10 +117,10 @@ export function Profile() {
       </header>
 
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        <h2 className="mb-5 text-xl font-semibold">
+        <h2 className="mb-5 text-xl uppercase">
           {isSelf ? 'Your launches' : `Launches by ${user.name}`}
           {items.length > 0 && (
-            <span className="ml-2 text-sm font-normal tabular-nums text-zinc-500 dark:text-zinc-500">
+            <span className="ml-2 font-mono text-sm font-bold tabular-nums text-muted">
               {items.length}
             </span>
           )}
@@ -142,7 +142,7 @@ export function Profile() {
               <ItemCard
                 key={item.id}
                 item={item}
-                className="animate-[var(--animate-fade-up)]"
+                className="animate-[var(--animate-slide-up)]"
                 style={{ animationDelay: `${Math.min(index, 8) * 50}ms` }}
               />
             ))}
@@ -155,9 +155,9 @@ export function Profile() {
 
 function StatTile({ label, value }: { label: string; value: string }) {
   return (
-    <Card className="px-4 py-3">
-      <dd className="font-display text-xl font-semibold tabular-nums">{value}</dd>
-      <dt className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-500">{label}</dt>
+    <Card className="px-4 py-3.5">
+      <dd className="font-display text-2xl tabular-nums">{value}</dd>
+      <dt className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{label}</dt>
     </Card>
   );
 }

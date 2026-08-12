@@ -19,6 +19,11 @@ export default defineConfig({
         target: 'http://localhost:4200',
         changeOrigin: true,
       },
+      // Uploaded images are served by the API, but referenced as same-origin paths.
+      '/uploads': {
+        target: 'http://localhost:4200',
+        changeOrigin: true,
+      },
     },
   },
 });

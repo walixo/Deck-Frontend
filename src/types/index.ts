@@ -151,6 +151,10 @@ export interface ItemDraft {
   pricing: PricingModel;
   websiteUrl: string;
   repoUrl?: string;
+  /** Paths returned by POST /api/uploads, or absolute URLs. */
+  logoUrl?: string;
+  coverUrl?: string;
+  gallery?: string[];
   tags: string[];
   makers: string[];
 }

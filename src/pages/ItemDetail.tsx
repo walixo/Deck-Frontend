@@ -1,8 +1,10 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
 import { CommentSection } from '@/components/items/CommentSection';
+import { ItemGallery } from '@/components/items/ItemGallery';
 import { ItemCard } from '@/components/items/ItemCard';
 import { ItemLogo } from '@/components/items/ItemLogo';
+import { ManageImages } from '@/components/items/ManageImages';
 import { VoteButton } from '@/components/items/VoteButton';
 import { Avatar } from '@/components/ui/Avatar';
 import { Backdrop } from '@/components/ui/Ambient';
@@ -57,6 +59,16 @@ export function ItemDetail() {
     <article>
       <header className="relative isolate overflow-hidden border-b-2 border-edge">
         <Backdrop pattern="halftone" />
+
+        {item.coverUrl && (
+          <div className="relative mx-auto max-w-4xl px-4 pt-8 sm:px-6 lg:px-8">
+            <img
+              src={item.coverUrl}
+              alt=""
+              className="aspect-[3/1] w-full border-2 border-edge object-cover shadow-hard"
+            />
+          </div>
+        )}
 
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <nav
@@ -167,6 +179,8 @@ export function ItemDetail() {
               )}
             </section>
 
+            <ItemGallery images={item.gallery ?? []} name={item.name} />
+
             <CommentSection slug={item.slug} itemName={item.name} />
           </div>
 
@@ -221,7 +235,8 @@ export function ItemDetail() {
               </dl>
 
               {isOwner && (
-                <div className="mt-5 border-t-2 border-edge pt-4">
+                <div className="mt-5 space-y-3 border-t-2 border-edge pt-4">
+                  <ManageImages item={item} />
                   <Button
                     variant="danger"
                     size="sm"

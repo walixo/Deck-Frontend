@@ -88,6 +88,26 @@ export async function request<T>(
   }
 }
 
+/**
+ * Uploads images and returns their stored paths, in the order given.
+ *
+ * Content-Type is deliberately left unset so the browser writes the multipart
+ * boundary itself — setting it by hand produces a body the server cannot parse.
+ */
+export async function uploadImages(files: File[]): Promise<string[]> {
+  const form = new FormData();
+  for (const file of files) form.append('images', file);
+
+  try {
+    const response = await api.post<Envelope<{ url: string }[]>>('/uploads', form, {
+      headers: { 'Content-Type': undefined },
+    });
+    return response.data.data.map((entry) => entry.url);
+  } catch (error) {
+    throw toRequestError(error);
+  }
+}
+
 /** Same as `request`, but keeps the `meta` block (pagination, leaderboard dates). */
 export async function requestWithMeta<T, M>(
   url: string,

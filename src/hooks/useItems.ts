@@ -41,6 +41,22 @@ export function useCreateItem() {
   });
 }
 
+/**
+ * Partial update for a launch the viewer owns. Takes the slug so the detail
+ * query can be refreshed by key; the request itself goes by id.
+ */
+export function useUpdateItem(slug: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...patch }: Partial<ItemDraft> & { id: string }) =>
+      request<Item>('patch', `/items/${id}`, patch),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.item(slug) });
+    },
+  });
+}
+
 export function useDeleteItem() {
   const queryClient = useQueryClient();
 

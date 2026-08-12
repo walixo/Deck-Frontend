@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { CharCount, Input, Select, Textarea } from '@/components/ui/Field';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 import { InlineAlert } from '@/components/ui/States';
 import { useCreateItem } from '@/hooks/useItems';
 import { RequestError } from '@/lib/api';
@@ -40,6 +41,11 @@ export function Submit() {
     makers: '',
   });
 
+  // Uploaded image paths, held apart from the text fields so the uploader owns them.
+  const [logo, setLogo] = useState<string[]>([]);
+  const [cover, setCover] = useState<string[]>([]);
+  const [gallery, setGallery] = useState<string[]>([]);
+
   const error = createItem.error instanceof RequestError ? createItem.error : null;
 
   const update =
@@ -62,6 +68,9 @@ export function Submit() {
         pricing: form.pricing,
         websiteUrl: form.websiteUrl.trim(),
         repoUrl: form.repoUrl.trim() || undefined,
+        logoUrl: logo[0],
+        coverUrl: cover[0],
+        gallery,
         // Comma separated in the UI, arrays on the wire.
         tags: splitList(form.tags, 6).map((tag) => tag.toLowerCase()),
         makers: splitList(form.makers, 8),
@@ -178,6 +187,38 @@ export function Submit() {
 
           <Card className="space-y-5 p-5 sm:p-6">
             <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+              Images
+            </h2>
+
+            <ImageUpload
+              label="Logo"
+              aspect="square"
+              value={logo}
+              onChange={setLogo}
+              error={error?.fieldError('logoUrl')}
+              hint="Square works best. Without one, Deck generates a colour monogram from your product name."
+            />
+
+            <ImageUpload
+              label="Cover image"
+              value={cover}
+              onChange={setCover}
+              error={error?.fieldError('coverUrl')}
+              hint="Shown on the launch wall and at the top of your product page."
+            />
+
+            <ImageUpload
+              label="Gallery"
+              max={6}
+              value={gallery}
+              onChange={setGallery}
+              error={error?.fieldError('gallery')}
+              hint="Up to 6 screenshots. Drag several in at once."
+            />
+          </Card>
+
+          <Card className="space-y-5 p-5 sm:p-6">
+            <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               Details
             </h2>
 
@@ -215,10 +256,21 @@ export function Submit() {
           <p className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
             Live preview
           </p>
-          <Card className="p-4">
-            <div className="flex items-start gap-3">
+          <Card className="overflow-hidden">
+            {cover[0] && (
+              <img
+                src={cover[0]}
+                alt=""
+                className="aspect-video w-full border-b-2 border-edge object-cover"
+              />
+            )}
+            <div className="flex items-start gap-3 p-4">
               <ItemLogo
-                item={{ name: form.name || 'Your product', slug: form.name || 'preview' }}
+                item={{
+                  name: form.name || 'Your product',
+                  slug: form.name || 'preview',
+                  logoUrl: logo[0],
+                }}
                 size="md"
               />
               <div className="min-w-0 flex-1">
@@ -242,7 +294,7 @@ export function Submit() {
             </div>
 
             {splitList(form.tags, 6).length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-1.5 border-t-2 border-edge pt-3">
+              <div className="flex flex-wrap gap-1.5 border-t-2 border-edge px-4 py-3">
                 {splitList(form.tags, 6).map((tag) => (
                   <span
                     key={tag}

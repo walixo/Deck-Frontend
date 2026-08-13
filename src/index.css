@@ -49,16 +49,27 @@
   --color-body: var(--body-ink);
   --color-muted: var(--muted-ink);
 
-  /* Fixed brand colours — identical in both themes, which is the whole point
-     of the style: flat ink-on-colour, never tinted or faded. */
+  /*
+   * Exactly two accents, plus black, white and grey. Both accents are fixed —
+   * identical in either theme, which is the point of the style: flat
+   * ink-on-colour, never tinted or faded.
+   *
+   * Anything destructive or wrong is expressed by INVERSION (`bg-edge` with
+   * `text-canvas`) rather than a third hue. Because `--edge` and `--canvas`
+   * swap between themes, that reads as black-on-white in light mode and
+   * white-on-black in dark — unmistakable, and it costs no extra colour.
+   */
   --color-cobalt: #2b4bff;
   --color-cobalt-deep: #1b3ae8;
   --color-acid: #c6ff3d;
   --color-acid-deep: #a8e01f;
-  --color-coral: #ff5c4d;
-  --color-coral-deep: #e8402f;
   --color-ink: #111111;
   --color-bone: #faf9f5;
+
+  /* Grey completes the neutral foundation alongside black and white: a flat
+     mid-tone for secondary blocks, quiet tiles and disabled states. */
+  --color-grey: #9c9c99;
+  --color-grey-soft: #d8d7d2;
 
   --font-sans:
     'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
@@ -233,7 +244,7 @@
 
   ::selection {
     background: var(--color-acid);
-    color: #111111;
+    color: var(--color-ink);
   }
 
   /* Display type is set tight and never lighter than the face's single weight. */

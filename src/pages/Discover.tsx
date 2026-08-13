@@ -281,7 +281,7 @@ function RemovableChip({
         type="button"
         onClick={onRemove}
         aria-label="Remove filter"
-        className="flex size-4 items-center justify-center text-muted transition-colors hover:bg-coral hover:text-white"
+        className="flex size-4 items-center justify-center text-muted transition-colors hover:bg-edge hover:text-canvas"
       >
         <span aria-hidden="true" className="text-[10px]">
           ✕

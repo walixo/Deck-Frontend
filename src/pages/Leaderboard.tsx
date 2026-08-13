@@ -27,7 +27,7 @@ const PERIODS: { value: Period; label: string }[] = [
 const PODIUM: Record<number, string> = {
   1: 'bg-acid text-ink',
   2: 'bg-cobalt text-white',
-  3: 'bg-coral text-white',
+  3: 'bg-edge text-canvas',
 };
 
 export function Leaderboard() {

@@ -35,15 +35,15 @@ interface ErrorStateProps {
 
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
-    <div className="rounded-slab border-2 border-edge bg-coral px-6 py-9 text-center shadow-hard">
+    <div className="rounded-slab border-2 border-edge bg-edge px-6 py-9 text-center shadow-hard">
       <span
         aria-hidden="true"
-        className="mx-auto mb-3 flex size-12 items-center justify-center border-2 border-edge bg-white font-display text-2xl text-ink"
+        className="mx-auto mb-3 flex size-12 items-center justify-center border-2 border-canvas bg-canvas font-display text-2xl text-edge"
       >
         !
       </span>
-      <h3 className="text-lg uppercase text-white">That did not load</h3>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-white/90 text-pretty">
+      <h3 className="text-lg uppercase text-canvas">That did not load</h3>
+      <p className="mx-auto mt-2 max-w-sm text-sm text-canvas/90 text-pretty">
         {message ?? 'Something went wrong while fetching this.'}
       </p>
       {onRetry && (
@@ -62,7 +62,7 @@ export function InlineAlert({
   children: ReactNode;
   tone?: 'error' | 'success';
 }) {
-  const styles = tone === 'error' ? 'bg-coral text-white' : 'bg-acid text-ink';
+  const styles = tone === 'error' ? 'bg-edge text-canvas' : 'bg-acid text-ink';
 
   return (
     <div

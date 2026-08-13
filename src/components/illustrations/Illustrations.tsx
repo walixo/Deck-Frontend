@@ -16,6 +16,7 @@ interface IllustrationProps {
 
 const EDGE = 'var(--edge)';
 const SURFACE = 'var(--surface)';
+const GREY = 'var(--color-grey)';
 const OUTLINE = { stroke: EDGE, strokeWidth: 2.5, strokeLinejoin: 'round' as const };
 
 /** Nothing launched yet — an empty deck with one card stamping into place. */
@@ -45,7 +46,7 @@ export function NoResultsIllustration({ className = 'size-36' }: IllustrationPro
     <svg viewBox="0 0 150 116" aria-hidden="true" className={className}>
       <rect x="12" y="20" width="30" height="30" fill={SURFACE} {...OUTLINE} />
       <rect x="50" y="20" width="30" height="30" fill="var(--color-acid)" {...OUTLINE} />
-      <rect x="12" y="58" width="30" height="30" fill="var(--color-coral)" {...OUTLINE} />
+      <rect x="12" y="58" width="30" height="30" fill={GREY} {...OUTLINE} />
       <rect
         x="50"
         y="58"
@@ -96,7 +97,7 @@ export function EmptyBoardIllustration({ className = 'size-36' }: IllustrationPr
   return (
     <svg viewBox="0 0 150 116" aria-hidden="true" className={className}>
       <rect x="14" y="62" width="36" height="34" fill="var(--color-cobalt)" {...OUTLINE} />
-      <rect x="100" y="72" width="36" height="24" fill="var(--color-coral)" {...OUTLINE} />
+      <rect x="100" y="72" width="36" height="24" fill={GREY} {...OUTLINE} />
       <rect x="56" y="46" width="38" height="50" fill="var(--color-acid)" {...OUTLINE} />
 
       <g className="animate-[var(--animate-kick)]">
@@ -119,7 +120,7 @@ export function LostCardIllustration({ className = 'w-64' }: IllustrationProps) 
 
       {/* The stray card, tipped off-axis and drifting. */}
       <g transform="rotate(-18 168 52)" className="animate-[var(--animate-kick)]">
-        <rect x="132" y="22" width="76" height="54" fill="var(--color-coral)" {...OUTLINE} />
+        <rect x="132" y="22" width="76" height="54" fill="var(--color-cobalt)" {...OUTLINE} />
         <rect x="146" y="40" width="36" height="7" fill={EDGE} />
         <rect x="146" y="54" width="20" height="7" fill={EDGE} />
       </g>
@@ -148,8 +149,8 @@ export function LaunchBoardIllustration({ className = 'w-full' }: IllustrationPr
   ];
   const bars = [
     { x: 246, h: 30, fill: 'var(--color-cobalt)' },
-    { x: 268, h: 52, fill: 'var(--color-cobalt)' },
-    { x: 290, h: 78, fill: 'var(--color-coral)' },
+    { x: 268, h: 52, fill: GREY },
+    { x: 290, h: 78, fill: 'var(--color-acid)' },
   ];
 
   return (
@@ -199,7 +200,7 @@ export function TrendMark({ className = 'size-10' }: IllustrationProps) {
         className="animate-[var(--animate-kick)]"
         d="M26 12h12v12"
         fill="none"
-        stroke="var(--color-coral)"
+        stroke={EDGE}
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"

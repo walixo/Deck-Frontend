@@ -48,12 +48,9 @@ export interface FlatColour {
 const FLAT_COLOURS: FlatColour[] = [
   { bg: 'bg-cobalt', ink: 'text-white' },
   { bg: 'bg-acid', ink: 'text-ink' },
-  { bg: 'bg-coral', ink: 'text-white' },
   { bg: 'bg-ink', ink: 'text-bone' },
-  { bg: 'bg-[#FFD23F]', ink: 'text-ink' },
-  { bg: 'bg-[#8B5CF6]', ink: 'text-white' },
-  { bg: 'bg-[#00C2A8]', ink: 'text-ink' },
-  { bg: 'bg-[#FF8A3D]', ink: 'text-ink' },
+  { bg: 'bg-grey', ink: 'text-ink' },
+  { bg: 'bg-bone', ink: 'text-ink' },
 ];
 
 function hashOf(seed: string): number {
@@ -68,12 +65,7 @@ export function colourFor(seed: string): FlatColour {
   return FLAT_COLOURS[hashOf(seed) % FLAT_COLOURS.length];
 }
 
-/** Raw hex of the same deterministic colour, for SVG fills and inline styles. */
-const FLAT_HEX = ['#2B4BFF', '#C6FF3D', '#FF5C4D', '#111111', '#FFD23F', '#8B5CF6', '#00C2A8', '#FF8A3D'];
 
-export function hexFor(seed: string): string {
-  return FLAT_HEX[hashOf(seed) % FLAT_HEX.length];
-}
 
 export function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -147,5 +139,5 @@ export function prettyUrl(url: string): string {
 export const MEDAL_STYLES: Record<number, string> = {
   1: 'bg-acid text-ink',
   2: 'bg-cobalt text-white',
-  3: 'bg-coral text-white',
+  3: 'bg-edge text-canvas',
 };

@@ -20,7 +20,8 @@ const VARIANTS: Record<Variant, string> = {
   primary: 'bg-cobalt text-white shadow-hard-sm hover:bg-cobalt-deep hover:shadow-hard',
   secondary: 'bg-surface text-body shadow-hard-sm hover:bg-surface-2 hover:shadow-hard',
   accent: 'bg-acid text-ink shadow-hard-sm hover:bg-acid-deep hover:shadow-hard',
-  danger: 'bg-coral text-white shadow-hard-sm hover:bg-coral-deep hover:shadow-hard',
+  // Inverted rather than a third colour: black-on-white in light, the reverse in dark.
+  danger: 'bg-edge text-canvas shadow-hard-sm hover:shadow-hard',
   // The one exception: no block, no shadow — for tertiary actions inside dense UI.
   ghost:
     'border-transparent text-muted shadow-none hover:translate-x-0 hover:translate-y-0 ' +

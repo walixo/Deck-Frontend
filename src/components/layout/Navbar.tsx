@@ -134,7 +134,7 @@ export function Navbar() {
                         logout();
                         navigate('/');
                       }}
-                      className="mt-0.5 block w-full px-3 py-2 text-left font-mono text-[12px] font-bold uppercase text-muted transition-colors hover:bg-coral hover:text-white"
+                      className="mt-0.5 block w-full px-3 py-2 text-left font-mono text-[12px] font-bold uppercase text-muted transition-colors hover:bg-edge hover:text-canvas"
                     >
                       Sign out
                     </button>

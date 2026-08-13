@@ -10,7 +10,7 @@ export function NotFound() {
       <div className="relative mx-auto flex min-h-[65dvh] max-w-lg flex-col items-center justify-center px-4 py-16 text-center">
         <LostCardIllustration className="w-64 animate-[var(--animate-slam)] sm:w-72" />
 
-        <p className="mt-3 border-2 border-edge bg-coral px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-white">
+        <p className="mt-3 border-2 border-edge bg-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-canvas">
           Error 404
         </p>
         <h1 className="display-tight mt-4 text-4xl uppercase text-balance sm:text-5xl">

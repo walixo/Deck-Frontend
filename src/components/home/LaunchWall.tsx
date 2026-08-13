@@ -1,7 +1,20 @@
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { CATEGORY_LABELS, cn, colourFor, formatNumber, PRICING_LABELS } from '@/lib/utils';
+import { CATEGORY_LABELS, cn, formatNumber, PRICING_LABELS } from '@/lib/utils';
 import type { Item } from '@/types';
+
+/*
+ * Wall panels cycle by position rather than hashing off the slug. Hashing gives
+ * each item a stable identity, which is right for a small avatar but wrong for
+ * a row of large panels: it clumps, and acid green is loud enough that three in
+ * a row swamps everything else. Cycling guarantees an even beat.
+ */
+const PANELS = [
+  { bg: 'bg-cobalt', ink: 'text-white' },
+  { bg: 'bg-ink', ink: 'text-bone' },
+  { bg: 'bg-acid', ink: 'text-ink' },
+  { bg: 'bg-grey', ink: 'text-ink' },
+];
 
 interface LaunchWallProps {
   items: Item[];
@@ -88,7 +101,13 @@ function WallGroup({ items, duplicate = false }: { items: Item[]; duplicate?: bo
       inert={duplicate || undefined}
     >
       {items.map((item, index) => (
-        <WallCard key={item.id} item={item} narrow={index % 3 === 2} focusable={!duplicate} />
+        <WallCard
+          key={item.id}
+          item={item}
+          narrow={index % 3 === 2}
+          focusable={!duplicate}
+          colour={PANELS[index % PANELS.length]}
+        />
       ))}
     </div>
   );
@@ -98,13 +117,13 @@ function WallCard({
   item,
   narrow,
   focusable,
+  colour,
 }: {
   item: Item;
   narrow: boolean;
   focusable: boolean;
+  colour: { bg: string; ink: string };
 }) {
-  const colour = colourFor(item.slug);
-
   return (
     <Link
       to={`/item/${item.slug}`}

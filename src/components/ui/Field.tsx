@@ -17,7 +17,8 @@ const CONTROL =
   'shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] ' +
   'placeholder:text-muted/70 focus:border-cobalt focus:shadow-none focus:outline-none';
 
-const INVALID = 'border-coral focus:border-coral';
+// Invalid fields keep the ink edge; the inverted message below carries the signal.
+const INVALID = 'shadow-[inset_3px_3px_0_var(--edge)] focus:shadow-none';
 
 interface FieldShellProps {
   label: string;
@@ -42,7 +43,7 @@ function FieldShell({ label, htmlFor, hint, error, counter, children }: FieldShe
       </div>
       {children}
       {error ? (
-        <p role="alert" className="mt-1.5 font-mono text-[11px] font-bold uppercase text-coral">
+        <p role="alert" className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas">
           {error}
         </p>
       ) : (
@@ -134,7 +135,7 @@ export function CharCount({ value, max }: { value: string; max: number }) {
     <span
       className={cn(
         'font-mono text-[11px] font-bold tabular-nums',
-        remaining < 0 ? 'text-coral' : remaining < max * 0.15 ? 'text-cobalt' : 'text-muted',
+        remaining < 0 ? 'bg-edge px-1 text-canvas' : remaining < max * 0.15 ? 'text-cobalt' : 'text-muted',
       )}
     >
       {value.length}/{max}

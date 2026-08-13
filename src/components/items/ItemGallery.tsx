@@ -28,7 +28,7 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
         <img
           src={current}
           alt={`${name} screenshot ${active + 1} of ${images.length}`}
-          className="aspect-video w-full bg-surface-2 object-contain"
+          className="aspect-video w-full bg-grey/30 object-contain"
         />
       </figure>
 
@@ -46,7 +46,7 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
                   index === active ? 'border-cobalt' : 'border-edge opacity-60 hover:opacity-100',
                 )}
               >
-                <img src={image} alt="" className="h-14 w-24 bg-surface-2 object-cover" />
+                <img src={image} alt="" className="h-14 w-24 bg-grey/30 object-cover" />
               </button>
             </li>
           ))}

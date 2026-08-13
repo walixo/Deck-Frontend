@@ -6,7 +6,7 @@ interface StarsProps {
   className?: string;
 }
 
-/** Read-only rating; supports halves via a clipped overlay. Coral, not gold. */
+/** Read-only rating; supports halves via a clipped overlay. Coral, not acid. */
 export function Stars({ value, size = 'sm', className }: StarsProps) {
   const dimension = size === 'sm' ? 'text-[13px]' : 'text-lg';
   const percentage = Math.max(0, Math.min(100, (value / 5) * 100));
@@ -20,7 +20,7 @@ export function Stars({ value, size = 'sm', className }: StarsProps) {
       <span className="text-muted/45">★★★★★</span>
       <span
         aria-hidden="true"
-        className="absolute inset-0 overflow-hidden text-coral"
+        className="absolute inset-0 overflow-hidden text-cobalt"
         style={{ width: `${percentage}%` }}
       >
         ★★★★★
@@ -49,7 +49,7 @@ export function StarPicker({ value, onChange, className }: StarPickerProps) {
           onClick={() => onChange(value === star ? 0 : star)}
           className={cn(
             'text-2xl leading-none transition-transform duration-[120ms] ease-[var(--ease-kick)] hover:scale-125',
-            star <= value ? 'text-coral' : 'text-muted/40 hover:text-coral/60',
+            star <= value ? 'text-cobalt' : 'text-muted/40 hover:text-cobalt/60',
           )}
         >
           ★

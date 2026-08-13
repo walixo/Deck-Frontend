@@ -110,7 +110,7 @@ export function ImageUpload({
                 type="button"
                 onClick={() => remove(url)}
                 aria-label="Remove image"
-                className="absolute -right-2 -top-2 flex size-6 items-center justify-center border-2 border-edge bg-coral text-[11px] font-bold text-white transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+                className="absolute -right-2 -top-2 flex size-6 items-center justify-center border-2 border-edge bg-edge text-[11px] font-bold text-canvas transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
               >
                 <span aria-hidden="true">✕</span>
               </button>
@@ -173,7 +173,7 @@ export function ImageUpload({
       )}
 
       {shown ? (
-        <p role="alert" className="mt-1.5 font-mono text-[11px] font-bold uppercase text-coral">
+        <p role="alert" className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas">
           {shown}
         </p>
       ) : (

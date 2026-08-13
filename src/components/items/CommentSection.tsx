@@ -186,7 +186,7 @@ function CommentComposer({
               <span
                 className={cn(
                   'font-mono text-[11px] font-bold tabular-nums',
-                  tooLong ? 'text-coral' : 'text-muted',
+                  tooLong ? 'bg-edge px-1 text-canvas' : 'text-muted',
                 )}
               >
                 {body.length}/{MAX_LENGTH}
@@ -290,7 +290,7 @@ function CommentRow({
                 type="button"
                 onClick={() => deleteComment.mutate(comment.id)}
                 disabled={deleteComment.isPending}
-                className="font-mono text-[11px] font-bold uppercase text-muted transition-colors hover:text-coral disabled:opacity-50"
+                className="font-mono text-[11px] font-bold uppercase text-muted transition-colors hover:bg-edge hover:px-1 hover:text-canvas disabled:opacity-50"
               >
                 Delete
               </button>
@@ -334,7 +334,7 @@ function CommentRow({
                           <button
                             type="button"
                             onClick={() => deleteComment.mutate(reply.id)}
-                            className="font-mono text-[10px] font-bold uppercase text-muted transition-colors hover:text-coral"
+                            className="font-mono text-[10px] font-bold uppercase text-muted transition-colors hover:bg-edge hover:px-1 hover:text-canvas"
                           >
                             Delete
                           </button>

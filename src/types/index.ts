@@ -163,3 +163,102 @@ export interface FieldError {
   field: string;
   message: string;
 }
+
+/* ---------------------------------------------------------------- merch --- */
+
+export type MerchCategory = 'apparel' | 'stickers' | 'print' | 'accessories';
+export type MerchSort = 'featured' | 'newest' | 'price-low' | 'price-high';
+export type OrderStatus = 'awaiting_payment' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
+
+export interface MerchVariant {
+  sku: string;
+  size?: string;
+  colour?: string;
+  stock: number;
+  inStock: boolean;
+}
+
+export interface MerchProduct {
+  id: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  description: string;
+  category: MerchCategory;
+  /** Integer minor units. Format for display; never do arithmetic in floats. */
+  priceMinor: number;
+  currency: string;
+  images: string[];
+  variants: MerchVariant[];
+  featured: boolean;
+  active: boolean;
+  totalStock: number;
+  soldOut: boolean;
+  createdAt: string;
+}
+
+export interface MerchProductDetail extends MerchProduct {
+  related: MerchProduct[];
+}
+
+export interface MerchFilters {
+  category?: MerchCategory;
+  sort?: MerchSort;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+/** A line held in the browser's cart. Prices are cached for display only — the
+ *  server reprices everything at checkout. */
+export interface CartLine {
+  sku: string;
+  slug: string;
+  name: string;
+  size?: string;
+  colour?: string;
+  unitPriceMinor: number;
+  quantity: number;
+  image?: string;
+  maxStock: number;
+}
+
+export interface ShippingAddress {
+  fullName: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  postcode: string;
+  country: string;
+}
+
+export interface OrderLine {
+  sku: string;
+  name: string;
+  size?: string;
+  colour?: string;
+  unitPriceMinor: number;
+  quantity: number;
+  image?: string;
+}
+
+export interface Order {
+  id: string;
+  reference: string;
+  email: string;
+  status: OrderStatus;
+  currency: string;
+  subtotalMinor: number;
+  shippingMinor: number;
+  totalMinor: number;
+  shippingAddress: ShippingAddress;
+  lines: OrderLine[];
+  createdAt: string;
+}
+
+export interface ShippingQuote {
+  subtotalMinor: number;
+  shippingMinor: number;
+  freeShippingThresholdMinor: number;
+  currency: string;
+}

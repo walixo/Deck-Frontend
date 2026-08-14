@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Avatar } from '@/components/ui/Avatar';
+import { useCart } from '@/hooks/useCart';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -10,11 +11,14 @@ import { ThemeToggle } from './ThemeToggle';
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/discover', label: 'Discover' },
+  { to: '/spotlight', label: 'Picks' },
   { to: '/leaderboard', label: 'Board' },
+  { to: '/shop', label: 'Shop' },
 ];
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { count: cartCount } = useCart();
   const [search, setSearch] = useState('');
   const accountRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -29,7 +33,8 @@ export function Navbar() {
   const menuOpen = panels.menu && onCurrentRoute;
   const accountOpen = panels.account && onCurrentRoute;
 
-  const setMenuOpen = (open: boolean) => setPanels({ menu: open, account: false, at: location.key });
+  const setMenuOpen = (open: boolean) =>
+    setPanels({ menu: open, account: false, at: location.key });
   const setAccountOpen = (open: boolean) =>
     setPanels({ menu: false, account: open, at: location.key });
 
@@ -62,7 +67,9 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Logo />
 
-        <nav aria-label="Main" className="ml-5 hidden items-center gap-1 md:flex">
+        {/* Five links only just clear 768px, so the padding tightens a notch
+            below lg to keep the row off the search field and the controls. */}
+        <nav aria-label="Main" className="ml-3 hidden items-center gap-1 md:flex lg:ml-5">
           {NAV_LINKS.map((link) => (
             <NavLink
               key={link.to}
@@ -70,7 +77,7 @@ export function Navbar() {
               end={link.to === '/'}
               className={({ isActive }) =>
                 cn(
-                  'border-2 px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
+                  'border-2 px-2.5 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] lg:px-3',
                   isActive
                     ? 'border-edge bg-acid text-ink'
                     : 'border-transparent text-muted hover:border-edge hover:bg-surface-2 hover:text-body',
@@ -96,6 +103,21 @@ export function Navbar() {
         </form>
 
         <div className="ml-auto flex items-center gap-2 lg:ml-3">
+          <Link
+            to="/cart"
+            aria-label={cartCount > 0 ? `Cart, ${cartCount} items` : 'Cart, empty'}
+            className="relative flex size-9 items-center justify-center rounded-slab border-2 border-edge bg-surface shadow-hard-sm transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-acid hover:text-ink hover:shadow-hard"
+          >
+            <span aria-hidden="true" className="text-sm">
+              ▣
+            </span>
+            {cartCount > 0 && (
+              <span className="absolute -right-2 -top-2 flex min-w-5 items-center justify-center border-2 border-edge bg-red px-1 font-mono text-[10px] font-bold tabular-nums text-white">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
           <ThemeToggle />
 
           {isAuthenticated && user ? (
@@ -127,6 +149,7 @@ export function Navbar() {
                     </div>
                     <MenuLink to={`/u/${user.username}`}>Your profile</MenuLink>
                     <MenuLink to="/submit">Launch something</MenuLink>
+                    <MenuLink to="/orders">Your orders</MenuLink>
                     <button
                       type="button"
                       role="menuitem"

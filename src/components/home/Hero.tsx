@@ -1,3 +1,4 @@
+import { HeroAvatar } from '@/components/home/HeroAvatar';
 import { Backdrop } from '@/components/ui/Ambient';
 import { ButtonLink } from '@/components/ui/Button';
 import { formatNumber } from '@/lib/utils';
@@ -7,12 +8,42 @@ interface HeroProps {
   stats?: PlatformStats;
 }
 
+/*
+ * The launch/maker/vote tiles are parked, not deleted — flip this back to true
+ * to bring them home. Typed as `boolean` rather than left to infer `false` so
+ * the branch below stays live code to the compiler.
+ */
+const SHOW_STATS: boolean = false;
+
 export function Hero({ stats }: HeroProps) {
   return (
     <section className="relative isolate overflow-hidden border-b-2 border-edge">
       <Backdrop pattern="grid" blocks />
 
-      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      {/* Bottom padding is deliberately shorter than the top: with the stat
+          tiles parked, this is what pulls the launch wall up into their slot. */}
+      <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-16 sm:px-6 sm:pb-16 sm:pt-24 lg:px-8">
+        {/*
+         * A pair, one in each gutter — which only exist once the centred column
+         * stops filling the container, hence lg and up. They are also the one
+         * thing here that wants a cursor to point at it, and below lg there
+         * usually isn't one. Positioned with `top` rather than a translate
+         * utility: the component drives `transform` itself, frame by frame.
+         *
+         * They face each other by default and both turn to watch the cursor
+         * when it comes near, so the hero is never quite still.
+         */}
+        <HeroAvatar
+          facing="right"
+          className="absolute left-2 top-[calc(30%-3rem)] z-10 hidden lg:block xl:left-6 xl:top-[calc(30%-3.8rem)]"
+        />
+        <HeroAvatar
+          facing="left"
+          ears
+          tone="fill-acid"
+          className="absolute right-2 top-[calc(30%-3rem)] z-10 hidden lg:block xl:right-6 xl:top-[calc(30%-3.8rem)]"
+        />
+
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-7 inline-flex animate-[var(--animate-slam)] items-center gap-2 border-2 border-edge bg-surface px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.1em] shadow-hard-sm">
             <span className="size-2 bg-cobalt" aria-hidden="true" />
@@ -56,7 +87,7 @@ export function Hero({ stats }: HeroProps) {
             </ButtonLink>
           </div>
 
-          {stats && (
+          {SHOW_STATS && stats && (
             <dl
               className="mx-auto mt-14 grid max-w-xl animate-[var(--animate-slide-up)] grid-cols-3 gap-3"
               style={{ animationDelay: '300ms' }}

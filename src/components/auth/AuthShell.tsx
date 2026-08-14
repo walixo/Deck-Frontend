@@ -19,7 +19,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
         {/* Form column */}
         <div className="mx-auto w-full max-w-md animate-[var(--animate-slide-up)] lg:order-2">
           <div className="mb-8 flex justify-center lg:hidden">
-            <Logo />
+            <Logo className="h-7 w-auto" />
           </div>
 
           <div className="rounded-slab border-2 border-edge bg-surface p-6 shadow-hard-xl sm:p-8">

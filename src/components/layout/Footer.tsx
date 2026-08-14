@@ -34,7 +34,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
-            <Logo />
+            <Logo className="h-8 w-auto" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted text-pretty">
               Deck is where makers launch new tech and the community decides what deserves
               attention. New launches every day.
@@ -86,6 +86,14 @@ export function Footer() {
                   className="text-sm text-muted underline-offset-4 transition-colors hover:text-cobalt hover:underline"
                 >
                   Launch a product
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/shop"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-cobalt hover:underline"
+                >
+                  Shop merch
                 </Link>
               </li>
             </ul>

@@ -4,20 +4,17 @@ import { Hero } from '@/components/home/Hero';
 import { LaunchWall } from '@/components/home/LaunchWall';
 import { MakerLeaderboard } from '@/components/home/MakerLeaderboard';
 import { ItemCard } from '@/components/items/ItemCard';
-import { SpotlightSlider } from '@/components/items/SpotlightSlider';
 import { ButtonLink } from '@/components/ui/Button';
 import { Card, SectionHeading } from '@/components/ui/Card';
 import { ItemCardSkeletonList } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
-import { useItems, useSpotlight } from '@/hooks/useItems';
+import { useItems } from '@/hooks/useItems';
 import { useDailyLeaderboard } from '@/hooks/useLeaderboard';
 import { useStats, useTags } from '@/hooks/useMeta';
 
 export function Home() {
   const { data: stats } = useStats();
-  const spotlight = useSpotlight();
   const today = useDailyLeaderboard();
-  const trending = useItems({ sort: 'trending', limit: 6 });
   const wall = useItems({ sort: 'top', limit: 24 });
   const { data: tags } = useTags();
 
@@ -28,27 +25,11 @@ export function Home() {
       <LaunchWall items={wall.data?.data ?? []} isLoading={wall.isLoading} />
 
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <section aria-labelledby="spotlight-heading" className="mb-16">
-          <SectionHeading
-            eyebrow="Spotlight"
-            title="Hand-picked launches worth your afternoon"
-            description="A rotating look at the products the community keeps coming back to."
-          />
-          <div id="spotlight-heading" className="sr-only">
-            Spotlighted launches
-          </div>
-          {spotlight.isError ? (
-            <ErrorState
-              message={spotlight.error.message}
-              onRetry={() => void spotlight.refetch()}
-            />
-          ) : (
-            <SpotlightSlider items={spotlight.data ?? []} isLoading={spotlight.isLoading} />
-          )}
-        </section>
-
         <section aria-labelledby="categories-heading" className="mb-16">
-          <h2 id="categories-heading" className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2
+            id="categories-heading"
+            className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          >
             Browse by category
           </h2>
           <CategoryStrip />
@@ -93,42 +74,6 @@ export function Home() {
                   description="Be the first to put something on today's board."
                   action={<ButtonLink to="/submit">Launch your product</ButtonLink>}
                 />
-              )}
-            </section>
-
-            <section aria-labelledby="trending-heading">
-              <SectionHeading
-                eyebrow="Trending"
-                title="Picking up momentum"
-                description="Recent launches gaining votes and conversation fastest."
-                action={
-                  <ButtonLink to="/discover" variant="secondary" size="sm">
-                    Discover all
-                  </ButtonLink>
-                }
-              />
-              <div id="trending-heading" className="sr-only">
-                Trending launches
-              </div>
-
-              {trending.isLoading ? (
-                <ItemCardSkeletonList count={4} />
-              ) : trending.isError ? (
-                <ErrorState
-                  message={trending.error.message}
-                  onRetry={() => void trending.refetch()}
-                />
-              ) : (
-                <div className="space-y-3">
-                  {trending.data?.data.map((item, index) => (
-                    <ItemCard
-                      key={item.id}
-                      item={item}
-                      className="animate-[var(--animate-slide-up)]"
-                      style={{ animationDelay: `${index * 60}ms` }}
-                    />
-                  ))}
-                </div>
               )}
             </section>
           </div>

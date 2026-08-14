@@ -141,3 +141,60 @@ export const MEDAL_STYLES: Record<number, string> = {
   2: 'bg-cobalt text-white',
   3: 'bg-edge text-canvas',
 };
+
+/* ---------------------------------------------------------------- money --- */
+
+export const MERCH_CATEGORY_LABELS: Record<string, string> = {
+  apparel: 'Apparel',
+  stickers: 'Stickers',
+  print: 'Print',
+  accessories: 'Accessories',
+};
+
+/**
+ * Formats integer minor units for display. The value stays an integer right up
+ * to this boundary — this is the only place a price becomes a decimal, and it
+ * never feeds back into arithmetic.
+ */
+export function formatMoney(minor: number, currency = 'NGN'): string {
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency,
+      // narrowSymbol gives ₦ rather than "NGN " regardless of the viewer's locale.
+      currencyDisplay: 'narrowSymbol',
+      // Whole units read better for merch pricing than trailing zeros.
+      minimumFractionDigits: minor % 100 === 0 ? 0 : 2,
+      maximumFractionDigits: 2,
+    }).format(minor / 100);
+  } catch {
+    // Unknown currency code — fall back to a plain number plus the code.
+    return `${currency} ${(minor / 100).toLocaleString()}`;
+  }
+}
+
+export function orderStatusLabel(status: string): string {
+  switch (status) {
+    case 'awaiting_payment':
+      return 'Awaiting payment';
+    case 'paid':
+      return 'Paid';
+    case 'shipped':
+      return 'Shipped';
+    case 'delivered':
+      return 'Delivered';
+    case 'cancelled':
+      return 'Cancelled';
+    default:
+      return status;
+  }
+}
+
+/** Flat block styling per order status, in the two-accent palette. */
+export const ORDER_STATUS_TONE: Record<string, string> = {
+  awaiting_payment: 'bg-surface-2 text-body',
+  paid: 'bg-acid text-ink',
+  shipped: 'bg-cobalt text-white',
+  delivered: 'bg-cobalt text-white',
+  cancelled: 'bg-edge text-canvas',
+};

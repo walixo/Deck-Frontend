@@ -38,7 +38,7 @@ export const PRICING_LABELS: Record<PricingModel, string> = {
  * other than the hard shadow.
  *
  * Each entry pairs a background with the ink that stays legible on it, since
- * acid green needs black type while cobalt needs white.
+ * acid green needs black type while lavender needs white.
  */
 export interface FlatColour {
   bg: string;
@@ -46,7 +46,7 @@ export interface FlatColour {
 }
 
 const FLAT_COLOURS: FlatColour[] = [
-  { bg: 'bg-cobalt', ink: 'text-white' },
+  { bg: 'bg-lavender', ink: 'text-ink' },
   { bg: 'bg-acid', ink: 'text-ink' },
   { bg: 'bg-ink', ink: 'text-bone' },
   { bg: 'bg-grey', ink: 'text-ink' },
@@ -64,8 +64,6 @@ function hashOf(seed: string): number {
 export function colourFor(seed: string): FlatColour {
   return FLAT_COLOURS[hashOf(seed) % FLAT_COLOURS.length];
 }
-
-
 
 export function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -138,7 +136,7 @@ export function prettyUrl(url: string): string {
 /** Flat medal fills for the top three. Rank badges are solid blocks, not metal. */
 export const MEDAL_STYLES: Record<number, string> = {
   1: 'bg-acid text-ink',
-  2: 'bg-cobalt text-white',
+  2: 'bg-lavender text-ink',
   3: 'bg-edge text-canvas',
 };
 
@@ -194,7 +192,7 @@ export function orderStatusLabel(status: string): string {
 export const ORDER_STATUS_TONE: Record<string, string> = {
   awaiting_payment: 'bg-surface-2 text-body',
   paid: 'bg-acid text-ink',
-  shipped: 'bg-cobalt text-white',
-  delivered: 'bg-cobalt text-white',
+  shipped: 'bg-lavender text-ink',
+  delivered: 'bg-lavender text-ink',
   cancelled: 'bg-edge text-canvas',
 };

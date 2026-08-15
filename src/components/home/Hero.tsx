@@ -46,7 +46,7 @@ export function Hero({ stats }: HeroProps) {
 
         <div className="mx-auto max-w-3xl text-center">
           <p className="mb-7 inline-flex animate-[var(--animate-slam)] items-center gap-2 border-2 border-edge bg-surface px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.1em] shadow-hard-sm">
-            <span className="size-2 bg-cobalt" aria-hidden="true" />
+            <span className="size-2 bg-lavender" aria-hidden="true" />
             {stats?.todayLaunches
               ? `${stats.todayLaunches} ${stats.todayLaunches === 1 ? 'launch' : 'launches'} today`
               : 'New launches every day'}
@@ -93,7 +93,7 @@ export function Hero({ stats }: HeroProps) {
               style={{ animationDelay: '300ms' }}
             >
               <Stat label="Launches" value={formatNumber(stats.launches)} tone="bg-surface" />
-              <Stat label="Makers" value={formatNumber(stats.makers)} tone="bg-cobalt text-white" />
+              <Stat label="Makers" value={formatNumber(stats.makers)} tone="bg-lavender text-ink" />
               <Stat label="Votes cast" value={formatNumber(stats.votes)} tone="bg-grey text-ink" />
             </dl>
           )}

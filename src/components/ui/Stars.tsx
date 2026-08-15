@@ -20,7 +20,7 @@ export function Stars({ value, size = 'sm', className }: StarsProps) {
       <span className="text-muted/45">★★★★★</span>
       <span
         aria-hidden="true"
-        className="absolute inset-0 overflow-hidden text-cobalt"
+        className="absolute inset-0 overflow-hidden text-lavender"
         style={{ width: `${percentage}%` }}
       >
         ★★★★★
@@ -49,7 +49,7 @@ export function StarPicker({ value, onChange, className }: StarPickerProps) {
           onClick={() => onChange(value === star ? 0 : star)}
           className={cn(
             'text-2xl leading-none transition-transform duration-[120ms] ease-[var(--ease-kick)] hover:scale-125',
-            star <= value ? 'text-cobalt' : 'text-muted/40 hover:text-cobalt/60',
+            star <= value ? 'text-lavender' : 'text-muted/40 hover:text-lavender/60',
           )}
         >
           ★

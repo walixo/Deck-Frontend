@@ -6,12 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState, InlineAlert } from '@/components/ui/States';
 import { useOrder, useVerifyPayment } from '@/hooks/useMerch';
-import {
-  formatFullDate,
-  formatMoney,
-  ORDER_STATUS_TONE,
-  orderStatusLabel,
-} from '@/lib/utils';
+import { formatFullDate, formatMoney, ORDER_STATUS_TONE, orderStatusLabel } from '@/lib/utils';
 
 export function OrderDetail() {
   const { reference = '' } = useParams();
@@ -69,7 +64,7 @@ export function OrderDetail() {
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border-2 border-edge bg-cobalt px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-white">
+        <p className="mb-3 inline-block border-2 border-edge bg-lavender px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
           Order
         </p>
         <h1 className="display-tight text-4xl uppercase sm:text-5xl">{data.reference}</h1>

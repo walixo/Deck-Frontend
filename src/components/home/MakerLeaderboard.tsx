@@ -37,7 +37,7 @@ export function MakerLeaderboard() {
             </span>
             <Avatar user={maker.user} size="sm" />
             <span className="min-w-0 flex-1">
-              <span className="block truncate font-display text-[13px] uppercase group-hover:text-cobalt">
+              <span className="block truncate font-display text-[13px] uppercase group-hover:text-lavender">
                 {maker.user.name}
               </span>
               <span className="block truncate font-mono text-[10px] uppercase text-muted">

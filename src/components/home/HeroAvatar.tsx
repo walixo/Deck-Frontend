@@ -86,7 +86,7 @@ interface HeroAvatarProps {
  */
 export function HeroAvatar({
   className,
-  tone = 'fill-cobalt',
+  tone = 'fill-lavender',
   facing = 'right',
   ears = false,
 }: HeroAvatarProps) {

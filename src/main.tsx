@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { ConsentProvider } from '@/context/ConsentContext';
 import { ThemeProvider } from './context/ThemeContext';
 import './index.css';
 import { RequestError } from './lib/api';
@@ -31,15 +32,17 @@ if (!rootElement) throw new Error('Root element #root is missing from index.html
 createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <BrowserRouter>
-          <AuthProvider>
-            <CartProvider>
-              <App />
-            </CartProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </ThemeProvider>
+      <ConsentProvider>
+        <ThemeProvider>
+          <BrowserRouter>
+            <AuthProvider>
+              <CartProvider>
+                <App />
+              </CartProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </ThemeProvider>
+      </ConsentProvider>
     </QueryClientProvider>
   </StrictMode>,
 );

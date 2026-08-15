@@ -56,7 +56,10 @@ export function VoteButton({ item, layout = 'stacked', className }: VoteButtonPr
         className,
       )}
     >
-      <span aria-hidden="true" className={cn('leading-none', stacked ? 'text-[10px]' : 'text-[9px]')}>
+      <span
+        aria-hidden="true"
+        className={cn('leading-none', stacked ? 'text-[10px]' : 'text-[9px]')}
+      >
         ▲
       </span>
       <span className="text-sm leading-none tabular-nums">{formatNumber(item.voteCount)}</span>

@@ -21,8 +21,7 @@ export function useCreateComment(slug: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (draft: CommentDraft) =>
-      request<Comment>('post', `/items/${slug}/comments`, draft),
+    mutationFn: (draft: CommentDraft) => request<Comment>('post', `/items/${slug}/comments`, draft),
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.comments(slug) }),

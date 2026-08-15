@@ -97,7 +97,7 @@ export function Navbar() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="SEARCH"
-              className="h-9 w-44 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-[width,box-shadow] duration-[140ms] placeholder:text-muted/70 focus:w-56 focus:border-cobalt focus:outline-none"
+              className="h-9 w-44 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-[width,box-shadow] duration-[140ms] placeholder:text-muted/70 focus:w-56 focus:border-lavender focus:outline-none"
             />
           </label>
         </form>
@@ -150,6 +150,9 @@ export function Navbar() {
                     <MenuLink to={`/u/${user.username}`}>Your profile</MenuLink>
                     <MenuLink to="/submit">Launch something</MenuLink>
                     <MenuLink to="/orders">Your orders</MenuLink>
+                    <MenuLink to="/sell">Sell on Deck</MenuLink>
+                    <MenuLink to="/advertise">Advertise</MenuLink>
+                    {user.role === 'admin' && <MenuLink to="/admin">Admin</MenuLink>}
                     <button
                       type="button"
                       role="menuitem"
@@ -198,7 +201,7 @@ export function Navbar() {
               onChange={(event) => setSearch(event.target.value)}
               placeholder="SEARCH LAUNCHES"
               aria-label="Search launches"
-              className="h-11 w-full border-2 border-edge bg-canvas px-3.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-cobalt focus:outline-none"
+              className="h-11 w-full border-2 border-edge bg-canvas px-3.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-lavender focus:outline-none"
             />
           </form>
 

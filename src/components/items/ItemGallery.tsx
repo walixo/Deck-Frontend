@@ -43,7 +43,7 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
                 aria-label={`Show screenshot ${index + 1}`}
                 className={cn(
                   'block border-2 transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
-                  index === active ? 'border-cobalt' : 'border-edge opacity-60 hover:opacity-100',
+                  index === active ? 'border-lavender' : 'border-edge opacity-60 hover:opacity-100',
                 )}
               >
                 <img src={image} alt="" className="h-14 w-24 bg-grey/30 object-cover" />

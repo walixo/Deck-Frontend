@@ -63,7 +63,7 @@ export function ItemCard({ item, rank, className, style }: ItemCardProps) {
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em] text-muted">
             <Link
               to={`/discover?category=${item.category}`}
-              className="relative z-10 inline-flex items-center gap-1.5 text-body transition-colors hover:text-cobalt"
+              className="relative z-10 inline-flex items-center gap-1.5 text-body transition-colors hover:text-lavender"
             >
               <CategoryIcon category={item.category} className="size-3.5" />
               {CATEGORY_LABELS[item.category]}

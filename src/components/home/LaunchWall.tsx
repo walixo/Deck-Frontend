@@ -10,7 +10,7 @@ import type { Item } from '@/types';
  * a row swamps everything else. Cycling guarantees an even beat.
  */
 const PANELS = [
-  { bg: 'bg-cobalt', ink: 'text-white' },
+  { bg: 'bg-lavender', ink: 'text-ink' },
   { bg: 'bg-ink', ink: 'text-bone' },
   { bg: 'bg-acid', ink: 'text-ink' },
   { bg: 'bg-grey', ink: 'text-ink' },
@@ -167,7 +167,9 @@ function FlatPreview({
   colour: { bg: string; ink: string };
 }) {
   return (
-    <div className={cn('relative flex size-full flex-col justify-between p-4', colour.bg, colour.ink)}>
+    <div
+      className={cn('relative flex size-full flex-col justify-between p-4', colour.bg, colour.ink)}
+    >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-halftone opacity-[0.12]"

@@ -59,8 +59,19 @@
    * swap between themes, that reads as black-on-white in light mode and
    * white-on-black in dark — unmistakable, and it costs no extra colour.
    */
-  --color-cobalt: #2b4bff;
-  --color-cobalt-deep: #1b3ae8;
+  /*
+   * Lavender is a light accent where the old blue was a dark one, which changes
+   * more than the hex. Ink sits on it (9.1:1) where white used to; white would
+   * be 2.1:1 and unreadable.
+   *
+   * `deep` earns its keep three times over: the hover state, the focus ring,
+   * and any fill that has to separate from a pale surface. It is dark enough to
+   * clear 3:1 against the light canvas — the base tone is only 2:1 there, so a
+   * focus ring in it would all but vanish — while still taking ink text at
+   * 5.2:1, so hovering a button never has to flip its label from black to white.
+   */
+  --color-lavender: #b8a9fa;
+  --color-lavender-deep: #8b72f0;
   --color-acid: #c6ff3d;
   --color-acid-deep: #a8e01f;
   --color-ink: #111111;
@@ -73,7 +84,7 @@
 
   /*
    * Alert red. Deliberately outside the two-accent rule and used in exactly one
-   * place — the notification count — because a badge that shares cobalt with
+   * place — the notification count — because a badge that shares lavender with
    * every primary button stops reading as "something needs you".
    *
    * This shade is chosen for its white text: 4.6:1, which clears AA for the
@@ -100,7 +111,7 @@
   --shadow-hard-lg: 7px 7px 0 var(--edge);
   --shadow-hard-xl: 10px 10px 0 var(--edge);
   --shadow-acid: 4px 4px 0 var(--color-acid);
-  --shadow-cobalt: 4px 4px 0 var(--color-cobalt);
+  --shadow-lavender: 4px 4px 0 var(--color-lavender);
 
   --radius-slab: 6px;
 
@@ -247,8 +258,13 @@
    * Focus is a solid offset block, not a soft ring — same visual language as
    * the shadows. Keyboard only.
    */
+  /*
+   * The deep tone, not the base: a focus ring has to be seen against the page
+   * it sits on, and pale lavender on the light canvas is 2:1 — technically
+   * present, practically invisible.
+   */
   :focus-visible {
-    outline: 3px solid var(--color-cobalt);
+    outline: 3px solid var(--color-lavender-deep);
     outline-offset: 2px;
   }
 
@@ -292,11 +308,7 @@
 }
 
 @utility bg-stripes {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    currentColor 0 6px,
-    transparent 6px 14px
-  );
+  background-image: repeating-linear-gradient(-45deg, currentColor 0 6px, transparent 6px 14px);
 }
 
 @layer utilities {

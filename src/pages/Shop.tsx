@@ -93,7 +93,7 @@ export function Shop() {
               className={cn(
                 'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
                 sort === option.value
-                  ? 'bg-cobalt text-white'
+                  ? 'bg-lavender text-ink'
                   : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
               )}
             >
@@ -154,7 +154,7 @@ function FilterPill({
       className={cn(
         'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-2 border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
         'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
-        active ? 'bg-cobalt text-white shadow-hard-sm' : 'bg-surface text-body',
+        active ? 'bg-lavender text-ink shadow-hard-sm' : 'bg-surface text-body',
       )}
     >
       {children}

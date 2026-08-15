@@ -136,7 +136,7 @@ export function MerchDetail() {
                       className={cn(
                         'block border-2 transition-transform duration-[120ms] hover:-translate-y-0.5',
                         index === activeImage
-                          ? 'border-cobalt'
+                          ? 'border-lavender'
                           : 'border-edge opacity-60 hover:opacity-100',
                       )}
                     >
@@ -187,7 +187,7 @@ export function MerchDetail() {
                             ? // Sold-out options stay visible but struck through.
                               'cursor-not-allowed bg-surface-2 text-muted line-through opacity-60'
                             : isSelected
-                              ? 'bg-cobalt text-white shadow-hard-sm'
+                              ? 'bg-lavender text-ink shadow-hard-sm'
                               : 'bg-surface hover:-translate-y-0.5 hover:bg-acid hover:text-ink hover:shadow-hard-sm',
                         )}
                       >
@@ -228,7 +228,10 @@ export function MerchDetail() {
             {added && (
               <div className="mt-4">
                 <InlineAlert tone="success">
-                  Added to your cart. <Link to="/cart" className="underline">Check out →</Link>
+                  Added to your cart.{' '}
+                  <Link to="/cart" className="underline">
+                    Check out →
+                  </Link>
                 </InlineAlert>
               </div>
             )}

@@ -13,7 +13,10 @@ interface EmptyStateProps {
 export function EmptyState({ title, description, action, illustration }: EmptyStateProps) {
   return (
     <div className="relative overflow-hidden rounded-slab border-2 border-dashed border-edge px-6 py-12 text-center">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-halftone text-edge opacity-[0.06]" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-halftone text-edge opacity-[0.06]"
+      />
 
       {/* Sized by its widest child (the title), so the narrower art still centres. */}
       <div className="relative flex flex-col items-center">

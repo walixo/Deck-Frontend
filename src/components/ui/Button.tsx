@@ -17,7 +17,7 @@ const BASE =
   'active:shadow-none disabled:pointer-events-none disabled:opacity-40 rounded-slab';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-cobalt text-white shadow-hard-sm hover:bg-cobalt-deep hover:shadow-hard',
+  primary: 'bg-lavender text-ink shadow-hard-sm hover:bg-lavender-deep hover:shadow-hard',
   secondary: 'bg-surface text-body shadow-hard-sm hover:bg-surface-2 hover:shadow-hard',
   accent: 'bg-acid text-ink shadow-hard-sm hover:bg-acid-deep hover:shadow-hard',
   // Inverted rather than a third colour: black-on-white in light, the reverse in dark.
@@ -42,8 +42,7 @@ interface CommonProps {
 }
 
 interface ButtonProps
-  extends CommonProps,
-    Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'className'> {
+  extends CommonProps, Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'className'> {
   loading?: boolean;
 }
 

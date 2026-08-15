@@ -33,7 +33,7 @@ export function EmptyDeckIllustration({ className = 'size-36' }: IllustrationPro
       </g>
 
       <g className="animate-[var(--animate-jitter)]">
-        <rect x="118" y="60" width="26" height="34" fill="var(--color-cobalt)" {...OUTLINE} />
+        <rect x="118" y="60" width="26" height="34" fill="var(--color-lavender)" {...OUTLINE} />
         <path d="M131 68l8 11h-16z" fill="#fff" />
       </g>
     </svg>
@@ -60,7 +60,7 @@ export function NoResultsIllustration({ className = 'size-36' }: IllustrationPro
 
       <g className="animate-[var(--animate-jitter)]">
         <circle cx="106" cy="50" r="24" fill={SURFACE} {...OUTLINE} />
-        <circle cx="106" cy="50" r="12" fill="var(--color-cobalt)" />
+        <circle cx="106" cy="50" r="12" fill="var(--color-lavender)" />
         <path d="M124 68l16 18" stroke={EDGE} strokeWidth="7" strokeLinecap="round" />
       </g>
     </svg>
@@ -96,7 +96,7 @@ export function EmptyCommentsIllustration({ className = 'size-32' }: Illustratio
 export function EmptyBoardIllustration({ className = 'size-36' }: IllustrationProps) {
   return (
     <svg viewBox="0 0 150 116" aria-hidden="true" className={className}>
-      <rect x="14" y="62" width="36" height="34" fill="var(--color-cobalt)" {...OUTLINE} />
+      <rect x="14" y="62" width="36" height="34" fill="var(--color-lavender)" {...OUTLINE} />
       <rect x="100" y="72" width="36" height="24" fill={GREY} {...OUTLINE} />
       <rect x="56" y="46" width="38" height="50" fill="var(--color-acid)" {...OUTLINE} />
 
@@ -120,7 +120,7 @@ export function LostCardIllustration({ className = 'w-64' }: IllustrationProps) 
 
       {/* The stray card, tipped off-axis and drifting. */}
       <g transform="rotate(-18 168 52)" className="animate-[var(--animate-kick)]">
-        <rect x="132" y="22" width="76" height="54" fill="var(--color-cobalt)" {...OUTLINE} />
+        <rect x="132" y="22" width="76" height="54" fill="var(--color-lavender)" {...OUTLINE} />
         <rect x="146" y="40" width="36" height="7" fill={EDGE} />
         <rect x="146" y="54" width="20" height="7" fill={EDGE} />
       </g>
@@ -148,7 +148,7 @@ export function LaunchBoardIllustration({ className = 'w-full' }: IllustrationPr
     { y: 110, fill: SURFACE },
   ];
   const bars = [
-    { x: 246, h: 30, fill: 'var(--color-cobalt)' },
+    { x: 246, h: 30, fill: 'var(--color-lavender)' },
     { x: 268, h: 52, fill: GREY },
     { x: 290, h: 78, fill: 'var(--color-acid)' },
   ];
@@ -191,7 +191,7 @@ export function TrendMark({ className = 'size-10' }: IllustrationProps) {
       <path
         d="M6 32l10-10 6 5 12-15"
         fill="none"
-        stroke="var(--color-cobalt)"
+        stroke="var(--color-lavender)"
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"

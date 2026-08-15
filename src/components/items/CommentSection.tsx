@@ -48,7 +48,7 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
                 className={cn(
                   'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase transition-colors duration-[120ms]',
                   filter === option
-                    ? 'bg-cobalt text-white'
+                    ? 'bg-lavender text-ink'
                     : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                 )}
               >
@@ -63,9 +63,7 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
         <CommentComposer slug={slug} itemName={itemName} />
       ) : (
         <div className="border-2 border-dashed border-edge px-5 py-6 text-center">
-          <p className="text-sm text-muted">
-            Sign in to review {itemName} or join the discussion.
-          </p>
+          <p className="text-sm text-muted">Sign in to review {itemName} or join the discussion.</p>
           <div className="mt-4 flex justify-center gap-2">
             <ButtonLink to="/login" size="sm">
               Sign in
@@ -153,7 +151,10 @@ function CommentComposer({
   };
 
   return (
-    <form onSubmit={submit} className="rounded-slab border-2 border-edge bg-surface p-4 shadow-hard">
+    <form
+      onSubmit={submit}
+      className="rounded-slab border-2 border-edge bg-surface p-4 shadow-hard"
+    >
       <div className="flex gap-3">
         {user && <Avatar user={user} size="sm" className="mt-1" />}
         <div className="min-w-0 flex-1">
@@ -166,7 +167,7 @@ function CommentComposer({
             onChange={(event) => setBody(event.target.value)}
             rows={parent ? 2 : 3}
             placeholder={parent ? 'Write a reply…' : `What do you think of ${itemName}?`}
-            className="w-full resize-y rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-cobalt focus:shadow-none focus:outline-none"
+            className="w-full resize-y rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-lavender focus:shadow-none focus:outline-none"
           />
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
@@ -251,9 +252,7 @@ function CommentRow({
             >
               {comment.user.name}
             </Link>
-            <span className="font-mono text-[11px] text-muted">
-              @{comment.user.username}
-            </span>
+            <span className="font-mono text-[11px] text-muted">@{comment.user.username}</span>
             <span aria-hidden="true" className="text-muted/50">
               ·
             </span>

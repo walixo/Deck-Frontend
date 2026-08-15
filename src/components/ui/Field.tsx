@@ -10,12 +10,12 @@ import { cn } from '@/lib/utils';
 /*
  * Inputs are inset blocks: 2px edge, no radius softening, and an inner hard
  * shadow so the field reads as a cut-out rather than a raised surface. On focus
- * the edge turns cobalt and the inset shadow snaps off.
+ * the edge turns lavender and the inset shadow snaps off.
  */
 const CONTROL =
   'w-full rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm text-body ' +
   'shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] ' +
-  'placeholder:text-muted/70 focus:border-cobalt focus:shadow-none focus:outline-none';
+  'placeholder:text-muted/70 focus:border-lavender focus:shadow-none focus:outline-none';
 
 // Invalid fields keep the ink edge; the inverted message below carries the signal.
 const INVALID = 'shadow-[inset_3px_3px_0_var(--edge)] focus:shadow-none';
@@ -43,7 +43,10 @@ function FieldShell({ label, htmlFor, hint, error, counter, children }: FieldShe
       </div>
       {children}
       {error ? (
-        <p role="alert" className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas">
+        <p
+          role="alert"
+          className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas"
+        >
           {error}
         </p>
       ) : (
@@ -112,7 +115,7 @@ export function Select({ label, hint, error, options, className, ...props }: Sel
         className={cn(CONTROL, 'cursor-pointer appearance-none pr-9', error && INVALID, className)}
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%232B4BFF'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E\")",
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%238B72F0'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E\")",
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'right 0.7rem center',
           backgroundSize: '1rem',
@@ -135,7 +138,11 @@ export function CharCount({ value, max }: { value: string; max: number }) {
     <span
       className={cn(
         'font-mono text-[11px] font-bold tabular-nums',
-        remaining < 0 ? 'bg-edge px-1 text-canvas' : remaining < max * 0.15 ? 'text-cobalt' : 'text-muted',
+        remaining < 0
+          ? 'bg-edge px-1 text-canvas'
+          : remaining < max * 0.15
+            ? 'text-lavender'
+            : 'text-muted',
       )}
     >
       {value.length}/{max}

@@ -75,7 +75,7 @@ interface Envelope<T> {
 
 /** Unwraps the API's { success, data } envelope and normalises errors. */
 export async function request<T>(
-  method: 'get' | 'post' | 'patch' | 'delete',
+  method: 'get' | 'post' | 'put' | 'patch' | 'delete',
   url: string,
   payload?: unknown,
   params?: Record<string, unknown>,

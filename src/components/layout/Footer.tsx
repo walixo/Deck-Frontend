@@ -50,7 +50,7 @@ export function Footer() {
                 <li key={category}>
                   <Link
                     to={`/discover?category=${category}`}
-                    className="text-sm text-muted underline-offset-4 transition-colors hover:text-cobalt hover:underline"
+                    className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
                   >
                     {CATEGORY_PLURAL[category]}
                   </Link>
@@ -67,7 +67,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/leaderboard"
-                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-cobalt hover:underline"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
                 >
                   Daily leaderboard
                 </Link>
@@ -75,7 +75,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/discover?sort=newest"
-                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-cobalt hover:underline"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
                 >
                   Newest launches
                 </Link>
@@ -83,7 +83,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/submit"
-                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-cobalt hover:underline"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
                 >
                   Launch a product
                 </Link>
@@ -91,7 +91,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/shop"
-                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-cobalt hover:underline"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
                 >
                   Shop merch
                 </Link>

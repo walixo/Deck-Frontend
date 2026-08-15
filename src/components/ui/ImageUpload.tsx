@@ -133,7 +133,7 @@ export function ImageUpload({
           }}
           className={cn(
             'rounded-slab border-2 border-dashed px-4 py-6 text-center transition-colors duration-[120ms]',
-            dragging ? 'border-cobalt bg-acid/15' : 'border-edge',
+            dragging ? 'border-lavender bg-acid/15' : 'border-edge',
           )}
         >
           <input
@@ -173,7 +173,10 @@ export function ImageUpload({
       )}
 
       {shown ? (
-        <p role="alert" className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas">
+        <p
+          role="alert"
+          className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas"
+        >
           {shown}
         </p>
       ) : (

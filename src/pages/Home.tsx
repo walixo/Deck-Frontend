@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { CategoryStrip } from '@/components/home/CategoryStrip';
 import { Hero } from '@/components/home/Hero';
 import { LaunchWall } from '@/components/home/LaunchWall';
@@ -25,6 +26,8 @@ export function Home() {
       <LaunchWall items={wall.data?.data ?? []} isLoading={wall.isLoading} />
 
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
+        <AdSlot placement="home" className="mb-14" />
+
         <section aria-labelledby="categories-heading" className="mb-16">
           <h2
             id="categories-heading"

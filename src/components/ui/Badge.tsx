@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-type Tone = 'neutral' | 'accent' | 'cobalt' | 'invert' | 'outline';
+type Tone = 'neutral' | 'accent' | 'lavender' | 'invert' | 'outline';
 
 /* Chips are hard-edged blocks with mono labels — they read as machine values. */
 const TONES: Record<Tone, string> = {
   neutral: 'bg-surface-2 text-body',
   accent: 'bg-acid text-ink',
-  cobalt: 'bg-cobalt text-white',
+  lavender: 'bg-lavender text-ink',
   invert: 'bg-edge text-canvas',
   outline: 'bg-transparent text-muted',
 };

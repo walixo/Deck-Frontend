@@ -50,7 +50,7 @@ export function Login() {
           New to Deck?{' '}
           <Link
             to="/register"
-            className="font-bold text-cobalt underline-offset-4 hover:underline"
+            className="font-bold text-lavender underline-offset-4 hover:underline"
           >
             Create an account
           </Link>

@@ -33,7 +33,7 @@ export function Backdrop({ pattern = 'grid', blocks = false, className }: Backdr
         <>
           {/* Hard-edged shapes, rotated off-axis so they read as deliberate. */}
           <div className="absolute -left-10 top-8 size-28 rotate-12 border-2 border-edge bg-acid" />
-          <div className="absolute -right-8 top-24 size-20 -rotate-6 border-2 border-edge bg-cobalt" />
+          <div className="absolute -right-8 top-24 size-20 -rotate-6 border-2 border-edge bg-lavender" />
           <div className="absolute right-[12%] top-4 size-12 rotate-[18deg] border-2 border-edge bg-grey" />
           <div className="absolute bottom-6 left-[18%] size-14 rotate-[24deg] border-2 border-edge bg-edge" />
           <div className="absolute bottom-16 right-[22%] size-10 -rotate-12 border-2 border-edge bg-surface" />
@@ -54,7 +54,7 @@ export function PageBanner({ className }: { className?: string }) {
       )}
     >
       <div className="absolute inset-0 bg-halftone text-edge opacity-[0.09]" />
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-cobalt" />
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-lavender" />
     </div>
   );
 }

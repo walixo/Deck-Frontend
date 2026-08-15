@@ -35,7 +35,10 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
   // Autoplay, paused on hover, focus, or when the tab is hidden.
   useEffect(() => {
     if (paused || total <= 1) return;
-    const timer = window.setInterval(() => setIndex((current) => (current + 1) % total), AUTOPLAY_MS);
+    const timer = window.setInterval(
+      () => setIndex((current) => (current + 1) % total),
+      AUTOPLAY_MS,
+    );
     return () => window.clearInterval(timer);
   }, [paused, total]);
 
@@ -154,7 +157,11 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
       <div className={cn('h-1.5 border-y-2 border-edge', colour.bg)} />
 
       <div className="flex items-center justify-between gap-4 px-5 py-3 sm:px-7">
-        <div className="flex items-center gap-2" role="tablist" aria-label="Choose a spotlighted launch">
+        <div
+          className="flex items-center gap-2"
+          role="tablist"
+          aria-label="Choose a spotlighted launch"
+        >
           {items.map((item, itemIndex) => (
             <button
               key={item.id}
@@ -165,7 +172,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
               onClick={() => goTo(itemIndex)}
               className={cn(
                 'h-3 border-2 border-edge transition-[width,background-color] duration-[140ms]',
-                itemIndex === index ? 'w-8 bg-cobalt' : 'w-3 bg-surface-2 hover:bg-acid',
+                itemIndex === index ? 'w-8 bg-lavender' : 'w-3 bg-surface-2 hover:bg-acid',
               )}
             />
           ))}

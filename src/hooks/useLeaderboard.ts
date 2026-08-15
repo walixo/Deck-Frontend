@@ -14,7 +14,8 @@ export function useDailyLeaderboard(date?: string) {
 export function usePeriodLeaderboard(period: 'week' | 'month' | 'year' | 'all') {
   return useQuery({
     queryKey: queryKeys.leaderboardPeriod(period),
-    queryFn: () => request<RankedItem[]>('get', '/leaderboard/period', undefined, { period, limit: 10 }),
+    queryFn: () =>
+      request<RankedItem[]>('get', '/leaderboard/period', undefined, { period, limit: 10 }),
   });
 }
 

@@ -67,6 +67,23 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
           </Link>
         </h3>
 
+        {/* Who is selling it. Deck's own stock says so; a maker's links to
+            their profile, which is the point of a marketplace — the seller is
+            a person on the board, not an anonymous warehouse. The link sits
+            above the card's full-bleed overlay so it stays clickable. */}
+        <p className="relative z-10 mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+          {product.seller ? (
+            <Link
+              to={`/u/${product.seller.username}`}
+              className="hover:text-body hover:underline underline-offset-2"
+            >
+              by {product.seller.name}
+            </Link>
+          ) : (
+            'by Deck'
+          )}
+        </p>
+
         <p className="mt-1.5 line-clamp-2 flex-1 text-sm leading-relaxed text-muted text-pretty">
           {product.tagline}
         </p>

@@ -70,12 +70,12 @@ export function Profile() {
 
             <div className="min-w-0 flex-1 animate-[var(--animate-slide-up)]">
               <h1 className="display-tight text-4xl uppercase">{user.name}</h1>
-              <p className="mt-1.5 font-mono text-[12px] font-bold uppercase text-muted">@{user.username}</p>
+              <p className="mt-1.5 font-mono text-[12px] font-bold uppercase text-muted">
+                @{user.username}
+              </p>
 
               {user.headline && (
-                <p className="mt-3 font-display text-sm uppercase">
-                  {user.headline}
-                </p>
+                <p className="mt-3 font-display text-sm uppercase">{user.headline}</p>
               )}
               {user.bio && (
                 <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted text-pretty">
@@ -89,7 +89,7 @@ export function Profile() {
                     href={user.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-body underline-offset-4 hover:text-cobalt hover:underline"
+                    className="text-body underline-offset-4 hover:text-lavender hover:underline"
                   >
                     {prettyUrl(user.websiteUrl)} ↗
                   </a>
@@ -134,7 +134,9 @@ export function Profile() {
                 ? 'Your first launch takes about two minutes to write up.'
                 : `${user.name} has not posted a launch on Deck yet.`
             }
-            action={isSelf ? <ButtonLink to="/submit">Launch your first product</ButtonLink> : undefined}
+            action={
+              isSelf ? <ButtonLink to="/submit">Launch your first product</ButtonLink> : undefined
+            }
           />
         ) : (
           <div className="space-y-3">
@@ -157,7 +159,9 @@ function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <Card className="px-4 py-3.5">
       <dd className="font-display text-2xl tabular-nums">{value}</dd>
-      <dt className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">{label}</dt>
+      <dt className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+        {label}
+      </dt>
     </Card>
   );
 }

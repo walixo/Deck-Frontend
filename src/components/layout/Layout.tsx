@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { ConsentBanner } from '@/components/ads/ConsentBanner';
 import { Footer } from './Footer';
 import { Navbar } from './Navbar';
 
@@ -27,6 +28,9 @@ export function Layout() {
       </main>
 
       <Footer />
+
+      {/* Shows only when AdSense is configured and nobody has answered yet. */}
+      <ConsentBanner />
     </div>
   );
 }

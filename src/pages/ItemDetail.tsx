@@ -1,5 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
+import { FundraiseCard } from '@/components/items/FundraiseCard';
+import { FundraiseSettings } from '@/components/items/FundraiseSettings';
 import { CommentSection } from '@/components/items/CommentSection';
 import { ItemGallery } from '@/components/items/ItemGallery';
 import { ItemCard } from '@/components/items/ItemCard';
@@ -102,7 +104,7 @@ export function ItemDetail() {
               <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[11px] font-bold uppercase tracking-[0.04em] text-muted">
                 <Link
                   to={`/discover?category=${item.category}`}
-                  className="inline-flex items-center gap-1.5 text-body hover:text-cobalt"
+                  className="inline-flex items-center gap-1.5 text-body hover:text-lavender"
                 >
                   <CategoryIcon category={item.category} className="size-4" />
                   {CATEGORY_LABELS[item.category]}
@@ -185,6 +187,9 @@ export function ItemDetail() {
           </div>
 
           <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+            {/* The owner manages the raise; everyone else sees it. */}
+            {isOwner ? <FundraiseSettings item={item} /> : <FundraiseCard item={item} />}
+
             <Card className="p-5">
               <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
                 Launched by
@@ -195,7 +200,7 @@ export function ItemDetail() {
               >
                 <Avatar user={item.submittedBy} size="md" />
                 <span className="min-w-0">
-                  <span className="block truncate font-display text-sm uppercase group-hover:text-cobalt">
+                  <span className="block truncate font-display text-sm uppercase group-hover:text-lavender">
                     {item.submittedBy.name}
                   </span>
                   <span className="block truncate font-mono text-[11px] text-muted">
@@ -267,7 +272,7 @@ export function ItemDetail() {
                     href={item.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-body underline-offset-4 hover:text-cobalt hover:underline"
+                    className="text-sm text-body underline-offset-4 hover:text-lavender hover:underline"
                   >
                     {prettyUrl(item.websiteUrl)} ↗
                   </a>
@@ -278,7 +283,7 @@ export function ItemDetail() {
                       href={item.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-body underline-offset-4 hover:text-cobalt hover:underline"
+                      className="text-sm text-body underline-offset-4 hover:text-lavender hover:underline"
                     >
                       {prettyUrl(item.repoUrl)} ↗
                     </a>

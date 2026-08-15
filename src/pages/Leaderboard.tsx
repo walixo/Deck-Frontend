@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { EmptyBoardIllustration, TrendMark } from '@/components/illustrations/Illustrations';
 import { ItemCard } from '@/components/items/ItemCard';
 import { PageBanner } from '@/components/ui/Ambient';
@@ -26,7 +27,7 @@ const PERIODS: { value: Period; label: string }[] = [
 /* Podium fills, brightest for first. */
 const PODIUM: Record<number, string> = {
   1: 'bg-acid text-ink',
-  2: 'bg-cobalt text-white',
+  2: 'bg-lavender text-ink',
   3: 'bg-edge text-canvas',
 };
 
@@ -54,7 +55,7 @@ export function Leaderboard() {
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border-2 border-edge bg-cobalt px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-white">
+        <p className="mb-3 inline-block border-2 border-edge bg-lavender px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
           Leaderboard
         </p>
         <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
@@ -65,6 +66,8 @@ export function Leaderboard() {
           midnight.
         </p>
       </header>
+
+      <AdSlot placement="board" className="mb-8" />
 
       {/* Day switcher */}
       <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -209,7 +212,7 @@ export function Leaderboard() {
                   className={cn(
                     'border-2 border-edge px-2 py-1 font-mono text-[10px] font-bold uppercase transition-colors duration-[120ms]',
                     period === option.value
-                      ? 'bg-cobalt text-white'
+                      ? 'bg-lavender text-ink'
                       : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                   )}
                 >
@@ -236,7 +239,7 @@ export function Leaderboard() {
                         <span className="w-4 shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">
                           {item.rank}
                         </span>
-                        <span className="min-w-0 flex-1 truncate font-display text-[13px] uppercase group-hover:text-cobalt">
+                        <span className="min-w-0 flex-1 truncate font-display text-[13px] uppercase group-hover:text-lavender">
                           {item.name}
                         </span>
                         <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">

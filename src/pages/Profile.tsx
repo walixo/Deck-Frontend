@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import { BadgeCase } from '@/components/profile/BadgeCase';
 import { ItemCard } from '@/components/items/ItemCard';
 import { Backdrop } from '@/components/ui/Ambient';
 import { Avatar } from '@/components/ui/Avatar';
@@ -117,6 +118,12 @@ export function Profile() {
       </header>
 
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+        {/* Above the launches: what someone has earned says more about who they
+            are here than a list of what they posted. */}
+        <div className="mb-12">
+          <BadgeCase badges={data.badges} />
+        </div>
+
         <h2 className="mb-5 text-xl uppercase">
           {isSelf ? 'Your launches' : `Launches by ${user.name}`}
           {items.length > 0 && (

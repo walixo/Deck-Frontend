@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
 import { FundraiseCard } from '@/components/items/FundraiseCard';
 import { FundraiseSettings } from '@/components/items/FundraiseSettings';
+import { SharePanel } from '@/components/items/SharePanel';
 import { CommentSection } from '@/components/items/CommentSection';
 import { ItemGallery } from '@/components/items/ItemGallery';
 import { ItemCard } from '@/components/items/ItemCard';
@@ -189,6 +190,10 @@ export function ItemDetail() {
           <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
             {/* The owner manages the raise; everyone else sees it. */}
             {isOwner ? <FundraiseSettings item={item} /> : <FundraiseCard item={item} />}
+
+            {/* The share kit is for the person who made the thing. Everyone
+                else already has the URL in their address bar. */}
+            {isOwner && <SharePanel item={item} />}
 
             <Card className="p-5">
               <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">

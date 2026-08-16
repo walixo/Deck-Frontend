@@ -142,6 +142,7 @@ export interface TopMaker {
 }
 
 export interface UserProfile {
+  badges: ProfileBadge[];
   user: PublicUser;
   items: Item[];
   stats: {
@@ -482,4 +483,33 @@ export interface AdRateCard {
     dayRateMinor: number;
     prices: { days: number; priceMinor: number }[];
   }[];
+}
+
+/* --------------------------------------------------------------- badges --- */
+
+export interface ProfileBadge {
+  id: string;
+  name: string;
+  description: string;
+  family: 'making' | 'community' | 'trade';
+  mark: string;
+  threshold: number;
+  earned: boolean;
+  earnedAt?: string;
+  /** Capped at the threshold, so a bar never reads past full. */
+  progress: number;
+}
+
+/* ---------------------------------------------------------------- share --- */
+
+export interface ShareKit {
+  name: string;
+  tagline: string;
+  slug: string;
+  voteCount: number;
+  logoUrl?: string;
+  pageUrl: string;
+  badgeUrl: string;
+  embed: { markdown: string; html: string };
+  post: string;
 }

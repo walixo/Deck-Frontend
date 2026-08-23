@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { CATEGORY_PLURAL } from '@/lib/utils';
+import { CategoryLabel } from '@/components/illustrations/CategoryIcon';
+import { useConsent } from '@/hooks/useConsent';
 import type { Category } from '@/types';
 import { Logo } from './Logo';
 
@@ -14,16 +15,38 @@ const CATEGORY_ORDER: Category[] = [
 /* A scrolling ticker closes the page — cheap energy, and it never repeats visibly. */
 const TICKER = 'LAUNCH · VOTE · REVIEW · REPEAT ·';
 
+/**
+ * Reopens the cookie notice, and says what the current answer is.
+ *
+ * A consent you cannot withdraw is not consent, and the only place a reader
+ * will think to look for it is the footer. Stating the current choice matters
+ * as much as the ability to change it — "Cookies: rejected" answers the
+ * question most people actually have, which is what they picked last time.
+ */
+function CookieChoices() {
+  const { choice, reset } = useConsent();
+
+  return (
+    <button
+      type="button"
+      onClick={reset}
+      className="font-mono text-[11px] uppercase text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
+    >
+      Cookies: {choice === 'granted' ? 'accepted' : choice === 'denied' ? 'rejected' : 'not set'}
+    </button>
+  );
+}
+
 export function Footer() {
   return (
     <footer className="mt-20 border-t-2 border-edge">
-      <div className="overflow-hidden border-b-2 border-edge bg-acid py-2">
+      <div className="overflow-hidden border-b-2 border-edge bg-deep py-2">
         <div className="flex w-max animate-[var(--animate-ticker)]">
           {[0, 1].map((copy) => (
             <span
               key={copy}
               aria-hidden={copy === 1 || undefined}
-              className="shrink-0 pr-4 font-display text-sm uppercase tracking-tight text-ink"
+              className="shrink-0 pr-4 font-display text-sm uppercase tracking-tight text-on-deep"
             >
               {Array.from({ length: 8 }, () => TICKER).join(' ')}
             </span>
@@ -50,9 +73,9 @@ export function Footer() {
                 <li key={category}>
                   <Link
                     to={`/discover?category=${category}`}
-                    className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
+                    className="text-sm text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
                   >
-                    {CATEGORY_PLURAL[category]}
+                    <CategoryLabel slug={category} />
                   </Link>
                 </li>
               ))}
@@ -67,7 +90,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/leaderboard"
-                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
                 >
                   Daily leaderboard
                 </Link>
@@ -75,7 +98,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/discover?sort=newest"
-                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
                 >
                   Newest launches
                 </Link>
@@ -83,7 +106,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/submit"
-                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
                 >
                   Launch a product
                 </Link>
@@ -91,7 +114,7 @@ export function Footer() {
               <li>
                 <Link
                   to="/shop"
-                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-lavender hover:underline"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
                 >
                   Shop merch
                 </Link>
@@ -104,7 +127,13 @@ export function Footer() {
           <p className="font-mono text-[11px] uppercase text-muted">
             © {new Date().getFullYear()} Deck — built for makers
           </p>
-          <p className="font-mono text-[11px] uppercase text-muted">Launches shown are demo data</p>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <CookieChoices />
+            <p className="font-mono text-[11px] uppercase text-muted">
+              Launches shown are demo data
+            </p>
+          </div>
         </div>
       </div>
     </footer>

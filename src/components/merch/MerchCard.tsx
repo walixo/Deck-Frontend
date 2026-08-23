@@ -54,7 +54,7 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
         )}
         {!product.soldOut && product.featured && (
           <span className="absolute left-3 top-3">
-            <Badge tone="accent">★ Pick</Badge>
+            <Badge tone="pop">★ Pick</Badge>
           </span>
         )}
       </div>

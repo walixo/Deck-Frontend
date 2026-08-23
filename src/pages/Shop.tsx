@@ -41,7 +41,7 @@ export function Shop() {
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-5">
         <div>
-          <p className="mb-3 inline-block border-2 border-edge bg-acid px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
+          <p className="mb-3 inline-block border-2 border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
             Shop
           </p>
           <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">Deck merch</h1>
@@ -93,7 +93,7 @@ export function Shop() {
               className={cn(
                 'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
                 sort === option.value
-                  ? 'bg-lavender text-ink'
+                  ? 'bg-pop text-on-pop'
                   : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
               )}
             >
@@ -104,15 +104,21 @@ export function Shop() {
       </div>
 
       {query.isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }, (_, index) => (
+        /* Eight placeholders for a four-wide grid: six left a ragged second row
+           the real content never has. */
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }, (_, index) => (
             <Skeleton key={index} className="h-80 w-full" />
           ))}
         </div>
       ) : query.isError ? (
         <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />
       ) : query.data?.data.length ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        /* Four across at xl, three at lg. A fourth column inside the 1024px lg
+           container gives each card ~240px, and a merch card carries a price, a
+           name and a seller — below about 260px the name starts wrapping to
+           three lines and the row loses its rhythm. */
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {query.data.data.map((product, index) => (
             <MerchCard
               key={product.id}
@@ -154,7 +160,7 @@ function FilterPill({
       className={cn(
         'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-2 border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
         'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
-        active ? 'bg-lavender text-ink shadow-hard-sm' : 'bg-surface text-body',
+        active ? 'bg-pop text-on-pop shadow-hard-sm' : 'bg-surface text-body',
       )}
     >
       {children}

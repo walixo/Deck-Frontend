@@ -16,7 +16,7 @@ import type { MerchStatus } from '@/types';
 const STATUS_TONE: Record<MerchStatus, string> = {
   draft: 'bg-surface-2 text-muted',
   pending: 'bg-grey text-ink',
-  approved: 'bg-acid text-ink',
+  approved: 'bg-deep text-on-deep',
   rejected: 'bg-edge text-canvas',
 };
 
@@ -65,7 +65,7 @@ export function SellerDashboard() {
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="mb-3 inline-block border-2 border-edge bg-lavender px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
+          <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
             Selling
           </p>
           <h1 className="display-tight text-4xl uppercase text-balance">Your shop</h1>
@@ -117,7 +117,7 @@ export function SellerDashboard() {
                   label="Awaiting payout"
                   value={formatMoney(earnings.owedMinor, earnings.currency)}
                   note="Held by Deck, sent in the next run"
-                  tone="bg-lavender text-ink"
+                  tone="bg-pop text-on-pop"
                 />
               </dl>
 

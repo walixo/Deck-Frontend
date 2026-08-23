@@ -13,7 +13,7 @@ interface AuthShellProps {
 export function AuthShell({ title, subtitle, children, footer }: AuthShellProps) {
   return (
     <div className="relative isolate overflow-hidden">
-      <Backdrop pattern="halftone" blocks />
+      <Backdrop pattern="halftone" />
 
       <div className="relative mx-auto grid min-h-[calc(100dvh-4rem)] max-w-5xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-16">
         {/* Form column */}

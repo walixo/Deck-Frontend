@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Avatar } from '@/components/ui/Avatar';
+import { BackerList, RaiseBar } from '@/components/items/FundraiseProgress';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Field';
 import { useAuth } from '@/hooks/useAuth';
@@ -41,7 +41,6 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
   /* Live figures beat the ones baked into the item payload, which may be a page
      load old — someone else may have given while this page was open. */
   const live: Fundraise = supporters?.meta ?? raise;
-  const remaining = Math.max(0, live.targetMinor - live.raisedMinor);
   const funded = live.targetMinor > 0 && live.raisedMinor >= live.targetMinor;
 
   const submit = async (event: React.FormEvent) => {
@@ -73,7 +72,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
       className="rounded-slab border-2 border-edge bg-surface p-5 shadow-hard-lg sm:p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="inline-block border-2 border-edge bg-acid px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
+        <p className="inline-block border-2 border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
           {funded ? 'Funded' : 'Raising'}
         </p>
         {live.closed && (
@@ -92,55 +91,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
       )}
 
       {/* Progress. The bar is capped at 100%; the figures below tell the truth. */}
-      <div className="mt-6">
-        <div className="flex items-end justify-between gap-3">
-          <p className="font-display text-3xl tabular-nums">{formatMoney(live.raisedMinor)}</p>
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
-            of {formatMoney(live.targetMinor)}
-          </p>
-        </div>
-
-        <div
-          role="progressbar"
-          aria-valuenow={live.percent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`${live.percent}% of the target raised`}
-          className="mt-3 h-5 w-full overflow-hidden border-2 border-edge bg-surface-2"
-        >
-          <div
-            className="h-full bg-lavender-deep transition-[width] duration-500 ease-[var(--ease-snap)]"
-            style={{ width: `${live.percent}%` }}
-          />
-        </div>
-
-        <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-1 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
-          {/* The visible word lives inside the <dd>: a bare <span> is not a
-              valid child of a <dl>, and splitting the value from its unit would
-              have a screen reader read "29" and "funded" as separate terms. */}
-          <div className="flex gap-1.5">
-            <dt className="sr-only">Funded</dt>
-            <dd>
-              <span className="tabular-nums text-body">{live.percent}%</span> funded
-            </dd>
-          </div>
-          <div className="flex gap-1.5">
-            <dt className="sr-only">Backers</dt>
-            <dd>
-              <span className="tabular-nums text-body">{live.contributorCount}</span>{' '}
-              {live.contributorCount === 1 ? 'backer' : 'backers'}
-            </dd>
-          </div>
-          {!funded && (
-            <div className="flex gap-1.5">
-              <dt className="sr-only">Still needed</dt>
-              <dd>
-                <span className="tabular-nums text-body">{formatMoney(remaining)}</span> to go
-              </dd>
-            </div>
-          )}
-        </dl>
-      </div>
+      <RaiseBar raise={live} className="mt-6" />
 
       {/* Who can give, and who cannot. */}
       {!live.open ? (
@@ -173,7 +124,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
                   aria-pressed={amount === preset}
                   className={`border-2 border-edge px-3 py-1.5 font-mono text-[12px] font-bold tabular-nums transition-colors duration-[120ms] ${
                     amount === preset
-                      ? 'bg-lavender text-ink'
+                      ? 'bg-pop text-on-pop'
                       : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
                   }`}
                 >
@@ -210,7 +161,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
               type="checkbox"
               checked={anonymous}
               onChange={(event) => setAnonymous(event.target.checked)}
-              className="size-4 border-2 border-edge accent-lavender"
+              className="size-4 border-2 border-edge accent-pop"
             />
             Give anonymously
           </label>
@@ -236,50 +187,8 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
         </form>
       )}
 
-      {supporters && supporters.data.length > 0 && (
-        <div className="mt-7 border-t-2 border-edge pt-5">
-          <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
-            Recent backers
-          </h3>
-          <ul className="mt-3 space-y-3">
-            {supporters.data.slice(0, 6).map((entry) => (
-              <li key={entry.id} className="flex items-start gap-3">
-                {entry.supporter ? (
-                  <Avatar user={entry.supporter} size="sm" />
-                ) : (
-                  <span
-                    aria-hidden="true"
-                    className="flex size-8 shrink-0 items-center justify-center border-2 border-edge bg-surface-2 font-mono text-[11px] font-bold"
-                  >
-                    ?
-                  </span>
-                )}
-                <div className="min-w-0">
-                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
-                    {entry.supporter ? (
-                      <Link
-                        to={`/u/${entry.supporter.username}`}
-                        className="hover:underline underline-offset-2"
-                      >
-                        {entry.supporter.name}
-                      </Link>
-                    ) : (
-                      'Anonymous'
-                    )}
-                    <span className="ml-2 tabular-nums text-muted">
-                      {formatMoney(entry.amountMinor, entry.currency)}
-                    </span>
-                  </p>
-                  {entry.message && (
-                    <p className="mt-0.5 text-xs leading-relaxed text-muted text-pretty">
-                      {entry.message}
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {supporters && (
+        <BackerList backers={supporters.data} className="mt-7 border-t-2 border-edge pt-5" />
       )}
     </section>
   );

@@ -4,6 +4,7 @@ import type {
   AdminOrder,
   AdminOverview,
   AdminUser,
+  FundraiseReviewData,
   AuditEvent,
   OrderStatus,
   Paginated,
@@ -96,5 +97,72 @@ export function useAuditTrail(action: string, actor: string, enabled = true) {
         actor: actor || undefined,
       }),
     enabled,
+  });
+}
+
+/**
+ * Grants or removes a verification mark.
+ *
+ * Invalidates broadly rather than by key: the mark appears beside the account's
+ * name on every launch, comment, review and leaderboard row it touches, so
+ * there is no narrow set of queries to refresh.
+ */
+export function useSetVerified() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, verified, reason }: { id: string; verified: boolean; reason: string }) =>
+      request<AdminUser>('patch', `/admin/users/${id}/verify`, { verified, reason }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
+  });
+}
+
+/* -------------------------------------------------------------- fundraise --- */
+
+export function useFundraiseApplications(enabled = true) {
+  return useQuery({
+    queryKey: ['admin-fundraises'],
+    queryFn: () => request<FundraiseReviewData>('get', '/admin/fundraises'),
+    enabled,
+  });
+}
+
+/**
+ * Approves or turns down an application.
+ *
+ * Invalidates everything: approval opens contributions on a launch, which
+ * changes that launch's payload, the maker's profile and the queue count in the
+ * sidebar all at once.
+ */
+export function useReviewFundraise() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ slug, approve, note }: { slug: string; approve: boolean; note?: string }) =>
+      request<unknown>('patch', `/admin/fundraises/${slug}`, { approve, note }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
+  });
+}
+
+/**
+ * Puts a launch on the Future Gen timeline, or takes it off.
+ *
+ * Broad invalidation on purpose: membership changes the launch's own payload,
+ * the timeline, and the audit trail, and the three are not worth enumerating
+ * for an action a staff member takes a handful of times a week.
+ */
+export function useSetFutureGen() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, futureGen, note }: { id: string; futureGen: boolean; note: string }) =>
+      request<unknown>('patch', `/admin/items/${id}/future-gen`, { futureGen, note }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
   });
 }

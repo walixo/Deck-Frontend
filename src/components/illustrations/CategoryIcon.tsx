@@ -1,111 +1,130 @@
-import type { Category } from '@/types';
+import { createElement } from 'react';
+import {
+  AcademicCapIcon,
+  BeakerIcon,
+  BoltIcon,
+  ChartBarIcon,
+  CircleStackIcon,
+  CloudIcon,
+  CodeBracketIcon,
+  CommandLineIcon,
+  CpuChipIcon,
+  CreditCardIcon,
+  CubeIcon,
+  DevicePhoneMobileIcon,
+  DocumentTextIcon,
+  EnvelopeIcon,
+  FilmIcon,
+  FingerPrintIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
+  MegaphoneIcon,
+  MusicalNoteIcon,
+  PaintBrushIcon,
+  PhotoIcon,
+  PuzzlePieceIcon,
+  RocketLaunchIcon,
+  ShoppingBagIcon,
+  SparklesIcon,
+  SquaresPlusIcon,
+  SquaresPlusIcon as FallbackIcon,
+  UsersIcon,
+  WindowIcon,
+  WrenchScrewdriverIcon,
+} from '@heroicons/react/24/outline';
+import { useCategoryIcon, useCategoryLabel } from '@/hooks/useCategories';
 
 /**
- * Line-art icon per category. These replaced Unicode glyphs, which rendered at
- * wildly different weights and sizes across platforms. Every path uses
- * currentColor, so an icon inherits whatever text colour it sits in.
+ * The curated icon set, keyed exactly as the backend stores it.
+ *
+ * These replaced a hand-drawn path per category, which had two problems that
+ * only showed up once categories became something anyone could add: the paths
+ * were keyed to the seven slugs Deck shipped with, so a new category had no
+ * icon at all, and drawing a matching one meant a code change — which is
+ * precisely what making categories dynamic was supposed to remove.
+ *
+ * Heroicons outline at 1.5px stroke, every one on the same optical grid, all
+ * inheriting `currentColor` so they read on either canvas. Thirty consistent
+ * options beat unlimited inconsistent ones.
+ *
+ * The keys must stay in step with CATEGORY_ICONS in the backend's constants —
+ * that is the list the admin picker offers and the model validates against.
  */
-const PATHS: Record<Category, React.ReactNode> = {
-  // Neural graph — three nodes feeding one.
-  'ai-model': (
-    <>
-      <circle cx="5" cy="6" r="2" />
-      <circle cx="5" cy="18" r="2" />
-      <circle cx="12" cy="12" r="2.2" />
-      <circle cx="19" cy="12" r="2" />
-      <path d="M6.7 7.2 10.2 10.6M6.7 16.8 10.2 13.4M14.2 12H17" />
-    </>
-  ),
-  // Sparkles.
-  'ai-tool': (
-    <>
-      <path d="M11 3.5 12.6 8 17 9.6 12.6 11.2 11 15.7 9.4 11.2 5 9.6 9.4 8Z" />
-      <path d="M17.5 15.5 18.3 17.7 20.5 18.5 18.3 19.3 17.5 21.5 16.7 19.3 14.5 18.5 16.7 17.7Z" />
-    </>
-  ),
-  // A capability card with a spark — a skill you drop in.
-  'claude-skill': (
-    <>
-      <rect x="3.5" y="4.5" width="13" height="15" rx="2.5" />
-      <path d="M7 9h6M7 12.5h4" />
-      <path d="M18 6.5 18.8 8.7 21 9.5 18.8 10.3 18 12.5 17.2 10.3 15 9.5 17.2 8.7Z" />
-    </>
-  ),
-  // Terminal with a prompt.
-  'developer-tool': (
-    <>
-      <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
-      <path d="M3 9h18" />
-      <path d="M7 12.5 9.5 15 7 17.5M12 17.5h5" />
-    </>
-  ),
-  // Phone.
-  'mobile-app': (
-    <>
-      <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
-      <path d="M10.5 5.5h3" />
-      <circle cx="12" cy="18" r="1" />
-    </>
-  ),
-  // Browser window.
-  website: (
-    <>
-      <rect x="2.5" y="4" width="19" height="16" rx="2.5" />
-      <path d="M2.5 8.5h19" />
-      <circle cx="6" cy="6.2" r="0.7" />
-      <circle cx="8.5" cy="6.2" r="0.7" />
-      <path d="M7 12.5h10M7 16h6" />
-    </>
-  ),
-  // Chip with pins.
-  hardware: (
-    <>
-      <rect x="6.5" y="6.5" width="11" height="11" rx="2" />
-      <rect x="10" y="10" width="4" height="4" rx="0.75" />
-      <path d="M10 6.5V3.5M14 6.5V3.5M10 17.5v3M14 17.5v3M6.5 10h-3M6.5 14h-3M17.5 10h3M17.5 14h3" />
-    </>
-  ),
-};
+export const ICON_SET = {
+  'cpu-chip': CpuChipIcon,
+  sparkles: SparklesIcon,
+  'command-line': CommandLineIcon,
+  'code-bracket': CodeBracketIcon,
+  'device-phone-mobile': DevicePhoneMobileIcon,
+  'globe-alt': GlobeAltIcon,
+  cube: CubeIcon,
+  'puzzle-piece': PuzzlePieceIcon,
+  bolt: BoltIcon,
+  beaker: BeakerIcon,
+  'chart-bar': ChartBarIcon,
+  'circle-stack': CircleStackIcon,
+  cloud: CloudIcon,
+  'credit-card': CreditCardIcon,
+  'document-text': DocumentTextIcon,
+  envelope: EnvelopeIcon,
+  film: FilmIcon,
+  'finger-print': FingerPrintIcon,
+  'lock-closed': LockClosedIcon,
+  megaphone: MegaphoneIcon,
+  'musical-note': MusicalNoteIcon,
+  'paint-brush': PaintBrushIcon,
+  photo: PhotoIcon,
+  'rocket-launch': RocketLaunchIcon,
+  'shopping-bag': ShoppingBagIcon,
+  'squares-plus': SquaresPlusIcon,
+  users: UsersIcon,
+  'wrench-screwdriver': WrenchScrewdriverIcon,
+  window: WindowIcon,
+  'academic-cap': AcademicCapIcon,
+} as const;
+
+export type IconKey = keyof typeof ICON_SET;
 
 interface CategoryIconProps {
-  category: Category;
+  /** A category slug. The icon is looked up from the category list. */
+  category: string;
   className?: string;
-}
-
-export function CategoryIcon({ category, className = 'size-4' }: CategoryIconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.25"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className={className}
-    >
-      {PATHS[category]}
-    </svg>
-  );
+  'aria-hidden'?: boolean | 'true' | 'false';
 }
 
 /**
- * Boxed variant: the icon inside a hard-edged block, for the category strip and
- * anywhere an icon needs to hold its own next to heavy display type.
+ * The icon for a category slug.
+ *
+ * Resolves through the cached category list rather than a local map, so a
+ * category added in the admin area gets its icon immediately with no deploy.
+ * Falls back to a neutral tile glyph while the list is loading or if a slug has
+ * somehow outlived its category — a missing icon should be a quiet square, not
+ * a crash or a gap in the layout.
  */
-export function CategoryIconBlock({
-  category,
-  className = '',
-}: {
-  category: Category;
-  className?: string;
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`flex size-10 items-center justify-center border-2 border-edge bg-surface-2 text-body ${className}`}
-    >
-      <CategoryIcon category={category} className="size-5" />
-    </span>
-  );
+export function CategoryIcon({ category, className, ...rest }: CategoryIconProps) {
+  const key = useCategoryIcon(category);
+
+  /*
+   * `createElement` rather than `<Icon />` with a local variable.
+   *
+   * Assigning a component to a capitalised local and rendering it trips
+   * `react-hooks/static-components`, which exists to catch components defined
+   * inside render — those get a new type every pass and remount their whole
+   * subtree. That is not what happens here: every entry in ICON_SET is a stable
+   * module-level component and this only picks one. Calling createElement says
+   * "select an existing component" instead of "here is a component", which is
+   * both what we mean and what the rule is looking for.
+   */
+  return createElement(ICON_SET[key as IconKey] ?? FallbackIcon, { className, ...rest });
+}
+
+/**
+ * The display label for a category slug.
+ *
+ * A component rather than a bare hook call so the ~10 places that used to write
+ * `{CATEGORY_LABELS[slug]}` inline stay one-liners. Renders the slug humanised
+ * until the list arrives, so chips never flash empty.
+ */
+export function CategoryLabel({ slug }: { slug: string }) {
+  return <>{useCategoryLabel(slug)}</>;
 }

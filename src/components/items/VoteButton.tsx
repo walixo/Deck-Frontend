@@ -47,11 +47,17 @@ export function VoteButton({ item, layout = 'stacked', className }: VoteButtonPr
       className={cn(
         'group/vote flex shrink-0 items-center justify-center gap-1 rounded-slab border-2 border-edge font-mono font-bold',
         'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
-        'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+        'hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
         stacked ? 'h-14 w-12 flex-col' : 'h-9 px-3.5',
+        /* Primary in both states — it sits beside the comment button and the
+           two are a matched pair. Voted is distinguished by the deeper fill and
+           by `aria-pressed`, never by colour alone. */
+        /* Secondary, like its partner. Voted is told apart by the filled
+           accent and by `aria-pressed` — the one state that has earned colour,
+           against a quiet resting state. */
         item.hasVoted
-          ? 'bg-acid text-ink shadow-hard-sm'
-          : 'bg-surface text-body shadow-hard-sm hover:bg-acid hover:text-ink',
+          ? 'bg-pop text-on-pop shadow-hard-sm'
+          : 'bg-surface text-body shadow-hard-sm hover:bg-surface-2',
         stamping && 'animate-[var(--animate-stamp)]',
         className,
       )}

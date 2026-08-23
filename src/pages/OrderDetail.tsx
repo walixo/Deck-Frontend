@@ -64,7 +64,7 @@ export function OrderDetail() {
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border-2 border-edge bg-lavender px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
+        <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
           Order
         </p>
         <h1 className="display-tight text-4xl uppercase sm:text-5xl">{data.reference}</h1>

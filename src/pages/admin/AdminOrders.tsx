@@ -48,7 +48,7 @@ export function AdminOrders() {
             aria-pressed={status === filter.value}
             className={`border-2 border-edge px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
               status === filter.value
-                ? 'bg-lavender text-ink'
+                ? 'bg-pop text-on-pop'
                 : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
             }`}
           >

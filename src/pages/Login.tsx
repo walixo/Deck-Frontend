@@ -50,7 +50,7 @@ export function Login() {
           New to Deck?{' '}
           <Link
             to="/register"
-            className="font-bold text-lavender underline-offset-4 hover:underline"
+            className="font-bold text-accent underline-offset-4 hover:underline"
           >
             Create an account
           </Link>
@@ -93,11 +93,11 @@ export function Login() {
         </p>
         <p className="mt-1.5 text-xs leading-relaxed text-muted">
           Any seeded account works — for example{' '}
-          <code className="border-2 border-edge bg-acid px-1.5 py-0.5 font-mono text-[11px] font-bold text-ink">
+          <code className="border-2 border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
             ada@deck.dev
           </code>{' '}
           with password{' '}
-          <code className="border-2 border-edge bg-acid px-1.5 py-0.5 font-mono text-[11px] font-bold text-ink">
+          <code className="border-2 border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
             deck1234
           </code>
           .

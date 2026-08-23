@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar } from '@/components/ui/Avatar';
+import { VerifiedMark } from '@/components/ui/VerifiedMark';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/States';
-import { useAdminUsers, useUpdateRole } from '@/hooks/useAdmin';
+import { useAdminUsers, useSetVerified, useUpdateRole } from '@/hooks/useAdmin';
 import { useAuth } from '@/hooks/useAuth';
 import type { AdminUser } from '@/types';
 
@@ -37,7 +38,7 @@ export function AdminUsers() {
           defaultValue={search}
           placeholder="NAME, HANDLE OR EMAIL"
           aria-label="Search people"
-          className="h-11 min-w-0 flex-1 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-lavender focus:outline-none"
+          className="h-11 min-w-0 flex-1 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
         />
         <Button type="submit" variant="secondary">
           Search
@@ -57,7 +58,7 @@ export function AdminUsers() {
             aria-pressed={role === option.value}
             className={`border-2 border-edge px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
               role === option.value
-                ? 'bg-lavender text-ink'
+                ? 'bg-pop text-on-pop'
                 : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
             }`}
           >
@@ -95,6 +96,7 @@ export function AdminUsers() {
 function PersonRow({ person }: { person: AdminUser }) {
   const { user } = useAuth();
   const update = useUpdateRole();
+  const verify = useSetVerified();
   const [error, setError] = useState<string | null>(null);
 
   const isAdmin = person.role === 'admin';
@@ -104,6 +106,27 @@ function PersonRow({ person }: { person: AdminUser }) {
     setError(null);
     try {
       await update.mutateAsync({ id: person.id, role: isAdmin ? 'user' : 'admin' });
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'That did not go through');
+    }
+  };
+
+  /*
+   * A reason is required in both directions, and the server enforces it too.
+   * The mark is a public claim Deck makes on somebody's behalf, so "why" has to
+   * outlive whoever clicked — especially for removals, which people notice.
+   */
+  const toggleVerified = async () => {
+    setError(null);
+    const reason = window.prompt(
+      person.verified
+        ? `Why is verification being removed from @${person.username}?`
+        : `What is @${person.username}'s verification based on?`,
+    );
+    if (!reason || reason.trim().length < 4) return;
+
+    try {
+      await verify.mutateAsync({ id: person.id, verified: !person.verified, reason: reason.trim() });
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'That did not go through');
     }
@@ -119,13 +142,14 @@ function PersonRow({ person }: { person: AdminUser }) {
             <Link to={`/u/${person.username}`} className="hover:underline underline-offset-2">
               {person.name}
             </Link>
+            {person.verified && <VerifiedMark name={person.name} />}
             {isAdmin && (
               <span className="border-2 border-edge bg-edge px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-canvas">
                 Staff
               </span>
             )}
             {isSelf && (
-              <span className="border-2 border-edge bg-acid px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-ink">
+              <span className="border-2 border-edge bg-deep px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-on-deep">
                 You
               </span>
             )}
@@ -138,16 +162,35 @@ function PersonRow({ person }: { person: AdminUser }) {
           means the guard never has to fire for an honest misclick — the API
           check is the one that matters, this is just not offering the rake.
         */}
-        {!isSelf && (
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Verification is about identity, staff is about privileges — an
+              admin can hold either, both or neither, so they are separate
+              controls rather than one combined state. */}
           <Button
             size="sm"
-            variant={isAdmin ? 'secondary' : 'primary'}
-            onClick={() => void toggle()}
-            loading={update.isPending}
+            variant="secondary"
+            onClick={() => void toggleVerified()}
+            loading={verify.isPending}
           >
-            {isAdmin ? 'Remove staff' : 'Make staff'}
+            {person.verified ? 'Unverify' : 'Verify'}
           </Button>
-        )}
+
+          {/*
+            Self-demotion is refused by the server too. Hiding the button as
+            well means the guard never has to fire for an honest misclick — the
+            API check is the one that matters, this is just not offering the rake.
+          */}
+          {!isSelf && (
+            <Button
+              size="sm"
+              variant={isAdmin ? 'secondary' : 'primary'}
+              onClick={() => void toggle()}
+              loading={update.isPending}
+            >
+              {isAdmin ? 'Remove staff' : 'Make staff'}
+            </Button>
+          )}
+        </div>
       </div>
 
       {error && (

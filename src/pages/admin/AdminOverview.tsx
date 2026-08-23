@@ -42,7 +42,7 @@ export function AdminOverview() {
         </h2>
 
         {allClear ? (
-          <p className="border-2 border-edge bg-acid px-4 py-5 font-display text-lg uppercase text-ink shadow-hard">
+          <p className="border-2 border-edge bg-deep px-4 py-5 font-display text-lg uppercase text-on-deep shadow-hard">
             Nothing waiting. Everything is reviewed, posted and paid.
           </p>
         ) : (
@@ -147,7 +147,7 @@ function Queue({
     <Link
       to={to}
       className={`block border-2 border-edge px-4 py-5 shadow-hard transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5 ${
-        count > 0 ? 'bg-lavender text-ink' : 'bg-surface'
+        count > 0 ? 'bg-pop text-on-pop' : 'bg-surface'
       }`}
     >
       <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">

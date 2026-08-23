@@ -1,9 +1,12 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
+import { CategoryIcon, CategoryLabel } from '@/components/illustrations/CategoryIcon';
+import { FutureGenToggle } from '@/components/items/FutureGenToggle';
 import { FundraiseCard } from '@/components/items/FundraiseCard';
 import { FundraiseSettings } from '@/components/items/FundraiseSettings';
 import { SharePanel } from '@/components/items/SharePanel';
 import { CommentSection } from '@/components/items/CommentSection';
+import { RevisionHistory } from '@/components/items/RevisionHistory';
+import { VersionStrip } from '@/components/items/VersionStrip';
 import { ItemGallery } from '@/components/items/ItemGallery';
 import { ItemCard } from '@/components/items/ItemCard';
 import { ItemLogo } from '@/components/items/ItemLogo';
@@ -12,16 +15,17 @@ import { VoteButton } from '@/components/items/VoteButton';
 import { Avatar } from '@/components/ui/Avatar';
 import { Backdrop } from '@/components/ui/Ambient';
 import { Badge } from '@/components/ui/Badge';
-import { Button, ExternalButtonLink } from '@/components/ui/Button';
+import { Button, ButtonLink, ExternalButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/States';
 import { Stars } from '@/components/ui/Stars';
+import { VerifiedMark } from '@/components/ui/VerifiedMark';
 import { useAuth } from '@/hooks/useAuth';
 import { useDeleteItem, useItem } from '@/hooks/useItems';
 import {
-  CATEGORY_LABELS,
   colourFor,
+  editWindow,
   formatFullDate,
   PRICING_LABELS,
   prettyUrl,
@@ -83,7 +87,7 @@ export function ItemDetail() {
             </Link>
             <span aria-hidden="true">/</span>
             <Link to={`/discover?category=${item.category}`} className="hover:text-body">
-              {CATEGORY_LABELS[item.category]}
+              <CategoryLabel slug={item.category} />
             </Link>
           </nav>
 
@@ -95,7 +99,7 @@ export function ItemDetail() {
                 <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
                   {item.name}
                 </h1>
-                {item.featured && <Badge tone="accent">★ Spotlight</Badge>}
+                {item.featured && <Badge tone="pop">★ Spotlight</Badge>}
               </div>
 
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted text-pretty">
@@ -105,10 +109,10 @@ export function ItemDetail() {
               <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[11px] font-bold uppercase tracking-[0.04em] text-muted">
                 <Link
                   to={`/discover?category=${item.category}`}
-                  className="inline-flex items-center gap-1.5 text-body hover:text-lavender"
+                  className="inline-flex items-center gap-1.5 text-body hover:text-accent"
                 >
                   <CategoryIcon category={item.category} className="size-4" />
-                  {CATEGORY_LABELS[item.category]}
+                  <CategoryLabel slug={item.category} />
                 </Link>
                 <span aria-hidden="true" className="text-muted/50">
                   /
@@ -173,7 +177,7 @@ export function ItemDetail() {
                     <Link
                       key={tag}
                       to={`/discover?tag=${encodeURIComponent(tag)}`}
-                      className="border-2 border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-acid hover:text-ink"
+                      className="border-2 border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-deep hover:text-on-deep"
                     >
                       #{tag}
                     </Link>
@@ -183,6 +187,13 @@ export function ItemDetail() {
             </section>
 
             <ItemGallery images={item.gallery ?? []} name={item.name} />
+
+            <VersionStrip versions={item.versions ?? []} totals={item.allVersions} />
+
+            {/* Above the discussion, not in the sidebar: whether the pitch has
+                been rewritten is context for reading the comments, and it
+                renders nothing at all on a launch nobody has edited. */}
+            <RevisionHistory slug={item.slug} editCount={item.editCount} />
 
             <CommentSection slug={item.slug} itemName={item.name} />
           </div>
@@ -205,8 +216,11 @@ export function ItemDetail() {
               >
                 <Avatar user={item.submittedBy} size="md" />
                 <span className="min-w-0">
-                  <span className="block truncate font-display text-sm uppercase group-hover:text-lavender">
+                  <span className="block truncate font-display text-sm uppercase group-hover:text-accent">
                     {item.submittedBy.name}
+                    {item.submittedBy.verified && (
+                      <VerifiedMark name={item.submittedBy.name} className="ml-1" />
+                    )}
                   </span>
                   <span className="block truncate font-mono text-[11px] text-muted">
                     @{item.submittedBy.username}
@@ -247,6 +261,26 @@ export function ItemDetail() {
               {isOwner && (
                 <div className="mt-5 space-y-3 border-t-2 border-edge pt-4">
                   <ManageImages item={item} />
+
+                  {/* Offered only while the server would accept it. A button
+                      that always errors is worse than no button. */}
+                  {(editWindow(item.editableUntil).open || user?.role === 'admin') && (
+                    <ButtonLink to={`/item/${item.slug}/edit`} size="sm" className="w-full">
+                      {editWindow(item.editableUntil).open
+                        ? `Edit · ${editWindow(item.editableUntil).label} left`
+                        : 'Edit as staff'}
+                    </ButtonLink>
+                  )}
+                  {/* The supported way to change what the product *is*. Ordinary
+                      edits freeze the name and category once votes arrive. */}
+                  <ButtonLink
+                    to={`/item/${item.slug}/release`}
+                    variant="secondary"
+                    size="sm"
+                    className="w-full"
+                  >
+                    Ship a new version
+                  </ButtonLink>
                   <Button
                     variant="danger"
                     size="sm"
@@ -265,6 +299,10 @@ export function ItemDetail() {
                   </Button>
                 </div>
               )}
+
+              {/* Staff only, and separate from the owner block above: this is
+                  not something the maker can do to their own launch. */}
+              {user?.role === 'admin' && <FutureGenToggle item={item} />}
             </Card>
 
             <Card className="p-5">
@@ -277,7 +315,7 @@ export function ItemDetail() {
                     href={item.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-body underline-offset-4 hover:text-lavender hover:underline"
+                    className="text-sm text-body underline-offset-4 hover:text-accent hover:underline"
                   >
                     {prettyUrl(item.websiteUrl)} ↗
                   </a>
@@ -288,7 +326,7 @@ export function ItemDetail() {
                       href={item.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-body underline-offset-4 hover:text-lavender hover:underline"
+                      className="text-sm text-body underline-offset-4 hover:text-accent hover:underline"
                     >
                       {prettyUrl(item.repoUrl)} ↗
                     </a>
@@ -302,7 +340,7 @@ export function ItemDetail() {
         {item.related.length > 0 && (
           <section aria-labelledby="related-heading" className="mt-16">
             <h2 id="related-heading" className="mb-5 text-xl uppercase">
-              More in {CATEGORY_LABELS[item.category]}
+              More in <CategoryLabel slug={item.category} />
             </h2>
             <div className="space-y-3">
               {item.related.map((related) => (

@@ -12,6 +12,7 @@ import { useComments, useCreateComment, useDeleteComment } from '@/hooks/useComm
 import { RequestError } from '@/lib/api';
 import { cn, relativeTime } from '@/lib/utils';
 import type { Comment } from '@/types';
+import { VerifiedMark } from '@/components/ui/VerifiedMark';
 
 const MAX_LENGTH = 2000;
 
@@ -26,7 +27,9 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
   const reviewCount = roots.filter((comment) => comment.rating).length;
 
   return (
-    <section aria-labelledby="discussion-heading" className="mt-12">
+    /* `id` as well as the labelledby target: the comment button on a launch
+       card links to #discussion, so the thread needs a scroll anchor. */
+    <section id="discussion" aria-labelledby="discussion-heading" className="mt-12">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <h2 id="discussion-heading" className="text-xl uppercase">
           Discussion
@@ -48,7 +51,7 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
                 className={cn(
                   'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase transition-colors duration-[120ms]',
                   filter === option
-                    ? 'bg-lavender text-ink'
+                    ? 'bg-pop text-on-pop'
                     : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                 )}
               >
@@ -167,7 +170,7 @@ function CommentComposer({
             onChange={(event) => setBody(event.target.value)}
             rows={parent ? 2 : 3}
             placeholder={parent ? 'Write a reply…' : `What do you think of ${itemName}?`}
-            className="w-full resize-y rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-lavender focus:shadow-none focus:outline-none"
+            className="w-full resize-y rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none"
           />
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
@@ -251,6 +254,9 @@ function CommentRow({
               className="font-display text-sm uppercase hover:underline"
             >
               {comment.user.name}
+              {comment.user.verified && (
+                <VerifiedMark name={comment.user.name} className="ml-1" />
+              )}
             </Link>
             <span className="font-mono text-[11px] text-muted">@{comment.user.username}</span>
             <span aria-hidden="true" className="text-muted/50">
@@ -263,7 +269,7 @@ function CommentRow({
               {relativeTime(comment.createdAt)}
             </time>
             {comment.rating && (
-              <Badge tone="accent" className="ml-1">
+              <Badge tone="pop" className="ml-1">
                 <Stars value={comment.rating} />
                 <span className="ml-0.5 tabular-nums">{comment.rating}/5</span>
               </Badge>
@@ -322,6 +328,9 @@ function CommentRow({
                           className="font-display text-xs uppercase hover:underline"
                         >
                           {reply.user.name}
+                          {reply.user.verified && (
+                            <VerifiedMark name={reply.user.name} className="ml-1" />
+                          )}
                         </Link>
                         <time
                           dateTime={reply.createdAt}

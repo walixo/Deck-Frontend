@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { CategoryLabel } from '@/components/illustrations/CategoryIcon';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Stars } from '@/components/ui/Stars';
-import { CATEGORY_LABELS, cn, colourFor, PRICING_LABELS } from '@/lib/utils';
+import { cn, colourFor, PRICING_LABELS } from '@/lib/utils';
 import type { Item } from '@/types';
 import { ItemLogo } from './ItemLogo';
 import { VoteButton } from './VoteButton';
@@ -81,8 +82,8 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
       <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
         <div key={active.id} className="animate-[var(--animate-slam)]">
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <Badge tone="accent">★ Spotlight</Badge>
-            <Badge tone="outline">{CATEGORY_LABELS[active.category]}</Badge>
+            <Badge tone="pop">★ Spotlight</Badge>
+            <Badge tone="outline"><CategoryLabel slug={active.category} /></Badge>
             <Badge tone="outline">{PRICING_LABELS[active.pricing]}</Badge>
           </div>
 
@@ -141,7 +142,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
                     {item.name}
                   </span>
                   <span className="block truncate font-mono text-[10px] uppercase text-muted">
-                    {CATEGORY_LABELS[item.category]}
+                    <CategoryLabel slug={item.category} />
                   </span>
                 </span>
                 <span className="font-mono text-[11px] font-bold tabular-nums text-muted">
@@ -172,7 +173,10 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
               onClick={() => goTo(itemIndex)}
               className={cn(
                 'h-3 border-2 border-edge transition-[width,background-color] duration-[140ms]',
-                itemIndex === index ? 'w-8 bg-lavender' : 'w-3 bg-surface-2 hover:bg-acid',
+                /* A dot is a mark on the page, not a filled panel, so it takes
+                   the themed accent — a fixed one would be 1.15:1 in light or
+                   1.9:1 in dark depending on which half you picked. */
+                itemIndex === index ? 'w-8 bg-accent' : 'w-3 bg-surface-2 hover:bg-accent/50',
               )}
             />
           ))}
@@ -202,7 +206,7 @@ function SliderArrow({
       type="button"
       onClick={onClick}
       aria-label={direction === 'next' ? 'Next spotlight' : 'Previous spotlight'}
-      className="flex size-8 items-center justify-center border-2 border-edge bg-surface text-sm transition-[transform,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:bg-acid hover:text-ink active:translate-y-0"
+      className="flex size-8 items-center justify-center border-2 border-edge bg-surface text-sm transition-[transform,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep active:translate-y-0"
     >
       <span aria-hidden="true">{direction === 'next' ? '→' : '←'}</span>
     </button>

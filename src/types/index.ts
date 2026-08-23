@@ -1,11 +1,12 @@
-export type Category =
-  | 'ai-model'
-  | 'ai-tool'
-  | 'claude-skill'
-  | 'developer-tool'
-  | 'mobile-app'
-  | 'website'
-  | 'hardware';
+/**
+ * A category slug.
+ *
+ * Deliberately `string`. Categories live in the database and admins can add
+ * them, so a union here would be a type that lies the moment somebody does —
+ * and it would lie silently, since every existing usage still compiles.
+ * Labels and icons come from `useCategories`.
+ */
+export type Category = string;
 
 export type PricingModel = 'free' | 'freemium' | 'paid' | 'open-source';
 
@@ -13,6 +14,8 @@ export type SortOption = 'trending' | 'newest' | 'top' | 'discussed';
 
 export interface PublicUser {
   id: string;
+  /** Staff-granted identity mark, shown beside the name. */
+  verified: boolean;
   name: string;
   username: string;
   avatarUrl?: string;
@@ -40,14 +43,33 @@ export interface Item {
   repoUrl?: string;
   logoUrl?: string;
   coverUrl?: string;
+  /**
+   * The colour this launch takes on the launch wall.
+   *
+   * A plain six-digit hex the maker chose. Absent means "sample my logo", which
+   * is what every launch did before the field existed and remains the default.
+   */
+  wallColour?: string;
+  /** A YouTube or Vimeo link. Played in the media slider, behind cookie consent. */
+  videoUrl?: string;
   gallery: string[];
   makers: string[];
   launchDate: string;
   launchDateKey: string;
   featured: boolean;
+  /** On the Future Gen showcase. Staff-set — see the page for what it is. */
+  futureGen: boolean;
   voteCount: number;
   commentCount: number;
   reviewCount: number;
+  /** Edits since posting. Zero means the launch is exactly as it went up. */
+  editCount: number;
+  /** When the owner's edit window shuts. Staff may edit past it. */
+  editableUntil: string;
+  /** Maker-supplied label like "2.0". Absent on a product's first launch. */
+  version?: string;
+  /** The id of the first launch in this product's chain. */
+  lineage: string;
   ratingAvg: number;
   createdAt: string;
   hasVoted: boolean;
@@ -55,12 +77,74 @@ export interface Item {
   fundraise: Fundraise;
 }
 
+/** The authored state of a launch at one point in time. */
+export interface RevisionSnapshot {
+  name: string;
+  tagline: string;
+  description: string;
+  category: Category;
+  pricing: PricingModel;
+  websiteUrl: string;
+  repoUrl?: string;
+  logoUrl?: string;
+  coverUrl?: string;
+  wallColour?: string;
+  videoUrl?: string;
+  gallery: string[];
+  tags: string[];
+  makers: string[];
+}
+
+export type RevisionField = keyof RevisionSnapshot;
+
+/**
+ * One entry in a launch's edit history.
+ *
+ * Carries the whole snapshot rather than just what changed, because the diff is
+ * rendered by comparing a revision against the one below it — the client needs
+ * both sides. `editedByName` is the name as it stood at the time, which is not
+ * always what `editedBy` says today.
+ */
+export interface Revision {
+  id: string;
+  version: number;
+  snapshot: RevisionSnapshot;
+  changed: RevisionField[];
+  note?: string;
+  role: 'owner' | 'admin';
+  editedByName: string;
+  editedBy: PublicUser;
+  createdAt: string;
+}
+
 /**
  * A launch's optional fundraise. Every launch carries this block; `enabled`
  * says whether the launcher opted in, and `open` is the single flag the UI
  * should read before offering to take someone's money.
  */
+/**
+ * How close a launch is to being allowed to ask for money.
+ *
+ * The thresholds travel with the figures rather than being repeated as
+ * frontend constants: they are the server's rule, and a copy here would be one
+ * more thing to keep in step — the audit page has already shown what that
+ * costs. Public on every launch, because "3 votes to go" is a reason to vote.
+ */
+export interface FundraiseEligibility {
+  votes: number;
+  votesNeeded: number;
+  comments: number;
+  commentsNeeded: number;
+  met: boolean;
+}
+
 export interface Fundraise {
+  /** Where the application stands. Only `approved` ever turns a raise on. */
+  status: 'none' | 'pending' | 'approved' | 'rejected';
+  eligibility: FundraiseEligibility;
+  /** Staff's note, shown to the maker when an application is turned down. */
+  reviewNote?: string;
+  appliedAt: string | null;
   enabled: boolean;
   targetMinor: number;
   raisedMinor: number;
@@ -85,8 +169,29 @@ export interface Contribution {
   createdAt: string;
 }
 
+/** One launch in a product's version chain, trimmed to what a strip renders. */
+export interface ItemVersion {
+  slug: string;
+  name: string;
+  /** Absent on a product's first launch, which predates any versioning. */
+  version?: string;
+  launchDate: string;
+  voteCount: number;
+  ratingAvg: number;
+  reviewCount: number;
+  current: boolean;
+}
+
 export interface ItemDetail extends Item {
   related: Item[];
+  /** Every version of this product, newest first. Empty when it has only one. */
+  versions: ItemVersion[];
+  /** Totals across the whole chain, derived server-side from each version. */
+  allVersions: {
+    voteCount: number;
+    reviewCount: number;
+    ratingAvg: number;
+  };
 }
 
 export interface RankedItem extends Item {
@@ -103,8 +208,15 @@ export interface Comment {
 }
 
 export interface CategoryCount {
+  id: string;
   slug: Category;
   label: string;
+  /** A key into the curated icon set. See components/illustrations/CategoryIcon. */
+  icon: string;
+  blurb?: string;
+  order: number;
+  /** Retired categories still render on old launches but take no new ones. */
+  active: boolean;
   count: number;
 }
 
@@ -171,6 +283,7 @@ export interface ItemFilters {
   pricing?: PricingModel;
   tag?: string;
   featured?: boolean;
+  futureGen?: boolean;
   page?: number;
   limit?: number;
 }
@@ -312,9 +425,26 @@ export interface AdminOrder extends Order {
   platformFeeMinor: number;
 }
 
+/*
+ * Must stay in step with Backend/src/constants.ts.
+ *
+ * It drifted once and took the whole audit page down with it: fifteen actions
+ * had been added on the server, the trail started returning them, and the
+ * lookup that styles each row returned undefined for every one. Nothing here
+ * is nullable, so the page threw on the first such entry and the admin route
+ * rendered blank. The reader below no longer trusts this list to be complete —
+ * see `describe` — but it is still the list the filter chips are built from,
+ * so a missing action means a filter you cannot reach.
+ */
 export const AUDIT_ACTIONS = [
   'role.granted',
   'role.revoked',
+  'user.verified',
+  'user.unverified',
+  'post.created',
+  'post.published',
+  'post.unpublished',
+  'post.deleted',
   'merch.approved',
   'merch.rejected',
   'merch.edited',
@@ -324,8 +454,22 @@ export const AUDIT_ACTIONS = [
   'payout.recorded',
   'item.edited',
   'item.deleted',
+  'item.rescheduled',
+  'category.created',
+  'category.updated',
+  'category.removed',
   'fundraise.changed',
+  'fundraise.approved',
+  'fundraise.rejected',
+  'futuregen.added',
+  'futuregen.removed',
   'comment.deleted',
+  'topic.edited',
+  'topic.deleted',
+  'topic.moderated',
+  'reply.deleted',
+  'ad.approved',
+  'ad.rejected',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -333,12 +477,24 @@ export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 /** One privileged action, as recorded. Append-only — nothing here can change. */
 export interface AuditEvent {
   id: string;
-  action: AuditAction;
+  /* Typed as the union *plus* string: the server is free to record an action
+     this build has never heard of, and the page has to survive reading one. */
+  action: AuditAction | (string & {});
   /** Null when a command-line script did it rather than a signed-in admin. */
   actorId: string | null;
   actorName: string;
   actorEmail?: string;
-  targetType: 'user' | 'merch' | 'order' | 'payout' | 'item' | 'comment';
+  targetType:
+    | 'user'
+    | 'merch'
+    | 'order'
+    | 'payout'
+    | 'item'
+    | 'category'
+    | 'comment'
+    | 'ad'
+    | 'post'
+    | 'topic';
   targetId: string;
   targetLabel: string;
   summary: string;
@@ -512,4 +668,111 @@ export interface ShareKit {
   badgeUrl: string;
   embed: { markdown: string; html: string };
   post: string;
+}
+
+/* ----------------------------------------------------------------- blog --- */
+
+export interface PostSummary {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverUrl?: string;
+  tags: string[];
+  status: 'draft' | 'published';
+  publishedAt: string | null;
+  /** Derived from the body server-side, so it can never disagree with it. */
+  readMinutes: number;
+  author: PublicUser | null;
+}
+
+export interface Post extends PostSummary {
+  body: string;
+}
+
+export interface PostDraft {
+  title: string;
+  excerpt: string;
+  body: string;
+  coverUrl?: string;
+  tags: string[];
+  status: 'draft' | 'published';
+  publishedAt?: string;
+}
+
+/** A fundraise as the review page sees it, pending or approved. */
+export interface FundraiseApplicationRow {
+  slug: string;
+  name: string;
+  logoUrl?: string;
+  status: 'none' | 'pending' | 'approved' | 'rejected';
+  appliedAt: string;
+  reviewedAt: string | null;
+  targetMinor: number;
+  raisedMinor: number;
+  contributorCount: number;
+  /** Approved *and* currently taking money — a paused raise is neither. */
+  live: boolean;
+  percent: number;
+  application: {
+    purpose?: string;
+    useOfFunds?: string;
+    timeline?: string;
+    contact?: string;
+  };
+  submittedBy: PublicUser;
+}
+
+export interface FundraiseReviewData {
+  pending: FundraiseApplicationRow[];
+  approved: FundraiseApplicationRow[];
+  totals: { raisedMinor: number; targetMinor: number; backers: number; live: number };
+}
+
+/* ---------------------------------------------------------------- forum --- */
+
+export const TOPIC_SECTIONS = ['ask', 'show', 'feedback', 'hiring', 'meta'] as const;
+export type TopicSection = (typeof TOPIC_SECTIONS)[number];
+
+/** Reader-facing names and a line on what each section is for. */
+export const SECTION_META: Record<TopicSection, { label: string; blurb: string }> = {
+  ask: { label: 'Ask', blurb: 'Questions for the room' },
+  show: { label: 'Show', blurb: 'Something you made or found' },
+  feedback: { label: 'Feedback', blurb: 'Put your work up for critique' },
+  hiring: { label: 'Hiring', blurb: 'Roles, contracts, looking for work' },
+  meta: { label: 'Meta', blurb: 'Deck itself — bugs, ideas, complaints' },
+};
+
+/** A topic in the index. No body — see TopicDetail. */
+export interface TopicSummary {
+  id: string;
+  title: string;
+  slug: string;
+  section: TopicSection;
+  replyCount: number;
+  lastReplyAt: string;
+  /** Null until somebody replies; the index shows the author instead. */
+  lastReplyBy: PublicUser | null;
+  pinned: boolean;
+  locked: boolean;
+  createdAt: string;
+  author: PublicUser | null;
+}
+
+export interface Reply {
+  id: string;
+  body: string;
+  createdAt: string;
+  author: PublicUser | null;
+}
+
+export interface TopicDetail extends TopicSummary {
+  body: string;
+  replies: Reply[];
+}
+
+export interface TopicDraft {
+  title: string;
+  body: string;
+  section: TopicSection;
 }

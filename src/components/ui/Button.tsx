@@ -17,11 +17,14 @@ const BASE =
   'active:shadow-none disabled:pointer-events-none disabled:opacity-40 rounded-slab';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-lavender text-ink shadow-hard-sm hover:bg-lavender-deep hover:shadow-hard',
+  primary: 'bg-pop text-on-pop shadow-hard-sm hover:bg-pop-hover hover:shadow-hard',
   secondary: 'bg-surface text-body shadow-hard-sm hover:bg-surface-2 hover:shadow-hard',
-  accent: 'bg-acid text-ink shadow-hard-sm hover:bg-acid-deep hover:shadow-hard',
+  accent: 'bg-deep text-on-deep shadow-hard-sm hover:bg-deep-hover hover:shadow-hard',
   // Inverted rather than a third colour: black-on-white in light, the reverse in dark.
-  danger: 'bg-edge text-canvas shadow-hard-sm hover:shadow-hard',
+  /* Red rather than inversion. A destructive action is the one place a
+     reader should not have to read the label to know what they are about to
+     do — and it still carries its word. See CONTRACT rule 6. */
+  danger: 'bg-danger text-bone shadow-hard-sm hover:shadow-hard',
   // The one exception: no block, no shadow — for tertiary actions inside dense UI.
   ghost:
     'border-transparent text-muted shadow-none hover:translate-x-0 hover:translate-y-0 ' +

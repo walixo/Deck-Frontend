@@ -3,6 +3,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useTopMakers } from '@/hooks/useMeta';
 import { cn, formatNumber, MEDAL_STYLES } from '@/lib/utils';
+import { VerifiedMark } from '@/components/ui/VerifiedMark';
 
 export function MakerLeaderboard() {
   const { data: makers, isLoading } = useTopMakers();
@@ -37,8 +38,11 @@ export function MakerLeaderboard() {
             </span>
             <Avatar user={maker.user} size="sm" />
             <span className="min-w-0 flex-1">
-              <span className="block truncate font-display text-[13px] uppercase group-hover:text-lavender">
+              <span className="block truncate font-display text-[13px] uppercase group-hover:text-accent">
                 {maker.user.name}
+                {maker.user.verified && (
+                  <VerifiedMark name={maker.user.name} className="ml-1" />
+                )}
               </span>
               <span className="block truncate font-mono text-[10px] uppercase text-muted">
                 {maker.launches} {maker.launches === 1 ? 'launch' : 'launches'}

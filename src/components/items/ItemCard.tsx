@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
-import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
+import { CategoryIcon, CategoryLabel } from '@/components/illustrations/CategoryIcon';
 import { Badge } from '@/components/ui/Badge';
 import { Stars } from '@/components/ui/Stars';
-import { CATEGORY_LABELS, MEDAL_STYLES, cn, PRICING_LABELS } from '@/lib/utils';
+import { MEDAL_STYLES, cn, PRICING_LABELS } from '@/lib/utils';
 import type { Item } from '@/types';
 import { ItemLogo } from './ItemLogo';
+import { CommentButton } from './CommentButton';
 import { VoteButton } from './VoteButton';
 
 interface ItemCardProps {
@@ -50,7 +51,7 @@ export function ItemCard({ item, rank, className, style }: ItemCardProps) {
               </Link>
             </h3>
             {item.featured && (
-              <Badge tone="accent" className="relative z-10">
+              <Badge tone="pop" className="relative z-10">
                 ★ Spotlight
               </Badge>
             )}
@@ -63,10 +64,10 @@ export function ItemCard({ item, rank, className, style }: ItemCardProps) {
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em] text-muted">
             <Link
               to={`/discover?category=${item.category}`}
-              className="relative z-10 inline-flex items-center gap-1.5 text-body transition-colors hover:text-lavender"
+              className="relative z-10 inline-flex items-center gap-1.5 text-body transition-colors hover:text-accent"
             >
               <CategoryIcon category={item.category} className="size-3.5" />
-              {CATEGORY_LABELS[item.category]}
+              <CategoryLabel slug={item.category} />
             </Link>
 
             <span aria-hidden="true" className="text-muted/50">
@@ -99,7 +100,13 @@ export function ItemCard({ item, rank, className, style }: ItemCardProps) {
           </div>
         </div>
 
-        <VoteButton item={item} className="relative z-10 mt-0.5" />
+        {/* Vote and comment together: react, or respond, without opening the
+            launch first. Stacked on the narrowest screens so a long product
+            name is not squeezed into nothing. */}
+        <div className="relative z-10 mt-0.5 flex shrink-0 flex-col gap-2 sm:flex-row">
+          <CommentButton item={item} />
+          <VoteButton item={item} />
+        </div>
       </div>
     </article>
   );

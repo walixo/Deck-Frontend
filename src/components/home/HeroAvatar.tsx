@@ -69,6 +69,13 @@ interface HeroAvatarProps {
   className?: string;
   /** Tailwind fill utility for the face. */
   tone?: string;
+  /**
+   * Fill for the eyes, which has to travel with `tone` rather than being fixed.
+   * Ink reads at 15.5:1 on the lime mascot and 1.9:1 on the slate one — the two
+   * accents sit at opposite ends of the scale, so no single eye colour serves
+   * both. Each face gets its partner's colour.
+   */
+  eye?: string;
   /** Which way it turns when the cursor is not around — toward its partner. */
   facing?: 'left' | 'right';
   ears?: boolean;
@@ -86,7 +93,8 @@ interface HeroAvatarProps {
  */
 export function HeroAvatar({
   className,
-  tone = 'fill-lavender',
+  tone = 'fill-pop',
+  eye = 'fill-deep',
   facing = 'right',
   ears = false,
 }: HeroAvatarProps) {
@@ -356,7 +364,7 @@ export function HeroAvatar({
               width={EYE.w}
               height={EYE.h}
               rx={EYE.w / 2}
-              className="fill-ink"
+              className={eye}
             />
             <rect
               ref={rightEyeRef}
@@ -365,7 +373,7 @@ export function HeroAvatar({
               width={EYE.w}
               height={EYE.h}
               rx={EYE.w / 2}
-              className="fill-ink"
+              className={eye}
             />
           </g>
         </g>

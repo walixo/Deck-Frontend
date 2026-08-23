@@ -133,7 +133,7 @@ export function ImageUpload({
           }}
           className={cn(
             'rounded-slab border-2 border-dashed px-4 py-6 text-center transition-colors duration-[120ms]',
-            dragging ? 'border-lavender bg-acid/15' : 'border-edge',
+            dragging ? 'border-accent bg-pop/20' : 'border-edge',
           )}
         >
           <input
@@ -154,7 +154,7 @@ export function ImageUpload({
               'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
               uploading
                 ? 'pointer-events-none opacity-60'
-                : 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-acid hover:text-ink hover:shadow-hard',
+                : 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard',
             )}
           >
             {uploading && (

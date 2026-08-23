@@ -19,6 +19,20 @@ const SURFACE = 'var(--surface)';
 const GREY = 'var(--color-grey)';
 const OUTLINE = { stroke: EDGE, strokeWidth: 2.5, strokeLinejoin: 'round' as const };
 
+/*
+ * Detail drawn *inside* a lime or slate block cannot use `--edge`, even though
+ * every outline does. `--edge` flips with the theme; the two blocks do not. Ink
+ * on slate is 1.9:1 in light mode, and bone on lime is 1.2:1 in dark — so an
+ * edge-coloured mark inside a block is guaranteed to vanish in one theme or the
+ * other. Each block carries its partner instead, which is 8.1:1 in both.
+ */
+const ON_POP = 'var(--color-on-pop)';
+const ON_DEEP = 'var(--color-on-deep)';
+
+/* A bare stroke on the page, with no block behind it, takes the themed mark —
+   the same reasoning as link text and focus rings. */
+const ACCENT = 'var(--accent)';
+
 /** Nothing launched yet — an empty deck with one card stamping into place. */
 export function EmptyDeckIllustration({ className = 'size-36' }: IllustrationProps) {
   return (
@@ -27,14 +41,14 @@ export function EmptyDeckIllustration({ className = 'size-36' }: IllustrationPro
       <rect x="26" y="34" width="76" height="54" fill={SURFACE} {...OUTLINE} />
 
       <g className="animate-[var(--animate-kick)]">
-        <rect x="40" y="18" width="76" height="54" fill="var(--color-acid)" {...OUTLINE} />
-        <rect x="52" y="34" width="38" height="6" fill={EDGE} />
-        <rect x="52" y="48" width="22" height="6" fill={EDGE} />
+        <rect x="40" y="18" width="76" height="54" fill="var(--color-deep)" {...OUTLINE} />
+        <rect x="52" y="34" width="38" height="6" fill={ON_DEEP} />
+        <rect x="52" y="48" width="22" height="6" fill={ON_DEEP} />
       </g>
 
       <g className="animate-[var(--animate-jitter)]">
-        <rect x="118" y="60" width="26" height="34" fill="var(--color-lavender)" {...OUTLINE} />
-        <path d="M131 68l8 11h-16z" fill="#fff" />
+        <rect x="118" y="60" width="26" height="34" fill="var(--color-pop)" {...OUTLINE} />
+        <path d="M131 68l8 11h-16z" fill={ON_POP} />
       </g>
     </svg>
   );
@@ -45,7 +59,7 @@ export function NoResultsIllustration({ className = 'size-36' }: IllustrationPro
   return (
     <svg viewBox="0 0 150 116" aria-hidden="true" className={className}>
       <rect x="12" y="20" width="30" height="30" fill={SURFACE} {...OUTLINE} />
-      <rect x="50" y="20" width="30" height="30" fill="var(--color-acid)" {...OUTLINE} />
+      <rect x="50" y="20" width="30" height="30" fill="var(--color-deep)" {...OUTLINE} />
       <rect x="12" y="58" width="30" height="30" fill={GREY} {...OUTLINE} />
       <rect
         x="50"
@@ -60,7 +74,9 @@ export function NoResultsIllustration({ className = 'size-36' }: IllustrationPro
 
       <g className="animate-[var(--animate-jitter)]">
         <circle cx="106" cy="50" r="24" fill={SURFACE} {...OUTLINE} />
-        <circle cx="106" cy="50" r="12" fill="var(--color-lavender)" />
+        {/* The lens sits straight on a white surface with no outline of its
+            own, so it takes the themed mark rather than the block colour. */}
+        <circle cx="106" cy="50" r="12" fill={ACCENT} />
         <path d="M124 68l16 18" stroke={EDGE} strokeWidth="7" strokeLinecap="round" />
       </g>
     </svg>
@@ -76,16 +92,16 @@ export function EmptyCommentsIllustration({ className = 'size-32' }: Illustratio
       <rect x="26" y="53" width="26" height="6" fill={EDGE} />
 
       <g className="animate-[var(--animate-kick)]">
-        <path d="M92 14h46v40h-8v14l-14-14H92V14z" fill="var(--color-acid)" {...OUTLINE} />
-        <rect x="102" y="28" width="6" height="6" fill={EDGE} />
-        <rect x="112" y="28" width="6" height="6" fill={EDGE} />
+        <path d="M92 14h46v40h-8v14l-14-14H92V14z" fill="var(--color-deep)" {...OUTLINE} />
+        <rect x="102" y="28" width="6" height="6" fill={ON_DEEP} />
+        <rect x="112" y="28" width="6" height="6" fill={ON_DEEP} />
         <rect
           className="animate-[var(--animate-blink)]"
           x="122"
           y="28"
           width="6"
           height="6"
-          fill={EDGE}
+          fill={ON_DEEP}
         />
       </g>
     </svg>
@@ -96,9 +112,9 @@ export function EmptyCommentsIllustration({ className = 'size-32' }: Illustratio
 export function EmptyBoardIllustration({ className = 'size-36' }: IllustrationProps) {
   return (
     <svg viewBox="0 0 150 116" aria-hidden="true" className={className}>
-      <rect x="14" y="62" width="36" height="34" fill="var(--color-lavender)" {...OUTLINE} />
+      <rect x="14" y="62" width="36" height="34" fill="var(--color-pop)" {...OUTLINE} />
       <rect x="100" y="72" width="36" height="24" fill={GREY} {...OUTLINE} />
-      <rect x="56" y="46" width="38" height="50" fill="var(--color-acid)" {...OUTLINE} />
+      <rect x="56" y="46" width="38" height="50" fill="var(--color-deep)" {...OUTLINE} />
 
       <g className="animate-[var(--animate-kick)]">
         <rect x="62" y="10" width="26" height="26" fill={SURFACE} {...OUTLINE} />
@@ -120,9 +136,9 @@ export function LostCardIllustration({ className = 'w-64' }: IllustrationProps) 
 
       {/* The stray card, tipped off-axis and drifting. */}
       <g transform="rotate(-18 168 52)" className="animate-[var(--animate-kick)]">
-        <rect x="132" y="22" width="76" height="54" fill="var(--color-lavender)" {...OUTLINE} />
-        <rect x="146" y="40" width="36" height="7" fill={EDGE} />
-        <rect x="146" y="54" width="20" height="7" fill={EDGE} />
+        <rect x="132" y="22" width="76" height="54" fill="var(--color-pop)" {...OUTLINE} />
+        <rect x="146" y="40" width="36" height="7" fill={ON_POP} />
+        <rect x="146" y="54" width="20" height="7" fill={ON_POP} />
       </g>
 
       <path
@@ -142,15 +158,18 @@ export function LostCardIllustration({ className = 'w-64' }: IllustrationProps) 
  * out of it, echoing what the product actually does.
  */
 export function LaunchBoardIllustration({ className = 'w-full' }: IllustrationProps) {
+  /* `mark` travels with the row because the middle one is a fixed block and
+     the other two are themed surfaces — the same edge colour cannot serve
+     both. On surface it is the themed ink; on slate it is lime. */
   const rows = [
-    { y: 18, fill: SURFACE },
-    { y: 64, fill: 'var(--color-acid)' },
-    { y: 110, fill: SURFACE },
+    { y: 18, fill: SURFACE, mark: EDGE },
+    { y: 64, fill: 'var(--color-deep)', mark: ON_DEEP },
+    { y: 110, fill: SURFACE, mark: EDGE },
   ];
   const bars = [
-    { x: 246, h: 30, fill: 'var(--color-lavender)' },
+    { x: 246, h: 30, fill: 'var(--color-pop)' },
     { x: 268, h: 52, fill: GREY },
-    { x: 290, h: 78, fill: 'var(--color-acid)' },
+    { x: 290, h: 78, fill: 'var(--color-deep)' },
   ];
 
   return (
@@ -158,9 +177,9 @@ export function LaunchBoardIllustration({ className = 'w-full' }: IllustrationPr
       {rows.map((row) => (
         <g key={row.y}>
           <rect x="14" y={row.y} width="206" height="38" fill={row.fill} {...OUTLINE} />
-          <rect x="26" y={row.y + 9} width="20" height="20" fill={EDGE} />
-          <rect x="56" y={row.y + 12} width="86" height="5" fill={EDGE} />
-          <rect x="56" y={row.y + 23} width="52" height="5" fill={EDGE} opacity="0.5" />
+          <rect x="26" y={row.y + 9} width="20" height="20" fill={row.mark} />
+          <rect x="56" y={row.y + 12} width="86" height="5" fill={row.mark} />
+          <rect x="56" y={row.y + 23} width="52" height="5" fill={row.mark} opacity="0.5" />
           <rect x="188" y={row.y + 9} width="20" height="20" fill={SURFACE} {...OUTLINE} />
         </g>
       ))}
@@ -191,7 +210,7 @@ export function TrendMark({ className = 'size-10' }: IllustrationProps) {
       <path
         d="M6 32l10-10 6 5 12-15"
         fill="none"
-        stroke="var(--color-lavender)"
+        stroke={ACCENT}
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"

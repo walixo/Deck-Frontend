@@ -26,8 +26,8 @@ const PERIODS: { value: Period; label: string }[] = [
 
 /* Podium fills, brightest for first. */
 const PODIUM: Record<number, string> = {
-  1: 'bg-acid text-ink',
-  2: 'bg-lavender text-ink',
+  1: 'bg-deep text-on-deep',
+  2: 'bg-pop text-on-pop',
   3: 'bg-edge text-canvas',
 };
 
@@ -55,7 +55,7 @@ export function Leaderboard() {
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border-2 border-edge bg-lavender px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
+        <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
           Leaderboard
         </p>
         <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
@@ -116,7 +116,7 @@ export function Leaderboard() {
                 aria-pressed={active}
                 className={cn(
                   'shrink-0 border-2 border-edge px-3 py-2 text-left transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
-                  active ? 'bg-acid text-ink shadow-hard-sm' : 'bg-surface text-body',
+                  active ? 'bg-deep text-on-deep shadow-hard-sm' : 'bg-surface text-body',
                 )}
               >
                 <span className="block whitespace-nowrap font-display text-[12px] uppercase">
@@ -212,7 +212,7 @@ export function Leaderboard() {
                   className={cn(
                     'border-2 border-edge px-2 py-1 font-mono text-[10px] font-bold uppercase transition-colors duration-[120ms]',
                     period === option.value
-                      ? 'bg-lavender text-ink'
+                      ? 'bg-pop text-on-pop'
                       : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                   )}
                 >
@@ -239,7 +239,7 @@ export function Leaderboard() {
                         <span className="w-4 shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">
                           {item.rank}
                         </span>
-                        <span className="min-w-0 flex-1 truncate font-display text-[13px] uppercase group-hover:text-lavender">
+                        <span className="min-w-0 flex-1 truncate font-display text-[13px] uppercase group-hover:text-accent">
                           {item.name}
                         </span>
                         <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">

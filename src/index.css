@@ -15,113 +15,70 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Semantic surface tokens are plain CSS variables redefined under `.dark`,
- * then exposed to Tailwind through `--color-*` below. That means a component
- * writes `border-edge` once and it flips automatically — no `dark:` twin on
- * every border, background and text colour in the app.
+ * Colour comes from design/tokens.json via scripts/build-tokens.mjs.
+ *
+ * It is generated rather than written here because four separate consumers
+ * need the same hexes and none of them can read a CSS variable at the moment
+ * they need one: this stylesheet, the <canvas> share card, the SVG badge Deck
+ * serves into other people's pages, and the handbook print stylesheet. Kept by
+ * hand, they drift — and did.
+ *
+ * Run `npm run tokens` from the repo root after editing tokens.json, and
+ * `npm run check:contrast` to prove the result still clears WCAG.
  */
-@layer base {
-  :root {
-    --canvas: #faf9f5;
-    --surface: #ffffff;
-    --surface-2: #efede6;
-    --edge: #111111;
-    --body-ink: #111111;
-    --muted-ink: #55534e;
-  }
+@import './styles/tokens.generated.css';
 
-  .dark {
-    --canvas: #151515;
-    --surface: #1e1e1e;
-    --surface-2: #262626;
-    --edge: #f7f6f2;
-    --body-ink: #f7f6f2;
-    --muted-ink: #a3a29c;
-  }
-}
-
+/*
+ * Everything the system is made of that is NOT colour.
+ *
+ * Type, shadow, radius and motion live here rather than in tokens.json because
+ * they are not what churns — the palette is. Tailwind merges multiple `@theme`
+ * blocks, so this sits alongside the generated one.
+ */
 @theme {
-  /* Themed surfaces — resolve through the variables above. */
-  --color-canvas: var(--canvas);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-edge: var(--edge);
-  --color-body: var(--body-ink);
-  --color-muted: var(--muted-ink);
-
   /*
-   * Exactly two accents, plus black, white and grey. Both accents are fixed —
-   * identical in either theme, which is the point of the style: flat
-   * ink-on-colour, never tinted or faded.
+   * Three voices, and they are not interchangeable.
    *
-   * Anything destructive or wrong is expressed by INVERSION (`bg-edge` with
-   * `text-canvas`) rather than a third hue. Because `--edge` and `--canvas`
-   * swap between themes, that reads as black-on-white in light mode and
-   * white-on-black in dark — unmistakable, and it costs no extra colour.
+   * Archivo Black is the display face and carries every heading — it is a
+   * single-weight heavy grotesque, which is exactly why it works for headlines
+   * and why it is never asked to set a paragraph. Geist does the calm work.
+   * Geist Mono marks anything that reads as a machine value: counts, labels,
+   * chips, dates.
    */
-  /*
-   * Lavender is a light accent where the old blue was a dark one, which changes
-   * more than the hex. Ink sits on it (9.1:1) where white used to; white would
-   * be 2.1:1 and unreadable.
-   *
-   * `deep` earns its keep three times over: the hover state, the focus ring,
-   * and any fill that has to separate from a pale surface. It is dark enough to
-   * clear 3:1 against the light canvas — the base tone is only 2:1 there, so a
-   * focus ring in it would all but vanish — while still taking ink text at
-   * 5.2:1, so hovering a button never has to flip its label from black to white.
-   */
-  --color-lavender: #b8a9fa;
-  --color-lavender-deep: #8b72f0;
-  --color-acid: #c6ff3d;
-  --color-acid-deep: #a8e01f;
-  --color-ink: #111111;
-  --color-bone: #faf9f5;
-
-  /* Grey completes the neutral foundation alongside black and white: a flat
-     mid-tone for secondary blocks, quiet tiles and disabled states. */
-  --color-grey: #9c9c99;
-  --color-grey-soft: #d8d7d2;
-
-  /*
-   * Alert red. Deliberately outside the two-accent rule and used in exactly one
-   * place — the notification count — because a badge that shares lavender with
-   * every primary button stops reading as "something needs you".
-   *
-   * This shade is chosen for its white text: 4.6:1, which clears AA for the
-   * badge's 10px bold numerals. Brighter reds look better but drop to ~3.5:1.
-   */
-  --color-red: #e02b20;
-
+  --font-display: 'Archivo Black', 'Helvetica Neue', Impact, -apple-system, sans-serif;
   --font-sans:
     'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, sans-serif;
-  --font-display:
-    'Archivo Black', 'Helvetica Neue', Impact, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono:
     'Geist Mono Variable', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, 'Cascadia Mono',
     Consolas, monospace;
 
   /*
    * Hard offset shadows — no blur, no alpha. They read as a second solid edge,
-   * which is what gives the style its weight. Colour comes from --edge, so the
-   * shadow inverts with the theme like everything else.
+   * which is what gives the style its weight, and they take their colour from
+   * `--edge` so they invert with the theme like everything else.
+   *
+   * Three tiers, on the canonical 3 / 5 / 8 scale: small for badges and chips,
+   * medium for cards and buttons, large for hero elements and overlays. The
+   * point of a fixed scale is restraint — when every card, chip and tooltip
+   * gets an equally aggressive shadow, the z-axis stops meaning anything.
    */
   --shadow-hard-sm: 3px 3px 0 var(--edge);
-  --shadow-hard: 4px 4px 0 var(--edge);
-  --shadow-hard-lg: 7px 7px 0 var(--edge);
-  --shadow-hard-xl: 10px 10px 0 var(--edge);
-  --shadow-acid: 4px 4px 0 var(--color-acid);
-  --shadow-lavender: 4px 4px 0 var(--color-lavender);
+  --shadow-hard: 5px 5px 0 var(--edge);
+  --shadow-hard-lg: 8px 8px 0 var(--edge);
+  --shadow-hard-xl: 12px 12px 0 var(--edge);
 
   --radius-slab: 6px;
 
-  /* Motion is fast and mechanical: things snap, they do not glide. */
+  /* Motion is mechanical: things snap into place rather than gliding. */
   --ease-snap: cubic-bezier(0.2, 0.9, 0.3, 1);
   --ease-kick: cubic-bezier(0.3, 1.6, 0.5, 1);
 
   --animate-slam: slam 0.32s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  /* Per-word headline entry: rises out of its own clipped box, so the words
+     appear to be set rather than to fade in. */
+  --animate-rise: rise 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
   --animate-slide-up: slide-up 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) both;
-  --animate-fade-in: fade-in 0.3s linear both;
   --animate-stamp: stamp 0.28s cubic-bezier(0.3, 1.6, 0.5, 1);
   --animate-kick: kick 3.2s cubic-bezier(0.3, 1.6, 0.5, 1) infinite;
   --animate-jitter: jitter 3.6s steps(1) infinite;
@@ -129,118 +86,123 @@
   --animate-marquee: marquee 70s linear infinite;
   --animate-marquee-reverse: marquee-reverse 70s linear infinite;
   --animate-ticker: ticker 26s linear infinite;
+}
 
-  @keyframes slam {
-    from {
-      opacity: 0;
-      transform: translateY(-10px) scale(0.98);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
+/* An entrance that overshoots and settles — the display equivalent of a stamp. */
+@keyframes slam {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
   }
-
-  @keyframes slide-up {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
+}
 
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+/* Travels 110% so the word starts fully outside its clipping box — 100% leaves
+   a hairline of the glyph visible on subpixel rounding. */
+@keyframes rise {
+  from {
+    transform: translateY(110%);
   }
-
-  /* The upvote press: element drops onto its own shadow, then springs back. */
-  @keyframes stamp {
-    0% {
-      transform: translate(0, 0);
-    }
-    45% {
-      transform: translate(4px, 4px);
-    }
-    100% {
-      transform: translate(0, 0);
-    }
+  to {
+    transform: translateY(0);
   }
+}
 
-  @keyframes kick {
-    0%,
-    58%,
-    100% {
-      transform: translateY(0);
-    }
-    68% {
-      transform: translateY(-6px);
-    }
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
   }
-
-  /* Steps(1) keeps this snapping between positions instead of easing. */
-  @keyframes jitter {
-    0%,
-    88%,
-    100% {
-      transform: translate(0, 0) rotate(0deg);
-    }
-    91% {
-      transform: translate(-2px, 1px) rotate(-1.5deg);
-    }
-    94% {
-      transform: translate(2px, -1px) rotate(1.5deg);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  @keyframes blink {
-    0%,
-    49% {
-      opacity: 1;
-    }
-    50%,
-    100% {
-      opacity: 0;
-    }
+@keyframes stamp {
+  0% {
+    transform: scale(1);
   }
-
-  /*
-   * Marquee tracks hold two identical copies of their row. Each copy carries a
-   * trailing gutter equal to the internal gap, so shifting by exactly -50%
-   * lands the second copy where the first began — no seam, no jump.
-   */
-  @keyframes marquee {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(-50%, 0, 0);
-    }
+  45% {
+    transform: scale(0.92);
   }
-
-  @keyframes marquee-reverse {
-    from {
-      transform: translate3d(-50%, 0, 0);
-    }
-    to {
-      transform: translate3d(0, 0, 0);
-    }
+  100% {
+    transform: scale(1);
   }
+}
 
-  @keyframes ticker {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(-50%, 0, 0);
-    }
+/* Mostly still, with one nudge per cycle — a pulse, not a wobble. */
+@keyframes kick {
+  0%,
+  88%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  93% {
+    transform: translateY(-5px) rotate(-1.5deg);
+  }
+}
+
+/* steps(1): discrete jumps, never a slide. Nothing here eases. */
+@keyframes jitter {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(2px, -2px);
+  }
+  66% {
+    transform: translate(-2px, 1px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/*
+ * The wall and the ticker both render their content twice, so travelling
+ * exactly -50% lands the second copy where the first began and the loop is
+ * seamless. Any other distance visibly jumps.
+ */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 
@@ -259,18 +221,21 @@
    * the shadows. Keyboard only.
    */
   /*
-   * The deep tone, not the base: a focus ring has to be seen against the page
-   * it sits on, and pale lavender on the light canvas is 2:1 — technically
-   * present, practically invisible.
+   * The themed mark, not a fixed accent: a focus ring has to be seen against
+   * the page it sits on, and lime on the light canvas is 1.15:1 — technically
+   * present, practically invisible. `--accent` hands each canvas the half of
+   * the pair it can actually see, so the ring is 9.3:1 light and 15.1:1 dark.
    */
   :focus-visible {
-    outline: 3px solid var(--color-lavender-deep);
+    outline: 3px solid var(--accent);
     outline-offset: 2px;
   }
 
+  /* Selection is a block fill, so it takes the fixed pair rather than the
+     themed mark: the bright block behind its own partner text. */
   ::selection {
-    background: var(--color-acid);
-    color: var(--color-ink);
+    background: var(--color-pop);
+    color: var(--color-on-pop);
   }
 
   /* Display type is set tight and never lighter than the face's single weight. */

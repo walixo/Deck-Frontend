@@ -1,20 +1,52 @@
 import { Link } from 'react-router-dom';
+import { CategoryLabel } from '@/components/illustrations/CategoryIcon';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { CATEGORY_LABELS, cn, formatNumber, PRICING_LABELS } from '@/lib/utils';
+import { useWallColour } from '@/hooks/useDominantColour';
+import { cn, formatNumber, PRICING_LABELS } from '@/lib/utils';
 import type { Item } from '@/types';
 
 /*
  * Wall panels cycle by position rather than hashing off the slug. Hashing gives
  * each item a stable identity, which is right for a small avatar but wrong for
- * a row of large panels: it clumps, and acid green is loud enough that three in
- * a row swamps everything else. Cycling guarantees an even beat.
+ * a row of large panels: it clumps. Cycling guarantees an even beat.
+ *
+ * All four are neutral. These are the biggest colour fields on the site and
+ * every one of them has somebody's product name — and often their logo — sitting
+ * on top of it. An accent here does not decorate the launch, it argues with it.
+ * The rhythm now comes from value alone, light through to dark, which reads just
+ * as deliberately and lets thirty different logos share one wall without any of
+ * them landing on a colour that fights.
+ */
+/*
+ * Three of the four are FIXED neutrals rather than themed surfaces. Themed ones
+ * collapse here: `surface`, `surface-2` and `ink` are #FFF, #EFEDE6 and #111 on
+ * the light canvas — a wide spread — but #1E1E1E, #262626 and #111 in dark,
+ * which is three shades of the same near-black and no rhythm at all. Pinning
+ * the greys keeps the light-to-dark beat identical in both themes.
  */
 const PANELS = [
-  { bg: 'bg-lavender', ink: 'text-ink' },
-  { bg: 'bg-ink', ink: 'text-bone' },
-  { bg: 'bg-acid', ink: 'text-ink' },
+  { bg: 'bg-surface', ink: 'text-body' },
   { bg: 'bg-grey', ink: 'text-ink' },
+  { bg: 'bg-ink', ink: 'text-bone' },
+  { bg: 'bg-grey-soft', ink: 'text-ink' },
 ];
+
+/*
+ * Two-tone panels: the launch's own colour ramped into a companion tone.
+ *
+ * Every panel gets one. The first attempt only gradiented launches whose logo
+ * held two chromatic colours, which turned out to be none of them — a logo is
+ * almost always one colour on white or black, and both neutrals are discarded
+ * before counting. So the far stop is derived from the primary instead, and the
+ * wall is consistent rather than three-in-thirty.
+ *
+ * This is the one soft edge in an otherwise entirely hard style, and it is a
+ * deliberate exception: it sits on the content layer, where the colour belongs
+ * to the product rather than to Deck. Every other surface stays flat.
+ *
+ * Flip to false for flat fills; nothing else changes.
+ */
+const GRADIENT_PANELS: boolean = true;
 
 interface LaunchWallProps {
   items: Item[];
@@ -134,20 +166,33 @@ function WallCard({
         narrow ? 'w-40 sm:w-48' : 'w-64 sm:w-[24rem] lg:w-[27rem]',
       )}
     >
-      {item.coverUrl ? (
-        <img src={item.coverUrl} alt="" loading="lazy" className="size-full object-cover" />
-      ) : (
-        <FlatPreview item={item} narrow={narrow} colour={colour} />
-      )}
+      {/*
+       * Always the colour panel — never the cover photo.
+       *
+       * The wall used to show `coverUrl` whenever a launch had one, which meant
+       * every panel was a different person's screenshot at a different crop,
+       * exposure and density. Thirty of those in a row is noise: the wall stopped
+       * reading as one surface and the launches with no cover looked unfinished
+       * beside the ones that had them. A cover is a screenshot of a product, and
+       * it belongs on the product's own page where somebody has chosen to look at
+       * it — the wall wants a colour and a name.
+       */}
+      <FlatPreview item={item} narrow={narrow} colour={colour} />
 
-      {/* Identity strip, revealed on hover so the resting state stays clean. */}
-      <div className="absolute inset-x-0 bottom-0 translate-y-full border-t-2 border-edge bg-surface px-3 py-2 transition-transform duration-[140ms] ease-[var(--ease-snap)] group-hover/card:translate-y-0 group-focus-visible/card:translate-y-0">
-        <p className="truncate font-display text-[13px] uppercase">{item.name}</p>
-        <p className="mt-0.5 flex items-center gap-2 font-mono text-[10px] font-bold uppercase text-muted">
-          <span className="truncate">{CATEGORY_LABELS[item.category]}</span>
-          <span aria-hidden="true">/</span>
-          <span className="shrink-0 tabular-nums">▲ {formatNumber(item.voteCount)}</span>
-        </p>
+      {/*
+       * Metadata strip, revealed on hover so the resting state stays clean.
+       *
+       * No longer repeats the name: the panel behind it now carries the logo and
+       * the name at the top, so printing it again 200px below was the same word
+       * twice on one card.
+       */}
+      <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center gap-2 border-t-2 border-edge bg-surface px-3 py-2 font-mono text-[10px] font-bold uppercase transition-transform duration-[140ms] ease-[var(--ease-snap)] group-hover/card:translate-y-0 group-focus-visible/card:translate-y-0">
+        <span className="min-w-0 truncate text-muted">
+          <CategoryLabel slug={item.category} />
+        </span>
+        <span className="ml-auto shrink-0 border-2 border-edge bg-surface-2 px-1.5 py-0.5 tabular-nums">
+          ▲ {formatNumber(item.voteCount)}
+        </span>
       </div>
     </Link>
   );
@@ -166,20 +211,87 @@ function FlatPreview({
   narrow: boolean;
   colour: { bg: string; ink: string };
 }) {
+  /*
+   * The launch supplies its own panel colour — chosen, or sampled from its logo.
+   *
+   * This is the one place an accent cannot argue with a product, because it IS
+   * the product's colour. Sampling was only ever a guess at what the maker would
+   * have picked, so a maker who picks explicitly overrides it. Falls back to the
+   * neutral cycle when there is neither: no chosen colour, and no logo or a
+   * greyscale one with no dominant hue to give.
+   */
+  const swatch = useWallColour(item.wallColour, item.logoUrl);
+
   return (
     <div
-      className={cn('relative flex size-full flex-col justify-between p-4', colour.bg, colour.ink)}
+      className={cn(
+        'relative flex size-full flex-col justify-between p-4',
+        !swatch && colour.bg,
+        !swatch && colour.ink,
+      )}
+      /* Inline because the value is computed per launch at runtime — there is
+         no class for "whatever colour this maker's logo happens to be". */
+      style={
+        swatch
+          ? {
+              /* 135° so the fall runs corner to corner rather than flat down —
+                 a vertical band reads as two stacked blocks, not one panel. */
+              background: GRADIENT_PANELS
+                ? `linear-gradient(135deg, ${swatch.hex}, ${swatch.gradientTo})`
+                : swatch.hex,
+              color: swatch.ink,
+            }
+          : undefined
+      }
     >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-halftone opacity-[0.12]"
       />
 
-      <div className="relative flex items-center gap-2">
-        <span className="flex size-5 items-center justify-center border-2 border-current font-mono text-[9px] font-bold">
-          {item.name.slice(0, 1)}
-        </span>
-        <span className="truncate font-mono text-[10px] font-bold uppercase tracking-[0.08em] opacity-90">
+      {/*
+       * The launch's actual mark, in a square, with its name beside it.
+       *
+       * This was a 20px box with the first letter of the name in it — a
+       * monogram standing in for a logo that was, in most cases, sitting
+       * uploaded and unused. The initial told a reader nothing they could not
+       * read from the name two millimetres to its right.
+       *
+       * `object-contain` on a bone tile, not `object-cover`: a logo is artwork
+       * with its own margins, and cropping one to fill a square cuts the mark.
+       * The tile is a fixed light neutral rather than transparent because most
+       * marks are drawn to sit on white, and a dark navy logo on a dark navy
+       * panel is a square of nothing.
+       */}
+      <div className="relative flex items-center gap-2.5">
+        {item.logoUrl ? (
+          <img
+            src={item.logoUrl}
+            alt=""
+            loading="lazy"
+            className={cn(
+              'shrink-0 border-2 border-current bg-bone object-contain p-1',
+              narrow ? 'size-9' : 'size-11',
+            )}
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className={cn(
+              'flex shrink-0 items-center justify-center border-2 border-current font-display uppercase',
+              narrow ? 'size-9 text-sm' : 'size-11 text-base',
+            )}
+          >
+            {item.name.slice(0, 2)}
+          </span>
+        )}
+
+        <span
+          className={cn(
+            'min-w-0 truncate font-display uppercase tracking-tight',
+            narrow ? 'text-sm' : 'text-base',
+          )}
+        >
           {item.name}
         </span>
       </div>
@@ -200,7 +312,7 @@ function FlatPreview({
               {PRICING_LABELS[item.pricing]}
             </span>
             <span className="border-2 border-current px-2 py-0.5 font-mono text-[10px] font-bold uppercase">
-              {CATEGORY_LABELS[item.category]}
+              <CategoryLabel slug={item.category} />
             </span>
           </div>
         )}

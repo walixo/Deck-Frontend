@@ -10,12 +10,12 @@ import { cn } from '@/lib/utils';
 /*
  * Inputs are inset blocks: 2px edge, no radius softening, and an inner hard
  * shadow so the field reads as a cut-out rather than a raised surface. On focus
- * the edge turns lavender and the inset shadow snaps off.
+ * the edge turns the accent colour and the inset shadow snaps off.
  */
 const CONTROL =
   'w-full rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm text-body ' +
   'shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] ' +
-  'placeholder:text-muted/70 focus:border-lavender focus:shadow-none focus:outline-none';
+  'placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none';
 
 // Invalid fields keep the ink edge; the inverted message below carries the signal.
 const INVALID = 'shadow-[inset_3px_3px_0_var(--edge)] focus:shadow-none';
@@ -45,7 +45,10 @@ function FieldShell({ label, htmlFor, hint, error, counter, children }: FieldShe
       {error ? (
         <p
           role="alert"
-          className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas"
+          /* Warning, not danger: a field that needs another look is not a
+             failure, and colouring it like one teaches people to panic at
+             typos. The invalid field itself still uses inversion. */
+          className="mt-1.5 inline-block border-2 border-edge bg-warning px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-ink"
         >
           {error}
         </p>
@@ -112,14 +115,14 @@ export function Select({ label, hint, error, options, className, ...props }: Sel
       <select
         id={id}
         aria-invalid={error ? true : undefined}
-        className={cn(CONTROL, 'cursor-pointer appearance-none pr-9', error && INVALID, className)}
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%238B72F0'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E\")",
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'right 0.7rem center',
-          backgroundSize: '1rem',
-        }}
+        className={cn(
+          CONTROL,
+          /* The arrow lives in CSS, not here: it is a background-image whose
+             fill has to be written out per theme. See `.select-chevron`. */
+          'select-chevron cursor-pointer appearance-none pr-9',
+          error && INVALID,
+          className,
+        )}
         {...props}
       >
         {options.map((option) => (
@@ -141,7 +144,7 @@ export function CharCount({ value, max }: { value: string; max: number }) {
         remaining < 0
           ? 'bg-edge px-1 text-canvas'
           : remaining < max * 0.15
-            ? 'text-lavender'
+            ? 'text-accent'
             : 'text-muted',
       )}
     >

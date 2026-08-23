@@ -40,6 +40,9 @@ export function SharePanel({ item }: { item: Item }) {
         tagline: item.tagline,
         voteCount: item.voteCount,
         logoUrl: item.logoUrl,
+        /* Host plus path, no scheme — the card is read, not clicked, so the
+           https:// is noise that costs width the slug could use. */
+        shareUrl: `${window.location.host.replace(/^www\./, '')}/item/${item.slug}`,
       });
       if (!blob) throw new Error('The card could not be drawn');
 

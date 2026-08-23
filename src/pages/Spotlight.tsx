@@ -25,7 +25,7 @@ export function Spotlight() {
       <PageBanner />
 
       <header className="mb-10">
-        <p className="mb-3 inline-block border-2 border-edge bg-acid px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
+        <p className="mb-3 inline-block border-2 border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
           Picks
         </p>
         <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">

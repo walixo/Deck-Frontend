@@ -4,17 +4,21 @@ type Pattern = 'grid' | 'halftone' | 'stripes';
 
 interface BackdropProps {
   pattern?: Pattern;
-  /** Flat colour blocks scattered behind the content. */
-  blocks?: boolean;
   className?: string;
 }
 
 /*
- * Decorative background. The style has no atmosphere — no blur, no glow, no
- * gradient — so depth comes from flat pattern and hard-edged colour blocks
- * instead. Always aria-hidden and non-interactive.
+ * Decorative background: a flat pattern, and nothing else.
+ *
+ * This used to scatter five rotated colour blocks behind the content as well.
+ * They were removed rather than hidden. On a site whose pages are mostly other
+ * people's logos, a scattering of saturated squares is one more thing competing
+ * with the products for attention — and unlike the products, it says nothing.
+ *
+ * The pattern stays because it is texture rather than colour: `--edge` at 7%,
+ * so it reads as paper stock behind the page and never as a coloured shape.
  */
-export function Backdrop({ pattern = 'grid', blocks = false, className }: BackdropProps) {
+export function Backdrop({ pattern = 'grid', className }: BackdropProps) {
   return (
     <div
       aria-hidden="true"
@@ -28,17 +32,6 @@ export function Backdrop({ pattern = 'grid', blocks = false, className }: Backdr
           pattern === 'stripes' && 'bg-stripes',
         )}
       />
-
-      {blocks && (
-        <>
-          {/* Hard-edged shapes, rotated off-axis so they read as deliberate. */}
-          <div className="absolute -left-10 top-8 size-28 rotate-12 border-2 border-edge bg-acid" />
-          <div className="absolute -right-8 top-24 size-20 -rotate-6 border-2 border-edge bg-lavender" />
-          <div className="absolute right-[12%] top-4 size-12 rotate-[18deg] border-2 border-edge bg-grey" />
-          <div className="absolute bottom-6 left-[18%] size-14 rotate-[24deg] border-2 border-edge bg-edge" />
-          <div className="absolute bottom-16 right-[22%] size-10 -rotate-12 border-2 border-edge bg-surface" />
-        </>
-      )}
     </div>
   );
 }
@@ -54,7 +47,10 @@ export function PageBanner({ className }: { className?: string }) {
       )}
     >
       <div className="absolute inset-0 bg-halftone text-edge opacity-[0.09]" />
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-lavender" />
+      {/* A hairline rule with no border of its own, so it takes the themed
+          mark — a 6px lime bar on the bone canvas is 1.15:1 and reads as
+          nothing at all. */}
+      <div className="absolute inset-x-0 top-0 h-1.5 bg-accent" />
     </div>
   );
 }

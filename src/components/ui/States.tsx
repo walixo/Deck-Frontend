@@ -65,7 +65,7 @@ export function InlineAlert({
   children: ReactNode;
   tone?: 'error' | 'success';
 }) {
-  const styles = tone === 'error' ? 'bg-edge text-canvas' : 'bg-acid text-ink';
+  const styles = tone === 'error' ? 'bg-edge text-canvas' : 'bg-deep text-on-deep';
 
   return (
     <div

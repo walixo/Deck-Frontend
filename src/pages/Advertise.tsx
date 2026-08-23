@@ -16,11 +16,11 @@ import type { AdCampaign, AdPhase } from '@/types';
 const PHASE: Record<AdPhase, { label: string; tone: string }> = {
   pending_review: { label: 'In review', tone: 'bg-grey text-ink' },
   rejected: { label: 'Not accepted', tone: 'bg-edge text-canvas' },
-  awaiting_payment: { label: 'Ready to pay', tone: 'bg-lavender text-ink' },
+  awaiting_payment: { label: 'Ready to pay', tone: 'bg-pop text-on-pop' },
   scheduled: { label: 'Scheduled', tone: 'bg-surface-2 text-muted' },
-  running: { label: 'Running', tone: 'bg-acid text-ink' },
+  running: { label: 'Running', tone: 'bg-deep text-on-deep' },
   finished: { label: 'Finished', tone: 'bg-surface-2 text-muted' },
-  live: { label: 'Live', tone: 'bg-acid text-ink' },
+  live: { label: 'Live', tone: 'bg-deep text-on-deep' },
   cancelled: { label: 'Cancelled', tone: 'bg-edge text-canvas' },
 };
 
@@ -82,7 +82,7 @@ export function Advertise() {
       <PageBanner />
 
       <header className="mb-10">
-        <p className="mb-3 inline-block border-2 border-edge bg-lavender px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-ink">
+        <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
           Advertise
         </p>
         <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
@@ -200,7 +200,7 @@ export function Advertise() {
 
             {/* The price is quoted from the server's own rate card, so what is
                 shown here is what will be charged. */}
-            <div className="border-2 border-edge bg-lavender px-4 py-3 text-ink">
+            <div className="border-2 border-edge bg-pop px-4 py-3 text-on-pop">
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em]">
                 {days} days on {placement}
               </p>

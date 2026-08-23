@@ -16,7 +16,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       className={cn(
         'relative flex size-9 items-center justify-center overflow-hidden rounded-slab border-2 border-edge bg-surface text-body shadow-hard-sm',
         'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
-        'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-acid hover:text-ink hover:shadow-hard',
+        'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard',
         'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
         className,
       )}

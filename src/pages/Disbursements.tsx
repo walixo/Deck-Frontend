@@ -42,7 +42,7 @@ export function Disbursements() {
         />
       ) : (
         <>
-          <div className="mb-6 border-2 border-edge bg-lavender px-4 py-4 text-ink shadow-hard">
+          <div className="mb-6 border-2 border-edge bg-pop px-4 py-4 text-on-pop shadow-hard">
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
               Outstanding across {owed.meta.sellers}{' '}
               {owed.meta.sellers === 1 ? 'seller' : 'sellers'}

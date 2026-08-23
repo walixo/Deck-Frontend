@@ -136,7 +136,7 @@ export function MerchDetail() {
                       className={cn(
                         'block border-2 transition-transform duration-[120ms] hover:-translate-y-0.5',
                         index === activeImage
-                          ? 'border-lavender'
+                          ? 'border-accent'
                           : 'border-edge opacity-60 hover:opacity-100',
                       )}
                     >
@@ -151,7 +151,7 @@ export function MerchDetail() {
           {/* Detail + buy */}
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              {product.featured && <Badge tone="accent">★ Pick</Badge>}
+              {product.featured && <Badge tone="pop">★ Pick</Badge>}
               {product.soldOut && <Badge tone="invert">Sold out</Badge>}
             </div>
 
@@ -187,8 +187,8 @@ export function MerchDetail() {
                             ? // Sold-out options stay visible but struck through.
                               'cursor-not-allowed bg-surface-2 text-muted line-through opacity-60'
                             : isSelected
-                              ? 'bg-lavender text-ink shadow-hard-sm'
-                              : 'bg-surface hover:-translate-y-0.5 hover:bg-acid hover:text-ink hover:shadow-hard-sm',
+                              ? 'bg-pop text-on-pop shadow-hard-sm'
+                              : 'bg-surface hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard-sm',
                         )}
                       >
                         {label}
@@ -200,7 +200,7 @@ export function MerchDetail() {
             )}
 
             {selected && selected.inStock && selected.stock <= 5 && (
-              <p className="mt-3 inline-block border-2 border-edge bg-acid px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-ink">
+              <p className="mt-3 inline-block border-2 border-edge bg-deep px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-on-deep">
                 Only {selected.stock} left
               </p>
             )}

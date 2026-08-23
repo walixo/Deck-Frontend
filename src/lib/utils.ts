@@ -37,8 +37,22 @@ export const PRICING_LABELS: Record<PricingModel, string> = {
  * needing an image. Flat fills, never gradients: the style has no depth cues
  * other than the hard shadow.
  *
- * Each entry pairs a background with the ink that stays legible on it, since
- * acid green needs black type while lavender needs white.
+ * Every entry is a NEUTRAL. That is the whole point of the list now, and it is
+ * worth stating plainly because it used to be the opposite.
+ *
+ * These fills sit on the content layer — behind a launch's monogram, under a
+ * merch card, along the edge of a profile. Deck's pages are mostly other
+ * people's logos, in whatever colours those people chose. A saturated tile
+ * assigned by hashing a slug has no relationship to the product sitting on it,
+ * so at best it is arbitrary and at worst it clashes with the very thing the
+ * page exists to show.
+ *
+ * So the content layer is greyscale and the accents live in the chrome —
+ * buttons, focus, active states — where they mean something. The colour a
+ * visitor sees on a launch page should be the maker's, not Deck's.
+ *
+ * Four steps rather than five, and ordered light-to-dark so adjacent items in a
+ * list stay distinguishable while none of them shouts.
  */
 export interface FlatColour {
   bg: string;
@@ -46,11 +60,10 @@ export interface FlatColour {
 }
 
 const FLAT_COLOURS: FlatColour[] = [
-  { bg: 'bg-lavender', ink: 'text-ink' },
-  { bg: 'bg-acid', ink: 'text-ink' },
-  { bg: 'bg-ink', ink: 'text-bone' },
+  { bg: 'bg-surface-2', ink: 'text-body' },
+  { bg: 'bg-grey-soft', ink: 'text-ink' },
   { bg: 'bg-grey', ink: 'text-ink' },
-  { bg: 'bg-bone', ink: 'text-ink' },
+  { bg: 'bg-ink', ink: 'text-bone' },
 ];
 
 function hashOf(seed: string): number {
@@ -135,8 +148,11 @@ export function prettyUrl(url: string): string {
 
 /** Flat medal fills for the top three. Rank badges are solid blocks, not metal. */
 export const MEDAL_STYLES: Record<number, string> = {
-  1: 'bg-acid text-ink',
-  2: 'bg-lavender text-ink',
+  /* First place takes the bright half of the pair, not the dark one — the
+     accent it replaced was a bright orange, and a podium that gets duller as
+     you climb it reads backwards. */
+  1: 'bg-pop text-on-pop',
+  2: 'bg-deep text-on-deep',
   3: 'bg-edge text-canvas',
 };
 
@@ -191,8 +207,32 @@ export function orderStatusLabel(status: string): string {
 /** Flat block styling per order status, in the two-accent palette. */
 export const ORDER_STATUS_TONE: Record<string, string> = {
   awaiting_payment: 'bg-surface-2 text-body',
-  paid: 'bg-acid text-ink',
-  shipped: 'bg-lavender text-ink',
-  delivered: 'bg-lavender text-ink',
+  paid: 'bg-deep text-on-deep',
+  shipped: 'bg-pop text-on-pop',
+  delivered: 'bg-pop text-on-pop',
   cancelled: 'bg-edge text-canvas',
 };
+
+/**
+ * How much of a launch's edit window is left.
+ *
+ * Derived from the server's `editableUntil` rather than recomputed from the
+ * launch date and a duplicated constant — the window length lives in the
+ * backend's env, and a second copy here would disagree the moment it changed.
+ */
+export function editWindow(editableUntil: string | undefined): {
+  open: boolean;
+  label: string;
+} {
+  if (!editableUntil) return { open: false, label: '' };
+
+  const remaining = new Date(editableUntil).getTime() - Date.now();
+  if (remaining <= 0) return { open: false, label: '' };
+
+  const minutes = Math.ceil(remaining / 60_000);
+  if (minutes < 60) return { open: true, label: `${minutes} min` };
+
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return { open: true, label: rest ? `${hours}h ${rest}m` : `${hours}h` };
+}

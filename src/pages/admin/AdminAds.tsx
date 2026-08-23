@@ -88,7 +88,7 @@ function ReviewCard({ campaign }: { campaign: AdCampaign }) {
             <h3 className="font-display text-base uppercase leading-tight">{campaign.headline}</h3>
             <p className="mt-1 text-sm leading-relaxed text-muted text-pretty">{campaign.body}</p>
           </div>
-          <span className="shrink-0 border-2 border-edge bg-lavender px-3.5 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-ink">
+          <span className="shrink-0 border-2 border-edge bg-pop px-3.5 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-on-pop">
             {campaign.ctaLabel}
           </span>
         </div>

@@ -9,7 +9,8 @@ import { ItemCardSkeletonList } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useItems } from '@/hooks/useItems';
 import { useCategories } from '@/hooks/useMeta';
-import { cn, CATEGORY_PLURAL, PRICING_LABELS } from '@/lib/utils';
+import { CategoryLabel } from '@/components/illustrations/CategoryIcon';
+import { cn, PRICING_LABELS } from '@/lib/utils';
 import type { Category, PricingModel, SortOption } from '@/types';
 
 const SORTS: { value: SortOption; label: string }[] = [
@@ -82,7 +83,7 @@ export function Discover() {
             type="search"
             defaultValue={search}
             placeholder="SEARCH BY NAME, TAGLINE OR TAG"
-            className="h-12 w-full rounded-slab border-2 border-edge bg-surface px-4 font-mono text-[12px] font-bold uppercase tracking-[0.06em] shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-lavender focus:shadow-none focus:outline-none"
+            className="h-12 w-full rounded-slab border-2 border-edge bg-surface px-4 font-mono text-[12px] font-bold uppercase tracking-[0.06em] shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none"
           />
         </label>
         <Button type="submit" size="lg">
@@ -102,7 +103,7 @@ export function Discover() {
             onClick={() => update({ category: entry.slug })}
           >
             <CategoryIcon category={entry.slug} className="size-4" />
-            {CATEGORY_PLURAL[entry.slug]}
+            {entry.label}
             <span className="tabular-nums opacity-60">{entry.count}</span>
           </FilterPill>
         ))}
@@ -123,7 +124,7 @@ export function Discover() {
                 className={cn(
                   'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
                   sort === option.value
-                    ? 'bg-lavender text-ink'
+                    ? 'bg-pop text-on-pop'
                     : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                 )}
               >
@@ -146,7 +147,7 @@ export function Discover() {
               className={cn(
                 'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
                 pricing === option
-                  ? 'bg-acid text-ink'
+                  ? 'bg-deep text-on-deep'
                   : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
               )}
             >
@@ -166,7 +167,7 @@ export function Discover() {
           )}
           {category && (
             <RemovableChip onRemove={() => update({ category: undefined })}>
-              {CATEGORY_PLURAL[category]}
+              <CategoryLabel slug={category} />
             </RemovableChip>
           )}
           {pricing && (
@@ -262,7 +263,7 @@ function FilterPill({
       className={cn(
         'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-2 border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
         'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
-        active ? 'bg-lavender text-ink shadow-hard-sm' : 'bg-surface text-body',
+        active ? 'bg-pop text-on-pop shadow-hard-sm' : 'bg-surface text-body',
       )}
     >
       {children}

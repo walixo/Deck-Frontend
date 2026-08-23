@@ -10,6 +10,7 @@ import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useMeta';
 import { colourFor, formatFullDate, formatNumber, prettyUrl } from '@/lib/utils';
+import { VerifiedMark } from '@/components/ui/VerifiedMark';
 
 export function Profile() {
   const { username = '' } = useParams();
@@ -70,7 +71,10 @@ export function Profile() {
             <Avatar user={user} size="xl" className="animate-[var(--animate-slam)]" />
 
             <div className="min-w-0 flex-1 animate-[var(--animate-slide-up)]">
-              <h1 className="display-tight text-4xl uppercase">{user.name}</h1>
+              <h1 className="display-tight text-4xl uppercase">
+                {user.name}
+                {user.verified && <VerifiedMark name={user.name} size="md" className="ml-2" />}
+              </h1>
               <p className="mt-1.5 font-mono text-[12px] font-bold uppercase text-muted">
                 @{user.username}
               </p>
@@ -90,7 +94,7 @@ export function Profile() {
                     href={user.websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-body underline-offset-4 hover:text-lavender hover:underline"
+                    className="text-body underline-offset-4 hover:text-accent hover:underline"
                   >
                     {prettyUrl(user.websiteUrl)} ↗
                   </a>

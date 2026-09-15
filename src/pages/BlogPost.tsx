@@ -13,7 +13,7 @@ export function BlogPost() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <Skeleton className="h-12 w-3/4" />
         <Skeleton className="mt-6 h-64 w-full" />
       </div>
@@ -40,10 +40,10 @@ export function BlogPost() {
 
   return (
     <article>
-      <header className="relative isolate overflow-hidden border-b-2 border-edge">
+      <header className="relative isolate overflow-hidden border-b border-edge">
         <Backdrop pattern="halftone" />
 
-        <div className="relative mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="relative mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-6">
             <Link
               to="/blog"
@@ -56,12 +56,12 @@ export function BlogPost() {
           {/* Staff see drafts here; readers get a 404 instead, so this chip only
               ever appears for somebody who can act on it. */}
           {post.status === 'draft' && (
-            <p className="mb-4 inline-block border-2 border-edge bg-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-canvas">
+            <p className="mb-4 inline-block border border-edge bg-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-canvas">
               Draft — only staff can see this
             </p>
           )}
 
-          <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
+          <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
             {post.title}
           </h1>
 
@@ -95,12 +95,12 @@ export function BlogPost() {
           <img
             src={post.coverUrl}
             alt=""
-            className="aspect-[3/1] w-full border-2 border-edge object-cover shadow-hard"
+            className="aspect-[3/1] w-full border border-edge object-cover shadow-hard"
           />
         </div>
       )}
 
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         {/*
          * Blank-line-separated plain text, the same convention a launch
          * description uses. Deliberately not markdown: rendering user-authored
@@ -118,12 +118,12 @@ export function BlogPost() {
         </div>
 
         {post.tags.length > 0 && (
-          <div className="mt-10 flex flex-wrap gap-2 border-t-2 border-edge pt-6">
+          <div className="mt-10 flex flex-wrap gap-2 border-t border-edge pt-6">
             {post.tags.map((tag) => (
               <Link
                 key={tag}
                 to={`/blog?tag=${encodeURIComponent(tag)}`}
-                className="border-2 border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-deep hover:text-on-deep"
+                className="border border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-deep hover:text-on-deep"
               >
                 {tag}
               </Link>

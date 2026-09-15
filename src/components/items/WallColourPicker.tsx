@@ -68,7 +68,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
           onClick={() => onChange('')}
           aria-pressed={auto}
           className={cn(
-            'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
+            'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
             auto ? 'bg-pop text-on-pop' : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
           )}
         >
@@ -89,7 +89,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
                  thing being chosen. A ring outside the border says "this one"
                  without touching the colour. */
               className={cn(
-                'size-8 border-2 border-edge transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
+                'size-8 border border-edge transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
                 active && 'outline outline-2 outline-offset-2 outline-edge',
               )}
               style={{ background: preset }}
@@ -119,7 +119,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
             spellCheck={false}
             maxLength={7}
             aria-invalid={Boolean(error) || undefined}
-            className="mt-1 h-10 w-32 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+            className="mt-1 h-10 w-32 border border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
           />
         </div>
 
@@ -127,7 +127,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
             its companion tone, and a label in the ink that pairs with it. */}
         <div
           aria-hidden="true"
-          className="flex h-10 min-w-36 items-center gap-2 border-2 border-edge px-3"
+          className="flex h-10 min-w-36 items-center gap-2 border border-edge px-3"
           style={
             swatch
               ? {

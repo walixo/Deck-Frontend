@@ -284,6 +284,8 @@ export interface ItemFilters {
   tag?: string;
   featured?: boolean;
   futureGen?: boolean;
+  /** A year, month or day — `2026`, `2026-08`, `2026-08-15`. */
+  on?: string;
   page?: number;
   limit?: number;
 }
@@ -468,6 +470,16 @@ export const AUDIT_ACTIONS = [
   'topic.deleted',
   'topic.moderated',
   'reply.deleted',
+  'acquisition.approved',
+  'acquisition.rejected',
+  'acquisition.sold',
+  'acquisition.removed',
+  'custom.approved',
+  'custom.rejected',
+  'game.approved',
+  'game.rejected',
+  'game.edited',
+  'game.removed',
   'ad.approved',
   'ad.rejected',
 ] as const;
@@ -494,7 +506,9 @@ export interface AuditEvent {
     | 'comment'
     | 'ad'
     | 'post'
-    | 'topic';
+    | 'topic'
+    | 'acquisition'
+    | 'custom';
   targetId: string;
   targetLabel: string;
   summary: string;
@@ -748,6 +762,8 @@ export interface TopicSummary {
   id: string;
   title: string;
   slug: string;
+  /** The opening of the post, trimmed server-side. Empty for a very short one. */
+  excerpt: string;
   section: TopicSection;
   replyCount: number;
   lastReplyAt: string;
@@ -775,4 +791,270 @@ export interface TopicDraft {
   title: string;
   body: string;
   section: TopicSection;
+}
+
+/* --------------------------------------------------------- acquisitions --- */
+
+export type AcquisitionStatus = 'pending' | 'approved' | 'rejected' | 'sold' | 'withdrawn';
+
+export const ACQUISITION_ASSETS = [
+  'source',
+  'domain',
+  'users',
+  'revenue',
+  'brand',
+  'socials',
+  'contracts',
+  'support',
+] as const;
+export type AcquisitionAsset = (typeof ACQUISITION_ASSETS)[number];
+
+/** What each included asset means, in the buyer's words rather than the seller's. */
+export const ASSET_LABELS: Record<AcquisitionAsset, string> = {
+  source: 'Source code',
+  domain: 'Domain name',
+  users: 'User accounts',
+  revenue: 'Revenue',
+  brand: 'Brand & assets',
+  socials: 'Social accounts',
+  contracts: 'Customer contracts',
+  support: 'Handover support',
+};
+
+/** The launch being sold, trimmed to what a listing card draws. */
+export interface AcquisitionItemRef {
+  name: string;
+  slug: string;
+  tagline?: string;
+  logoUrl?: string;
+  category?: string;
+  wallColour?: string;
+  voteCount: number;
+}
+
+export interface AcquisitionSummary {
+  id: string;
+  slug: string;
+  status: AcquisitionStatus;
+  /** The asking price. The figure the board sets in display type. */
+  askingMinor: number;
+  currency: string;
+  negotiable: boolean;
+  assets: AcquisitionAsset[];
+  monthlyRevenueMinor: number;
+  monthlyCostMinor: number;
+  activeUsers: number;
+  bidCount: number;
+  /** Zero when nobody has bid. Never the list — see the note on the Bid model. */
+  highestBidMinor: number;
+  /** Deck's commission, and what it comes to at the asking price. */
+  feePercent: number;
+  feeMinor: number;
+  /** What the seller keeps at the asking price. */
+  netMinor: number;
+  soldAt: string | null;
+  soldMinor: number;
+  createdAt: string;
+  item: AcquisitionItemRef | null;
+  seller: PublicUser | null;
+}
+
+export interface Bid {
+  id: string;
+  amountMinor: number;
+  currency: string;
+  message: string;
+  status: 'active' | 'withdrawn' | 'accepted' | 'declined';
+  createdAt: string;
+  bidder: PublicUser | null;
+}
+
+export interface AcquisitionDetail extends AcquisitionSummary {
+  reason: string;
+  notes?: string;
+  reviewNote?: string;
+  appliedAt: string;
+  reviewedAt: string | null;
+  soldFeeMinor: number;
+  /** Only ever populated for the seller and staff. Empty for everybody else. */
+  bids: Bid[];
+  /** Your own live offer, so a buyer can always see what they said. */
+  yourBid: Bid | null;
+}
+
+export interface AcquisitionDraft {
+  asking: number;
+  negotiable: boolean;
+  reason: string;
+  assets: AcquisitionAsset[];
+  monthlyRevenue: number;
+  monthlyCost: number;
+  activeUsers: number;
+  notes?: string;
+}
+
+/** The admin queue's shape. */
+export interface AcquisitionQueue {
+  pending: AcquisitionDetail[];
+  live: AcquisitionSummary[];
+  sold: AcquisitionSummary[];
+  totals: {
+    feePercent: number;
+    listedMinor: number;
+    soldMinor: number;
+    earnedMinor: number;
+    openBids: number;
+  };
+}
+
+/* --------------------------------------------------- custom print jobs --- */
+
+export const CUSTOM_PRODUCTS = ['sticker', 'sticker-sheet', 'tee', 'hoodie'] as const;
+export type CustomProduct = (typeof CUSTOM_PRODUCTS)[number];
+
+export const CUSTOM_PLACEMENTS = ['centre-chest', 'left-chest', 'full-front', 'back'] as const;
+export type CustomPlacement = (typeof CUSTOM_PLACEMENTS)[number];
+
+export const PLACEMENT_LABELS: Record<CustomPlacement, string> = {
+  'centre-chest': 'Centre chest',
+  'left-chest': 'Left chest',
+  'full-front': 'Full front',
+  back: 'Back',
+};
+
+export type CustomStatus = 'draft' | 'submitted' | 'approved' | 'rejected';
+
+/** What Deck measured in the uploaded file. See services/artwork on the server. */
+export interface ArtworkAnalysis {
+  width: number;
+  height: number;
+  maxInchesAtGoodDpi: number;
+  transparent: boolean;
+  inkCoverage: number;
+  dominantHex: string;
+  luminance: number;
+  suggestedGarments: string[];
+  warnings: string[];
+}
+
+export interface Garment {
+  id: string;
+  label: string;
+  hex: string;
+}
+
+/** The reply to POST /custom/inspect: everything the picker needs to render. */
+export interface ArtworkInspection {
+  analysis: ArtworkAnalysis;
+  pricing: Record<
+    CustomProduct,
+    { baseMinor: number; label: string; apparel: boolean; priceMinor: number; currency: string }
+  >;
+  garments: Garment[];
+  sizes: string[];
+  /** False when no image provider is configured — the page hides the offer. */
+  lifestyleAvailable: boolean;
+}
+
+export interface CustomDesign {
+  id: string;
+  reference: string;
+  name: string;
+  artworkUrl: string;
+  analysis: ArtworkAnalysis;
+  product: CustomProduct;
+  garment: string;
+  placement: CustomPlacement;
+  scale: number;
+  size?: string;
+  /** An AI-generated scene. Illustrative — never the print proof. */
+  lifestyleUrl?: string;
+  priceMinor: number;
+  currency: string;
+  status: CustomStatus;
+  reviewNote?: string;
+  reviewedAt: string | null;
+  createdAt: string;
+  /** Populated only on the staff queue. */
+  owner: PublicUser | null;
+}
+
+export interface CustomDesignDraft {
+  artworkUrl: string;
+  name: string;
+  product: CustomProduct;
+  garment: string;
+  placement: CustomPlacement;
+  scale: number;
+  size?: string;
+}
+
+export interface CustomQueue {
+  submitted: CustomDesign[];
+  approved: CustomDesign[];
+  rejected: CustomDesign[];
+}
+
+/* ---------------------------------------------------------------- arcade */
+
+export const GAME_GENRES = ['arcade', 'puzzle', 'action', 'strategy', 'idle', 'other'] as const;
+export type GameGenre = (typeof GAME_GENRES)[number];
+
+export const GAME_GENRE_LABELS: Record<GameGenre, string> = {
+  arcade: 'Arcade',
+  puzzle: 'Puzzle',
+  action: 'Action',
+  strategy: 'Strategy',
+  idle: 'Idle',
+  other: 'Other',
+};
+
+export interface GameSummary {
+  id: string;
+  title: string;
+  slug: string;
+  tagline: string;
+  genre: GameGenre;
+  coverUrl: string;
+  /** `builtin` runs in this bundle; `external` lives at somebody else's URL. */
+  kind: 'builtin' | 'external';
+  /** For `builtin`: the key `GAME_COMPONENTS` maps to a component. */
+  component: string | null;
+  playUrl: string | null;
+  embeddable: boolean;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewNote: string;
+  plays: number;
+  featured: boolean;
+  createdAt: string;
+  author: PublicUser | null;
+}
+
+export interface GameDetail extends GameSummary {
+  description: string;
+}
+
+export interface GameDraft {
+  title: string;
+  tagline: string;
+  description: string;
+  genre: GameGenre;
+  coverUrl?: string;
+  playUrl: string;
+}
+
+export interface ScoreRow {
+  id: string;
+  rank: number;
+  score: number;
+  achievedAt: string;
+  player: PublicUser | null;
+}
+
+export interface Leaderboard {
+  scores: ScoreRow[];
+  /** Everyone who has ever posted a score, not just the ten shown. */
+  players: number;
+  /** The signed-in reader's own standing, if they have one. */
+  you: { rank: number; score: number } | null;
 }

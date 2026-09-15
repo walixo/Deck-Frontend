@@ -12,7 +12,7 @@ export function RequireAuth() {
         <span
           role="status"
           aria-label="Checking your session"
-          className="size-6 animate-spin border-2 border-edge border-t-transparent"
+          className="size-6 animate-spin border border-edge border-t-transparent"
         />
       </div>
     );

@@ -13,13 +13,16 @@ import { colourFor, formatFullDate, formatNumber, prettyUrl } from '@/lib/utils'
 import { VerifiedMark } from '@/components/ui/VerifiedMark';
 
 export function Profile() {
-  const { username = '' } = useParams();
+  /* The route is `/:handle` and the handle carries its `@` — see `App.tsx`,
+     which is also what guarantees the sigil is there before this renders. */
+  const { handle = '' } = useParams();
+  const username = handle.slice(1);
   const { data, isLoading, isError, error, refetch } = useProfile(username);
   const { user: viewer } = useAuth();
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex gap-5">
           <Skeleton className="size-20" />
           <div className="flex-1 space-y-3">
@@ -58,12 +61,12 @@ export function Profile() {
 
   return (
     <div>
-      <header className="relative isolate overflow-hidden border-b-2 border-edge">
+      <header className="relative isolate overflow-hidden border-b border-edge">
         <Backdrop pattern="halftone" />
         {/* Flat colour bar keyed to the username, on the header's bottom edge. */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-x-0 bottom-0 h-2 border-t-2 border-edge ${colourFor(user.username).bg}`}
+          className={`pointer-events-none absolute inset-x-0 bottom-0 h-2 border-t border-edge ${colourFor(user.username).bg}`}
         />
 
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
@@ -71,7 +74,7 @@ export function Profile() {
             <Avatar user={user} size="xl" className="animate-[var(--animate-slam)]" />
 
             <div className="min-w-0 flex-1 animate-[var(--animate-slide-up)]">
-              <h1 className="display-tight text-4xl uppercase">
+              <h1 className="display-tight text-3xl uppercase">
                 {user.name}
                 {user.verified && <VerifiedMark name={user.name} size="md" className="ml-2" />}
               </h1>
@@ -121,7 +124,7 @@ export function Profile() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Above the launches: what someone has earned says more about who they
             are here than a list of what they posted. */}
         <div className="mb-12">

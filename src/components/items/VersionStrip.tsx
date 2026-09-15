@@ -25,7 +25,7 @@ export function VersionStrip({ versions, totals }: VersionStripProps) {
   return (
     <section
       aria-labelledby="versions-heading"
-      className="rounded-slab border-2 border-edge bg-surface p-5 shadow-hard"
+      className="rounded-slab border border-edge bg-surface p-5 shadow-hard"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2
@@ -55,14 +55,14 @@ export function VersionStrip({ versions, totals }: VersionStripProps) {
               {/* The current version is not a link to itself: a row that looks
                   clickable and goes nowhere is worse than a row that does not. */}
               {version.current ? (
-                <div className="flex items-center gap-3 border-2 border-accent bg-surface-2 px-3 py-2">
+                <div className="flex items-center gap-3 border border-accent bg-surface-2 px-3 py-2">
                   <VersionChip label={label} current />
                   <VersionMeta version={version} />
                 </div>
               ) : (
                 <Link
                   to={`/item/${version.slug}`}
-                  className="flex items-center gap-3 border-2 border-edge bg-canvas px-3 py-2 transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm"
+                  className="flex items-center gap-3 border border-edge bg-canvas px-3 py-2 transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm"
                 >
                   <VersionChip label={label} />
                   <VersionMeta version={version} />
@@ -80,7 +80,7 @@ function VersionChip({ label, current = false }: { label: string; current?: bool
   return (
     <span
       className={cn(
-        'shrink-0 border-2 border-edge px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.04em]',
+        'shrink-0 border border-edge px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.04em]',
         current ? 'bg-pop text-on-pop' : 'bg-surface-2 text-body',
       )}
     >

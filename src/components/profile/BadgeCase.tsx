@@ -33,7 +33,7 @@ export function BadgeCase({ badges }: { badges: ProfileBadge[] }) {
   const earned = badges.filter((badge) => badge.earned);
 
   return (
-    <details className="group rounded-slab border-2 border-edge bg-surface shadow-hard">
+    <details className="group rounded-slab border border-edge bg-surface shadow-hard">
       <summary
         className={cn(
           'flex cursor-pointer list-none items-center gap-3 p-4',
@@ -52,7 +52,7 @@ export function BadgeCase({ badges }: { badges: ProfileBadge[] }) {
               <span
                 key={badge.id}
                 className={cn(
-                  'flex size-6 items-center justify-center border-2 border-edge',
+                  'flex size-6 items-center justify-center border border-edge',
                   art.tone,
                 )}
               >
@@ -72,7 +72,7 @@ export function BadgeCase({ badges }: { badges: ProfileBadge[] }) {
         />
       </summary>
 
-      <ul className="grid gap-2 border-t-2 border-edge p-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-2 border-t border-edge p-4 sm:grid-cols-2 lg:grid-cols-3">
         {badges.map((badge) => (
           <li key={badge.id}>
             <Tile badge={badge} />
@@ -91,7 +91,7 @@ function Tile({ badge }: { badge: ProfileBadge }) {
   return (
     <div
       className={cn(
-        'flex h-full items-start gap-3 border-2 border-edge p-3',
+        'flex h-full items-start gap-3 border border-edge p-3',
         badge.earned ? 'bg-surface shadow-hard-sm' : 'bg-surface-2',
       )}
       /* One label for the whole tile, so an unearned badge is never announced
@@ -105,7 +105,7 @@ function Tile({ badge }: { badge: ProfileBadge }) {
       <span
         aria-hidden="true"
         className={cn(
-          'flex size-10 shrink-0 items-center justify-center border-2 border-edge',
+          'flex size-10 shrink-0 items-center justify-center border border-edge',
           badge.earned ? cn(art.tone, 'shadow-hard-sm') : 'bg-surface',
         )}
       >

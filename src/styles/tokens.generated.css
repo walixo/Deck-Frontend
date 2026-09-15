@@ -3,9 +3,9 @@
 
 @layer base {
   :root {
-    --canvas: #faf9f5;
+    --canvas: #ffffff;
     --surface: #ffffff;
-    --surface-2: #efede6;
+    --surface-2: #f2f0ea;
     --edge: #111111;
     --body-ink: #111111;
     --muted-ink: #55534e;
@@ -156,6 +156,30 @@
     --accent: #74b9ff;
     --color-accent: var(--accent);
   }
+
+  /* Mono / Ink */
+  [data-palette='mono-ink'] {
+    --accent: #5c5c5c;
+    --pop: #8a8a8a;
+    --pop-hover: #7f7f7f;
+    --on-pop: #111111;
+    --deep: #1c1c1c;
+    --deep-hover: #333333;
+    --on-deep: #f2f2f2;
+    --color-accent: var(--accent);
+    --color-pop: var(--pop);
+    --color-pop-hover: var(--pop-hover);
+    --color-on-pop: var(--on-pop);
+    --color-deep: var(--deep);
+    --color-deep-hover: var(--deep-hover);
+    --color-on-deep: var(--on-deep);
+  }
+
+  .dark [data-palette='mono-ink'],
+  [data-palette='mono-ink'].dark {
+    --accent: #a5a5a5;
+    --color-accent: var(--accent);
+  }
 }
 
 @theme {
@@ -283,5 +307,18 @@
   .dark [data-palette='cobalt-navy'] .select-chevron,
   [data-palette='cobalt-navy'] .dark .select-chevron {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2374b9ff'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
+  }
+
+  /* Mono / Ink */
+  [data-palette='mono-ink'] .select-chevron {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%235c5c5c'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1rem;
+  }
+
+  .dark [data-palette='mono-ink'] .select-chevron,
+  [data-palette='mono-ink'] .dark .select-chevron {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a5a5a5'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
   }
 }

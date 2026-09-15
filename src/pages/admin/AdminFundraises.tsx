@@ -34,7 +34,7 @@ export function AdminFundraises() {
           next to what has already been approved and how it is going. */}
       {data && data.approved.length > 0 && (
         <section>
-          <h2 className="mb-3 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
             Money in flight
           </h2>
           <dl className="grid gap-3 sm:grid-cols-4">
@@ -47,7 +47,7 @@ export function AdminFundraises() {
       )}
 
       <section>
-        <h2 className="mb-3 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
           {data ? `${data.pending.length} waiting on a decision` : 'Waiting on a decision'}
         </h2>
 
@@ -73,7 +73,7 @@ export function AdminFundraises() {
 
       {data && data.approved.length > 0 && (
         <section>
-          <h2 className="mb-3 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
             {data.approved.length} approved
           </h2>
           <ul className="space-y-2">
@@ -89,7 +89,7 @@ export function AdminFundraises() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-2 border-edge bg-surface px-4 py-3 shadow-hard-sm">
+    <div className="border border-edge bg-surface px-4 py-3 shadow-hard-sm">
       <dd className="font-display text-xl tabular-nums">{value}</dd>
       <dt className="mt-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
         {label}
@@ -108,7 +108,7 @@ function Stat({ label, value }: { label: string; value: string }) {
  */
 function ApprovedRow({ row }: { row: FundraiseApplicationRow }) {
   return (
-    <li className="rounded-slab border-2 border-edge bg-surface p-3 shadow-hard-sm">
+    <li className="rounded-slab border border-edge bg-surface p-3 shadow-hard-sm">
       <div className="flex flex-wrap items-center gap-3">
         <Link
           to={`/item/${row.slug}`}
@@ -118,7 +118,7 @@ function ApprovedRow({ row }: { row: FundraiseApplicationRow }) {
         </Link>
 
         {!row.live && (
-          <span className="shrink-0 border-2 border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-canvas">
+          <span className="shrink-0 border border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-canvas">
             Paused
           </span>
         )}
@@ -139,7 +139,7 @@ function ApprovedRow({ row }: { row: FundraiseApplicationRow }) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label={`${row.name} is ${row.percent}% funded`}
-        className="mt-2 h-2 w-full overflow-hidden border-2 border-edge bg-surface-2"
+        className="mt-2 h-2 w-full overflow-hidden border border-edge bg-surface-2"
       >
         <div className="h-full bg-accent" style={{ width: `${row.percent}%` }} />
       </div>
@@ -171,7 +171,7 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
   return (
     <li>
       <Card className="p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-edge pb-3">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-edge pb-3">
           <div className="min-w-0">
             <Link
               to={`/item/${row.slug}`}
@@ -190,7 +190,7 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
             </p>
           </div>
 
-          <p className="shrink-0 border-2 border-edge bg-pop px-2.5 py-1 font-display text-sm text-on-pop">
+          <p className="shrink-0 border border-edge bg-pop px-2.5 py-1 font-display text-sm text-on-pop">
             {formatMoney(row.targetMinor)}
           </p>
         </div>
@@ -204,7 +204,7 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
           </div>
         </dl>
 
-        <div className="mt-5 space-y-3 border-t-2 border-edge pt-4">
+        <div className="mt-5 space-y-3 border-t border-edge pt-4">
           <label className="block">
             <span className="mb-1.5 block font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
               Note to the maker
@@ -215,14 +215,14 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
               onChange={(event) => setNote(event.target.value)}
               maxLength={300}
               placeholder="Required if you turn it down — they see this."
-              className="w-full rounded-slab border-2 border-edge bg-surface px-3 py-2 text-sm shadow-[inset_3px_3px_0_var(--surface-2)] focus:border-accent focus:shadow-none focus:outline-none"
+              className="w-full rounded-slab border border-edge bg-surface px-3 py-2 text-sm shadow-[inset_3px_3px_0_var(--surface-2)] focus:border-accent focus:shadow-none focus:outline-none"
             />
           </label>
 
           {error && (
             <p
               role="alert"
-              className="border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+              className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
             >
               {error}
             </p>

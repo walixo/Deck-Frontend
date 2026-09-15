@@ -54,7 +54,7 @@ export function FundraiseApply({ slug, itemName, fundraise, className }: Fundrai
        * will actually accept.
        */}
       {gated && (
-        <div className="mb-3 border-2 border-edge bg-surface-2 px-3 py-2.5">
+        <div className="mb-3 border border-edge bg-surface-2 px-3 py-2.5">
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em]">
             Not ready to raise yet
           </p>
@@ -95,7 +95,7 @@ export function FundraiseApply({ slug, itemName, fundraise, className }: Fundrai
       )}
 
       {rejected && fundraise.reviewNote && (
-        <p className="mt-2 border-2 border-edge bg-surface-2 px-3 py-2 text-xs leading-relaxed text-muted text-pretty">
+        <p className="mt-2 border border-edge bg-surface-2 px-3 py-2 text-xs leading-relaxed text-muted text-pretty">
           <span className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-body">
             Not approved
           </span>
@@ -139,7 +139,7 @@ function Requirement({ label, have, need }: { label: string; have: number; need:
         aria-valuemin={0}
         aria-valuemax={need}
         aria-label={`${label}: ${have} of ${need}`}
-        className="mt-1 h-1.5 w-full overflow-hidden border-2 border-edge bg-surface"
+        className="mt-1 h-1.5 w-full overflow-hidden border border-edge bg-surface"
       >
         {/* The themed mark. A fixed accent is unreadable against one canvas or
             the other at this height — see CONTRACT rule 3. */}
@@ -210,7 +210,7 @@ function ApplyDialog({
       onClose={onClose}
       aria-labelledby="apply-heading"
       className={cn(
-        'w-[min(34rem,92vw)] rounded-slab border-2 border-edge bg-surface p-0 text-body shadow-hard-lg',
+        'w-[min(34rem,92vw)] rounded-slab border border-edge bg-surface p-0 text-body shadow-hard-lg',
         /* `m-auto` restores centring. A modal <dialog> is centred by the UA
            sheet's `inset: 0; margin: auto`, and Tailwind's preflight zeroes
            every margin — which silently pins it to the top of the viewport. */
@@ -221,7 +221,7 @@ function ApplyDialog({
       <form onSubmit={submit} className="p-5 sm:p-6" noValidate>
         <h2
           id="apply-heading"
-          className="border-b-2 border-edge pb-3 font-display text-lg uppercase"
+          className="border-b border-edge pb-3 font-display text-lg uppercase"
         >
           Raise money for {itemName}
         </h2>
@@ -292,7 +292,7 @@ function ApplyDialog({
           />
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3 border-t-2 border-edge pt-4">
+        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-edge pt-4">
           <Button type="submit" loading={apply.isPending}>
             Submit application
           </Button>

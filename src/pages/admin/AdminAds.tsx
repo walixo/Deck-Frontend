@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/Field';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/States';
 import { usePendingAds, useReviewAd } from '@/hooks/useAds';
-import { formatMoney } from '@/lib/utils';
+import { formatMoney, profilePath } from '@/lib/utils';
 import type { AdCampaign } from '@/types';
 
 /**
@@ -70,9 +70,9 @@ function ReviewCard({ campaign }: { campaign: AdCampaign }) {
   };
 
   return (
-    <article className="rounded-slab border-2 border-edge bg-surface shadow-hard">
+    <article className="rounded-slab border border-edge bg-surface shadow-hard">
       {/* Shown the way a reader will see it, so review is of the actual ad. */}
-      <div className="border-b-2 border-dashed border-edge p-4">
+      <div className="border-b border-dashed border-edge p-4">
         <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
           Sponsored{campaign.item ? ` · ${campaign.item.name}` : ''}
         </p>
@@ -81,23 +81,23 @@ function ReviewCard({ campaign }: { campaign: AdCampaign }) {
             <img
               src={campaign.imageUrl ?? campaign.item?.logoUrl}
               alt=""
-              className="size-14 shrink-0 border-2 border-edge object-cover"
+              className="size-14 shrink-0 border border-edge object-cover"
             />
           )}
           <div className="min-w-0 flex-1">
             <h3 className="font-display text-base uppercase leading-tight">{campaign.headline}</h3>
             <p className="mt-1 text-sm leading-relaxed text-muted text-pretty">{campaign.body}</p>
           </div>
-          <span className="shrink-0 border-2 border-edge bg-pop px-3.5 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-on-pop">
+          <span className="shrink-0 border border-edge bg-pop px-3.5 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-on-pop">
             {campaign.ctaLabel}
           </span>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 border-b-2 border-edge px-4 py-3">
+      <div className="flex flex-wrap items-center gap-4 border-b border-edge px-4 py-3">
         {campaign.advertiser && (
           <Link
-            to={`/u/${campaign.advertiser.username}`}
+            to={profilePath(campaign.advertiser.username)}
             className="flex items-center gap-2 hover:underline underline-offset-2"
           >
             <Avatar user={campaign.advertiser} size="sm" />
@@ -159,7 +159,7 @@ function ReviewCard({ campaign }: { campaign: AdCampaign }) {
         {error && (
           <p
             role="alert"
-            className="mt-3 border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+            className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
           >
             {error}
           </p>

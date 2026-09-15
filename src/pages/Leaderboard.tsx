@@ -51,14 +51,14 @@ export function Leaderboard() {
   };
 
   return (
-    <div className="relative isolate mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+        <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
           Leaderboard
         </p>
-        <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
+        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
           {meta ? formatDay(meta.date) : 'Today'} on Deck
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
@@ -115,7 +115,7 @@ export function Leaderboard() {
                 onClick={() => goToDate(day.date)}
                 aria-pressed={active}
                 className={cn(
-                  'shrink-0 border-2 border-edge px-3 py-2 text-left transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
+                  'shrink-0 border border-edge px-3 py-2 text-left transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
                   active ? 'bg-deep text-on-deep shadow-hard-sm' : 'bg-surface text-body',
                 )}
               >
@@ -199,7 +199,7 @@ export function Leaderboard() {
 
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
           <Card className="p-5">
-            <h2 className="border-b-2 border-edge pb-2 font-display text-sm uppercase">
+            <h2 className="border-b border-edge pb-2 font-display text-sm uppercase">
               All-round favourites
             </h2>
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -210,7 +210,7 @@ export function Leaderboard() {
                   onClick={() => setPeriod(option.value)}
                   aria-pressed={period === option.value}
                   className={cn(
-                    'border-2 border-edge px-2 py-1 font-mono text-[10px] font-bold uppercase transition-colors duration-[120ms]',
+                    'border border-edge px-2 py-1 font-mono text-[10px] font-bold uppercase transition-colors duration-[120ms]',
                     period === option.value
                       ? 'bg-pop text-on-pop'
                       : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
@@ -234,7 +234,7 @@ export function Leaderboard() {
                     <li key={item.id}>
                       <Link
                         to={`/item/${item.slug}`}
-                        className="group flex items-center gap-2.5 border-2 border-transparent px-2 py-1.5 transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2"
+                        className="group flex items-center gap-2.5 border border-transparent px-2 py-1.5 transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2"
                       >
                         <span className="w-4 shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">
                           {item.rank}
@@ -277,7 +277,7 @@ function PodiumCard({
     <Link
       to={`/item/${item.slug}`}
       className={cn(
-        'flex h-full flex-col border-2 border-edge p-4 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
+        'flex h-full flex-col border border-edge p-4 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
         PODIUM[item.rank] ?? 'bg-surface',
       )}
     >

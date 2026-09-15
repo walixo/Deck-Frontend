@@ -35,7 +35,7 @@ export function LaunchTicker({ items, className }: LaunchTickerProps) {
     <section
       aria-labelledby="launch-ticker-heading"
       className={cn(
-        'group/ticker relative overflow-hidden border-b-2 border-edge bg-deep py-2.5',
+        'group/ticker relative overflow-hidden border-b border-edge bg-deep py-2.5',
         className,
       )}
     >
@@ -75,21 +75,22 @@ function TickerItem({ item, focusable }: { item: Item; focusable: boolean }) {
         tabIndex={focusable ? undefined : -1}
         className="flex shrink-0 items-center gap-2.5 px-4 text-on-deep transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
       >
+        {/* The app mark, same as everywhere else. On a bone tile rather than
+            transparent: most logos are drawn to sit on white, and a dark one on
+            the deep band would be a squircle of nothing. */}
         {item.logoUrl ? (
-          /* On a bone tile, not transparent: most marks are drawn to sit on
-             white, and a dark logo on the deep band is a square of nothing. */
           <img
             src={item.logoUrl}
             alt=""
             loading="lazy"
-            className="size-7 shrink-0 border-2 border-current bg-bone object-contain p-0.5"
+            className="squircle size-8 shrink-0 bg-bone object-cover"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="flex size-7 shrink-0 items-center justify-center border-2 border-current font-mono text-[10px] font-bold"
+            className="squircle flex size-8 shrink-0 items-center justify-center bg-bone font-display text-[11px] uppercase text-ink"
           >
-            {item.name.slice(0, 1)}
+            {item.name.slice(0, 2)}
           </span>
         )}
 

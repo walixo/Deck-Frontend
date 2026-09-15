@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -7,44 +6,33 @@ import { CharCount, Input, Textarea } from '@/components/ui/Field';
 import { ImageUpload } from '@/components/ui/ImageUpload';
 import { InlineAlert } from '@/components/ui/States';
 import { useAuth } from '@/hooks/useAuth';
-import { request, RequestError, setStoredToken } from '@/lib/api';
+import { request, RequestError } from '@/lib/api';
 import type { AuthUser } from '@/types';
 
 const LIMITS = { name: 60, headline: 80, bio: 280 };
 
 /**
- * Your account: who you are, and how you get in.
+ * Who you are, as everybody else sees it.
  *
- * Two forms on one page, and they are deliberately separate submissions. A
- * password change needs the current password and reissues a token; folding it
- * into the profile save would mean typing your password to fix a typo in your
- * bio, and would make an ordinary save capable of locking you out.
+ * Split out of the old single-page Settings when the account grew a sidebar.
+ * The substance is unchanged — including the two fields that are deliberately
+ * not here, and the note saying why.
  */
-export function Settings() {
+export function AccountProfile() {
   const { user } = useAuth();
-
-  /* RequireAuth guards the route, so this is a render-order guard rather than
-     an access check — the provider resolves `user` a tick after mount. */
   if (!user) return null;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-      <header className="border-b-2 border-edge pb-6">
-        <h1 className="display-tight text-[clamp(2rem,5vw,3rem)] uppercase">Your profile</h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">
-          How you appear on Deck. Your public page is{' '}
-          <Link
-            to={`/u/${user.username}`}
-            className="font-bold text-body underline underline-offset-2"
-          >
-            @{user.username}
-          </Link>
-          .
+    <div>
+      <header className="mb-6">
+        <h1 className="display-tight text-3xl uppercase">Profile</h1>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted text-pretty">
+          Your name, photo and the line under them. This is what shows on your public page and
+          beside everything you post.
         </p>
       </header>
 
       <ProfileForm user={user} />
-      <PasswordForm />
     </div>
   );
 }
@@ -97,7 +85,7 @@ function ProfileForm({ user }: { user: AuthUser }) {
   return (
     <Card className="mt-8 p-5 sm:p-6">
       <form onSubmit={submit} className="space-y-5" noValidate>
-        <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
           Details
         </h2>
 
@@ -176,7 +164,7 @@ function ProfileForm({ user }: { user: AuthUser }) {
             presentation: a username is in every link anybody has shared to your
             profile, and changing an email is an account-recovery flow with a
             confirmation step, not a text field. */}
-        <dl className="grid gap-3 border-t-2 border-edge pt-4 sm:grid-cols-2">
+        <dl className="grid gap-3 border-t border-edge pt-4 sm:grid-cols-2">
           <div>
             <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
               Username
@@ -196,110 +184,13 @@ function ProfileForm({ user }: { user: AuthUser }) {
         </dl>
 
         {saved && !error && (
-          <p className="border-2 border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
+          <p className="border border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
             Saved
           </p>
         )}
 
         <Button type="submit" loading={saving}>
           Save changes
-        </Button>
-      </form>
-    </Card>
-  );
-}
-
-function PasswordForm() {
-  const { updateUser } = useAuth();
-
-  const [form, setForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
-  const [error, setError] = useState<RequestError | Error | null>(null);
-  const [saved, setSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  const fieldError = (name: string) =>
-    error instanceof RequestError ? error.fieldError(name) : undefined;
-
-  const submit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setError(null);
-    setSaved(false);
-    setSaving(true);
-
-    try {
-      const result = await request<{ token: string; user: AuthUser }>(
-        'post',
-        '/auth/me/password',
-        form,
-      );
-      /* The server reissues a token on success — store it before anything else
-         so the next request cannot go out with the stale one. */
-      setStoredToken(result.token);
-      updateUser(result.user);
-      setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      setSaved(true);
-    } catch (cause) {
-      setError(cause instanceof Error ? cause : new Error('We could not change that'));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <Card className="mt-8 p-5 sm:p-6">
-      <form onSubmit={submit} className="space-y-5" noValidate>
-        <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
-          Password
-        </h2>
-
-        {error && !(error instanceof RequestError && error.fields.length) && (
-          <InlineAlert>{error.message}</InlineAlert>
-        )}
-
-        <Input
-          label="Current password"
-          type="password"
-          required
-          autoComplete="current-password"
-          value={form.currentPassword}
-          onChange={(event) => setForm({ ...form, currentPassword: event.target.value })}
-          error={fieldError('currentPassword')}
-          hint="Asked for even though you are signed in — an open session is not proof of who is typing."
-        />
-
-        <Input
-          label="New password"
-          type="password"
-          required
-          autoComplete="new-password"
-          value={form.newPassword}
-          onChange={(event) => setForm({ ...form, newPassword: event.target.value })}
-          error={fieldError('newPassword')}
-          hint="At least 8 characters."
-        />
-
-        <Input
-          label="New password again"
-          type="password"
-          required
-          autoComplete="new-password"
-          value={form.confirmPassword}
-          onChange={(event) => setForm({ ...form, confirmPassword: event.target.value })}
-          error={fieldError('confirmPassword')}
-        />
-
-        {saved && !error && (
-          <p className="border-2 border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
-            Password changed
-          </p>
-        )}
-
-        <Button type="submit" loading={saving}>
-          Change password
         </Button>
       </form>
     </Card>

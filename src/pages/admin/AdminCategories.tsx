@@ -50,7 +50,7 @@ export function AdminCategories() {
       <CategoryForm />
 
       <section>
-        <h2 className="mb-3 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
           {categories ? `${categories.length} categories` : 'Categories'}
         </h2>
 
@@ -105,7 +105,7 @@ function CategoryForm() {
 
   return (
     <Card className="p-5 sm:p-6">
-      <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+      <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
         Add a category
       </h2>
 
@@ -192,7 +192,7 @@ function IconPicker({
               title={key.replace(/-/g, ' ')}
               onClick={() => onChange(key)}
               className={cn(
-                'flex aspect-square items-center justify-center border-2 border-edge transition-transform duration-[120ms] ease-[var(--ease-snap)]',
+                'flex aspect-square items-center justify-center border border-edge transition-transform duration-[120ms] ease-[var(--ease-snap)]',
                 selected
                   ? 'bg-pop text-on-pop shadow-hard-sm'
                   : 'bg-surface text-muted hover:-translate-y-0.5 hover:text-body',
@@ -249,12 +249,12 @@ function CategoryRow({ category }: { category: CategoryCount }) {
   return (
     <li
       className={cn(
-        'rounded-slab border-2 border-edge bg-surface p-3.5 shadow-hard-sm',
+        'rounded-slab border border-edge bg-surface p-3.5 shadow-hard-sm',
         !category.active && 'opacity-80',
       )}
     >
       <div className="flex flex-wrap items-center gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center border-2 border-edge bg-surface-2">
+        <span className="flex size-10 shrink-0 items-center justify-center border border-edge bg-surface-2">
           <CategoryIcon category={category.slug} className="size-5 text-body" aria-hidden />
         </span>
 
@@ -262,7 +262,7 @@ function CategoryRow({ category }: { category: CategoryCount }) {
           <span className="block truncate font-display text-[13px] uppercase">
             {category.label}
             {!category.active && (
-              <span className="ml-2 border-2 border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-canvas">
+              <span className="ml-2 border border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-canvas">
                 Retired
               </span>
             )}
@@ -310,14 +310,14 @@ function CategoryRow({ category }: { category: CategoryCount }) {
       {error && (
         <p
           role="alert"
-          className="mt-3 border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
         >
           {error.message}
         </p>
       )}
 
       {editing && (
-        <div className="mt-4 space-y-4 border-t-2 border-edge pt-4">
+        <div className="mt-4 space-y-4 border-t border-edge pt-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <Input
               label="Name"

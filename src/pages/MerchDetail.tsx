@@ -8,7 +8,8 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState, InlineAlert } from '@/components/ui/States';
 import { useCart } from '@/hooks/useCart';
 import { useMerchProduct } from '@/hooks/useMerch';
-import { cn, colourFor, formatMoney, MERCH_CATEGORY_LABELS } from '@/lib/utils';
+import { Money } from '@/components/ui/Money';
+import { cn, colourFor, MERCH_CATEGORY_LABELS } from '@/lib/utils';
 import type { MerchVariant } from '@/types';
 
 export function MerchDetail() {
@@ -23,7 +24,7 @@ export function MerchDetail() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:px-8">
+      <div className="mx-auto grid max-w-5xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:px-8">
         <Skeleton className="aspect-square w-full" />
         <div className="space-y-4">
           <Skeleton className="h-10 w-2/3" />
@@ -101,7 +102,7 @@ export function MerchDetail() {
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           {/* Imagery */}
           <div>
-            <div className="border-2 border-edge shadow-hard">
+            <div className="border border-edge shadow-hard">
               {image ? (
                 <img
                   src={image}
@@ -134,7 +135,7 @@ export function MerchDetail() {
                       aria-current={index === activeImage}
                       aria-label={`Show image ${index + 1}`}
                       className={cn(
-                        'block border-2 transition-transform duration-[120ms] hover:-translate-y-0.5',
+                        'block border transition-transform duration-[120ms] hover:-translate-y-0.5',
                         index === activeImage
                           ? 'border-accent'
                           : 'border-edge opacity-60 hover:opacity-100',
@@ -161,7 +162,7 @@ export function MerchDetail() {
             </p>
 
             <p className="mt-5 font-display text-3xl">
-              {formatMoney(product.priceMinor, product.currency)}
+              <Money minor={product.priceMinor} approxClassName="text-base font-normal" />
             </p>
 
             {/* Variants */}
@@ -182,7 +183,7 @@ export function MerchDetail() {
                         onClick={() => setSelectedSku(variant.sku)}
                         aria-pressed={isSelected}
                         className={cn(
-                          'min-w-12 border-2 border-edge px-3 py-2 font-mono text-[12px] font-bold uppercase transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
+                          'min-w-12 border border-edge px-3 py-2 font-mono text-[12px] font-bold uppercase transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
                           !variant.inStock
                             ? // Sold-out options stay visible but struck through.
                               'cursor-not-allowed bg-surface-2 text-muted line-through opacity-60'
@@ -200,7 +201,7 @@ export function MerchDetail() {
             )}
 
             {selected && selected.inStock && selected.stock <= 5 && (
-              <p className="mt-3 inline-block border-2 border-edge bg-deep px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-on-deep">
+              <p className="mt-3 inline-block border border-edge bg-deep px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-on-deep">
                 Only {selected.stock} left
               </p>
             )}
@@ -236,7 +237,7 @@ export function MerchDetail() {
               </div>
             )}
 
-            <div className="mt-8 space-y-4 border-t-2 border-edge pt-6 text-sm leading-relaxed text-body text-pretty">
+            <div className="mt-8 space-y-4 border-t border-edge pt-6 text-sm leading-relaxed text-body text-pretty">
               {product.description
                 .split('\n')
                 .filter(Boolean)

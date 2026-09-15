@@ -5,8 +5,9 @@ import { Star } from '@/components/ui/Star';
 import { useCart } from '@/hooks/useCart';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
+import { cn, profilePath } from '@/lib/utils';
 import { Logo } from './Logo';
+import { SoundToggle } from './SoundToggle';
 import { ThemeToggle } from './ThemeToggle';
 
 /**
@@ -43,7 +44,24 @@ const NAV_LINKS: NavItem[] = [
   { to: '/leaderboard', label: 'Board' },
   { to: '/future-gen', label: 'Future Gen', star: true },
   { to: '/forum', label: 'Forum' },
-  { to: '/shop', label: 'Shop' },
+  {
+    to: '/shop',
+    label: 'Shop',
+    children: [
+      { to: '/shop', label: 'Merch', blurb: 'T-shirts, stickers and print from makers' },
+      {
+        to: '/customise',
+        label: 'Print your own',
+        blurb: 'Send us a PNG and we put it on a shirt',
+      },
+      {
+        to: '/acquisitions',
+        label: 'Acquisitions',
+        blurb: 'Whole products and tools, for sale outright',
+      },
+    ],
+  },
+  { to: '/games', label: 'Games' },
   { to: '/blog', label: 'Blog' },
 ];
 
@@ -94,7 +112,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-edge bg-canvas">
+    <header className="sticky top-0 z-50 border-b border-edge bg-canvas">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Logo />
 
@@ -124,44 +142,43 @@ export function Navbar() {
         </nav>
 
         {/*
-         * Search waits for xl now.
+         * No search in the header row.
          *
-         * At exactly 1024px — the lg breakpoint, where the seven-link row first
-         * appears — the header measured 1131px of content in a 1024px viewport.
-         * Something had to leave, and this is the right thing to drop: /discover
-         * carries its own search field, so nothing becomes unreachable, whereas
-         * hiding nav links behind a hamburger at desktop widths does make the
-         * site look smaller than it is. With it gone the row measures ~884px at
-         * lg, which leaves real room rather than a hairline.
+         * It had already been pushed out to xl — at lg the header measured
+         * 1131px of content in a 1024px viewport and something had to leave —
+         * so on every screen below a very wide desktop this row has looked like
+         * this for a while. Now it looks like it everywhere.
+         *
+         * Search itself is not gone: /discover carries its own field, and the
+         * menu below keeps one, so there is still a way in from any width.
          */}
-        <form onSubmit={onSearch} className="ml-auto hidden xl:block" role="search">
-          <label className="relative block">
-            <span className="sr-only">Search launches</span>
-            <input
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="SEARCH"
-              className="h-9 w-44 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-[width,box-shadow] duration-[140ms] placeholder:text-muted/70 focus:w-56 focus:border-accent focus:outline-none"
-            />
-          </label>
-        </form>
 
-        <div className="ml-auto flex items-center gap-2 lg:ml-3">
+        {/*
+         * `ml-auto` at every width, with no `lg:` override.
+         *
+         * It used to carry `lg:ml-3`, which beat `ml-auto` from lg up and left
+         * these pinned to the end of the nav links instead of the end of the
+         * row. That was invisible while the search field sat between them
+         * holding its own `ml-auto`; the moment the field came out, the whole
+         * group slid left into the space. The gap belongs here, not there.
+         */}
+        <div className="ml-auto flex items-center gap-2">
           <Link
             to="/cart"
             aria-label={cartCount > 0 ? `Cart, ${cartCount} items` : 'Cart, empty'}
-            className="relative flex size-9 items-center justify-center rounded-slab border-2 border-edge bg-surface shadow-hard-sm transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard"
+            className="relative flex size-9 items-center justify-center rounded-slab border border-edge bg-surface shadow-hard-sm transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard"
           >
             <span aria-hidden="true" className="text-sm">
               ▣
             </span>
             {cartCount > 0 && (
-              <span className="absolute -right-2 -top-2 flex min-w-5 items-center justify-center border-2 border-edge bg-red px-1 font-mono text-[10px] font-bold tabular-nums text-white">
+              <span className="absolute -right-2 -top-2 flex min-w-5 items-center justify-center border border-edge bg-red px-1 font-mono text-[10px] font-bold tabular-nums text-white">
                 {cartCount}
               </span>
             )}
           </Link>
+
+          <SoundToggle />
 
           <ThemeToggle />
 
@@ -186,14 +203,16 @@ export function Navbar() {
                 {accountOpen && (
                   <div
                     role="menu"
-                    className="absolute right-0 top-12 w-56 animate-[var(--animate-slam)] border-2 border-edge bg-surface p-1.5 shadow-hard-lg"
+                    className="absolute right-0 top-12 w-56 animate-[var(--animate-slam)] border border-edge bg-surface p-1.5 shadow-hard-lg"
                   >
-                    <div className="border-b-2 border-edge px-3 py-2.5">
+                    <div className="border-b border-edge px-3 py-2.5">
                       <p className="truncate font-display text-sm uppercase">{user.name}</p>
                       <p className="truncate font-mono text-[11px] text-muted">@{user.username}</p>
                     </div>
+                    {/* Public page first: it is what most people are looking for when they
+                        click their own avatar — "how do I look to everyone else". */}
+                    <MenuLink to={profilePath(user.username)}>Public page</MenuLink>
                     <MenuLink to="/settings">Your profile</MenuLink>
-                    <MenuLink to={`/u/${user.username}`}>Public page</MenuLink>
                     <MenuLink to="/submit">Launch something</MenuLink>
                     <MenuLink to="/orders">Your orders</MenuLink>
                     <MenuLink to="/sell">Sell on Deck</MenuLink>
@@ -239,7 +258,7 @@ export function Navbar() {
       </div>
 
       {menuOpen && (
-        <div className="animate-[var(--animate-slam)] border-t-2 border-edge bg-surface px-4 pb-4 pt-3 lg:hidden">
+        <div className="animate-[var(--animate-slam)] border-t border-edge bg-surface px-4 pb-4 pt-3 lg:hidden">
           <form onSubmit={onSearch} role="search" className="mb-3">
             <input
               type="search"
@@ -247,7 +266,7 @@ export function Navbar() {
               onChange={(event) => setSearch(event.target.value)}
               placeholder="SEARCH LAUNCHES"
               aria-label="Search launches"
-              className="h-11 w-full border-2 border-edge bg-canvas px-3.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+              className="h-11 w-full border border-edge bg-canvas px-3.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
             />
           </form>
 
@@ -263,7 +282,7 @@ export function Navbar() {
                   end={link.to === '/'}
                   className={({ isActive }) =>
                     cn(
-                      'flex items-center gap-1.5 border-2 border-edge px-3 py-2.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em]',
+                      'flex items-center gap-1.5 border border-edge px-3 py-2.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em]',
                       isActive ? 'bg-deep text-on-deep' : 'bg-canvas text-body',
                     )
                   }
@@ -280,7 +299,7 @@ export function Navbar() {
                       to={child.to}
                       className={({ isActive }) =>
                         cn(
-                          'ml-5 border-2 border-edge px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em]',
+                          'ml-5 border border-edge px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em]',
                           isActive ? 'bg-deep text-on-deep' : 'bg-surface-2 text-muted',
                         )
                       }
@@ -292,7 +311,7 @@ export function Navbar() {
             ))}
           </nav>
 
-          <div className="mt-3 flex flex-col gap-2 border-t-2 border-edge pt-3">
+          <div className="mt-3 flex flex-col gap-2 border-t border-edge pt-3">
             {isAuthenticated ? (
               <ButtonLink to="/submit" variant="accent" size="md" className="w-full">
                 Launch something
@@ -317,7 +336,7 @@ export function Navbar() {
 /** Shared between the plain links and the dropdown trigger, so they match. */
 const navClass = ({ isActive }: { isActive: boolean }) =>
   cn(
-    'flex items-center gap-1.5 whitespace-nowrap border-2 px-2 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] xl:px-3',
+    'flex items-center gap-1.5 whitespace-nowrap border px-2 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] xl:px-3',
     isActive
       ? 'border-edge bg-deep text-on-deep'
       : 'border-transparent text-muted hover:border-edge hover:bg-surface-2 hover:text-body',
@@ -366,7 +385,7 @@ function NavDropdown({ item }: { item: NavItem }) {
           aria-expanded={open}
           aria-haspopup="true"
           aria-label={`${item.label} sections`}
-          className="ml-0.5 flex items-center border-2 border-transparent px-1 text-muted transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2 hover:text-body"
+          className="ml-0.5 flex items-center border border-transparent px-1 text-muted transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2 hover:text-body"
         >
           <span aria-hidden="true" className="text-[9px] leading-none">
             ▼
@@ -378,14 +397,14 @@ function NavDropdown({ item }: { item: NavItem }) {
         <div
           /* `top-full` with no gap: a panel that starts a few pixels below its
              trigger loses the pointer on the way down and closes itself. */
-          className="absolute left-0 top-full z-50 w-64 animate-[var(--animate-slam)] border-2 border-edge bg-surface p-1.5 shadow-hard-lg"
+          className="absolute left-0 top-full z-50 w-64 animate-[var(--animate-slam)] border border-edge bg-surface p-1.5 shadow-hard-lg"
         >
           {item.children?.map((child) => (
             <Link
               key={child.to}
               to={child.to}
               onClick={() => setOpen(false)}
-              className="block border-2 border-transparent px-2.5 py-2 transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2"
+              className="block border border-transparent px-2.5 py-2 transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2"
             >
               <span className="font-mono text-[12px] font-bold uppercase tracking-[0.06em]">
                 {child.label}

@@ -51,7 +51,7 @@ export function SellerDashboard() {
 
   if (loadingEarnings) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         <Skeleton className="h-40 w-full" />
       </div>
     );
@@ -60,15 +60,15 @@ export function SellerDashboard() {
   const nothingYet = earnings?.earnedMinor === 0 && !listings?.length;
 
   return (
-    <div className="relative isolate mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+          <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
             Selling
           </p>
-          <h1 className="display-tight text-4xl uppercase text-balance">Your shop</h1>
+          <h1 className="display-tight text-3xl uppercase text-balance">Your shop</h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
             Buyers pay Deck, and Deck pays you in regular disbursements. Shipping on your orders is
             yours too.
@@ -89,7 +89,7 @@ export function SellerDashboard() {
             <section aria-labelledby="ledger-heading" className="mb-12">
               <h2
                 id="ledger-heading"
-                className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+                className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
               >
                 Your money
               </h2>
@@ -150,7 +150,7 @@ export function SellerDashboard() {
             <section aria-labelledby="payouts-heading" className="mb-12">
               <h2
                 id="payouts-heading"
-                className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+                className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
               >
                 Disbursements
               </h2>
@@ -158,7 +158,7 @@ export function SellerDashboard() {
                 {payouts.data.map((payout) => (
                   <li
                     key={payout.id}
-                    className="flex flex-wrap items-center justify-between gap-3 border-2 border-edge bg-surface px-4 py-3"
+                    className="flex flex-wrap items-center justify-between gap-3 border border-edge bg-surface px-4 py-3"
                   >
                     <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
                       {dateOf(payout.paidAt)} &middot; {payout.reference}
@@ -175,7 +175,7 @@ export function SellerDashboard() {
           <section aria-labelledby="listings-heading">
             <h2
               id="listings-heading"
-              className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+              className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
             >
               Your listings
             </h2>
@@ -201,12 +201,12 @@ export function SellerDashboard() {
                         <img
                           src={product.images[0]}
                           alt=""
-                          className="size-16 shrink-0 border-2 border-edge object-cover"
+                          className="size-16 shrink-0 border border-edge object-cover"
                         />
                       ) : (
                         <span
                           aria-hidden="true"
-                          className="flex size-16 shrink-0 items-center justify-center border-2 border-edge bg-surface-2 font-display"
+                          className="flex size-16 shrink-0 items-center justify-center border border-edge bg-surface-2 font-display"
                         >
                           {product.name.slice(0, 2).toUpperCase()}
                         </span>
@@ -216,12 +216,12 @@ export function SellerDashboard() {
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="font-display text-base uppercase">{product.name}</p>
                           <span
-                            className={`border-2 border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${STATUS_TONE[product.status]}`}
+                            className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${STATUS_TONE[product.status]}`}
                           >
                             {STATUS_LABEL[product.status]}
                           </span>
                           {!product.active && (
-                            <span className="border-2 border-edge bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-muted">
+                            <span className="border border-edge bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-muted">
                               Retired
                             </span>
                           )}
@@ -245,7 +245,7 @@ export function SellerDashboard() {
                           <button
                             type="button"
                             onClick={() => retire.mutate(product.id)}
-                            className="border-2 border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted transition-colors duration-[120ms] hover:bg-edge hover:text-canvas"
+                            className="border border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted transition-colors duration-[120ms] hover:bg-edge hover:text-canvas"
                           >
                             Retire
                           </button>
@@ -275,7 +275,7 @@ function Figure({
   tone: string;
 }) {
   return (
-    <div className={`border-2 border-edge px-4 py-5 shadow-hard ${tone}`}>
+    <div className={`border border-edge px-4 py-5 shadow-hard ${tone}`}>
       <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
         {label}
       </dt>

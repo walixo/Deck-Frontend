@@ -102,7 +102,7 @@ export function ImageUpload({
                 src={url}
                 alt=""
                 className={cn(
-                  'w-full border-2 border-edge object-cover',
+                  'w-full border border-edge object-cover',
                   aspect === 'square' ? 'aspect-square' : 'aspect-video',
                 )}
               />
@@ -110,7 +110,7 @@ export function ImageUpload({
                 type="button"
                 onClick={() => remove(url)}
                 aria-label="Remove image"
-                className="absolute -right-2 -top-2 flex size-6 items-center justify-center border-2 border-edge bg-edge text-[11px] font-bold text-canvas transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+                className="absolute -right-2 -top-2 flex size-6 items-center justify-center border border-edge bg-edge text-[11px] font-bold text-canvas transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
               >
                 <span aria-hidden="true">✕</span>
               </button>
@@ -132,7 +132,7 @@ export function ImageUpload({
             void accept(event.dataTransfer.files);
           }}
           className={cn(
-            'rounded-slab border-2 border-dashed px-4 py-6 text-center transition-colors duration-[120ms]',
+            'rounded-slab border border-dashed px-4 py-6 text-center transition-colors duration-[120ms]',
             dragging ? 'border-accent bg-pop/20' : 'border-edge',
           )}
         >
@@ -150,7 +150,7 @@ export function ImageUpload({
           <label
             htmlFor={inputId}
             className={cn(
-              'inline-flex cursor-pointer items-center gap-2 border-2 border-edge bg-surface px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em] shadow-hard-sm',
+              'inline-flex cursor-pointer items-center gap-2 border border-edge bg-surface px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em] shadow-hard-sm',
               'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
               uploading
                 ? 'pointer-events-none opacity-60'
@@ -160,7 +160,7 @@ export function ImageUpload({
             {uploading && (
               <span
                 aria-hidden="true"
-                className="size-3 animate-spin border-2 border-current border-t-transparent"
+                className="size-3 animate-spin border border-current border-t-transparent"
               />
             )}
             {uploading ? 'Uploading' : value.length > 0 ? 'Add another' : 'Choose image'}

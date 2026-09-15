@@ -23,7 +23,7 @@ export function ReleaseVersion() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         <Skeleton className="h-10 w-2/3" />
         <Skeleton className="mt-6 h-96 w-full" />
       </div>
@@ -47,14 +47,14 @@ export function ReleaseVersion() {
   if (!mayRelease) return <Navigate to={`/item/${item.slug}`} replace />;
 
   return (
-    <div className="relative isolate mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8 max-w-2xl">
-        <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+        <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
           New version
         </p>
-        <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
+        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
           Ship the next {item.name}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">

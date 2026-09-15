@@ -1,0 +1,247 @@
+/**
+ * The Deck build handbook, as structured content.
+ *
+ * One source, three deliverables: the PDF, the DOCX, and the /handbook page
+ * the app serves — `web.cjs` compiles this file into typed data the frontend
+ * imports, so the page cannot drift from the documents.
+ *
+ * Section numbers are positional, not stored. They used to be a hand-kept `n`
+ * on every entry, which meant inserting a section in the middle silently
+ * renumbered nothing and every number after it was wrong.
+ *
+ * Originally two deliverables. The previous handbook was hand-written HTML
+ * printed to PDF, which meant the DOCX would have been a third hand-kept copy
+ * — and the HTML had already drifted: it claimed 11 models and 26 pages when
+ * the repository held 17 and 42.
+ */
+exports.meta = {
+  title: 'Deck — Build Handbook',
+  subtitle:
+    'Where new tech gets its first fans — a launch board with a forum, a shop, ' +
+    'custom printing, fundraises, acquisitions, an ad service and a staff back office.',
+  facts: [
+    ['Stack', 'React 19 · Vite · TypeScript · Tailwind 4 — Express 4 · Mongoose 8 · MongoDB'],
+    ['Payments', 'Paystack, collected centrally and disbursed by Deck'],
+    ['Shape', '18 models · 23 controllers · 123 endpoints · 52 pages · 65 components'],
+    ['Size', '~13,900 lines of backend TypeScript · ~26,800 of frontend'],
+    ['Status', 'Typechecks, lints and builds clean in both packages'],
+  ],
+};
+
+exports.sections = [
+  {
+    title: 'What Deck is',
+    body: [
+      'Deck is a launch board. Makers post new tech — AI models, AI tools, Claude skills, developer tools, mobile apps, websites and hardware — and the community votes, comments and reviews. Every launch belongs to a day, and each day has a board ranked by votes that resets at midnight UTC.',
+      'Around that core sit six other things, each of which exists because the board alone does not pay for itself or hold people once they have voted: a forum, a merch shop, custom printing, fundraises, an acquisitions marketplace, and a paid ad service. A staff back office reviews everything that touches money or leaves the building.',
+    ],
+    bullets: [
+      ['Board', 'Daily ranking by votes, archived by date, with per-day maker standings.'],
+      ['Future Gen', 'A curated timeline for young hardware makers in Africa, with fundraising attached.'],
+      ['Forum', 'Five sections, flat replies, ordered by last activity.'],
+      ['Shop', 'Maker-sold merch, plus Deck printing customer artwork to order.'],
+      ['Acquisitions', 'Whole products for sale outright. Deck takes 8% of a completed sale.'],
+      ['Fundraises', 'Staff-approved, gated on 20 votes and 3 comments.'],
+      ['Ads', 'Three placements, a server-side rate card, and Google AdSense behind consent.'],
+    ],
+  },
+  {
+    title: 'Architecture',
+    body: [
+      'Two packages, no shared build. The frontend is a Vite SPA; the backend is a plain Express app over Mongoose. They agree on a REST contract and nothing else — there is no code generation, no monorepo tooling and no shared runtime package.',
+      'The contract is kept honest by hand, and the one place that has bitten is duplicated constant lists. The audit action list drifted between the two sides and took the admin trail down; the fix was to sync the list and make the reader total, so an action the client has never heard of renders with its raw name instead of throwing.',
+    ],
+    bullets: [
+      ['Auth', 'JWT bearer tokens, 7-day expiry, stored in localStorage. No refresh flow.'],
+      ['Uploads', 'Magic-byte verified images written to disk under a UUID. SVG is refused — it can carry script.'],
+      ['Money', 'Integer minor units end to end. The client never does price arithmetic.'],
+      ['State', 'TanStack Query for everything server-owned; React context for auth, cart, theme, consent and display currency.'],
+    ],
+  },
+  {
+    title: 'The design system',
+    body: [
+      'Colour is generated, not written. `design/tokens.json` is the single source and `npm run tokens` compiles it into four consumers that each need the same hexes at a moment they cannot read a CSS variable: the Tailwind theme, the share-card canvas palette, the SVG badge Deck serves into other sites, and the handbook print stylesheet. Kept by hand they drifted, and did.',
+      '`npm run check:contrast` proves the result. It checks 103 pairings across both themes and exits non-zero on a failure, so a palette that cannot carry 10px labels cannot be merged.',
+      'Six rules govern it, in `design/CONTRACT.md`. The load-bearing ones: the content layer stays neutral so it never fights a stranger\'s logo; fixed blocks carry their own text colour while themed marks swap per canvas; everything must survive greyscale; and status has exactly three colours, each always beside a word.',
+    ],
+    bullets: [
+      ['Type', 'Archivo Black for display, Geist for body, Geist Mono for anything that reads as a machine value.'],
+      ['Form', 'Hard offset shadows on a 3/5/8/12 scale, 6px radius, no blur and no gradients on chrome.'],
+      ['Marks', 'Launch logos render as a true superellipse — |x|⁵+|y|⁵=1 — masked, not border-radius.'],
+      ['Motion', 'Snap easings. Everything stops under prefers-reduced-motion.'],
+    ],
+  },
+  {
+    title: 'Data model',
+    body: [
+      'Seventeen collections. The shape worth understanding is that several things which look like they should be subdocuments are not, and one that looks like it should be a collection is not.',
+      'A fundraise is embedded in its launch: one block of state, no children, only ever read alongside the launch. An acquisition is a collection: it has bids hanging off it and the board sorts across every listing by price, which would mean scanning every launch on Deck if it were embedded.',
+      'Two collections are append-only, enforced by schema hooks rather than convention: the audit trail and launch revisions. A history that can be rewritten is not a history, and the hooks mean a careless `updateMany` in some future handler throws instead of quietly rewriting the record.',
+    ],
+    bullets: [
+      ['Item', 'A launch. Self-referential `lineage` links versions — the first points at itself, so one query returns the whole chain.'],
+      ['ItemRevision', 'Snapshots, not diffs. A diff chain corrupts every version after one bad entry.'],
+      ['Acquisition / Bid', 'A listing and its offers. One live offer per person per listing, enforced by a partial unique index.'],
+      ['CustomDesign', 'Uploaded artwork plus the measured analysis that priced it and the decision made on it.'],
+      ['Topic / Reply', 'Forum threads, flat. Reply counts move by atomic `$inc`.'],
+      ['AuditEvent', 'Append-only, self-contained — names are copied in, not joined, so an entry still reads in a year.'],
+    ],
+  },
+  {
+    title: 'Launches, versions and the board',
+    body: [
+      'A launch is editable for four hours after posting and then sets. That replaced a rule which froze only the name and category, and only once votes existed — aimed at the right problem but solving it badly, since a launch with no votes could be rewritten wholesale and one with votes could still have its entire pitch swapped.',
+      'Changing what a product *is* has a supported path: ship a release. A release is a new launch on today\'s board with votes reset, linked to its predecessors by lineage, subject to a 30-day cooldown so "v1.0.1" every morning cannot hold the board.',
+      'Every edit writes a revision, and the history is public. Staff may edit past the window; those edits are audited and appear in the same history.',
+    ],
+    bullets: [
+      ['Board day', '`launchDateKey` is a denormalised UTC day, so a daily board is one indexed lookup.'],
+      ['Rescheduling', 'Staff-only and audited. Left editable, a maker could move a voted launch to another day and rewrite who won it.'],
+      ['Wall colour', 'Makers pick their panel colour; it goes through the same contrast pass a sampled colour does.'],
+    ],
+  },
+  {
+    title: 'The forum',
+    body: [
+      'Five sections — Ask, Show, Feedback, Hiring, Meta — ordered by last activity rather than creation, with pinned threads on top. An index ordered by creation puts a thread nobody has touched in a month above the argument happening now.',
+      'Replies are flat. Launch comments nest because they branch off a fixed thing; a forum thread is a conversation in sequence, and nesting turns "what did people conclude" into archaeology.',
+      'The index reads as a timeline: avatar rail, byline, the opening of the post, then the counts. Body previews are trimmed server-side — sending twenty full posts to render two lines of each would ship up to 160KB of prose.',
+    ],
+  },
+  {
+    title: 'Writing',
+    body: [
+      'Every account can publish to the blog. It began as a staff-only surface, which is the surest way to have a blog nobody reads — one contributor, posting when someone remembers to.',
+      'Publishing is immediate rather than queued. Deck reviews the things that end in money changing hands or an object in the post; an article is neither, and a review queue is how a blog with one writer stays a blog with one writer. Staff can unpublish, and the unpublishing is audited.',
+      'Authors write from their own dashboard and see their drafts and published pieces in one list. A draft is readable by its author and by staff at its real URL, so a link can be passed round before it goes out.',
+    ],
+    bullets: [
+      ['Where', 'Your profile → Writing. The blog itself is at /blog.'],
+      ['Draft', 'Saved unpublished, previewable at its slug by the author and staff only.'],
+      ['Ownership', 'The endpoints check the author, not the role — staff moderate, they do not co-author.'],
+    ],
+  },
+  {
+    title: 'The arcade',
+    body: [
+      'A games page with four of Deck\'s own games on it and a shelf of other people\'s underneath. A cabinet row across the top switches between them and the chosen one plays in the page. Sky Run is the bird from the home page given something to dodge; Snakejo is Snake on a green LCD; Block Drop is Sky Run turned ninety degrees, with a robot on the floor and scrap coming down; Speed X is five lanes of traffic where one touch ends the run and the score is distance. All four share `lib/pixel` with the hero, so one set of sprites can never drift into two.',
+      'Submitted games are listed, not hosted. Deck stores a title, a write-up and an https URL, and the play button opens that URL in a new tab by default. Framing somebody else\'s page inside Deck puts their JavaScript under Deck\'s chrome, where it can imitate Deck\'s own interface and ask for a password with Deck\'s header above it — and unlike the listing, that is a trust the maker can withdraw later by changing their page. Staff can still clear a game to run embedded: the frame is `sandbox="allow-scripts"` with **no** `allow-same-origin`, which gives it a unique opaque origin so it cannot read Deck\'s cookies or storage, cannot touch the document and cannot navigate the top window; `allow=""` denies every permission; and nothing is fetched from the maker at all until the reader presses play. No submission can set the flag.',
+      'Both sorts share one collection, because they share a shelf. A reader should not have to care who wrote which, and splitting them would mean two queries and two sort orders to merge on every page load for a distinction that only matters when rendering the play button.',
+    ],
+    bullets: [
+      ['Review', 'The same queue as fundraises and listings. A rejection needs a reason; editing a rejected game puts it back in the queue.'],
+      ['Frozen on approval', 'An author cannot edit an approved listing — swapping the URL afterwards would make the review meaningless.'],
+      ['Hitboxes', 'Tetrominoes collide cell by cell, not by bounding box: a box kills you in empty air at 3.4% of positions. The player\'s own box is a fraction of the drawn sprite, never a fixed unit count — a hitbox sized against the unscaled sprite once left a permanently safe lane along the top of Sky Run.'],
+      ['Colour in play', 'Each game owns its board. Sky Run is red and yellow obstacles on indigo, Snakejo a green LCD, Block Drop neon on near-black — none of which read at 3:1 on the site\'s near-white surface, and telling hazards apart at speed is the point.'],
+      ['Lives', 'Three in the dodging games, and exactly one in Speed X — a car that survives three crashes has nothing at stake, and the tension of overtaking is entirely the cost of getting it wrong.'],
+      ['Scores', 'A local best for everyone, and an all-time board for signed-in players — one row per player per game, kept with `$max` so two tabs cannot race it backwards. Self-reported and labelled as such: the games run on the client, so there is nothing to check them against.'],
+      ['Difficulty', 'Speed compounds rather than climbing: 175 + 26t + 1.35t² for Sky Run, capped at 19 seconds. Gaps close at the same time — a run is meant to end.'],
+      ['Sound', 'Synthesised, no audio files. The engine hum tracks the current speed, which a fixed clip cannot do. One mute switch across the arcade.'],
+      ['Palette', 'The one place the contract is set aside. Snake is a remembered object and belongs on a green backlight; Block Drop owns its whole board. Deck\'s chrome around them is unchanged.'],
+    ],
+  },
+  {
+    title: 'The shop and custom printing',
+    body: [
+      'Two halves. Makers list merch that Deck reviews and sells on their behalf; and anyone can send a PNG for Deck to print on stickers, tees or hoodies.',
+      'The custom flow measures the artwork before anything is priced. A hand-written PNG decoder — zlib inflate plus the five scanline filters, no native dependency — reads the file, and the analysis reports dimensions, the largest clean print size, whether the background is genuinely transparent, ink coverage, the dominant colour, and which garment colours the design will actually read on. Bad files get specific warnings rather than a generic rejection.',
+      'Pricing is derived server-side from that analysis, so an ink surcharge cannot be avoided by lying about coverage. It applies to apparel only — a sticker costs the same whatever is on it.',
+      'Every design is reviewed before it can be ordered. It is the one review that ends with a physical object in the post carrying Deck\'s return address, so it is gated and audited like the money ones.',
+    ],
+    bullets: [
+      ['Print proof', 'The uploaded file composited into the real print area at the real scale, with fabric shading multiplied over it.'],
+      ['Lifestyle shot', 'The only generative AI on Deck. Optional, env-gated, once per design, and labelled as illustrative.'],
+      ['Why not generative proofs', 'A model redraws the artwork. The buyer would approve the model\'s interpretation and receive their own file.'],
+    ],
+  },
+  {
+    title: 'How money moves',
+    body: [
+      'Every charge lands in Deck\'s Paystack account. Deck then owes sellers, which makes the arithmetic more important rather than less, because nothing external will catch a discrepancy.',
+      'There is one rounding rule in one place. The fee is rounded and the net is defined as the remainder, never rounded independently, so fee and net always add back to gross exactly. Shipping is split across sellers by largest-remainder allocation so the parts sum to the whole; commission is charged on goods only, since taking a cut of postage would mean profiting from the courier.',
+      'What a seller earned on a sale is frozen at checkout. The fee percentage can change next week; that sale cannot.',
+    ],
+    bullets: [
+      ['Shop', 'Platform fee percentage from env, charged on goods.'],
+      ['Fundraise', 'Same fee machinery. Nothing counts until Paystack confirms the charge.'],
+      ['Acquisitions', '8%, its own constant, copied onto each deal at acceptance so a rate change never rewrites a past sale.'],
+      ['Escrow', 'None. Deck records the agreed price and invoices its commission; it does not hold acquisition funds.'],
+    ],
+  },
+  {
+    title: 'Fundraises and acquisitions',
+    body: [
+      'A fundraise is applied for, not switched on. That replaced a checkbox which let anyone start collecting money from strangers on Deck\'s rails unreviewed — fine until the first person takes the money and disappears, at which point it is Deck\'s problem and Deck has no record of having considered it.',
+      'Applying is gated on 20 votes and 3 comments. Traction, not merit: the point is that an application should cost something that cannot be manufactured on the way in. The thresholds ship in the API payload rather than being duplicated client-side, and the shortfall is shown to the maker.',
+      'Acquisitions run the same review, then take offers. Bid amounts go to the seller and staff only — publishing every offer lets the second bidder read the first bidder\'s ceiling, which suppresses offers rather than raising them. The public page shows the count and the highest.',
+    ],
+  },
+  {
+    title: 'Currency',
+    body: [
+      'Naira is the ledger currency and nothing changes that. Every stored amount, every charge and every payout is kobo.',
+      'On top sits a display layer: a rate table fetched once a day and cached in one object in one process, with a stale-then-hardcoded fallback so a rate-provider outage never stops a price rendering. Readers see their own currency beside the naira, marked with ≈, never instead of it.',
+      'Checkout shows naira alone. A buyer who reads "$12" and is billed ₦18,500 at their own bank\'s rate will call it a bait and switch, and they would be right.',
+    ],
+  },
+  {
+    title: 'Consent and privacy',
+    body: [
+      'A cookie notice on first visit, with Accept and Reject the same size in the same row. A reject hidden behind a settings page or phrased as "manage preferences" is the pattern regulators call a dark pattern.',
+      'Three things are stored regardless — sign-in, theme, cart — because all three are strictly necessary and asking permission to remember dark mode, then breaking dark mode when somebody says no, is consent theatre. Everything that reaches a third party is gated: Google\'s ad script, and embedded video players, which are click-to-load even after consent.',
+      'The footer states the current answer and reopens the notice. A decision you cannot revisit is not a decision.',
+    ],
+  },
+  {
+    title: 'The admin area',
+    body: [
+      'One shell, gated once, with every route nested under it — so nothing has to remember to check a role per page. The sidebar groups by Overview, Queues and Workspace.',
+      'Queues: merch review, orders, payouts, ads, fundraises, acquisitions and custom prints. Workspace: categories, people, and the audit trail.',
+      'Every consequential decision requires a note, and the note is what the person on the other end reads. An approval with no reason attached explains nothing a month later.',
+    ],
+  },
+  {
+    title: 'The audit trail',
+    body: [
+      'Thirty-nine action types, append-only, enforced at the schema layer. Three properties make it a trail rather than a table: it cannot be edited or deleted; names and labels are copied in rather than joined, so an entry still reads after somebody leaves; and before/after snapshots mean a disputed action can be reconstructed without trusting the summary.',
+      'Reading it must never fail. An earlier version indexed a style table directly and blanked the entire admin route the first time the server recorded an action the client had not been taught. The reader is now total — an unknown action renders with its raw name.',
+    ],
+  },
+  {
+    title: 'Security and integrity',
+    bullets: [
+      ['Uploads', 'Verified by magic bytes, never by filename or declared mimetype. SVG refused outright.'],
+      ['Paths', 'Upload references are matched against a strict `/uploads/<uuid>.<ext>` shape, and basenamed again before any disk read.'],
+      ['Embeds', 'Video URLs restricted to YouTube and Vimeo, parsed for a real id, loaded only on click.'],
+      ['Passwords', 'bcrypt, `select: false`. Changing one requires the current password even in an authenticated session.'],
+      ['Ownership', 'Checked server-side on every mutation. Hiding a button is not an access control.'],
+      ['Pricing', 'Always derived server-side. A tampered payload can change what someone buys, never what it costs.'],
+    ],
+  },
+  {
+    title: 'Running it',
+    bullets: [
+      ['Install', 'npm install in Backend and Frontend separately.'],
+      ['Backend', 'npm run dev — tsx watch on PORT (default 4200).'],
+      ['Frontend', 'npm run dev — Vite on 5173.'],
+      ['Seed', 'npm run seed, then seed-artwork, seed-future-gen, seed-forum, seed-acquisitions.'],
+      ['Admin', 'npm run create-admin.'],
+      ['Tokens', 'npm run tokens && npm run check:contrast from the repo root after editing tokens.json.'],
+      ['Env', 'MONGODB_URI, JWT_SECRET, PAYSTACK_SECRET_KEY, CURRENCY. Optional: IMAGE_API_KEY for lifestyle renders, ACQUISITION_FEE_PERCENT, EDIT_WINDOW_HOURS.'],
+    ],
+  },
+  {
+    title: 'Known gaps',
+    body: ['Stated rather than hidden, because the useful version of a handbook says what is not done.'],
+    bullets: [
+      ['Custom prints and the cart', 'An approved design stops at "ready to order". It is not yet a checkout line.'],
+      ['Print geometry', 'Placement rectangles are hand-measured, not taken from a supplier\'s spec sheet.'],
+      ['Acquisition settlement', 'Deck records the deal and invoices; it holds no funds and runs no escrow.'],
+      ['Sessions', 'No refresh tokens and no server-side revocation. A stolen token is valid until it expires.'],
+      ['Rate limiting', 'None on the public API.'],
+      ['Tests', 'No automated suite. Verification is typecheck, lint, build, the contrast script, and manual exercise of each flow.'],
+      ['Search', 'Regex over name and tagline. Fine at this size; it will not scale.'],
+    ],
+  },
+];

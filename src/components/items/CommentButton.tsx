@@ -44,13 +44,16 @@ export function CommentButton({ item, layout = 'stacked', className }: CommentBu
           : `Read ${item.commentCount} comments on ${item.name}, or add yours`
       }
       className={cn(
-        'group/comment flex shrink-0 items-center justify-center gap-1 rounded-slab border-2 border-edge font-mono font-bold',
+        'group/comment flex shrink-0 items-center justify-center gap-1 rounded-slab border border-edge font-mono font-bold',
         'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
         /* The shadow stays small at rest and on hover — it lifts on hover by
            moving, not by growing. A tier change mid-interaction reads as the
            button changing size. */
         'hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
-        stacked ? 'h-14 w-12 flex-col' : 'h-9 px-3.5',
+        /* Matched to VoteButton — the two are a pair and must stay the
+           same height wherever they sit side by side, so this follows every
+           time that one is resized. */
+        stacked ? 'h-9 w-9 flex-col' : 'h-7 px-2.5',
         'bg-surface text-body shadow-hard-sm hover:bg-surface-2',
         className,
       )}
@@ -59,9 +62,9 @@ export function CommentButton({ item, layout = 'stacked', className }: CommentBu
           button — the number is the information, the mark is only a label. */}
       <ChatBubbleOvalLeftIcon
         aria-hidden="true"
-        className={cn('shrink-0', stacked ? 'size-3' : 'size-3')}
+        className="size-2.5 shrink-0"
       />
-      <span className={cn('tabular-nums', stacked ? 'text-sm' : 'text-[13px]')}>
+      <span className="text-[11px] leading-none tabular-nums">
         {formatNumber(item.commentCount)}
       </span>
     </button>

@@ -30,6 +30,10 @@ const ACTION_STYLE: Record<AuditAction, { label: string; tone: string }> = {
   'merch.rejected': { label: 'Rejected', tone: 'bg-grey text-ink' },
   'merch.edited': { label: 'Listing edited', tone: 'bg-grey text-ink' },
   'merch.retired': { label: 'Listing retired', tone: 'bg-grey text-ink' },
+  'game.approved': { label: 'Game approved', tone: 'bg-deep text-on-deep' },
+  'game.rejected': { label: 'Game rejected', tone: 'bg-grey text-ink' },
+  'game.edited': { label: 'Game edited', tone: 'bg-grey text-ink' },
+  'game.removed': { label: 'Game removed', tone: 'bg-edge text-canvas' },
   'ad.approved': { label: 'Ad approved', tone: 'bg-deep text-on-deep' },
   'ad.rejected': { label: 'Ad rejected', tone: 'bg-grey text-ink' },
   'order.shipped': { label: 'Shipped', tone: 'bg-pop text-on-pop' },
@@ -51,6 +55,16 @@ const ACTION_STYLE: Record<AuditAction, { label: string; tone: string }> = {
   'topic.deleted': { label: 'Topic deleted', tone: 'bg-edge text-canvas' },
   'topic.moderated': { label: 'Topic pinned/locked', tone: 'bg-grey text-ink' },
   'reply.deleted': { label: 'Reply removed', tone: 'bg-grey text-ink' },
+  /* A completed sale is the entry Deck later invoices its commission against,
+     so it is weighted with the money actions rather than the approvals. */
+  'acquisition.sold': { label: 'Acquisition sold', tone: 'bg-edge text-canvas' },
+  'acquisition.approved': { label: 'Listing approved', tone: 'bg-deep text-on-deep' },
+  'acquisition.rejected': { label: 'Listing turned down', tone: 'bg-grey text-ink' },
+  'acquisition.removed': { label: 'Listing removed', tone: 'bg-edge text-canvas' },
+  /* Approving a custom print commits Deck to putting a stranger's image on an
+     object and posting it, so it sits with the consequential approvals. */
+  'custom.approved': { label: 'Print approved', tone: 'bg-deep text-on-deep' },
+  'custom.rejected': { label: 'Print turned down', tone: 'bg-grey text-ink' },
 };
 
 /*
@@ -89,11 +103,14 @@ const GROUP_NAMES: Record<string, string> = {
   comment: 'Launches',
   fundraise: 'Money',
   payout: 'Money',
+  acquisition: 'Money',
   futuregen: 'Launches',
   order: 'Shop',
   merch: 'Shop',
+  custom: 'Shop',
   post: 'Content',
   ad: 'Content',
+  game: 'Content',
   topic: 'Forum',
   reply: 'Forum',
 };
@@ -208,7 +225,7 @@ function FilterChip({
       type="button"
       onClick={() => onPick(value)}
       aria-pressed={current === value}
-      className={`border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
+      className={`border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
         current === value
           ? 'bg-pop text-on-pop'
           : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
@@ -225,10 +242,10 @@ function Entry({ event }: { event: AuditEvent }) {
   const hasDetail = event.before !== undefined || event.after !== undefined;
 
   return (
-    <article className="rounded-slab border-2 border-edge bg-surface">
+    <article className="rounded-slab border border-edge bg-surface">
       <div className="flex flex-wrap items-start gap-3 p-3">
         <span
-          className={`shrink-0 border-2 border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${style.tone}`}
+          className={`shrink-0 border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${style.tone}`}
         >
           {style.label}
         </span>
@@ -247,7 +264,7 @@ function Entry({ event }: { event: AuditEvent }) {
             type="button"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
-            className="shrink-0 border-2 border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-muted transition-colors duration-[120ms] hover:bg-surface-2 hover:text-body"
+            className="shrink-0 border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-muted transition-colors duration-[120ms] hover:bg-surface-2 hover:text-body"
           >
             {open ? 'Hide' : 'Detail'}
           </button>
@@ -257,7 +274,7 @@ function Entry({ event }: { event: AuditEvent }) {
       {/* The raw snapshot. Ugly on purpose — this is evidence, not a summary,
           and it should be obvious that nothing has been prettied up. */}
       {open && hasDetail && (
-        <div className="space-y-2 border-t-2 border-edge px-3 py-3">
+        <div className="space-y-2 border-t border-edge px-3 py-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
             {event.targetType}: {event.targetLabel}
           </p>
@@ -275,7 +292,7 @@ function Snapshot({ label, value }: { label: string; value: unknown }) {
       <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
         {label}
       </p>
-      <pre className="mt-1 overflow-x-auto border-2 border-edge bg-surface-2 p-2 font-mono text-[11px]">
+      <pre className="mt-1 overflow-x-auto border border-edge bg-surface-2 p-2 font-mono text-[11px]">
         {JSON.stringify(value, null, 2)}
       </pre>
     </div>

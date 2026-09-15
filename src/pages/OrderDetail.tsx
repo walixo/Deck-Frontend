@@ -30,7 +30,7 @@ export function OrderDetail() {
 
   if (order.isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4 px-4 py-12 sm:px-6">
+      <div className="mx-auto max-w-3xl space-y-4 px-4 py-8 sm:px-6">
         <Skeleton className="h-10 w-64" />
         <Skeleton className="h-32 w-full" />
         <Skeleton className="h-24 w-full" />
@@ -60,17 +60,17 @@ export function OrderDetail() {
   const paid = data.status === 'paid' || data.status === 'shipped' || data.status === 'delivered';
 
   return (
-    <div className="relative isolate mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+        <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
           Order
         </p>
-        <h1 className="display-tight text-4xl uppercase sm:text-5xl">{data.reference}</h1>
+        <h1 className="display-tight text-3xl uppercase sm:text-4xl">{data.reference}</h1>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <span
-            className={`border-2 border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase ${
+            className={`border border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase ${
               ORDER_STATUS_TONE[data.status] ?? 'bg-surface-2 text-body'
             }`}
           >
@@ -116,7 +116,7 @@ export function OrderDetail() {
       )}
 
       <Card className="p-5 sm:p-6">
-        <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
           Items
         </h2>
 
@@ -137,7 +137,7 @@ export function OrderDetail() {
           ))}
         </ul>
 
-        <dl className="mt-5 space-y-2 border-t-2 border-edge pt-4 text-sm">
+        <dl className="mt-5 space-y-2 border-t border-edge pt-4 text-sm">
           <div className="flex justify-between gap-3">
             <dt className="text-muted">Subtotal</dt>
             <dd className="tabular-nums">{formatMoney(data.subtotalMinor, data.currency)}</dd>
@@ -148,7 +148,7 @@ export function OrderDetail() {
               {data.shippingMinor === 0 ? 'Free' : formatMoney(data.shippingMinor, data.currency)}
             </dd>
           </div>
-          <div className="flex justify-between gap-3 border-t-2 border-edge pt-2">
+          <div className="flex justify-between gap-3 border-t border-edge pt-2">
             <dt className="font-display uppercase">Total</dt>
             <dd className="font-display text-lg tabular-nums">
               {formatMoney(data.totalMinor, data.currency)}
@@ -158,7 +158,7 @@ export function OrderDetail() {
       </Card>
 
       <Card className="mt-5 p-5 sm:p-6">
-        <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
           Shipping to
         </h2>
         <address className="mt-3 text-sm not-italic leading-relaxed">

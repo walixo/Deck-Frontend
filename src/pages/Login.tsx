@@ -87,17 +87,17 @@ export function Login() {
         </Button>
       </form>
 
-      <div className="mt-6 border-2 border-dashed border-edge p-3.5">
+      <div className="mt-6 border border-dashed border-edge p-3.5">
         <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
           Trying the demo data?
         </p>
         <p className="mt-1.5 text-xs leading-relaxed text-muted">
           Any seeded account works — for example{' '}
-          <code className="border-2 border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
+          <code className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
             ada@deck.dev
           </code>{' '}
           with password{' '}
-          <code className="border-2 border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
+          <code className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
             deck1234
           </code>
           .

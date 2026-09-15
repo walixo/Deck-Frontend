@@ -3,7 +3,7 @@
 
 /** Deck's palette for the <canvas> share card, which has no stylesheet to read. */
 export const PALETTE = {
-  canvas: '#faf9f5',
+  canvas: '#ffffff',
   ink: '#111111',
   pop: '#b8a9fa',
   onPop: '#180f43',

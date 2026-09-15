@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Field';
 import { InlineAlert } from '@/components/ui/States';
 import { useAuth } from '@/hooks/useAuth';
 import { RequestError } from '@/lib/api';
+import { profilePath } from '@/lib/utils';
 
 export function Register() {
   const { register } = useAuth();
@@ -29,7 +30,7 @@ export function Register() {
         email: form.email.trim(),
         password: form.password,
       });
-      navigate(`/u/${user.username}`, { replace: true });
+      navigate(profilePath(user.username), { replace: true });
     } catch (caught) {
       setError(caught instanceof RequestError ? caught : new RequestError('Sign up failed', 0));
     } finally {

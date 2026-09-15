@@ -45,10 +45,19 @@ export function VoteButton({ item, layout = 'stacked', className }: VoteButtonPr
       aria-pressed={item.hasVoted}
       aria-label={`${item.hasVoted ? 'Remove your upvote from' : 'Upvote'} ${item.name}`}
       className={cn(
-        'group/vote flex shrink-0 items-center justify-center gap-1 rounded-slab border-2 border-edge font-mono font-bold',
+        'group/vote flex shrink-0 items-center justify-center gap-1 rounded-slab border border-edge font-mono font-bold',
         'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
         'hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
-        stacked ? 'h-14 w-12 flex-col' : 'h-9 px-3.5',
+        /*
+         * 36x36, down from 56x48 and then 44x40.
+         *
+         * The control repeats on every row of every list on the site, so its
+         * size is a tax paid per launch — a column of twelve was 672px of
+         * button at the original size and is 432px now. Square rather than
+         * portrait: at this height the caret and the count no longer need a
+         * taller box than they need a wider one.
+         */
+        stacked ? 'h-9 w-9 flex-col' : 'h-7 px-2.5',
         /* Primary in both states — it sits beside the comment button and the
            two are a matched pair. Voted is distinguished by the deeper fill and
            by `aria-pressed`, never by colour alone. */
@@ -62,13 +71,12 @@ export function VoteButton({ item, layout = 'stacked', className }: VoteButtonPr
         className,
       )}
     >
-      <span
-        aria-hidden="true"
-        className={cn('leading-none', stacked ? 'text-[10px]' : 'text-[9px]')}
-      >
+      <span aria-hidden="true" className="text-[8px] leading-none">
         ▲
       </span>
-      <span className="text-sm leading-none tabular-nums">{formatNumber(item.voteCount)}</span>
+      {/* 11px, not 13. `formatNumber` caps a count at five characters —
+          "12.3k" — and at 13px mono that is 36px of glyph in a 34px box. */}
+      <span className="text-[11px] leading-none tabular-nums">{formatNumber(item.voteCount)}</span>
     </button>
   );
 }

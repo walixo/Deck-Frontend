@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/Field';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/States';
 import { usePendingListings, useReviewListing } from '@/hooks/useSeller';
-import { formatMoney, MERCH_CATEGORY_LABELS } from '@/lib/utils';
+import { formatMoney, MERCH_CATEGORY_LABELS, profilePath } from '@/lib/utils';
 import type { MerchProduct } from '@/types';
 
 /**
@@ -69,18 +69,18 @@ function ReviewCard({ product }: { product: MerchProduct }) {
   };
 
   return (
-    <article className="rounded-slab border-2 border-edge bg-surface shadow-hard">
+    <article className="rounded-slab border border-edge bg-surface shadow-hard">
       <div className="flex flex-wrap gap-4 p-4">
         {product.images[0] ? (
           <img
             src={product.images[0]}
             alt=""
-            className="size-24 shrink-0 border-2 border-edge object-cover"
+            className="size-24 shrink-0 border border-edge object-cover"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="flex size-24 shrink-0 items-center justify-center border-2 border-edge bg-surface-2 font-display text-lg"
+            className="flex size-24 shrink-0 items-center justify-center border border-edge bg-surface-2 font-display text-lg"
           >
             {product.name.slice(0, 2).toUpperCase()}
           </span>
@@ -89,7 +89,7 @@ function ReviewCard({ product }: { product: MerchProduct }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-display text-lg uppercase">{product.name}</h3>
-            <span className="border-2 border-edge bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+            <span className="border border-edge bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
               {MERCH_CATEGORY_LABELS[product.category] ?? product.category}
             </span>
           </div>
@@ -98,7 +98,7 @@ function ReviewCard({ product }: { product: MerchProduct }) {
 
           {product.seller && (
             <Link
-              to={`/u/${product.seller.username}`}
+              to={profilePath(product.seller.username)}
               className="mt-3 inline-flex items-center gap-2 hover:underline underline-offset-2"
             >
               <Avatar user={product.seller} size="sm" />
@@ -133,13 +133,13 @@ function ReviewCard({ product }: { product: MerchProduct }) {
       </div>
 
       {/* The full description matters here — it is the thing being reviewed. */}
-      <div className="border-t-2 border-edge px-4 py-3">
+      <div className="border-t border-edge px-4 py-3">
         <p className="whitespace-pre-line text-sm leading-relaxed text-muted text-pretty">
           {product.description}
         </p>
       </div>
 
-      <div className="border-t-2 border-edge p-4">
+      <div className="border-t border-edge p-4">
         {rejecting ? (
           <div className="space-y-3">
             <Textarea
@@ -178,7 +178,7 @@ function ReviewCard({ product }: { product: MerchProduct }) {
         {error && (
           <p
             role="alert"
-            className="mt-3 border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+            className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
           >
             {error}
           </p>

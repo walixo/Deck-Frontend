@@ -22,7 +22,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
             <Logo className="h-7 w-auto" />
           </div>
 
-          <div className="rounded-slab border-2 border-edge bg-surface p-6 shadow-hard-xl sm:p-8">
+          <div className="rounded-slab border border-edge bg-surface p-6 shadow-hard-xl sm:p-8">
             <h1 className="display-tight text-2xl uppercase text-balance">{title}</h1>
             <p className="mt-2.5 text-sm leading-relaxed text-muted text-pretty">{subtitle}</p>
 

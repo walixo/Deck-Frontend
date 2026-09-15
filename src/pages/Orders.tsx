@@ -10,11 +10,11 @@ export function Orders() {
   const { data: orders, isLoading, isError, error, refetch } = useMyOrders();
 
   return (
-    <div className="relative isolate mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8">
-        <h1 className="display-tight text-4xl uppercase sm:text-5xl">Your orders</h1>
+        <h1 className="display-tight text-3xl uppercase sm:text-4xl">Your orders</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">
           Everything you have bought from the Deck shop.
         </p>
@@ -30,12 +30,12 @@ export function Orders() {
             <li key={order.id}>
               <Link
                 to={`/orders/${order.reference}`}
-                className="block rounded-slab border-2 border-edge bg-surface p-4 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg"
+                className="block rounded-slab border border-edge bg-surface p-4 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span className="font-display text-lg uppercase">{order.reference}</span>
                   <span
-                    className={`border-2 border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                    className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
                       ORDER_STATUS_TONE[order.status] ?? 'bg-surface-2 text-body'
                     }`}
                   >

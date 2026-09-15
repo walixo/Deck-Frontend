@@ -61,7 +61,7 @@ export function RevisionHistory({ slug, editCount }: { slug: string; editCount: 
 
   return (
     <details
-      className="group rounded-slab border-2 border-edge bg-surface shadow-hard"
+      className="group rounded-slab border border-edge bg-surface shadow-hard"
       onToggle={(event) => setOpen((event.currentTarget as HTMLDetailsElement).open)}
     >
       <summary
@@ -84,7 +84,7 @@ export function RevisionHistory({ slug, editCount }: { slug: string; editCount: 
         />
       </summary>
 
-      <div className="border-t-2 border-edge p-4">
+      <div className="border-t border-edge p-4">
         {isLoading && <Skeleton className="h-24 w-full" />}
 
         {revisions && (
@@ -109,9 +109,9 @@ function RevisionRow({ revision, previous }: { revision: Revision; previous?: Re
   const original = !previous;
 
   return (
-    <li className="border-2 border-edge bg-canvas p-3.5">
+    <li className="border border-edge bg-canvas p-3.5">
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <span className="border-2 border-edge bg-pop px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums text-on-pop">
+        <span className="border border-edge bg-pop px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums text-on-pop">
           v{revision.version}
         </span>
         <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
@@ -143,10 +143,10 @@ function RevisionRow({ revision, previous }: { revision: Revision; previous?: Re
                   {/* Removed and added are marked by a leading glyph and a
                       border, never by colour alone — the palette expresses
                       "wrong" by inversion and has no red or green to spend. */}
-                  <p className="border-l-2 border-grey pl-2 text-muted line-through">
+                  <p className="border-l border-grey pl-2 text-muted line-through">
                     {textOf(previous.snapshot, field) || '—'}
                   </p>
-                  <p className="border-l-2 border-accent pl-2 text-body">
+                  <p className="border-l border-accent pl-2 text-body">
                     {textOf(revision.snapshot, field) || '—'}
                   </p>
                 </div>

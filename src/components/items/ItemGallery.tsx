@@ -24,7 +24,7 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
         Screenshots
       </h2>
 
-      <figure className="border-2 border-edge shadow-hard">
+      <figure className="border border-edge shadow-hard">
         <img
           src={current}
           alt={`${name} screenshot ${active + 1} of ${images.length}`}
@@ -42,7 +42,7 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
                 aria-current={index === active}
                 aria-label={`Show screenshot ${index + 1}`}
                 className={cn(
-                  'block border-2 transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
+                  'block border transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
                   index === active ? 'border-accent' : 'border-edge opacity-60 hover:opacity-100',
                 )}
               >

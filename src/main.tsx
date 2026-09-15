@@ -6,9 +6,21 @@ import { App } from './App';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ConsentProvider } from '@/context/ConsentContext';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 import { ThemeProvider } from './context/ThemeContext';
 import './index.css';
 import { RequestError } from './lib/api';
+import { restoreFontset } from './lib/fontset';
+import { installClickSound } from './lib/sound';
+
+/* Before the first render, not in an effect: restoring the font preview one
+   paint late would make the whole page visibly re-letter on every load. */
+restoreFontset();
+
+/* One listener for the whole site, outside React, because it belongs to the
+   document rather than to any tree that mounts and unmounts inside it. Nothing
+   is built until the first press — see `installClickSound`. */
+installClickSound();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,6 +45,7 @@ createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ConsentProvider>
+        <CurrencyProvider>
         <ThemeProvider>
           <BrowserRouter>
             <AuthProvider>
@@ -42,6 +55,7 @@ createRoot(rootElement).render(
             </AuthProvider>
           </BrowserRouter>
         </ThemeProvider>
+        </CurrencyProvider>
       </ConsentProvider>
     </QueryClientProvider>
   </StrictMode>,

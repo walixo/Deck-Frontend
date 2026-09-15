@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/States';
 import { useAdminUsers, useSetVerified, useUpdateRole } from '@/hooks/useAdmin';
 import { useAuth } from '@/hooks/useAuth';
 import type { AdminUser } from '@/types';
+import { profilePath } from '@/lib/utils';
 
 /**
  * People, and who among them is staff.
@@ -38,7 +39,7 @@ export function AdminUsers() {
           defaultValue={search}
           placeholder="NAME, HANDLE OR EMAIL"
           aria-label="Search people"
-          className="h-11 min-w-0 flex-1 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+          className="h-11 min-w-0 flex-1 border border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
         />
         <Button type="submit" variant="secondary">
           Search
@@ -56,7 +57,7 @@ export function AdminUsers() {
             type="button"
             onClick={() => setRole(option.value)}
             aria-pressed={role === option.value}
-            className={`border-2 border-edge px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
+            className={`border border-edge px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
               role === option.value
                 ? 'bg-pop text-on-pop'
                 : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
@@ -133,23 +134,23 @@ function PersonRow({ person }: { person: AdminUser }) {
   };
 
   return (
-    <div className="rounded-slab border-2 border-edge bg-surface p-3">
+    <div className="rounded-slab border border-edge bg-surface p-3">
       <div className="flex flex-wrap items-center gap-3">
         <Avatar user={person} size="sm" />
 
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-2 font-display text-sm uppercase">
-            <Link to={`/u/${person.username}`} className="hover:underline underline-offset-2">
+            <Link to={profilePath(person.username)} className="hover:underline underline-offset-2">
               {person.name}
             </Link>
             {person.verified && <VerifiedMark name={person.name} />}
             {isAdmin && (
-              <span className="border-2 border-edge bg-edge px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-canvas">
+              <span className="border border-edge bg-edge px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-canvas">
                 Staff
               </span>
             )}
             {isSelf && (
-              <span className="border-2 border-edge bg-deep px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-on-deep">
+              <span className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-on-deep">
                 You
               </span>
             )}
@@ -196,7 +197,7 @@ function PersonRow({ person }: { person: AdminUser }) {
       {error && (
         <p
           role="alert"
-          className="mt-2 border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-2 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
         >
           {error}
         </p>

@@ -10,7 +10,7 @@ import { Stars, StarPicker } from '@/components/ui/Stars';
 import { useAuth } from '@/hooks/useAuth';
 import { useComments, useCreateComment, useDeleteComment } from '@/hooks/useComments';
 import { RequestError } from '@/lib/api';
-import { cn, relativeTime } from '@/lib/utils';
+import { cn, relativeTime, profilePath } from '@/lib/utils';
 import type { Comment } from '@/types';
 import { VerifiedMark } from '@/components/ui/VerifiedMark';
 
@@ -49,7 +49,7 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
                 onClick={() => setFilter(option)}
                 aria-pressed={filter === option}
                 className={cn(
-                  'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase transition-colors duration-[120ms]',
+                  'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase transition-colors duration-[120ms]',
                   filter === option
                     ? 'bg-pop text-on-pop'
                     : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
@@ -65,7 +65,7 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
       {isAuthenticated ? (
         <CommentComposer slug={slug} itemName={itemName} />
       ) : (
-        <div className="border-2 border-dashed border-edge px-5 py-6 text-center">
+        <div className="border border-dashed border-edge px-5 py-6 text-center">
           <p className="text-sm text-muted">Sign in to review {itemName} or join the discussion.</p>
           <div className="mt-4 flex justify-center gap-2">
             <ButtonLink to="/login" size="sm">
@@ -156,7 +156,7 @@ function CommentComposer({
   return (
     <form
       onSubmit={submit}
-      className="rounded-slab border-2 border-edge bg-surface p-4 shadow-hard"
+      className="rounded-slab border border-edge bg-surface p-4 shadow-hard"
     >
       <div className="flex gap-3">
         {user && <Avatar user={user} size="sm" className="mt-1" />}
@@ -170,7 +170,7 @@ function CommentComposer({
             onChange={(event) => setBody(event.target.value)}
             rows={parent ? 2 : 3}
             placeholder={parent ? 'Write a reply…' : `What do you think of ${itemName}?`}
-            className="w-full resize-y rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none"
+            className="w-full resize-y rounded-slab border border-edge bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none"
           />
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
@@ -241,16 +241,16 @@ function CommentRow({
   const deleteComment = useDeleteComment(slug);
 
   return (
-    <article className="rounded-slab border-2 border-edge bg-surface p-4 shadow-hard">
+    <article className="rounded-slab border border-edge bg-surface p-4 shadow-hard">
       <div className="flex gap-3">
-        <Link to={`/u/${comment.user.username}`} className="shrink-0">
+        <Link to={profilePath(comment.user.username)} className="shrink-0">
           <Avatar user={comment.user} size="sm" />
         </Link>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <Link
-              to={`/u/${comment.user.username}`}
+              to={profilePath(comment.user.username)}
               className="font-display text-sm uppercase hover:underline"
             >
               {comment.user.name}
@@ -314,17 +314,17 @@ function CommentRow({
           )}
 
           {replies.length > 0 && (
-            <ul className="mt-4 space-y-3 border-l-2 border-edge pl-4">
+            <ul className="mt-4 space-y-3 border-l border-edge pl-4">
               {replies.map((reply) => (
                 <li key={reply.id}>
                   <div className="flex gap-2.5">
-                    <Link to={`/u/${reply.user.username}`} className="shrink-0">
+                    <Link to={profilePath(reply.user.username)} className="shrink-0">
                       <Avatar user={reply.user} size="xs" className="mt-0.5" />
                     </Link>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-x-2">
                         <Link
-                          to={`/u/${reply.user.username}`}
+                          to={profilePath(reply.user.username)}
                           className="font-display text-xs uppercase hover:underline"
                         >
                           {reply.user.name}

@@ -85,6 +85,23 @@ export function initialsOf(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+/**
+ * Where a person lives on Deck: `/@username`.
+ *
+ * A function rather than a template literal at two dozen call sites, because
+ * this is the second shape the URL has had — it was `/u/:username` — and the
+ * first move cost a search-and-replace across twenty-three files. The next one
+ * is this line.
+ *
+ * The `@` is part of the path, not decoration: React Router cannot express a
+ * partial dynamic segment (its matcher only recognises `:param` directly after
+ * a slash), so the route is `/:handle` and the sigil is checked by the page.
+ * See `App.tsx`.
+ */
+export function profilePath(username: string): string {
+  return `/@${username}`;
+}
+
 export function formatNumber(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
   if (value >= 1_000) return `${(value / 1_000).toFixed(1).replace(/\.0$/, '')}k`;

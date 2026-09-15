@@ -11,7 +11,7 @@ type Size = 'sm' | 'md' | 'lg';
  * active state slams it all the way down, so a press feels physical.
  */
 const BASE =
-  'inline-flex items-center justify-center gap-2 border-2 border-edge font-bold whitespace-nowrap ' +
+  'inline-flex items-center justify-center gap-2 border border-edge font-bold whitespace-nowrap ' +
   'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] ' +
   'hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-[3px] active:translate-y-[3px] ' +
   'active:shadow-none disabled:pointer-events-none disabled:opacity-40 rounded-slab';
@@ -67,7 +67,7 @@ export function Button({
       {loading && (
         <span
           aria-hidden="true"
-          className="size-3.5 shrink-0 animate-spin border-2 border-current border-t-transparent"
+          className="size-3.5 shrink-0 animate-spin border border-current border-t-transparent"
         />
       )}
       {children}

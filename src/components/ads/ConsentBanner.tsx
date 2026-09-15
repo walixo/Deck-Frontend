@@ -34,7 +34,7 @@ export function ConsentBanner() {
     <div
       role="region"
       aria-label="Cookie choices"
-      className="fixed inset-x-0 bottom-0 z-50 border-t-2 border-edge bg-surface p-4 shadow-hard-lg"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-edge bg-surface p-4 shadow-hard-lg"
     >
       <div className="mx-auto max-w-4xl">
         <div className="flex flex-wrap items-center gap-4">
@@ -75,7 +75,7 @@ export function ConsentBanner() {
         </button>
 
         {detail && (
-          <dl className="mt-3 grid gap-3 border-t-2 border-edge pt-3 text-xs leading-relaxed sm:grid-cols-2">
+          <dl className="mt-3 grid gap-3 border-t border-edge pt-3 text-xs leading-relaxed sm:grid-cols-2">
             <div>
               <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em]">
                 Always on

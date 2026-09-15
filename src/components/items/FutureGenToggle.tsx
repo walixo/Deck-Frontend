@@ -39,11 +39,11 @@ export function FutureGenToggle({ item }: { item: Item }) {
   };
 
   return (
-    <div className="space-y-3 border-t-2 border-edge pt-4">
+    <div className="space-y-3 border-t border-edge pt-4">
       <p className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
         Future Gen
         <span
-          className={`border-2 border-edge px-1.5 py-0.5 text-[10px] ${
+          className={`border border-edge px-1.5 py-0.5 text-[10px] ${
             on ? 'bg-deep text-on-deep' : 'bg-surface-2 text-muted'
           }`}
         >

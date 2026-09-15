@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CategoryIcon, CategoryLabel } from '@/components/illustrations/CategoryIcon';
 import { FutureGenToggle } from '@/components/items/FutureGenToggle';
+import { ListForAcquisition } from '@/components/items/ListForAcquisition';
 import { FundraiseCard } from '@/components/items/FundraiseCard';
 import { FundraiseSettings } from '@/components/items/FundraiseSettings';
 import { SharePanel } from '@/components/items/SharePanel';
@@ -23,14 +24,7 @@ import { Stars } from '@/components/ui/Stars';
 import { VerifiedMark } from '@/components/ui/VerifiedMark';
 import { useAuth } from '@/hooks/useAuth';
 import { useDeleteItem, useItem } from '@/hooks/useItems';
-import {
-  colourFor,
-  editWindow,
-  formatFullDate,
-  PRICING_LABELS,
-  prettyUrl,
-  relativeTime,
-} from '@/lib/utils';
+import { colourFor, editWindow, formatFullDate, PRICING_LABELS, prettyUrl, relativeTime, profilePath } from '@/lib/utils';
 
 export function ItemDetail() {
   const { slug = '' } = useParams();
@@ -64,7 +58,7 @@ export function ItemDetail() {
 
   return (
     <article>
-      <header className="relative isolate overflow-hidden border-b-2 border-edge">
+      <header className="relative isolate overflow-hidden border-b border-edge">
         <Backdrop pattern="halftone" />
 
         {item.coverUrl && (
@@ -72,7 +66,7 @@ export function ItemDetail() {
             <img
               src={item.coverUrl}
               alt=""
-              className="aspect-[3/1] w-full border-2 border-edge object-cover shadow-hard"
+              className="aspect-[3/1] w-full border border-edge object-cover shadow-hard"
             />
           </div>
         )}
@@ -96,7 +90,7 @@ export function ItemDetail() {
 
             <div className="min-w-0 flex-1 animate-[var(--animate-slide-up)]">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
+                <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
                   {item.name}
                 </h1>
                 {item.featured && <Badge tone="pop">★ Spotlight</Badge>}
@@ -125,7 +119,7 @@ export function ItemDetail() {
               </div>
 
               {item.reviewCount > 0 && (
-                <div className="mt-4 inline-flex items-center gap-2.5 border-2 border-edge bg-surface px-3 py-2 shadow-hard-sm">
+                <div className="mt-4 inline-flex items-center gap-2.5 border border-edge bg-surface px-3 py-2 shadow-hard-sm">
                   <Stars value={item.ratingAvg} size="md" />
                   <span className="font-display text-sm tabular-nums">
                     {item.ratingAvg.toFixed(1)}
@@ -152,10 +146,10 @@ export function ItemDetail() {
         </div>
 
         {/* Colour bar keyed to the item, sitting on the header's bottom edge. */}
-        <div className={`h-2 border-t-2 border-edge ${colour.bg}`} />
+        <div className={`h-2 border-t border-edge ${colour.bg}`} />
       </header>
 
-      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="min-w-0">
             <section aria-labelledby="about-heading">
@@ -177,7 +171,7 @@ export function ItemDetail() {
                     <Link
                       key={tag}
                       to={`/discover?tag=${encodeURIComponent(tag)}`}
-                      className="border-2 border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-deep hover:text-on-deep"
+                      className="border border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-deep hover:text-on-deep"
                     >
                       #{tag}
                     </Link>
@@ -207,11 +201,11 @@ export function ItemDetail() {
             {isOwner && <SharePanel item={item} />}
 
             <Card className="p-5">
-              <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+              <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
                 Launched by
               </h2>
               <Link
-                to={`/u/${item.submittedBy.username}`}
+                to={profilePath(item.submittedBy.username)}
                 className="group mt-3 flex items-center gap-3"
               >
                 <Avatar user={item.submittedBy} size="md" />
@@ -230,7 +224,7 @@ export function ItemDetail() {
 
               {item.makers.length > 0 && (
                 <div className="mt-5">
-                  <h3 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+                  <h3 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
                     Makers
                   </h3>
                   <ul className="mt-2.5 space-y-1.5">
@@ -243,7 +237,7 @@ export function ItemDetail() {
                 </div>
               )}
 
-              <dl className="mt-5 space-y-2 border-t-2 border-edge pt-4 font-mono text-[11px] font-bold uppercase">
+              <dl className="mt-5 space-y-2 border-t border-edge pt-4 font-mono text-[11px] font-bold uppercase">
                 <div className="flex justify-between gap-2">
                   <dt className="text-muted">Votes</dt>
                   <dd className="tabular-nums">{item.voteCount}</dd>
@@ -259,7 +253,7 @@ export function ItemDetail() {
               </dl>
 
               {isOwner && (
-                <div className="mt-5 space-y-3 border-t-2 border-edge pt-4">
+                <div className="mt-5 space-y-3 border-t border-edge pt-4">
                   <ManageImages item={item} />
 
                   {/* Offered only while the server would accept it. A button
@@ -297,6 +291,11 @@ export function ItemDetail() {
                   >
                     Delete this launch
                   </Button>
+
+                  {/* Selling the whole thing. Under the owner controls rather
+                      than beside "ship a new version", because it is the end of
+                      the maker's involvement rather than a step in it. */}
+                  <ListForAcquisition item={item} />
                 </div>
               )}
 
@@ -306,7 +305,7 @@ export function ItemDetail() {
             </Card>
 
             <Card className="p-5">
-              <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+              <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
                 Links
               </h2>
               <ul className="mt-3 space-y-2">
@@ -357,7 +356,7 @@ export function ItemDetail() {
 function ItemDetailSkeleton() {
   return (
     <div>
-      <div className="border-b-2 border-edge">
+      <div className="border-b border-edge">
         <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6 lg:px-8">
           <div className="flex gap-6">
             <Skeleton className="size-20" />
@@ -370,7 +369,7 @@ function ItemDetailSkeleton() {
           </div>
         </div>
       </div>
-      <div className="mx-auto max-w-4xl space-y-3 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl space-y-3 px-4 py-8 sm:px-6 lg:px-8">
         <Skeleton className="h-6 w-40" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-full" />

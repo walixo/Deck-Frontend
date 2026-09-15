@@ -11,7 +11,7 @@ import { VerifiedMark } from '@/components/ui/VerifiedMark';
 import { useAuth } from '@/hooks/useAuth';
 import { useCreateTopic, useTopics } from '@/hooks/useForum';
 import { RequestError } from '@/lib/api';
-import { cn, relativeTime } from '@/lib/utils';
+import { cn, formatFullDate, relativeTime } from '@/lib/utils';
 import { SECTION_META, TOPIC_SECTIONS, type TopicSection, type TopicSummary } from '@/types';
 
 /**
@@ -45,7 +45,7 @@ export function Forum() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-      <header className="border-b-2 border-edge pb-6">
+      <header className="border-b border-edge pb-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="display-tight text-[clamp(2rem,5vw,3rem)] uppercase">Forum</h1>
@@ -95,7 +95,7 @@ export function Forum() {
           onChange={(event) => setDraft(event.target.value)}
           placeholder="SEARCH TOPICS"
           aria-label="Search topics"
-          className="h-10 min-w-0 flex-1 border-2 border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+          className="h-10 min-w-0 flex-1 border border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
         />
         <Button type="submit" variant="secondary" size="sm">
           Search
@@ -113,7 +113,11 @@ export function Forum() {
           <ErrorState message={error.message} onRetry={() => void refetch()} />
         </div>
       ) : data?.data.length ? (
-        <ul className="mt-8 space-y-3">
+        /* A feed, not a list of blocks. Rows are separated by a hairline
+           because a timeline needs *some* boundary to stop two short posts
+           reading as one — but nothing is boxed, and the hover tint is what
+           actually picks out the row under the pointer. */
+        <ul className="mt-6 divide-y divide-edge/25">
           {data.data.map((topic) => (
             <li key={topic.id}>
               <TopicRow topic={topic} />
@@ -153,7 +157,7 @@ function SectionChip({
       onClick={() => onPick(value)}
       aria-pressed={current === value}
       className={cn(
-        'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
+        'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
         current === value
           ? 'bg-pop text-on-pop'
           : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
@@ -165,60 +169,104 @@ function SectionChip({
 }
 
 /**
- * One row in the index.
+ * One post on the timeline.
  *
- * The reply count is a block on the right rather than a line of text: it is the
- * one number anybody scans for, and at 11px in a row of grey metadata it
- * disappears. "Last reply by" beats "posted by" here — it says whether the
- * thread is alive.
+ * Laid out like a feed rather than a table: avatar in a fixed left rail, and
+ * everything else in one column beside it — author, then time, then the post,
+ * then the actions. That is the shape people already read without thinking,
+ * and it puts the *writing* first instead of the metadata.
+ *
+ * No card, no shadow, no rule between posts. A timeline is a continuous
+ * surface; boxing each entry turns scrolling it into paging through a stack.
+ * The whole row is a link via a stretched overlay, so the target is the post
+ * rather than its title.
  */
 function TopicRow({ topic }: { topic: TopicSummary }) {
-  const last = topic.lastReplyBy ?? topic.author;
+  const author = topic.author;
+  /* Who spoke last is the useful fact on a busy thread, but the *author* is
+     whose post this is — so the byline is the author and the reply line at the
+     bottom carries the latest voice. */
+  const last = topic.lastReplyBy;
 
   return (
-    <Link
-      to={`/forum/${topic.slug}`}
-      className="group flex items-start gap-4 rounded-slab border-2 border-edge bg-surface p-4 transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard"
-    >
+    <article className="group relative flex gap-3 px-1 py-4 transition-colors duration-[120ms] hover:bg-surface-2/60 sm:gap-4">
+      {author ? (
+        <Avatar user={author} size="md" className="relative z-10 shrink-0" />
+      ) : (
+        <span aria-hidden="true" className="size-11 shrink-0 rounded-full bg-surface-2" />
+      )}
+
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
+        <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm leading-tight">
+          <span className="font-bold">{author?.name ?? 'Deleted account'}</span>
+          {author?.verified && <VerifiedMark name={author.name} />}
+          {author && (
+            <span className="font-mono text-[11px] text-muted">@{author.username}</span>
+          )}
+          <span aria-hidden="true" className="text-muted">
+            ·
+          </span>
+          <time
+            dateTime={topic.createdAt}
+            className="font-mono text-[11px] text-muted"
+            title={formatFullDate(topic.createdAt)}
+          >
+            {relativeTime(topic.createdAt)}
+          </time>
+
           {topic.pinned && (
-            <span className="inline-flex items-center gap-1 border-2 border-edge bg-pop px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-on-pop">
+            <span className="ml-1 inline-flex items-center gap-1 border border-edge bg-pop px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em] text-on-pop">
               <Star name="glint" className="size-2" /> Pinned
             </span>
           )}
           {topic.locked && (
-            <span className="border-2 border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-canvas">
+            <span className="ml-1 border border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em] text-canvas">
               Locked
             </span>
           )}
-          <span className="border-2 border-edge bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-muted">
-            {SECTION_META[topic.section].label}
-          </span>
-        </div>
+        </p>
 
-        <h2 className="mt-2 font-display text-base uppercase leading-tight underline-offset-4 group-hover:underline sm:text-lg">
-          {topic.title}
+        <h2 className="mt-1 font-display text-base uppercase leading-snug text-pretty sm:text-lg">
+          <Link to={`/forum/${topic.slug}`} className="hover:underline">
+            <span className="absolute inset-0 z-0" aria-hidden="true" />
+            <span className="relative">{topic.title}</span>
+          </Link>
         </h2>
 
-        <p className="mt-1.5 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
-          {last && <Avatar user={last} size="sm" />}
-          <span>{last?.name ?? 'Someone'}</span>
-          {last?.verified && <VerifiedMark name={last.name} />}
-          <span aria-hidden="true">/</span>
-          <span>
-            {topic.replyCount > 0 ? 'replied' : 'posted'} {relativeTime(topic.lastReplyAt)}
-          </span>
-        </p>
-      </div>
+        {/* The opening line of the post, the way a timeline shows the tweet and
+            not just its headline. Clamped hard — this is a preview, and a
+            six-line preview is the post. */}
+        {topic.excerpt && (
+          <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted text-pretty">
+            {topic.excerpt}
+          </p>
+        )}
 
-      <span className="flex shrink-0 flex-col items-center border-2 border-edge bg-surface-2 px-3 py-1.5">
-        <span className="font-display text-lg tabular-nums leading-none">{topic.replyCount}</span>
-        <span className="mt-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em] text-muted">
-          {topic.replyCount === 1 ? 'reply' : 'replies'}
-        </span>
-      </span>
-    </Link>
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
+          <Link
+            to={`/forum?section=${topic.section}`}
+            className="relative z-10 font-bold uppercase tracking-[0.06em] text-body underline-offset-2 hover:underline"
+          >
+            {SECTION_META[topic.section].label}
+          </Link>
+
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true">↩</span>
+            <span className="tabular-nums">{topic.replyCount}</span>
+            <span className="sr-only">
+              {topic.replyCount === 1 ? 'reply' : 'replies'}
+            </span>
+          </span>
+
+          {topic.replyCount > 0 && last && (
+            <span className="truncate">
+              last from <span className="text-body">{last.name}</span>{' '}
+              {relativeTime(topic.lastReplyAt)}
+            </span>
+          )}
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -240,7 +288,7 @@ function Composer({ onDone }: { onDone: () => void }) {
   return (
     <Card className="mt-6 p-5 sm:p-6">
       <form onSubmit={submit} className="space-y-4" noValidate>
-        <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
           Start a topic
         </h2>
 

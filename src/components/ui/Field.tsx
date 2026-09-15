@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
  * the edge turns the accent colour and the inset shadow snaps off.
  */
 const CONTROL =
-  'w-full rounded-slab border-2 border-edge bg-surface px-3.5 py-2.5 text-sm text-body ' +
+  'w-full rounded-slab border border-edge bg-surface px-3.5 py-2.5 text-sm text-body ' +
   'shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] ' +
   'placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none';
 
@@ -48,7 +48,7 @@ function FieldShell({ label, htmlFor, hint, error, counter, children }: FieldShe
           /* Warning, not danger: a field that needs another look is not a
              failure, and colouring it like one teaches people to panic at
              typos. The invalid field itself still uses inversion. */
-          className="mt-1.5 inline-block border-2 border-edge bg-warning px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-ink"
+          className="mt-1.5 inline-block border border-edge bg-warning px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-ink"
         >
           {error}
         </p>

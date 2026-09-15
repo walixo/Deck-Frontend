@@ -78,14 +78,14 @@ export function Advertise() {
   };
 
   return (
-    <div className="relative isolate mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-10">
-        <p className="mb-3 inline-block border-2 border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+        <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
           Advertise
         </p>
-        <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">
+        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
           Put your launch in front of Deck
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
@@ -98,7 +98,7 @@ export function Advertise() {
         <section aria-labelledby="rates-heading" className="mb-12">
           <h2
             id="rates-heading"
-            className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+            className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
           >
             Rates
           </h2>
@@ -106,7 +106,7 @@ export function Advertise() {
             {rates.placements.map((entry) => (
               <div
                 key={entry.placement}
-                className="border-2 border-edge bg-surface px-4 py-4 shadow-hard"
+                className="border border-edge bg-surface px-4 py-4 shadow-hard"
               >
                 <dt className="font-display text-sm uppercase">{entry.placement}</dt>
                 <dd className="mt-1 font-mono text-[11px] leading-relaxed text-muted">
@@ -125,7 +125,7 @@ export function Advertise() {
       <section aria-labelledby="book-heading" className="mb-12">
         <h2
           id="book-heading"
-          className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
         >
           Book a slot
         </h2>
@@ -200,7 +200,7 @@ export function Advertise() {
 
             {/* The price is quoted from the server's own rate card, so what is
                 shown here is what will be charged. */}
-            <div className="border-2 border-edge bg-pop px-4 py-3 text-on-pop">
+            <div className="border border-edge bg-pop px-4 py-3 text-on-pop">
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em]">
                 {days} days on {placement}
               </p>
@@ -215,7 +215,7 @@ export function Advertise() {
             {error && (
               <p
                 role="alert"
-                className="border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+                className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
               >
                 {error}
               </p>
@@ -231,7 +231,7 @@ export function Advertise() {
       <section aria-labelledby="mine-heading">
         <h2
           id="mine-heading"
-          className="mb-5 border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
         >
           Your campaigns
         </h2>
@@ -280,7 +280,7 @@ function CampaignRow({ campaign }: { campaign: AdCampaign }) {
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-display text-base uppercase">{campaign.headline}</h3>
             <span
-              className={`border-2 border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${phase.tone}`}
+              className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${phase.tone}`}
             >
               {phase.label}
             </span>
@@ -333,7 +333,7 @@ function CampaignRow({ campaign }: { campaign: AdCampaign }) {
       {error && (
         <p
           role="alert"
-          className="mt-3 border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
         >
           {error}
         </p>

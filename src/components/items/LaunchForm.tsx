@@ -145,7 +145,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
 
         {releasing && (
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               This version
             </h2>
 
@@ -174,7 +174,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
         )}
 
         <Card className="space-y-5 p-5 sm:p-6">
-          <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
             The basics
           </h2>
 
@@ -215,7 +215,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
         </Card>
 
         <Card className="space-y-5 p-5 sm:p-6">
-          <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
             Where it lives
           </h2>
 
@@ -257,7 +257,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
         </Card>
 
         <Card className="space-y-5 p-5 sm:p-6">
-          <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
             Images
           </h2>
 
@@ -299,7 +299,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
             hint="Up to 6 screenshots. Drag several in at once."
           />
 
-          <div className="border-t-2 border-edge pt-5">
+          <div className="border-t border-edge pt-5">
             <WallColourPicker
               value={wallColour}
               onChange={setWallColour}
@@ -310,7 +310,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
         </Card>
 
         <Card className="space-y-5 p-5 sm:p-6">
-          <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
             Details
           </h2>
 
@@ -353,11 +353,12 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
             <img
               src={cover[0]}
               alt=""
-              className="aspect-video w-full border-b-2 border-edge object-cover"
+              className="aspect-video w-full border-b border-edge object-cover"
             />
           )}
           <div className="flex items-start gap-3 p-4">
             <ItemLogo
+              shape="block"
               item={{
                 name: form.name || 'Your product',
                 slug: form.name || 'preview',
@@ -382,7 +383,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
                 <Badge tone="neutral">{PRICING_LABELS[form.pricing]}</Badge>
               </div>
             </div>
-            <span className="flex h-14 w-12 shrink-0 flex-col items-center justify-center border-2 border-edge bg-surface font-mono text-muted">
+            <span className="flex h-14 w-12 shrink-0 flex-col items-center justify-center border border-edge bg-surface font-mono text-muted">
               <span aria-hidden="true" className="text-[10px]">
                 ▲
               </span>
@@ -391,11 +392,11 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
           </div>
 
           {splitList(form.tags, 6).length > 0 && (
-            <div className="flex flex-wrap gap-1.5 border-t-2 border-edge px-4 py-3">
+            <div className="flex flex-wrap gap-1.5 border-t border-edge px-4 py-3">
               {splitList(form.tags, 6).map((tag) => (
                 <span
                   key={tag}
-                  className="border-2 border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-muted"
+                  className="border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-muted"
                 >
                   #{tag.toLowerCase()}
                 </span>
@@ -404,7 +405,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
           )}
         </Card>
 
-        <div className="mt-5 border-2 border-dashed border-edge p-4">
+        <div className="mt-5 border border-dashed border-edge p-4">
           <h3 className="font-display text-xs uppercase">
             {releasing ? 'What carries over' : 'What makes a launch land'}
           </h3>

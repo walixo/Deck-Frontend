@@ -53,7 +53,7 @@ export function FundraiseSettings({ item }: { item: Item }) {
 
   return (
     <Card className="p-5">
-      <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+      <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
         Raise money for this
       </h2>
 
@@ -69,7 +69,7 @@ export function FundraiseSettings({ item }: { item: Item }) {
           {/* The one place a success colour earns its keep: this is an outcome
               the maker has been waiting on, and it should not look like every
               other grey panel. The word carries it too — see CONTRACT rule 6. */}
-          <p className="border-2 border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-ink">
+          <p className="border border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-ink">
             Approved — your raise is live
           </p>
 
@@ -98,14 +98,14 @@ export function FundraiseSettings({ item }: { item: Item }) {
           {error && (
             <p
               role="alert"
-              className="border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+              className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
             >
               {error}
             </p>
           )}
 
           {saved && !error && (
-            <p className="border-2 border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
+            <p className="border border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
               Saved
             </p>
           )}
@@ -127,7 +127,7 @@ export function FundraiseSettings({ item }: { item: Item }) {
            * so a contribution landing moves this too without a reload.
            */}
           {live && (
-            <div className="space-y-5 border-t-2 border-edge pt-5">
+            <div className="space-y-5 border-t border-edge pt-5">
               <RaiseBar raise={live} size="sm" />
               <BackerList backers={supporters?.data ?? []} limit={8} />
             </div>

@@ -61,7 +61,7 @@ interface LaunchWallProps {
 export function LaunchWall({ items, isLoading = false }: LaunchWallProps) {
   if (isLoading) {
     return (
-      <section className="border-y-2 border-edge py-3">
+      <section className="border-y border-edge py-3">
         <div className="space-y-3 overflow-hidden">
           {[0, 1].map((row) => (
             <div key={row} className="flex gap-3">
@@ -86,7 +86,7 @@ export function LaunchWall({ items, isLoading = false }: LaunchWallProps) {
   return (
     <section
       aria-labelledby="launch-wall-heading"
-      className="group/wall relative border-y-2 border-edge bg-canvas py-3"
+      className="group/wall relative border-y border-edge bg-canvas py-3"
     >
       <h2 id="launch-wall-heading" className="sr-only">
         A wall of launches on Deck
@@ -161,7 +161,7 @@ function WallCard({
       to={`/item/${item.slug}`}
       tabIndex={focusable ? undefined : -1}
       className={cn(
-        'group/card relative block h-52 shrink-0 overflow-hidden border-2 border-edge sm:h-60',
+        'group/card relative block h-52 shrink-0 overflow-hidden border border-edge sm:h-60',
         'transition-transform duration-[140ms] ease-[var(--ease-snap)] hover:-translate-y-1',
         narrow ? 'w-40 sm:w-48' : 'w-64 sm:w-[24rem] lg:w-[27rem]',
       )}
@@ -186,11 +186,11 @@ function WallCard({
        * the name at the top, so printing it again 200px below was the same word
        * twice on one card.
        */}
-      <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center gap-2 border-t-2 border-edge bg-surface px-3 py-2 font-mono text-[10px] font-bold uppercase transition-transform duration-[140ms] ease-[var(--ease-snap)] group-hover/card:translate-y-0 group-focus-visible/card:translate-y-0">
+      <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center gap-2 border-t border-edge bg-surface px-3 py-2 font-mono text-[10px] font-bold uppercase transition-transform duration-[140ms] ease-[var(--ease-snap)] group-hover/card:translate-y-0 group-focus-visible/card:translate-y-0">
         <span className="min-w-0 truncate text-muted">
           <CategoryLabel slug={item.category} />
         </span>
-        <span className="ml-auto shrink-0 border-2 border-edge bg-surface-2 px-1.5 py-0.5 tabular-nums">
+        <span className="ml-auto shrink-0 border border-edge bg-surface-2 px-1.5 py-0.5 tabular-nums">
           ▲ {formatNumber(item.voteCount)}
         </span>
       </div>
@@ -270,7 +270,7 @@ function FlatPreview({
             alt=""
             loading="lazy"
             className={cn(
-              'shrink-0 border-2 border-current bg-bone object-contain p-1',
+              'shrink-0 border border-current bg-bone object-contain p-1',
               narrow ? 'size-9' : 'size-11',
             )}
           />
@@ -278,7 +278,7 @@ function FlatPreview({
           <span
             aria-hidden="true"
             className={cn(
-              'flex shrink-0 items-center justify-center border-2 border-current font-display uppercase',
+              'flex shrink-0 items-center justify-center border border-current font-display uppercase',
               narrow ? 'size-9 text-sm' : 'size-11 text-base',
             )}
           >
@@ -308,10 +308,10 @@ function FlatPreview({
 
         {!narrow && (
           <div className="mt-3 flex items-center gap-2">
-            <span className="border-2 border-current px-2 py-0.5 font-mono text-[10px] font-bold uppercase">
+            <span className="border border-current px-2 py-0.5 font-mono text-[10px] font-bold uppercase">
               {PRICING_LABELS[item.pricing]}
             </span>
-            <span className="border-2 border-current px-2 py-0.5 font-mono text-[10px] font-bold uppercase">
+            <span className="border border-current px-2 py-0.5 font-mono text-[10px] font-bold uppercase">
               <CategoryLabel slug={item.category} />
             </span>
           </div>

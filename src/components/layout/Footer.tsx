@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { CategoryLabel } from '@/components/illustrations/CategoryIcon';
+import { CurrencyPicker } from '@/components/ui/Money';
 import { useConsent } from '@/hooks/useConsent';
 import type { Category } from '@/types';
 import { Logo } from './Logo';
@@ -39,8 +40,8 @@ function CookieChoices() {
 
 export function Footer() {
   return (
-    <footer className="mt-20 border-t-2 border-edge">
-      <div className="overflow-hidden border-b-2 border-edge bg-deep py-2">
+    <footer className="mt-20 border-t border-edge">
+      <div className="overflow-hidden border-b border-edge bg-deep py-2">
         <div className="flex w-max animate-[var(--animate-ticker)]">
           {[0, 1].map((copy) => (
             <span
@@ -54,7 +55,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <Logo className="h-8 w-auto" />
@@ -65,7 +66,7 @@ export function Footer() {
           </div>
 
           <nav aria-label="Browse">
-            <h3 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h3 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               Browse
             </h3>
             <ul className="mt-3 space-y-2">
@@ -83,7 +84,7 @@ export function Footer() {
           </nav>
 
           <nav aria-label="Deck">
-            <h3 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h3 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               Deck
             </h3>
             <ul className="mt-3 space-y-2">
@@ -119,16 +120,25 @@ export function Footer() {
                   Shop merch
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/handbook"
+                  className="text-sm text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
+                >
+                  Build handbook
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t-2 border-edge pt-5">
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-5">
           <p className="font-mono text-[11px] uppercase text-muted">
             © {new Date().getFullYear()} Deck — built for makers
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
+            <CurrencyPicker />
             <CookieChoices />
             <p className="font-mono text-[11px] uppercase text-muted">
               Launches shown are demo data

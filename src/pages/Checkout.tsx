@@ -83,11 +83,11 @@ export function Checkout() {
   }
 
   return (
-    <div className="relative isolate mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8">
-        <h1 className="display-tight text-4xl uppercase sm:text-5xl">Checkout</h1>
+        <h1 className="display-tight text-3xl uppercase sm:text-4xl">Checkout</h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
           Where should this go? Payment happens on Paystack's secure page — Deck never sees your
           card details.
@@ -99,7 +99,7 @@ export function Checkout() {
           {error && !error.fields.length && <InlineAlert>{error.message}</InlineAlert>}
 
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               Contact
             </h2>
             <Input
@@ -115,7 +115,7 @@ export function Checkout() {
           </Card>
 
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               Shipping address
             </h2>
 
@@ -171,7 +171,7 @@ export function Checkout() {
 
         <aside className="lg:sticky lg:top-24">
           <Card className="p-5">
-            <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
               Order
             </h2>
 
@@ -192,7 +192,7 @@ export function Checkout() {
               ))}
             </ul>
 
-            <dl className="mt-4 space-y-2 border-t-2 border-edge pt-3 text-sm">
+            <dl className="mt-4 space-y-2 border-t border-edge pt-3 text-sm">
               <div className="flex justify-between gap-3">
                 <dt className="text-muted">Subtotal</dt>
                 <dd className="tabular-nums">{formatMoney(subtotalMinor)}</dd>
@@ -203,7 +203,7 @@ export function Checkout() {
                   {shippingMinor === 0 ? 'Free' : formatMoney(shippingMinor)}
                 </dd>
               </div>
-              <div className="flex justify-between gap-3 border-t-2 border-edge pt-2">
+              <div className="flex justify-between gap-3 border-t border-edge pt-2">
                 <dt className="font-display uppercase">Total</dt>
                 <dd className="font-display text-lg tabular-nums">{formatMoney(totalMinor)}</dd>
               </div>

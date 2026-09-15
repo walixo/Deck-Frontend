@@ -37,7 +37,7 @@ export function ListingForm() {
 
   if (id && loadingListings) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
         <Skeleton className="h-96 w-full" />
       </div>
     );
@@ -45,7 +45,7 @@ export function ListingForm() {
 
   if (id && !existing) {
     return (
-      <div className="relative isolate mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="relative isolate mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
         <PageBanner />
         <EmptyState
           title="We could not find that listing"
@@ -138,14 +138,14 @@ function ListingFields({ existing }: { existing?: MerchProduct }) {
   const saving = create.isPending || update.isPending;
 
   return (
-    <div className="relative isolate mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border-2 border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+        <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
           {id ? 'Editing' : 'New listing'}
         </p>
-        <h1 className="display-tight text-4xl uppercase text-balance">
+        <h1 className="display-tight text-3xl uppercase text-balance">
           {id ? 'Edit your product' : 'List a product'}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">
@@ -217,8 +217,8 @@ function ListingFields({ existing }: { existing?: MerchProduct }) {
           aspect="wide"
         />
 
-        <fieldset className="rounded-slab border-2 border-edge bg-surface p-4">
-          <legend className="border-2 border-edge bg-surface px-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+        <fieldset className="rounded-slab border border-edge bg-surface p-4">
+          <legend className="border border-edge bg-surface px-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
             Variants
           </legend>
           <p className="mb-4 text-xs leading-relaxed text-muted">
@@ -264,7 +264,7 @@ function ListingFields({ existing }: { existing?: MerchProduct }) {
                       setVariants((current) => current.filter((_, position) => position !== index))
                     }
                     aria-label={`Remove variant ${index + 1}`}
-                    className={`h-11 border-2 border-edge px-3 font-mono text-[12px] font-bold text-muted transition-colors duration-[120ms] hover:bg-edge hover:text-canvas ${
+                    className={`h-11 border border-edge px-3 font-mono text-[12px] font-bold text-muted transition-colors duration-[120ms] hover:bg-edge hover:text-canvas ${
                       index === 0 ? 'sm:mt-[1.6rem]' : ''
                     }`}
                   >
@@ -289,7 +289,7 @@ function ListingFields({ existing }: { existing?: MerchProduct }) {
         {error && (
           <p
             role="alert"
-            className="border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+            className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
           >
             {error}
           </p>

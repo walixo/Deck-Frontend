@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Avatar } from '@/components/ui/Avatar';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useTopMakers } from '@/hooks/useMeta';
-import { cn, formatNumber, MEDAL_STYLES } from '@/lib/utils';
+import { cn, formatNumber, MEDAL_STYLES, profilePath } from '@/lib/utils';
 import { VerifiedMark } from '@/components/ui/VerifiedMark';
 
 export function MakerLeaderboard() {
@@ -25,12 +25,12 @@ export function MakerLeaderboard() {
       {makers.slice(0, 6).map((maker) => (
         <li key={maker.user.id}>
           <Link
-            to={`/u/${maker.user.username}`}
-            className="group flex items-center gap-2.5 border-2 border-transparent px-2 py-2 transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2"
+            to={profilePath(maker.user.username)}
+            className="group flex items-center gap-2.5 border border-transparent px-2 py-2 transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2"
           >
             <span
               className={cn(
-                'flex size-6 shrink-0 items-center justify-center border-2 border-edge font-mono text-[11px] font-bold tabular-nums',
+                'flex size-6 shrink-0 items-center justify-center border border-edge font-mono text-[11px] font-bold tabular-nums',
                 MEDAL_STYLES[maker.rank] ?? 'bg-surface-2 text-muted',
               )}
             >

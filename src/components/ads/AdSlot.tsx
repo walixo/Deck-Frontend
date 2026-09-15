@@ -61,7 +61,7 @@ function DeckAd({ ad, className }: { ad: ServedAd; className?: string }) {
     <aside
       aria-label="Sponsored"
       className={cn(
-        'rounded-slab border-2 border-edge bg-surface shadow-hard',
+        'rounded-slab border border-edge bg-surface shadow-hard',
         /* Dashed rather than solid, so it reads as set apart from the page's
            own content at a glance rather than only via the label. */
         'border-dashed',
@@ -73,13 +73,13 @@ function DeckAd({ ad, className }: { ad: ServedAd; className?: string }) {
           <img
             src={ad.imageUrl}
             alt=""
-            className="size-14 shrink-0 border-2 border-edge object-cover"
+            className="size-14 shrink-0 border border-edge object-cover"
           />
         ) : ad.item?.logoUrl ? (
           <img
             src={ad.item.logoUrl}
             alt=""
-            className="size-14 shrink-0 border-2 border-edge object-cover"
+            className="size-14 shrink-0 border border-edge object-cover"
           />
         ) : null}
 
@@ -94,7 +94,7 @@ function DeckAd({ ad, className }: { ad: ServedAd; className?: string }) {
         <a
           href={ad.item ? `/item/${ad.item.slug}` : '/'}
           onClick={(event) => void go(event)}
-          className="shrink-0 border-2 border-edge bg-pop px-3.5 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-on-pop transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+          className="shrink-0 border border-edge bg-pop px-3.5 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-on-pop transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
         >
           {ad.ctaLabel}
         </a>

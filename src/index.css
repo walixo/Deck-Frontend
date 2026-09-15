@@ -11,6 +11,73 @@
 @import '@fontsource-variable/geist';
 @import '@fontsource-variable/geist-mono';
 
+
+/*
+ * The heading-face preview, as one attribute on <html>.
+ *
+ * Set by the switch on `/styleguide` and restored on boot from localStorage.
+ * It re-points one variable and one weight — every heading on the site already
+ * resolves through `--font-display`, so the whole page changes voice with no
+ * rebuild and nothing to revert but one attribute. The same trick the palette
+ * switcher uses for colour.
+ *
+ * Everything but the family and the weight is held constant on purpose — same
+ * uppercase, same tracking, same sizes — because a comparison that changes four
+ * things at once answers nothing.
+ *
+ * `geist-black` asks whether Geist at 900 can do the job Archivo Black does at
+ * 400 and let Deck drop a whole typeface. Nothing is added to the bundle by it:
+ * Geist Variable already ships a `100 900` axis for body copy, so 900 is a value
+ * on a file that is downloaded either way. Adopting it would *remove* Archivo
+ * Black's 47KB.
+ *
+ * `sukhumvit` asks a different sort of question, and comes with a condition.
+ * Sukhumvit Set is a *system* face — it ships with macOS and iOS and exists
+ * nowhere else — so this previews at full fidelity on Apple hardware and falls
+ * through to Geist everywhere else. It is a real answer to "what would a
+ * humanist face look like up there" and not a shippable one: adopting it would
+ * mean licensing a webfont, which is a decision with an invoice attached.
+ * Geist is named ahead of the OS UI stack in its fallback so a machine without
+ * it lands on one of Deck's own faces rather than on Segoe.
+ */
+[data-fontset='geist-black'] {
+  --font-display: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display-weight: 900;
+}
+
+[data-fontset='sukhumvit'] {
+  --font-display: 'Sukhumvit Set', 'Geist Variable', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* 700 because that is where the family stops. Asking for 900 gets Bold back
+     with no complaint and no extra weight, which would quietly misreport what
+     the face can actually do. */
+  --font-display-weight: 700;
+}
+
+/*
+ * Archivo Black ships one weight, so `--font-display` never needed a weight
+ * rule and none of the heading utilities carry one. Every other family would
+ * therefore render at 400 — body weight — and the preview would look like a bug
+ * rather than a proposal.
+ *
+ * Keyed on the bare attribute rather than on each fontset in turn: `deck`
+ * removes the attribute entirely instead of setting it to a value, so this
+ * matches only while a preview is running, and a fourth face to try is two
+ * lines above rather than eight more selectors here.
+ *
+ * Plain descendant selectors rather than `:where()`, so they beat the `font-*`
+ * utilities already sitting on these elements.
+ */
+[data-fontset] .display-tight,
+[data-fontset] .font-display,
+[data-fontset] h1,
+[data-fontset] h2,
+[data-fontset] h3,
+[data-fontset] h4,
+[data-fontset] h5,
+[data-fontset] h6 {
+  font-weight: var(--font-display-weight, 400);
+}
+
 /* Class-based dark mode — toggled on <html> by ThemeProvider. */
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -78,6 +145,25 @@
   /* Per-word headline entry: rises out of its own clipped box, so the words
      appear to be set rather than to fade in. */
   --animate-rise: rise 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+
+  /*
+   * The headline's drift, once it has finished arriving.
+   *
+   * The one place in the system that eases. Everything else snaps because it is
+   * reacting to something — a click, a load, a state change — and a reaction
+   * that glides reads as lag. Nothing is reacting here: the words are simply
+   * suspended, the same as the birds and blocks drifting behind them, and a
+   * suspended thing that moved in steps would read as broken rather than calm.
+   *
+   * Lift is a per-word variable read by the keyframes. Period is *not*: a
+   * `var()` in this shorthand would resolve here, against `:root`, and every
+   * word would silently share the fallback — a nested custom property is
+   * substituted where it is declared, not where it is used. The keyframes are
+   * the exception, being resolved against the element they animate. So each
+   * word overrides `animation-duration` inline instead.
+   */
+  --animate-float: float 6s ease-in-out infinite;
+
   --animate-slide-up: slide-up 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) both;
   --animate-stamp: stamp 0.28s cubic-bezier(0.3, 1.6, 0.5, 1);
   --animate-kick: kick 3.2s cubic-bezier(0.3, 1.6, 0.5, 1) infinite;
@@ -86,6 +172,71 @@
   --animate-marquee: marquee 70s linear infinite;
   --animate-marquee-reverse: marquee-reverse 70s linear infinite;
   --animate-ticker: ticker 26s linear infinite;
+
+  /*
+   * The wordmark's tic. One 15-second cycle: normal, a flicker into lavender,
+   * five seconds lavender, a flicker back.
+   *
+   * `steps(1)` rather than an easing, so every change is an instant cut. A
+   * tweened colour would fade, and a fade is not a flicker — it is the same
+   * reason `jitter` steps rather than slides. Nothing in this system eases.
+   */
+  --animate-wordmark: wordmark 15s steps(1) infinite;
+}
+
+/*
+ * The wordmark cycle.
+ *
+ * Colour comes from `--accent`, not `--pop`. Both are lavender in the active
+ * palette, but `--pop` is the *block* fill — #b8a9fa, which on the white canvas
+ * is 1.7:1 against the page and would make the logo almost vanish for the five
+ * seconds it is meant to be showing off. `--accent` is the themed mark: a deep
+ * violet on light, the pale lavender on dark, legible on both. See
+ * design/CONTRACT.md rule 3.
+ *
+ * The flicker stops are deliberately uneven. Evenly spaced blips read as a
+ * blinking cursor; unequal gaps read as something electrical struggling to
+ * strike, which is what a flicker is.
+ */
+
+@keyframes wordmark {
+  0%,
+  56% {
+    color: var(--body-ink);
+  }
+  56.5% {
+    color: var(--accent);
+  }
+  57.2% {
+    color: var(--body-ink);
+  }
+  58% {
+    color: var(--accent);
+  }
+  58.4% {
+    color: var(--body-ink);
+  }
+  /* Settles into lavender, and holds it: 59.5% to 92% of 15s is 4.9 seconds. */
+  59.5%,
+  92% {
+    color: var(--accent);
+  }
+  92.5% {
+    color: var(--body-ink);
+  }
+  93.2% {
+    color: var(--accent);
+  }
+  94% {
+    color: var(--body-ink);
+  }
+  94.4% {
+    color: var(--accent);
+  }
+  95%,
+  100% {
+    color: var(--body-ink);
+  }
 }
 
 /* An entrance that overshoots and settles — the display equivalent of a stamp. */
@@ -108,6 +259,18 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+
+/* Both ends sit at rest, so a delayed start never jumps and reduced motion —
+   which collapses this to a single 0.001ms pass — lands on translateY(0). */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--float-lift, -7px));
   }
 }
 
@@ -299,5 +462,35 @@
   .display-tight {
     line-height: 0.95;
     letter-spacing: -0.03em;
+  }
+
+  /*
+   * The app-icon squircle.
+   *
+   * A real superellipse — |x|^5 + |y|^5 = 1 — not `border-radius`. The two are
+   * not the same shape and the difference is exactly what makes an iOS icon
+   * read as an iOS icon: a rounded rectangle changes curvature abruptly where
+   * the arc meets the straight edge, and the eye catches that pinch. A
+   * superellipse's curvature is continuous, so the corner flows into the side.
+   *
+   * Generated by arc-length sampling the curve at 32 points and fitting cubics
+   * through them, then clamping to the 0–100 box — Catmull-Rom overshoots
+   * slightly on the near-straight runs, and any excursion past the edge gets
+   * sliced off by the mask's own bounds.
+   *
+   * `mask` rather than `clip-path: path()`, because a mask scales with the
+   * element while a path is in absolute pixels — one class then works at 32px
+   * in a list and 80px on a detail page. Where masks are unsupported the
+   * element simply stays square, which is the old appearance rather than a
+   * broken one.
+   */
+  .squircle {
+    --squircle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M100 50C100 53.8 100 57.7 100 61.5C100 65.2 100 68.8 99.8 72.5C99.6 76.2 99.6 80.2 98.5 83.7C97.5 87.2 96 91.1 93.5 93.5C91 96 87.1 97.5 83.6 98.5C80.1 99.6 76.2 99.6 72.4 99.8C68.7 100 65.5 100 61.2 100C56.8 100 50 100 46.2 100C42.5 100 41.7 100 38.5 100C35.4 100 31.2 100 27.5 99.8C23.8 99.6 19.8 99.6 16.3 98.5C12.8 97.5 8.9 96 6.5 93.5C4 91 2.5 87.1 1.5 83.6C0.4 80.1 0.4 76.2 0.2 72.4C0 68.7 0 65.5 0 61.2C0 56.8 0 50 0 46.2C0 42.5 0 41.7 0 38.5C0 35.4 0 31.2 0.2 27.5C0.4 23.8 0.4 19.8 1.5 16.3C2.5 12.8 4 8.9 6.5 6.5C9 4 12.9 2.5 16.4 1.5C19.9 0.4 23.8 0.4 27.6 0.2C31.3 0 34.5 0 38.8 0C43.2 0 50 0 53.8 0C57.5 0 58.3 0 61.5 0C64.6 0 68.8 0 72.5 0.2C76.2 0.4 80.2 0.4 83.7 1.5C87.2 2.5 91.1 4 93.5 6.5C96 9 97.5 12.9 98.5 16.4C99.6 19.9 99.6 23.8 99.8 27.6C100 31.3 100 35.1 100 38.8C100 42.6 100 46.2 100 50Z'/%3E%3C/svg%3E");
+    -webkit-mask-image: var(--squircle);
+    mask-image: var(--squircle);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
   }
 }

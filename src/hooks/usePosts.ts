@@ -35,10 +35,25 @@ function useInvalidatePosts() {
   return () => queryClient.invalidateQueries({ predicate: (q) => String(q.queryKey[0]).includes('post') });
 }
 
+/** Everything you have written, drafts included. */
+export function useMyPosts() {
+  return useQuery({
+    queryKey: ['posts', 'mine'],
+    queryFn: () => request<PostSummary[]>('get', '/posts/mine'),
+  });
+}
+
+/*
+ * Writing now goes through `/posts`, not `/admin/posts`.
+ *
+ * The admin routes still exist and still work — staff use them to moderate
+ * anybody's post. These are the ones every account uses on its own writing, and
+ * the server checks authorship rather than trusting the path.
+ */
 export function useCreatePost() {
   const invalidate = useInvalidatePosts();
   return useMutation({
-    mutationFn: (draft: PostDraft) => request<Post>('post', '/admin/posts', draft),
+    mutationFn: (draft: PostDraft) => request<Post>('post', '/posts', draft),
     onSuccess: invalidate,
   });
 }
@@ -47,7 +62,7 @@ export function useUpdatePost() {
   const invalidate = useInvalidatePosts();
   return useMutation({
     mutationFn: ({ id, ...patch }: Partial<PostDraft> & { id: string }) =>
-      request<Post>('patch', `/admin/posts/${id}`, patch),
+      request<Post>('patch', `/posts/${id}`, patch),
     onSuccess: invalidate,
   });
 }
@@ -55,7 +70,7 @@ export function useUpdatePost() {
 export function useDeletePost() {
   const invalidate = useInvalidatePosts();
   return useMutation({
-    mutationFn: (id: string) => request<{ id: string }>('delete', `/admin/posts/${id}`),
+    mutationFn: (id: string) => request<{ id: string }>('delete', `/posts/${id}`),
     onSuccess: invalidate,
   });
 }

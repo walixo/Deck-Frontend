@@ -36,15 +36,15 @@ export function Shop() {
   };
 
   return (
-    <div className="relative isolate mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-5">
         <div>
-          <p className="mb-3 inline-block border-2 border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+          <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
             Shop
           </p>
-          <h1 className="display-tight text-4xl uppercase text-balance sm:text-5xl">Deck merch</h1>
+          <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">Deck merch</h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
             Small runs, printed properly. Every order helps keep the board free to use.
           </p>
@@ -53,7 +53,7 @@ export function Shop() {
         {count > 0 && (
           <Link
             to="/cart"
-            className="flex items-center gap-3 border-2 border-edge bg-surface px-4 py-2.5 shadow-hard-sm transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard"
+            className="flex items-center gap-3 border border-edge bg-surface px-4 py-2.5 shadow-hard-sm transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard"
           >
             <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
               Cart · {count}
@@ -63,7 +63,7 @@ export function Shop() {
         )}
       </header>
 
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b-2 border-edge pb-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-edge pb-4">
         <div className="flex flex-wrap items-center gap-2">
           <FilterPill active={!category} onClick={() => update({ category: undefined })}>
             All
@@ -91,7 +91,7 @@ export function Shop() {
               onClick={() => update({ sort: option.value })}
               aria-pressed={sort === option.value}
               className={cn(
-                'border-2 border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
+                'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
                 sort === option.value
                   ? 'bg-pop text-on-pop'
                   : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
@@ -158,7 +158,7 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border-2 border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
+        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
         'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
         active ? 'bg-pop text-on-pop shadow-hard-sm' : 'bg-surface text-body',
       )}

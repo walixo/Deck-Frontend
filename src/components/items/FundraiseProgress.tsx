@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Avatar } from '@/components/ui/Avatar';
-import { cn, formatMoney, relativeTime } from '@/lib/utils';
+import { Money } from '@/components/ui/Money';
+import { cn, formatMoney, relativeTime, profilePath } from '@/lib/utils';
 import type { Contribution, Fundraise } from '@/types';
 
 /**
@@ -29,7 +30,10 @@ export function RaiseBar({
     <div className={className}>
       <div className="flex items-end justify-between gap-3">
         <p className={cn('font-display tabular-nums', large ? 'text-3xl' : 'text-xl')}>
-          {formatMoney(raise.raisedMinor)}
+          {/* The headline figure carries the conversion; the target and the
+              remainder below stay naira-only so the row does not become four
+              numbers where two would do. */}
+          <Money minor={raise.raisedMinor} approxClassName="text-xs font-normal" />
         </p>
         <p
           className={cn(
@@ -48,7 +52,7 @@ export function RaiseBar({
         aria-valuemax={100}
         aria-label={`${raise.percent}% of the target raised`}
         className={cn(
-          'mt-2 w-full overflow-hidden border-2 border-edge bg-surface-2',
+          'mt-2 w-full overflow-hidden border border-edge bg-surface-2',
           large ? 'h-5' : 'h-3',
         )}
       >
@@ -139,7 +143,7 @@ export function BackerList({
             ) : (
               <span
                 aria-hidden="true"
-                className="flex size-8 shrink-0 items-center justify-center border-2 border-edge bg-surface-2 font-mono text-[11px] font-bold"
+                className="flex size-8 shrink-0 items-center justify-center border border-edge bg-surface-2 font-mono text-[11px] font-bold"
               >
                 ?
               </span>
@@ -149,7 +153,7 @@ export function BackerList({
               <p className="flex flex-wrap items-baseline gap-x-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
                 {entry.supporter ? (
                   <Link
-                    to={`/u/${entry.supporter.username}`}
+                    to={profilePath(entry.supporter.username)}
                     className="underline-offset-2 hover:underline"
                   >
                     {entry.supporter.name}
@@ -160,7 +164,7 @@ export function BackerList({
 
                 {/* The amount is the reason this row exists, so it is set as a
                     block rather than as trailing grey text. */}
-                <span className="border-2 border-edge bg-surface-2 px-1.5 py-0.5 tabular-nums">
+                <span className="border border-edge bg-surface-2 px-1.5 py-0.5 tabular-nums">
                   {formatMoney(entry.amountMinor, entry.currency)}
                 </span>
 

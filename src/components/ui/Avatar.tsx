@@ -19,7 +19,7 @@ interface AvatarProps {
 
 /** Falls back to a flat initials block, so profiles never look broken. */
 export function Avatar({ user, size = 'md', className }: AvatarProps) {
-  const shared = cn('shrink-0 overflow-hidden border-2 border-edge', SIZES[size], className);
+  const shared = cn('shrink-0 overflow-hidden border border-edge', SIZES[size], className);
 
   if (user.avatarUrl) {
     return (

@@ -78,7 +78,7 @@ export function CategoryStrip() {
             key={category.slug}
             to={`/discover?category=${category.slug}`}
             style={{ animationDelay: `${index * 45}ms` }}
-            className="group w-40 shrink-0 animate-[var(--animate-slide-up)] rounded-slab border-2 border-edge bg-surface p-4 text-body shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg"
+            className="group w-40 shrink-0 animate-[var(--animate-slide-up)] rounded-slab border border-edge bg-surface p-4 text-body shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg"
           >
             {/* Secondary: a themed surface, so the icon and text take the
                 themed body ink and the tile reads the same way a card does. */}
@@ -138,7 +138,7 @@ function ScrollArrow({
           /* Themed, like the tiles it sits over. The band behind them is themed
              too now, so a fixed bone chevron would be a white dot on a pale
              band in light mode. */
-          'flex size-8 items-center justify-center border-2 border-edge bg-surface text-body transition-transform duration-[120ms] ease-[var(--ease-snap)]',
+          'flex size-8 items-center justify-center border border-edge bg-surface text-body transition-transform duration-[120ms] ease-[var(--ease-snap)]',
           show ? 'pointer-events-auto hover:-translate-y-0.5' : 'pointer-events-none',
         )}
       >

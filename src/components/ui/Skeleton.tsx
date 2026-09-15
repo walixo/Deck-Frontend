@@ -5,14 +5,14 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={cn('animate-pulse border-2 border-edge bg-grey/40', className)}
+      className={cn('animate-pulse border border-edge bg-grey/40', className)}
     />
   );
 }
 
 export function ItemCardSkeleton() {
   return (
-    <div className="rounded-slab border-2 border-edge bg-surface p-4 shadow-hard">
+    <div className="rounded-slab border border-edge bg-surface p-4 shadow-hard">
       <div className="flex gap-4">
         <Skeleton className="size-12 shrink-0" />
         <div className="min-w-0 flex-1 space-y-2.5">

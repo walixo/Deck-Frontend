@@ -17,11 +17,11 @@ export function Cart() {
   const awayFromFree = threshold - subtotalMinor;
 
   return (
-    <div className="relative isolate mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="relative isolate mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
       <PageBanner />
 
       <header className="mb-8">
-        <h1 className="display-tight text-4xl uppercase sm:text-5xl">Your cart</h1>
+        <h1 className="display-tight text-3xl uppercase sm:text-4xl">Your cart</h1>
         {count > 0 && (
           <p className="mt-3 font-mono text-[12px] font-bold uppercase text-muted">
             {count} {count === 1 ? 'item' : 'items'}
@@ -43,19 +43,19 @@ export function Cart() {
               return (
                 <li
                   key={line.sku}
-                  className="flex items-start gap-4 rounded-slab border-2 border-edge bg-surface p-4 shadow-hard"
+                  className="flex items-start gap-4 rounded-slab border border-edge bg-surface p-4 shadow-hard"
                 >
                   {line.image ? (
                     <img
                       src={line.image}
                       alt=""
-                      className="size-20 shrink-0 border-2 border-edge bg-surface-2 object-cover"
+                      className="size-20 shrink-0 border border-edge bg-surface-2 object-cover"
                     />
                   ) : (
                     <span
                       aria-hidden="true"
                       className={cn(
-                        'flex size-20 shrink-0 items-center justify-center border-2 border-edge font-display text-xl uppercase',
+                        'flex size-20 shrink-0 items-center justify-center border border-edge font-display text-xl uppercase',
                         colour.bg,
                         colour.ink,
                       )}
@@ -79,7 +79,7 @@ export function Cart() {
                     </p>
 
                     <div className="mt-3 flex items-center gap-3">
-                      <div className="flex items-center border-2 border-edge">
+                      <div className="flex items-center border border-edge">
                         <button
                           type="button"
                           onClick={() => setQuantity(line.sku, line.quantity - 1)}
@@ -122,7 +122,7 @@ export function Cart() {
 
           <aside className="lg:sticky lg:top-24">
             <Card className="p-5">
-              <h2 className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+              <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
                 Summary
               </h2>
 
@@ -137,14 +137,14 @@ export function Cart() {
                     {shippingMinor === 0 ? 'Free' : formatMoney(shippingMinor)}
                   </dd>
                 </div>
-                <div className="flex justify-between gap-3 border-t-2 border-edge pt-2.5">
+                <div className="flex justify-between gap-3 border-t border-edge pt-2.5">
                   <dt className="font-display uppercase">Total</dt>
                   <dd className="font-display text-lg tabular-nums">{formatMoney(totalMinor)}</dd>
                 </div>
               </dl>
 
               {awayFromFree > 0 && (
-                <p className="mt-4 border-2 border-edge bg-surface-2 px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase leading-relaxed">
+                <p className="mt-4 border border-edge bg-surface-2 px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase leading-relaxed">
                   {formatMoney(awayFromFree)} more for free shipping
                 </p>
               )}

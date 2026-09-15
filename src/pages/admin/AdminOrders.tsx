@@ -46,7 +46,7 @@ export function AdminOrders() {
             type="button"
             onClick={() => setStatus(filter.value)}
             aria-pressed={status === filter.value}
-            className={`border-2 border-edge px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
+            className={`border border-edge px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
               status === filter.value
                 ? 'bg-pop text-on-pop'
                 : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
@@ -101,13 +101,13 @@ function OrderRow({ order }: { order: AdminOrder }) {
   };
 
   return (
-    <article className="rounded-slab border-2 border-edge bg-surface p-4 shadow-hard">
+    <article className="rounded-slab border border-edge bg-surface p-4 shadow-hard">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-display text-base uppercase">{order.reference}</h3>
             <span
-              className={`border-2 border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${ORDER_STATUS_TONE[order.status]}`}
+              className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${ORDER_STATUS_TONE[order.status]}`}
             >
               {orderStatusLabel(order.status)}
             </span>
@@ -159,7 +159,7 @@ function OrderRow({ order }: { order: AdminOrder }) {
       {error && (
         <p
           role="alert"
-          className="mt-3 border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
         >
           {error}
         </p>

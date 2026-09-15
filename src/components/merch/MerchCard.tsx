@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/Badge';
-import { cn, colourFor, formatMoney, MERCH_CATEGORY_LABELS } from '@/lib/utils';
+import { Money } from '@/components/ui/Money';
+import { cn, colourFor, MERCH_CATEGORY_LABELS, profilePath } from '@/lib/utils';
 import type { MerchProduct } from '@/types';
 
 interface MerchCardProps {
@@ -17,13 +18,13 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
     <article
       style={style}
       className={cn(
-        'group relative flex flex-col rounded-slab border-2 border-edge bg-surface shadow-hard',
+        'group relative flex flex-col rounded-slab border border-edge bg-surface shadow-hard',
         'transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)]',
         'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
         className,
       )}
     >
-      <div className="relative border-b-2 border-edge">
+      <div className="relative border-b border-edge">
         {image ? (
           <img
             src={image}
@@ -74,7 +75,7 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
         <p className="relative z-10 mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
           {product.seller ? (
             <Link
-              to={`/u/${product.seller.username}`}
+              to={profilePath(product.seller.username)}
               className="hover:text-body hover:underline underline-offset-2"
             >
               by {product.seller.name}
@@ -90,7 +91,7 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
 
         <div className="mt-3 flex items-center justify-between gap-3">
           <span className="font-display text-lg">
-            {formatMoney(product.priceMinor, product.currency)}
+            <Money minor={product.priceMinor} approxClassName="block text-[11px] font-normal" />
           </span>
           <span className="font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-muted">
             {MERCH_CATEGORY_LABELS[product.category] ?? product.category}

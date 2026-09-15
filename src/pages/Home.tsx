@@ -1,7 +1,8 @@
 import { CategoryStrip } from '@/components/home/CategoryStrip';
 import { Hero } from '@/components/home/Hero';
 import { LaunchTicker } from '@/components/home/LaunchTicker';
-import { LaunchWall } from '@/components/home/LaunchWall';
+import { LaunchVortex } from '@/components/home/LaunchVortex';
+import { ShareShowcase } from '@/components/home/ShareShowcase';
 import { ButtonLink } from '@/components/ui/Button';
 import { useItems } from '@/hooks/useItems';
 import { useStats } from '@/hooks/useMeta';
@@ -9,26 +10,35 @@ import { useStats } from '@/hooks/useMeta';
 /**
  * The landing page.
  *
- * Deliberately short. The board moved to `/today`, and the maker, tag and
- * launch-CTA cards went with it — this page's job is to say what Deck is, show
- * that it is busy, and offer two ways in. Everything it used to carry below the
- * fold now has an address of its own.
+ * Says what Deck is, shows that it is busy, and offers two ways in. What it
+ * used to carry — the board, the maker and tag cards, the launch wall — all
+ * came off over time and has an address of its own now, so what is left below
+ * the fold has to earn the room rather than duplicate another page.
+ *
+ * Two sections are the answer to that, and neither exists anywhere else on the
+ * site. The vortex sits straight under the hero and is the catalogue itself,
+ * turning; the share showcase further down shows the artwork a launch leaves
+ * with, drawn live by the real generator rather than mocked up. Both are aimed
+ * at the reader who has not launched yet.
  */
 export function Home() {
   const { data: stats } = useStats();
-  const wall = useItems({ sort: 'newest', limit: 24 });
+  const launches = useItems({ sort: 'newest', limit: 24 });
 
   return (
     <>
       <Hero stats={stats} />
 
       {/*
-       * Categories above the wall.
+       * Straight off the hero, and straight into the categories.
        *
-       * They are navigation and the wall is content, so the choice comes first:
-       * somebody who already knows they want Claude skills should not have to
-       * scroll past a marquee of everything else to say so.
+       * Two dark full-bleed bands in a row is a deliberate run: the hero is a
+       * starfield and this is a tunnel, so they read as one long night that the
+       * striped shelf below cuts off. The hairline between them is the only
+       * thing keeping them apart, and it earns its keep.
        */}
+      <LaunchVortex items={launches.data?.data ?? []} total={stats?.launches} />
+
       {/*
        * A striped band, themed rather than fixed.
        *
@@ -40,7 +50,7 @@ export function Home() {
        * and auth pages use, in the themed ink so they invert with it, at an
        * opacity low enough to read as material rather than pattern.
        */}
-      <div className="relative isolate overflow-hidden border-b-2 border-edge bg-surface-2">
+      <div className="relative isolate overflow-hidden border-b border-edge bg-surface-2">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-stripes text-edge opacity-[0.07]"
@@ -50,12 +60,14 @@ export function Home() {
         </div>
       </div>
 
-      {/* Ticker, then wall. The ticker is a single line of names travelling one
-          way and the wall is two rows of panels travelling the other — a small
-          statement of the same content before the large one. */}
-      <LaunchTicker items={wall.data?.data ?? []} />
+      {/* The wall is gone; the ticker carries the launches on its own now. One
+          line of names travelling past says "this place is busy" without two
+          rows of full-bleed panels saying it again underneath. */}
+      <LaunchTicker items={launches.data?.data ?? []} />
 
-      <LaunchWall items={wall.data?.data ?? []} isLoading={wall.isLoading} />
+      {/* Framed with real launches off the feed above, so this section can
+          never advertise a card the generator does not actually produce. */}
+      <ShareShowcase items={launches.data?.data ?? []} />
 
       {/* One clear exit to the board, since it is no longer on this page. */}
       <div className="mx-auto max-w-6xl px-4 py-14 text-center sm:px-6 lg:px-8">

@@ -69,14 +69,14 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
   return (
     <section
       aria-labelledby="fundraise-heading"
-      className="rounded-slab border-2 border-edge bg-surface p-5 shadow-hard-lg sm:p-6"
+      className="rounded-slab border border-edge bg-surface p-5 shadow-hard-lg sm:p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="inline-block border-2 border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+        <p className="inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
           {funded ? 'Funded' : 'Raising'}
         </p>
         {live.closed && (
-          <p className="border-2 border-edge bg-edge px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-canvas">
+          <p className="border border-edge bg-edge px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-canvas">
             Closed
           </p>
         )}
@@ -95,15 +95,15 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
 
       {/* Who can give, and who cannot. */}
       {!live.open ? (
-        <p className="mt-6 border-2 border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+        <p className="mt-6 border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
           This raise is not taking contributions right now.
         </p>
       ) : isOwner ? (
-        <p className="mt-6 border-2 border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+        <p className="mt-6 border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
           This is your launch. Share it — you cannot back it yourself.
         </p>
       ) : !isAuthenticated ? (
-        <p className="mt-6 border-2 border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+        <p className="mt-6 border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
           <Link to="/login" className="font-bold underline underline-offset-2">
             Sign in
           </Link>{' '}
@@ -122,7 +122,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
                   type="button"
                   onClick={() => setAmount(preset)}
                   aria-pressed={amount === preset}
-                  className={`border-2 border-edge px-3 py-1.5 font-mono text-[12px] font-bold tabular-nums transition-colors duration-[120ms] ${
+                  className={`border border-edge px-3 py-1.5 font-mono text-[12px] font-bold tabular-nums transition-colors duration-[120ms] ${
                     amount === preset
                       ? 'bg-pop text-on-pop'
                       : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
@@ -161,7 +161,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
               type="checkbox"
               checked={anonymous}
               onChange={(event) => setAnonymous(event.target.checked)}
-              className="size-4 border-2 border-edge accent-pop"
+              className="size-4 border border-edge accent-pop"
             />
             Give anonymously
           </label>
@@ -169,7 +169,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
           {error && (
             <p
               role="alert"
-              className="border-2 border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+              className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
             >
               {error}
             </p>
@@ -188,7 +188,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
       )}
 
       {supporters && (
-        <BackerList backers={supporters.data} className="mt-7 border-t-2 border-edge pt-5" />
+        <BackerList backers={supporters.data} className="mt-7 border-t border-edge pt-5" />
       )}
     </section>
   );

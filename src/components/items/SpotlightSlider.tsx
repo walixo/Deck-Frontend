@@ -77,7 +77,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="rounded-slab border-2 border-edge bg-surface shadow-hard-lg"
+      className="rounded-slab border border-edge bg-surface shadow-hard-lg"
     >
       <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
         <div key={active.id} className="animate-[var(--animate-slam)]">
@@ -133,7 +133,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
                 key={item.id}
                 type="button"
                 onClick={() => goTo(itemIndex)}
-                className="flex w-64 items-center gap-3 border-2 border-edge bg-canvas p-2.5 text-left transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-1"
+                className="flex w-64 items-center gap-3 border border-edge bg-canvas p-2.5 text-left transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-1"
                 style={{ transform: `translateX(${(offset - 1) * 12}px)` }}
               >
                 <ItemLogo item={item} size="sm" />
@@ -155,7 +155,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
       </div>
 
       {/* Colour bar keyed to the active item — the only thing that changes hue. */}
-      <div className={cn('h-1.5 border-y-2 border-edge', colour.bg)} />
+      <div className={cn('h-1.5 border-y border-edge', colour.bg)} />
 
       <div className="flex items-center justify-between gap-4 px-5 py-3 sm:px-7">
         <div
@@ -172,7 +172,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
               aria-label={`Show ${item.name}`}
               onClick={() => goTo(itemIndex)}
               className={cn(
-                'h-3 border-2 border-edge transition-[width,background-color] duration-[140ms]',
+                'h-3 border border-edge transition-[width,background-color] duration-[140ms]',
                 /* A dot is a mark on the page, not a filled panel, so it takes
                    the themed accent — a fixed one would be 1.15:1 in light or
                    1.9:1 in dark depending on which half you picked. */
@@ -206,7 +206,7 @@ function SliderArrow({
       type="button"
       onClick={onClick}
       aria-label={direction === 'next' ? 'Next spotlight' : 'Previous spotlight'}
-      className="flex size-8 items-center justify-center border-2 border-edge bg-surface text-sm transition-[transform,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep active:translate-y-0"
+      className="flex size-8 items-center justify-center border border-edge bg-surface text-sm transition-[transform,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep active:translate-y-0"
     >
       <span aria-hidden="true">{direction === 'next' ? '→' : '←'}</span>
     </button>

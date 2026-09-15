@@ -17,7 +17,7 @@ import {
   useTopic,
 } from '@/hooks/useForum';
 import { RequestError } from '@/lib/api';
-import { formatFullDate, relativeTime } from '@/lib/utils';
+import { formatFullDate, relativeTime, profilePath } from '@/lib/utils';
 import { SECTION_META, type PublicUser, type Reply } from '@/types';
 
 /**
@@ -38,7 +38,7 @@ export function TopicDetail() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl space-y-4 px-4 py-8 sm:px-6 lg:px-8">
         <Skeleton className="h-10 w-3/4" />
         <Skeleton className="h-48 w-full" />
         <Skeleton className="h-28 w-full" />
@@ -85,12 +85,12 @@ export function TopicDetail() {
       <header>
         <div className="flex flex-wrap items-center gap-2">
           {topic.pinned && (
-            <span className="inline-flex items-center gap-1 border-2 border-edge bg-pop px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-on-pop">
+            <span className="inline-flex items-center gap-1 border border-edge bg-pop px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-on-pop">
               <Star name="glint" className="size-2" /> Pinned
             </span>
           )}
           {topic.locked && (
-            <span className="border-2 border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-canvas">
+            <span className="border border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-canvas">
               Locked
             </span>
           )}
@@ -108,7 +108,7 @@ export function TopicDetail() {
         <Prose body={topic.body} className="mt-4" />
 
         {(isAuthor || isStaff) && (
-          <div className="mt-5 flex flex-wrap gap-2 border-t-2 border-edge pt-4">
+          <div className="mt-5 flex flex-wrap gap-2 border-t border-edge pt-4">
             <Button
               variant="danger"
               size="sm"
@@ -162,7 +162,7 @@ export function TopicDetail() {
       <section aria-labelledby="replies-heading" className="mt-10">
         <h2
           id="replies-heading"
-          className="border-b-2 border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
         >
           {topic.replies.length} {topic.replies.length === 1 ? 'reply' : 'replies'}
         </h2>
@@ -179,13 +179,13 @@ export function TopicDetail() {
 
         <div className="mt-8">
           {topic.locked ? (
-            <p className="border-2 border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+            <p className="border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
               This topic is locked. Nobody can add to it.
             </p>
           ) : isAuthenticated ? (
             <ReplyForm slug={topic.slug} />
           ) : (
-            <p className="border-2 border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+            <p className="border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
               <Link to="/login" className="font-bold underline underline-offset-2">
                 Sign in
               </Link>{' '}
@@ -195,7 +195,7 @@ export function TopicDetail() {
         </div>
       </section>
 
-      <div className="mt-12 border-t-2 border-edge pt-6">
+      <div className="mt-12 border-t border-edge pt-6">
         <ButtonLink to="/forum" variant="secondary" size="sm">
           ← All topics
         </ButtonLink>
@@ -209,7 +209,7 @@ function Byline({ user, at }: { user: PublicUser | null; at: string }) {
     <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
       {user ? <Avatar user={user} size="sm" /> : null}
       {user ? (
-        <Link to={`/u/${user.username}`} className="font-bold text-body hover:underline">
+        <Link to={profilePath(user.username)} className="font-bold text-body hover:underline">
           {user.name}
         </Link>
       ) : (
@@ -253,7 +253,7 @@ function ReplyRow({ reply, slug }: { reply: Reply; slug: string }) {
   const mine = user?.id === reply.author?.id;
 
   return (
-    <article className="rounded-slab border-2 border-edge bg-surface p-4">
+    <article className="rounded-slab border border-edge bg-surface p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <Byline user={reply.author} at={reply.createdAt} />
 

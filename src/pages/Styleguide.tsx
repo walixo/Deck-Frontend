@@ -3,7 +3,6 @@ import { useState } from 'react';
    proposal, not the system. If it is adopted the import moves to index.css; if
    it is rejected this line and the dependency both go. 24KB latin subset. */
 import '@fontsource-variable/space-grotesk';
-import tokens from '@/../../design/tokens.json';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -11,6 +10,12 @@ import { CharCount, Input, Select, Textarea } from '@/components/ui/Field';
 import { Star } from '@/components/ui/Star';
 import { Stars } from '@/components/ui/Stars';
 import { applyFontset, readFontset, type Fontset } from '@/lib/fontset';
+import {
+  ACTIVE_PALETTE,
+  PALETTE_IDS,
+  PALETTES,
+  type PaletteId,
+} from '@/lib/palettes.generated';
 import { cn } from '@/lib/utils';
 
 /**
@@ -32,9 +37,6 @@ import { cn } from '@/lib/utils';
  * Deliberately not linked from the nav. It is a workbench, not a page.
  */
 
-type PaletteId = keyof typeof tokens.palettes;
-
-const PALETTE_IDS = Object.keys(tokens.palettes) as PaletteId[];
 
 /**
  * Fake launches whose logo colours are chosen to fight.
@@ -56,14 +58,14 @@ const CLASH = [
 ];
 
 export function Styleguide() {
-  const [palette, setPalette] = useState<PaletteId>(tokens.active as PaletteId);
+  const [palette, setPalette] = useState<PaletteId>(ACTIVE_PALETTE);
   /* Read once, lazily. `main.tsx` has already put the attribute on <html>, so
      this is only catching up the button's own label. */
   const [fontset, setFontset] = useState<Fontset>(readFontset);
   /* Both themes render side by side rather than behind a toggle. Half the
      contrast bugs this project shipped were "fine in the theme I was looking
      at" — seeing them together makes that class of mistake impossible to miss. */
-  const active = tokens.palettes[palette];
+  const active = PALETTES[palette];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
@@ -101,8 +103,8 @@ export function Styleguide() {
                   : 'bg-surface text-muted hover:-translate-y-0.5 hover:text-body',
               )}
             >
-              {tokens.palettes[id].label}
-              {id === tokens.active && ' ·  live'}
+              {PALETTES[id].label}
+              {id === ACTIVE_PALETTE && ' ·  live'}
             </button>
           ))}
         </div>

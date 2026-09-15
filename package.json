@@ -11,9 +11,9 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "typecheck": "tsc --noEmit",
-    "tokens": "node scripts/build-tokens.mjs",
-    "check:contrast": "node scripts/check-contrast.mjs",
-    "handbook": "node scripts/handbook/pdf.cjs && node scripts/handbook/docx.cjs && node scripts/handbook/web.cjs"
+    "tokens": "node ../scripts/build-tokens.mjs",
+    "check:contrast": "node ../scripts/check-contrast.mjs",
+    "handbook": "node ../scripts/handbook/pdf.cjs && node ../scripts/handbook/docx.cjs && node ../scripts/handbook/web.cjs"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

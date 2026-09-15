@@ -3,8 +3,41 @@ import type { FieldError } from '@/types';
 
 export const TOKEN_STORAGE_KEY = 'deck-token';
 
+/**
+ * Where the API lives.
+ *
+ * Two modes, and which one is in play depends entirely on whether
+ * `VITE_API_BASE_URL` was set **at build time** — Vite inlines it, so it is
+ * baked into the bundle and cannot be changed afterwards without rebuilding.
+ *
+ * **Set** — the origin of the API server, e.g. `https://deck-api.onrender.com`.
+ * Requests go straight there, cross-origin, which means the API's
+ * `CLIENT_ORIGIN` must name this site or the browser will refuse every call.
+ * The `Authorization` header makes each one a preflighted request, so the API
+ * answers an `OPTIONS` first; `cors()` handles that already.
+ *
+ * **Unset** — a relative `/api`, which is what development uses (Vite proxies
+ * it to localhost:4200) and what a same-origin deployment uses (Vercel rewrites
+ * it to the API host). No CORS in either case.
+ */
+function apiBaseUrl(): string {
+  const configured = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+  if (!configured) return '/api';
+
+  /*
+   * Forgiving about the two ways this gets typed wrong.
+   *
+   * A trailing slash is invisible in a dashboard field and would produce
+   * `//api`; writing the whole path rather than the origin is the other common
+   * reading of "base URL", and would produce `/api/api`. Both fail as 404s that
+   * look like the server is broken rather than the configuration, so both are
+   * normalised here and the variable is documented as the origin.
+   */
+  return `${configured.replace(/\/+$/, '').replace(/\/api$/, '')}/api`;
+}
+
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: apiBaseUrl(),
   headers: { 'Content-Type': 'application/json' },
 });
 

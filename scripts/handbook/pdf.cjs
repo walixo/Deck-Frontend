@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const PDFDocument = require('pdfkit');
-const { meta, sections } = require('./content.js');
+const { meta, sections } = require('./content.cjs');
 
 /*
  * The handbook as a PDF, drawn rather than converted.
@@ -14,7 +14,11 @@ const { meta, sections } = require('./content.js');
 /* Anchored to this file, not the working directory — `npm run handbook` from
    the repository root used to fail on the font paths. */
 const HERE = __dirname;
-const OUT = path.resolve(HERE, '../../Deck-Handbook.pdf');
+/* Written straight into `public/`, which is the only place Vite serves a static
+   file from and where the download link on /handbook points. It used to land at
+   the repository root and be copied across; with the tooling inside the
+   frontend repo the root copy is the same file twice. */
+const OUT = path.resolve(HERE, '../../public/Deck-Handbook.pdf');
 
 const INK = '#111111';
 const POP = '#b8a9fa';

@@ -6,7 +6,7 @@ const {
   TableOfContents, PageBreak, LevelFormat, PositionalTab,
   PositionalTabAlignment, PositionalTabLeader,
 } = require('docx');
-const { meta, sections } = require('./content.js');
+const { meta, sections } = require('./content.cjs');
 
 /* Deck's palette, so the document is recognisably the same product. */
 const INK = '111111';
@@ -180,6 +180,6 @@ const doc = new Document({
 });
 
 Packer.toBuffer(doc).then((buffer) => {
-  fs.writeFileSync(path.resolve(__dirname, '../../Deck-Handbook.docx'), buffer);
+  fs.writeFileSync(path.resolve(__dirname, '../../public/Deck-Handbook.docx'), buffer);
   console.log('wrote Deck-Handbook.docx', (buffer.length / 1024).toFixed(0) + 'KB');
 });

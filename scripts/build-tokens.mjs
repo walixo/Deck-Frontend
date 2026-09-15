@@ -20,7 +20,7 @@
  * without running a codegen step first, and the diff on a palette change is
  * exactly the point — you can see every consumer move together.
  */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -41,6 +41,39 @@ function write(relative, contents) {
   writeFileSync(target, contents);
   console.log(`  ${relative}`);
 }
+
+/**
+ * Writes a file that belongs to a *different repository*.
+ *
+ * The backend needs one generated palette file — the accents for the SVG badge
+ * it serves into other people's pages, which cannot reach a stylesheet. It used
+ * to be written directly, back when both halves lived under one root. They do
+ * not any more: `Deck-Frontend` and `Deck-Backend` are separate repos that
+ * happen to sit side by side on a development machine.
+ *
+ * So this writes it when the sibling checkout is there and says so clearly when
+ * it is not, rather than the two failure modes either extreme would give —
+ * crashing on a machine that only has the frontend, or silently conjuring a
+ * `Backend/` directory inside the frontend repo and filling it with a file
+ * nobody will ever read.
+ *
+ * The generated file is committed to the backend repo. It changes only when the
+ * palette does, which is rare and deliberate, so a stale one is visible in a
+ * diff rather than lurking.
+ */
+function writeSibling(repoDir, relative, contents) {
+  const repo = join(root, '..', repoDir);
+  if (!existsSync(repo)) {
+    skipped.push(`${repoDir}/${relative}`);
+    return;
+  }
+  const target = join(repo, relative);
+  mkdirSync(dirname(target), { recursive: true });
+  writeFileSync(target, contents);
+  console.log(`  ../${repoDir}/${relative}`);
+}
+
+const skipped = [];
 
 /* ------------------------------------------------------------ 1. Tailwind --- */
 
@@ -206,12 +239,12 @@ ${Object.entries(tokens.palettes)
 }
 `;
 
-write('Frontend/src/styles/tokens.generated.css', themedCss);
+write('src/styles/tokens.generated.css', themedCss);
 
 /* ---------------------------------------------------------- 2. Share card --- */
 
 write(
-  'Frontend/src/lib/palette.generated.ts',
+  'src/lib/palette.generated.ts',
   `${BANNER}
 
 /** Deck's palette for the <canvas> share card, which has no stylesheet to read. */
@@ -226,10 +259,65 @@ export const PALETTE = {
 `,
 );
 
-/* --------------------------------------------------------- 3. Embed badge --- */
+/* ----------------------------------------------------------- 3. Workbench --- */
 
+/*
+ * The whole catalogue, for the styleguide's palette switcher.
+ *
+ * `/styleguide` used to import `design/tokens.json` directly, across the
+ * directory boundary, which worked locally and broke the moment the frontend
+ * was built anywhere the repository root was not present — a Vercel project
+ * rooted at `Frontend/` never uploads `design/`, so `tsc` failed on a module it
+ * could not find and then produced two more errors downstream, where
+ * `keyof typeof tokens.palettes` had collapsed to `string | number | symbol`.
+ *
+ * Generating it instead makes `Frontend/` buildable on its own, which is the
+ * property that actually matters, and types the ids properly on the way
+ * through rather than needing a cast at every use.
+ */
 write(
-  'Backend/src/config/palette.generated.ts',
+  'src/lib/palettes.generated.ts',
+  `${BANNER}
+
+export interface PaletteEntry {
+  label: string;
+  note: string;
+  pop: string;
+  'pop-hover': string;
+  'on-pop': string;
+  deep: string;
+  'deep-hover': string;
+  'on-deep': string;
+  'mark-light': string;
+  'mark-dark': string;
+}
+
+export const PALETTES = {
+${Object.entries(tokens.palettes)
+  .map(
+    ([id, palette]) => `  '${id}': {
+${['label', 'note', 'pop', 'pop-hover', 'on-pop', 'deep', 'deep-hover', 'on-deep', 'mark-light', 'mark-dark']
+  .map((key) => `    '${key}': ${JSON.stringify(palette[key] ?? '')},`)
+  .join('\n')}
+  },`,
+  )
+  .join('\n')}
+} as const satisfies Record<string, PaletteEntry>;
+
+export type PaletteId = keyof typeof PALETTES;
+
+/** The one shipping today. */
+export const ACTIVE_PALETTE: PaletteId = '${tokens.active}';
+
+export const PALETTE_IDS = Object.keys(PALETTES) as PaletteId[];
+`,
+);
+
+/* --------------------------------------------------------- 4. Embed badge --- */
+
+writeSibling(
+  'Backend',
+  'src/config/palette.generated.ts',
   `${BANNER}
 
 /**
@@ -250,7 +338,7 @@ export const DEFAULT_ACCENT = 'pop';
 `,
 );
 
-/* ------------------------------------------------------------ 4. Handbook --- */
+/* ------------------------------------------------------------ 5. Handbook --- */
 
 write(
   'docs/tokens.generated.css',
@@ -272,6 +360,12 @@ ${Object.entries(tokens.fixed)
 }
 `,
 );
+
+if (skipped.length) {
+  console.log(`\n  skipped (sibling repo not checked out here):`);
+  for (const target of skipped) console.log(`    ${target}`);
+  console.log('    — clone Deck-Backend alongside this repo and re-run to write it.');
+}
 
 console.log(
   `\n  Active palette: ${active.label} (${tokens.active}) · ${Object.keys(tokens.palettes).length} available\n`,

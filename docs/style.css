@@ -1,0 +1,324 @@
+/*
+ * Print styling for the Deck handbook.
+ *
+ * Deliberately the app's own design language — the same flat colour, 2px
+ * borders and hard offset shadows — because documentation that looks nothing
+ * like the product it describes is harder to hold in your head alongside it.
+ *
+ * Light palette only: this is a document that will be printed, and a dark page
+ * is a page that empties a toner cartridge.
+ */
+
+/* Palette comes from tokens.generated.css, which this file is loaded after.
+   Only layout and type live here now. */
+
+@page {
+  size: A4;
+  margin: 18mm 16mm 20mm;
+}
+
+/* The running footer. Chrome draws page numbers from its own header/footer
+   template, passed on the command line — nothing here can produce them. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 10.5pt;
+}
+
+body {
+  margin: 0;
+  font-family: 'Geist', -apple-system, sans-serif;
+  color: var(--body-ink);
+  background: var(--canvas);
+  line-height: 1.62;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Archivo Black', Impact, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+/* Every top-level section starts a page: the handbook is read by section, not
+   cover to cover, and a heading stranded at the foot of a page is a heading
+   nobody finds. */
+h2 {
+  break-before: page;
+  font-size: 22pt;
+  margin: 0 0 4mm;
+  padding-bottom: 3mm;
+  border-bottom: 3px solid var(--edge);
+}
+
+h3 {
+  font-size: 13pt;
+  margin: 9mm 0 3mm;
+  break-after: avoid;
+}
+
+h4 {
+  font-size: 10.5pt;
+  margin: 6mm 0 2mm;
+  break-after: avoid;
+}
+
+p,
+ul,
+ol {
+  margin: 0 0 3.5mm;
+}
+
+/* A paragraph never starts on the last line of a page or ends on the first. */
+p,
+li {
+  orphans: 3;
+  widows: 3;
+}
+
+ul,
+ol {
+  padding-left: 5mm;
+}
+
+li {
+  margin-bottom: 1.5mm;
+}
+
+a {
+  color: var(--body-ink);
+  text-decoration-color: var(--accent);
+  text-underline-offset: 2px;
+}
+
+code {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 0.88em;
+  background: var(--surface-2);
+  border: 1px solid var(--grey);
+  padding: 0.5mm 1.2mm;
+  white-space: nowrap;
+}
+
+pre {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 8pt;
+  line-height: 1.5;
+  background: var(--surface);
+  border: 2px solid var(--edge);
+  box-shadow: 3px 3px 0 var(--edge);
+  padding: 3mm 4mm;
+  margin: 0 0 5mm;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  break-inside: avoid;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  white-space: inherit;
+}
+
+/* ------------------------------------------------------------------ cover */
+
+.cover {
+  height: calc(297mm - 38mm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  break-after: page;
+}
+
+.cover .wordmark {
+  font-family: 'Archivo Black', Impact, sans-serif;
+  font-size: 58pt;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+  margin: 0;
+}
+
+.cover .rule {
+  height: 5px;
+  background: var(--edge);
+  margin: 6mm 0;
+}
+
+.cover .subtitle {
+  font-size: 15pt;
+  line-height: 1.35;
+  max-width: 120mm;
+  margin: 0 0 10mm;
+}
+
+.cover dl {
+  display: grid;
+  grid-template-columns: 34mm 1fr;
+  gap: 2mm 4mm;
+  margin: 0;
+  font-size: 9pt;
+}
+
+.cover dt {
+  font-family: 'Geist Mono', monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-ink);
+}
+
+.cover dd {
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- chrome  */
+
+.eyebrow {
+  display: inline-block;
+  font-family: 'Geist Mono', monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border: 2px solid var(--edge);
+  background: var(--pop);
+  color: var(--on-pop);
+  padding: 1mm 2.5mm;
+  margin-bottom: 3mm;
+}
+
+.eyebrow.acid {
+  background: var(--pop-hover);
+}
+.eyebrow.plain {
+  background: var(--surface);
+}
+
+/* A boxed aside for the decisions worth stopping on. */
+.note {
+  border: 2px solid var(--edge);
+  border-left-width: 6px;
+  background: var(--surface);
+  padding: 3mm 4mm;
+  margin: 0 0 5mm;
+  break-inside: avoid;
+}
+
+.note > :last-child {
+  margin-bottom: 0;
+}
+
+.note .label {
+  display: block;
+  font-family: 'Geist Mono', monospace;
+  font-size: 7.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-ink);
+  margin-bottom: 1.5mm;
+}
+
+.note.why {
+  border-left-color: var(--accent);
+}
+.note.warn {
+  border-left-color: var(--red);
+}
+.note.gap {
+  border-left-color: var(--grey);
+  background: var(--surface-2);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.5pt;
+  margin: 0 0 5mm;
+  break-inside: avoid;
+}
+
+th,
+td {
+  border: 2px solid var(--edge);
+  padding: 1.8mm 2.5mm;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: var(--surface-2);
+  font-family: 'Geist Mono', monospace;
+  font-size: 7.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+td code {
+  white-space: normal;
+}
+
+/* Contents ---------------------------------------------------------------- */
+
+.toc {
+  columns: 2;
+  column-gap: 10mm;
+  font-size: 9.5pt;
+}
+
+.toc ol {
+  margin: 0;
+  padding-left: 6mm;
+}
+
+.toc > p {
+  break-after: avoid;
+}
+
+/* The verification tables read as evidence, so they get the mono treatment. */
+.checks td:first-child {
+  font-family: 'Geist Mono', monospace;
+  font-weight: 700;
+  font-size: 7.5pt;
+  white-space: nowrap;
+  background: var(--pop-hover);
+  color: var(--on-pop);
+  text-align: center;
+  width: 16mm;
+}
+
+.stack {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3mm;
+  margin-bottom: 5mm;
+}
+
+.stack div {
+  border: 2px solid var(--edge);
+  background: var(--surface);
+  padding: 3mm;
+  break-inside: avoid;
+}
+
+.stack h4 {
+  margin: 0 0 1.5mm;
+}
+
+.stack p {
+  margin: 0;
+  font-size: 9pt;
+}

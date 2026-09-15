@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1120" width="1200" height="1120" role="img" aria-label="Mockup: black t-shirt with the Deck wordmark and the words Built for Makers">
+  <title>Deck merch mockup — black tee, "Built for Makers"</title>
+
+  <defs>
+    <!-- Fabric body: not flat black. A near-black with a touch of warmth reads
+         as dyed cotton; pure #000 reads as a hole in the page. -->
+    <linearGradient id="cloth" x1="0" y1="0" x2="1" y2="0.35">
+      <stop offset="0" stop-color="#0f0f10" />
+      <stop offset="0.34" stop-color="#1c1c1e" />
+      <stop offset="0.62" stop-color="#191919" />
+      <stop offset="1" stop-color="#0d0d0e" />
+    </linearGradient>
+
+    <!-- Broad centre highlight, as if lit from front-left. -->
+    <linearGradient id="sheen" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="0.4" stop-color="#ffffff" stop-opacity="0.055" />
+      <stop offset="0.72" stop-color="#ffffff" stop-opacity="0.012" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="collarRib" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b2b2e" />
+      <stop offset="1" stop-color="#151517" />
+    </linearGradient>
+
+    <radialGradient id="ground" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#1a1a1a" stop-opacity="0.18" />
+      <stop offset="1" stop-color="#1a1a1a" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Seam falloff. Gradients, not flat fills: a constant-opacity black bar
+         along the seam reads as a printed stripe, which is exactly what the
+         first pass of this file looked like. -->
+    <linearGradient id="fadeLeft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#000" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="fadeRight" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0.54" />
+      <stop offset="1" stop-color="#000" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="fadeHem" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0.3" />
+      <stop offset="1" stop-color="#000" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Cotton weave. Kept very low opacity: enough to break up the flat fill
+         so the print sits *on* fabric, not floating above a silhouette. -->
+    <filter id="weave" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7" result="n" />
+      <feColorMatrix in="n" type="saturate" values="0" />
+    </filter>
+
+    <!-- Folds get blurred hard. Any fold whose edge you can trace reads as a
+         drawn line; cloth shading has no edge at all. -->
+    <filter id="soft" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="18" />
+    </filter>
+
+    <!--
+      The shirt silhouette, reused as a clip so no highlight, fold or print can
+      spill past the seams.
+
+      Proportions: shoulder-to-hem is ~1.45x the chest width (535 units across
+      the body, 775 down). An earlier pass ran the body to 960 units tall, which
+      turned a t-shirt into a tunic — garment length is the single measurement
+      that decides whether this reads as a tee at a glance.
+    -->
+    <path
+      id="shirt"
+      d="M600 214
+         C561 214 521 204 492 185
+         L372 199
+         C300 253 220 333 150 455
+         C143 473 148 495 164 507
+         L268 581
+         C284 593 306 589 316 573
+         L352 515
+         C344 600 338 740 336 930
+         C336 948 348 960 364 960
+         L836 960
+         C852 960 864 948 864 930
+         C862 740 856 600 848 515
+         L884 573
+         C894 589 916 593 932 581
+         L1036 507
+         C1052 495 1057 473 1050 455
+         C980 333 900 253 828 199
+         L708 185
+         C679 204 639 214 600 214 Z"
+    />
+    <clipPath id="clipShirt">
+      <use href="#shirt" />
+    </clipPath>
+  </defs>
+
+  <!-- Studio ground -->
+  <rect width="1200" height="1120" fill="#f4f3f0" />
+  <ellipse cx="600" cy="988" rx="320" ry="40" fill="url(#ground)" />
+
+  <!-- ============================ THE SHIRT ============================ -->
+  <g>
+    <!-- Soft contact shadow so the garment sits on the surface -->
+    <use href="#shirt" fill="#20201e" opacity="0.14" transform="translate(9 13)" />
+
+    <use href="#shirt" fill="url(#cloth)" />
+
+    <g clip-path="url(#clipShirt)">
+      <!-- Lighting -->
+      <rect width="1200" height="1120" fill="url(#sheen)" />
+
+      <!-- Weave texture -->
+      <rect width="1200" height="1120" filter="url(#weave)" opacity="0.055" style="mix-blend-mode:overlay" />
+
+      <!-- Seam falloff and hem weight -->
+      <rect x="330" y="180" width="130" height="780" fill="url(#fadeLeft)" />
+      <rect x="740" y="180" width="130" height="780" fill="url(#fadeRight)" />
+      <rect x="330" y="740" width="540" height="220" fill="url(#fadeHem)" />
+
+      <!-- Shadow cast by the collar onto the chest -->
+      <path d="M470 200C520 244 680 244 730 200L742 236C688 288 512 288 458 236Z" fill="#000" opacity="0.26" />
+
+      <!-- Sleeve seams and their shadow -->
+      <path d="M352 515C330 560 316 600 306 640L268 581Z" fill="#000" opacity="0.22" />
+      <path d="M848 515C870 560 884 600 894 640L932 581Z" fill="#000" opacity="0.24" />
+      <path d="M356 512 316 573" stroke="#000" stroke-opacity="0.3" stroke-width="7" fill="none" />
+      <path d="M844 512 884 573" stroke="#000" stroke-opacity="0.3" stroke-width="7" fill="none" />
+
+      <!-- Folds -->
+      <g fill="none" stroke-linecap="round" filter="url(#soft)">
+        <path d="M406 640c20 118 18 232 8 300" stroke="#fff" stroke-opacity="0.055" stroke-width="26" />
+        <path d="M786 660c-16 112-12 220-2 282" stroke="#fff" stroke-opacity="0.045" stroke-width="22" />
+        <path d="M470 690c-10 76-10 154-4 224" stroke="#000" stroke-opacity="0.26" stroke-width="24" />
+        <path d="M714 706c8 74 8 150 2 212" stroke="#000" stroke-opacity="0.22" stroke-width="20" />
+        <path d="M600 800c0 52 2 96 4 138" stroke="#000" stroke-opacity="0.13" stroke-width="30" />
+      </g>
+
+      <!-- Hem: a doubled-over band, so the bottom edge has weight -->
+      <path d="M330 918H870V928H330Z" fill="#000" opacity="0.3" />
+      <path d="M330 928H870V935H330Z" fill="#fff" opacity="0.045" />
+
+      <!-- Sleeve cuffs -->
+      <path d="M268 581 316 573 306 553 258 561Z" fill="#fff" opacity="0.05" />
+      <path d="M932 581 884 573 894 553 942 561Z" fill="#fff" opacity="0.05" />
+    </g>
+
+    <!-- Collar: rib band, then the visible inside of the back neck -->
+    <path
+      d="M492 185C512 209 552 227 600 227C648 227 688 209 708 185L692 175C674 197 640 213 600 213C560 213 526 197 508 175Z"
+      fill="url(#collarRib)"
+    />
+    <path d="M508 175C526 197 560 213 600 213C640 213 674 197 692 175Z" fill="#070708" />
+    <path
+      d="M500 181C522 206 558 222 600 222C642 222 678 206 700 181"
+      fill="none"
+      stroke="#fff"
+      stroke-opacity="0.075"
+      stroke-width="1.6"
+    />
+  </g>
+
+  <!-- ============================ THE PRINT ============================
+       Screen-printed white, sat about a third of the way down the body — a
+       print centred on the body by arithmetic always looks like it has slipped
+       downward once the garment is worn. -->
+  <g clip-path="url(#clipShirt)" opacity="0.94">
+    <!-- Deck wordmark. These are the app's own paths (lib/wordmark.ts), not the
+         word "DECK" set in a typeface: the real K has a flat-cut chevron vertex
+         that no stock face reproduces. Even-odd keeps the D and C counters
+         genuinely open rather than filling them in. -->
+    <g
+      transform="translate(419 378) scale(0.86)"
+      fill="#ffffff"
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+    >
+      <path d="M0 0H62C89 0 110 21 110 48V52C110 79 89 100 62 100H0V0ZM42 29V71H60C66 71 70 67 70 61V39C70 33 66 29 60 29H42Z" />
+      <path d="M114 0H215V30H154V37H211V63H154V70H215V100H114V0Z" />
+      <path d="M263 0H323V30H259V70H323V100H263C239 100 219 82 219 58V42C219 18 239 0 263 0Z" />
+      <path d="M327 0H367V33L394 0H421L369 47V53L421 100H394L367 67V100H327V0Z" />
+    </g>
+
+    <!-- x is nudged left by half the tracking: SVG adds letter-spacing after the
+         final glyph too, so a `middle` anchor sits the line off-centre. -->
+    <text
+      x="595"
+      y="516"
+      text-anchor="middle"
+      fill="#ffffff"
+      fill-opacity="0.88"
+      font-family="'Geist Mono Variable', 'Geist Mono', 'SF Mono', ui-monospace, Menlo, Monaco, monospace"
+      font-size="27"
+      font-weight="700"
+      letter-spacing="10.5"
+    >BUILT FOR MAKERS</text>
+  </g>
+</svg>

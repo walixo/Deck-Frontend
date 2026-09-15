@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Deck — Build Handbook</title>
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="tokens.generated.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ============================================================ cover -->
+    <section class="cover">
+      <p class="eyebrow">Build handbook</p>
+      <h1 class="wordmark">DECK</h1>
+      <div class="rule"></div>
+      <p class="subtitle">
+        Where new tech gets its first fans — a launch board with a shop, a fundraise, an ad
+        service and a staff back office.
+      </p>
+      <dl>
+        <dt>Stack</dt>
+        <dd>React 19 · Vite · TypeScript · Tailwind 4 — Express 4 · Mongoose 8 · MongoDB</dd>
+        <dt>Payments</dt>
+        <dd>Paystack, collected centrally and disbursed by Deck</dd>
+        <dt>Shape</dt>
+        <dd>11 models · 17 controllers · 26 pages · 41 components</dd>
+        <dt>Status</dt>
+        <dd>Typechecks, lints and builds clean in both packages</dd>
+      </dl>
+    </section>
+
+    <!-- ========================================================= contents -->
+    <h2>Contents</h2>
+    <div class="toc">
+      <ol>
+        <li>What Deck is</li>
+        <li>Architecture</li>
+        <li>The design system</li>
+        <li>Data model</li>
+        <li>Launches, votes and the board</li>
+        <li>The shop</li>
+        <li>How money moves</li>
+        <li>Fundraising</li>
+        <li>Advertising</li>
+        <li>Badges</li>
+        <li>The share kit</li>
+        <li>The admin area</li>
+        <li>The audit trail</li>
+        <li>Security &amp; integrity</li>
+        <li>Running it</li>
+        <li>Known gaps</li>
+      </ol>
+    </div>
+
+    <p style="margin-top: 8mm">
+      This handbook records not just <em>what</em> was built but <em>why</em> each significant
+      decision went the way it did — particularly the ones about money, permissions and
+      privacy, where the reasoning is the part that is expensive to reconstruct later.
+    </p>
+
+    <div class="note why">
+      <span class="label">How to read the boxes</span>
+      <p>
+        <strong>Why</strong> boxes explain a decision that had a real alternative.
+        <strong>Careful</strong> boxes flag something that will bite if forgotten.
+        <strong>Gap</strong> boxes are things deliberately not built.
+      </p>
+    </div>
+
+    <!-- ==================================================== what deck is -->
+    <h2>1 · What Deck is</h2>
+    <p>
+      Deck is a place where makers launch new tech — AI models, tools, Claude skills, mobile
+      apps, websites, hardware — and the community votes, comments and reviews. A leaderboard
+      resets every UTC day, so each launch gets its own day in front of people.
+    </p>
+    <p>Four things were built on top of that core, in order:</p>
+    <ul>
+      <li>
+        <strong>A shop.</strong> Deck sells its own merch, and any maker can list theirs
+        alongside it, subject to review.
+      </li>
+      <li>
+        <strong>A fundraise.</strong> Any launch can opt in to accepting contributions, with a
+        target and a progress bar.
+      </li>
+      <li>
+        <strong>An ad service.</strong> Makers buy placements to promote their own launches, with
+        Google AdSense filling unsold slots.
+      </li>
+      <li>
+        <strong>A back office.</strong> One gated admin area covering review queues, fulfilment,
+        disbursements, roles and an append-only audit trail.
+      </li>
+    </ul>
+
+    <h3>The rule that shaped everything</h3>
+    <p>
+      The original brief was explicit: no Redis, Kafka, RabbitMQ, Docker, Kubernetes,
+      microservices, Prisma, PostgreSQL, GraphQL, event sourcing, CQRS or AWS-specific work.
+      Keep the stack lightweight and focused on shipping.
+    </p>
+    <p>
+      That held throughout. The backend still has nine runtime dependencies. Several designs in
+      this document — the derived ledger, the client-rendered share card, the SVG embed badge —
+      are the direct result of solving a problem <em>without</em> reaching for a new service.
+    </p>
+
+    <!-- ==================================================== architecture -->
+    <h2>2 · Architecture</h2>
+    <p>Two packages in one repository, deployable together or apart.</p>
+
+    <div class="stack">
+      <div>
+        <h4>Frontend</h4>
+        <p>
+          React 19, Vite, TypeScript, React Router 7, TanStack Query 5, Tailwind CSS 4, Axios.
+          A single-page app; all state that matters lives on the server.
+        </p>
+      </div>
+      <div>
+        <h4>Backend</h4>
+        <p>
+          Express 4, TypeScript, Mongoose 8, Zod for validation, JWT with bcrypt for auth,
+          Multer for uploads. No ORM beyond Mongoose, no job queue, no cache layer.
+        </p>
+      </div>
+    </div>
+
+    <h3>Request shape</h3>
+    <p>
+      Every response is <code>{ success, data }</code> or <code>{ success, error }</code>, with
+      paginated lists adding a <code>meta</code> block. Errors are thrown as
+      <code>ApiError</code> and caught by one handler, so a controller never assembles an error
+      response by hand.
+    </p>
+    <p>
+      Validation is Zod at the route boundary via a <code>validate</code> middleware. By the time
+      a controller runs, its input is typed and trusted.
+    </p>
+
+    <h3>Serving</h3>
+    <p>
+      In development Vite serves the app and proxies <code>/api</code>. In production the backend
+      can serve the built frontend itself, which is what makes per-launch link previews possible
+      (§11). It detects a build and stays out of the way when there isn't one, so running the API
+      headless is unaffected.
+    </p>
+
+    <!-- ================================================== design system -->
+    <h2>3 · The design system</h2>
+    <p>
+      Neo-Brutalist Pop: flat colour, 2px borders, hard offset shadows with no blur or alpha,
+      Archivo Black for display, Geist for body, Geist Mono for anything that reads as a machine
+      value. Motion is fast and mechanical — things snap rather than glide.
+    </p>
+
+    <h3>Themed tokens</h3>
+    <p>
+      Dark mode is not a set of <code>dark:</code> overrides. Six semantic CSS variables are
+      redefined under <code>.dark</code> and exposed to Tailwind as colours:
+    </p>
+    <pre><code>--canvas  --surface  --surface-2  --edge  --body-ink  --muted-ink</code></pre>
+    <p>
+      A component writes <code>border-edge</code> once and it flips. The hard shadows reference
+      <code>var(--edge)</code> too, so they invert with everything else.
+    </p>
+
+    <div class="note why">
+      <span class="label">Why — errors have no colour</span>
+      <p>
+        Anything destructive or wrong is shown by <strong>inversion</strong> —
+        <code>bg-edge</code> with <code>text-canvas</code> — rather than a warning hue. Because
+        those two tokens swap between themes, it reads black-on-white in light mode and
+        white-on-black in dark. Unmistakable, and it costs no extra colour.
+      </p>
+    </div>
+
+    <h3>The palette</h3>
+    <table>
+      <thead>
+        <tr><th>Token</th><th>Value</th><th>Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>lime</code></td><td>#D3F84F</td><td>Primary accent — a bright block. Takes <em>slate</em> text at 8.1:1</td></tr>
+        <tr><td><code>lime-deep</code></td><td>#BBE434</td><td>Hover on lime surfaces</td></tr>
+        <tr><td><code>slate</code></td><td>#2F4750</td><td>Second accent — a dark block. Takes <em>lime</em> text at 8.1:1</td></tr>
+        <tr><td><code>slate-deep</code></td><td>#1E3138</td><td>Hover on slate surfaces</td></tr>
+        <tr><td><code>accent</code></td><td>themed</td><td>Marks on the page: link text, focus rings, active borders, progress fills. Slate on light, lime on dark</td></tr>
+        <tr><td><code>ink</code> / <code>bone</code></td><td>#111111 / #FAF9F5</td><td>The fixed poles</td></tr>
+        <tr><td><code>grey</code></td><td>#9C9C99</td><td>Neutral third — quiet tiles, disabled states</td></tr>
+        <tr><td><code>red</code></td><td>#E02B20</td><td>Alert only. One use: the notification count</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <span class="label">The two accents are a pair, not two picks</span>
+      <p>
+        Lime sits at luminance <strong>0.82</strong> and slate at <strong>0.06</strong>, near
+        opposite ends of the scale. That is the whole design: each carries the other's text at
+        <strong>8.1:1</strong>, in both directions, so a block can be bright with dark type or
+        the same block inverted. Hierarchy comes out of the pairing, which is why no third hue
+        is needed. It also survives greyscale printing, which the previous pair did not.
+      </p>
+    </div>
+
+    <div class="note warn">
+      <span class="label">Careful — blocks are fixed, marks are themed</span>
+      <p>
+        <code>lime</code> and <code>slate</code> are identical in both themes because they are
+        <em>block fills</em>: a filled panel brings its own background and its own text, so it
+        does not care what the page behind it is doing. A new <code>bg-lime</code> surface must
+        carry <code>text-slate</code>, and a new <code>bg-slate</code> surface must carry
+        <code>text-lime</code>. <code>text-ink</code> on slate is <strong>1.9:1</strong>.
+      </p>
+      <p>
+        Anything that sits <em>on</em> the page instead — link text, a focus ring, a 1px rule, a
+        progress fill, an SVG stroke — must use <code>accent</code>, which is themed. This is not
+        a preference: no fixed colour can clear 4.5:1 against both #FAF9F5 and #151515, because
+        light demands a luminance under 0.17 and dark demands over 0.20. Reaching for
+        <code>text-lime</code> on the light canvas gives <strong>1.15:1</strong>.
+      </p>
+      <p>
+        The same split governs detail drawn inside a block. Illustration marks and mascot eyes
+        take the partner colour rather than <code>--edge</code>, since <code>--edge</code> flips
+        with the theme while the block does not — an edge-coloured mark inside a block is
+        guaranteed to vanish in one theme or the other.
+      </p>
+    </div>
+
+    <h3>The mascots</h3>
+    <p>
+      Two draggable characters flank the hero. The eyes are treated as patches on the surface of
+      an implied sphere, projected each frame — which is what makes them slide toward the
+      silhouette and compress as the head turns, rather than just sliding around a flat face.
+      A sphere's outline doesn't change when it rotates, so the oval holds still while the eyes
+      move across it.
+    </p>
+    <p>
+      They track the cursor on all three axes: direction for x and y, and proximity for z, which
+      makes them lean in and widen their eyes as you approach. When the cursor is far away they
+      turn to look at each other. Every frame is written straight to the DOM from a rAF loop —
+      a <code>setState</code> per mousemove would re-render the hero sixty times a second for an
+      animation React has no opinion about. Both respect
+      <code>prefers-reduced-motion</code> and are hidden from assistive tech.
+    </p>
+
+    <!-- ===================================================== data model -->
+    <h2>4 · Data model</h2>
+    <table>
+      <thead>
+        <tr><th>Model</th><th>What it holds</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>User</code></td><td>Account, profile, <code>role: user | admin</code></td></tr>
+        <tr><td><code>Item</code></td><td>A launch, with denormalised vote/comment/review counters and an opt-in <code>fundraise</code> block</td></tr>
+        <tr><td><code>Vote</code></td><td>One row per person per launch</td></tr>
+        <tr><td><code>Comment</code></td><td>Threaded, with an optional rating on top-level comments</td></tr>
+        <tr><td><code>MerchProduct</code></td><td>A listing with variants and stock. <code>seller</code> null means Deck's own</td></tr>
+        <tr><td><code>Order</code></td><td>Lines, totals, shipping address, and per-seller settlement shares</td></tr>
+        <tr><td><code>Contribution</code></td><td>One fundraise backing, with its fee split frozen on the row</td></tr>
+        <tr><td><code>Payout</code></td><td>A disbursement Deck has sent a seller</td></tr>
+        <tr><td><code>AdCampaign</code></td><td>A paid placement, its creative, window and counters</td></tr>
+        <tr><td><code>BadgeAward</code></td><td>A badge somebody has earned, with the date</td></tr>
+        <tr><td><code>AuditEvent</code></td><td>One privileged action. Append-only</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Money is always integer minor units</h3>
+    <p>
+      Kobo for NGN, cents for USD — everywhere, end to end. Floats cannot represent 0.1 exactly,
+      so a cart of three items at 19.99 would drift. It is also exactly the unit Paystack
+      expects, so nothing is converted at the boundary. The client never sees or sends a decimal
+      price; <code>formatMoney</code> on the frontend is the single place a decimal appears.
+    </p>
+
+    <div class="note why">
+      <span class="label">Why — stored versus derived</span>
+      <p>
+        The codebase makes this choice differently in two places, on purpose.
+      </p>
+      <p>
+        A seller's <strong>balance is derived</strong> — earnings minus payouts, recomputed on
+        every read. It costs an aggregation and buys a number that cannot silently drift. A
+        stored balance goes wrong the first time an increment fails after its transaction
+        committed, and on a ledger nobody external reconciles, nothing would notice.
+      </p>
+      <p>
+        A <strong>badge is stored</strong>. An achievement is a fact about the past: you
+        <em>did</em> top the board. If that launch is deleted next year, a derived badge would
+        quietly take it back.
+      </p>
+    </div>
+
+    <!-- ======================================================== launches -->
+    <h2>5 · Launches, votes and the board</h2>
+    <p>
+      Anyone signed in can submit a launch: name, tagline, description, category, tags, pricing
+      model, links, logo, cover and gallery. Uploads are verified by magic bytes rather than by
+      the declared MIME type, given a server-generated filename, and served with
+      <code>X-Content-Type-Options: nosniff</code>. SVG is not accepted.
+    </p>
+    <p>
+      Votes are one per person per launch, toggled. Comments are threaded, and a top-level
+      comment can carry a rating, which feeds the launch's average.
+    </p>
+    <p>
+      The daily board ranks by votes within one UTC day. <code>launchDateKey</code> is
+      denormalised onto every launch as <code>YYYY-MM-DD</code>, so a day's board is an indexed
+      lookup rather than a date-range scan. Weekly, monthly, yearly and all-time boards exist on
+      the backend.
+    </p>
+
+    <!-- ============================================================ shop -->
+    <h2>6 · The shop</h2>
+    <p>
+      Deck's own catalogue and maker-listed products share one shelf. A listing is buyable only
+      when <em>two</em> separate switches agree: Deck has approved it, and the seller has it
+      switched on. Every public read goes through one filter constant, so a product can never
+      appear in one place while being hidden in another.
+    </p>
+
+    <h3>The review queue</h3>
+    <p>
+      Anything a maker lists arrives <code>pending</code> and reaches the shop only once staff
+      approve it. Rejection requires a reason, which the seller sees on their own shop page — a
+      listing that silently fails gives them nothing to fix.
+    </p>
+
+    <div class="note why">
+      <span class="label">Why — editing sends a listing back for review</span>
+      <p>
+        A seller editing an approved listing returns it to the queue. Otherwise approval is a
+        one-time gate: get a plain tote through, then rewrite it into anything you like. The
+        listing form says so rather than letting a seller discover it when their product
+        vanishes.
+      </p>
+    </div>
+
+    <h3>Stock and checkout</h3>
+    <p>
+      The checkout payload carries SKUs and quantities only — deliberately no prices. Every line
+      is priced from the database. A tampered cart can change <em>what</em> is ordered, never
+      what it costs.
+    </p>
+    <p>
+      Stock is reserved with a conditional update per line
+      (<code>$elemMatch</code> requiring <code>stock ≥ n</code>), so two people buying the last
+      item cannot both win. If any line loses the race, everything already reserved is handed
+      back <em>and</em> the order row is deleted — releasing stock alone would leave an unpayable
+      order sitting in the customer's history.
+    </p>
+
+    <div class="note warn">
+      <span class="label">Careful — the merged-quantity cap</span>
+      <p>
+        Zod enforces the per-line quantity limit, which on its own is bypassable by sending the
+        same SKU twice: ten plus ten arrives as two valid lines. Duplicate SKUs are collapsed
+        first and the cap is re-checked against the merged total.
+      </p>
+    </div>
+
+    <!-- ======================================================== money -->
+    <h2>7 · How money moves</h2>
+    <p>
+      Every payment — merch, contributions, ads — is a Paystack transaction that settles into
+      <strong>Deck's own account</strong>. Deck then owes sellers their share and disburses it
+      periodically. Two rules govern the integration:
+    </p>
+    <ol>
+      <li>The secret key never leaves the server. The browser only ever gets an authorization URL.</li>
+      <li>
+        Nothing is ever marked paid because the browser came back from checkout. The customer
+        controls that redirect. Payment is confirmed only by asking Paystack directly, or by a
+        signature-verified webhook.
+      </li>
+    </ol>
+
+    <h3>The webhook</h3>
+    <p>
+      Paystack signs the <em>raw</em> request body with HMAC SHA-512. The webhook route is
+      mounted <strong>before</strong> <code>express.json()</code> — once that has parsed and
+      discarded the buffer, the signature can never be recomputed. Comparison is
+      <code>timingSafeEqual</code>, length-guarded because it throws on a mismatch.
+    </p>
+
+    <div class="note warn">
+      <span class="label">Careful — do not move the webhook route</span>
+      <p>
+        Registering it after the JSON body parser silently breaks signature verification. Every
+        webhook would then be rejected as forged, and payments would only ever settle via the
+        browser callback.
+      </p>
+    </div>
+
+    <h3>Idempotency</h3>
+    <p>
+      The callback and the webhook both arrive for every transaction, and webhooks retry for
+      days. Each settlement path is guarded on its pending state, so a single contribution
+      cannot land on a progress bar twice, and a seven-day ad campaign cannot start twice.
+    </p>
+    <p>
+      Every settlement also re-checks that the amount and currency Paystack confirmed match what
+      was asked for. A mismatch means the transaction was tampered with or belongs to something
+      else, and is never treated as payment.
+    </p>
+
+    <h3>The ledger</h3>
+    <p>
+      A seller's balance is <strong>earned − paid out</strong>, computed from the source rows on
+      every read. Only settled money counts: an abandoned checkout owes nobody anything.
+    </p>
+    <p>Each order freezes a per-seller settlement share at checkout:</p>
+    <pre><code>netMinor = goodsMinor − platformFeeMinor + shippingMinor</code></pre>
+    <p>
+      The fee percentage can change next week; what a seller earned on <em>this</em> sale cannot.
+    </p>
+
+    <h3>Shipping goes to the seller</h3>
+    <p>
+      Whoever posts the parcel gets the postage, allocated across a mixed basket in proportion to
+      goods value. Allocation uses a largest-remainder helper so the parts sum to exactly what
+      the buyer paid.
+    </p>
+
+    <div class="note why">
+      <span class="label">Why — rounding each share separately is a bug</span>
+      <p>
+        Round each seller's share independently and a kobo goes missing on most orders. Over
+        thousands of orders that is a ledger which never balances and nobody can explain.
+        <code>allocate()</code> floors every share, then hands the leftover units to whoever lost
+        most to rounding — ties breaking toward the earlier entry, so the same input always
+        gives the same output.
+      </p>
+      <p>
+        The platform fee applies to <strong>goods only</strong>. Shipping is a pass-through;
+        commission on postage would mean Deck earning from the courier.
+      </p>
+    </div>
+
+    <h3>Disbursement</h3>
+    <p>
+      Staff see everyone owed, largest first, send the transfer from the bank, and record it.
+      Recording more than the outstanding balance is <em>refused</em>, not clamped — an
+      overpayment is almost always a typo, and a ledger that quietly accepts one stops meaning
+      anything.
+    </p>
+
+    <div class="note gap">
+      <span class="label">Gap — where to send the money</span>
+      <p>
+        Payout accounts were removed when the architecture moved to central collection. Nothing
+        in the app records a seller's bank details. The disbursement form has a free-text
+        &ldquo;sent to&rdquo; field for tracing after the fact, but you will be collecting those
+        details by email or DM until that changes.
+      </p>
+    </div>
+
+    <!-- ==================================================== fundraising -->
+    <h2>8 · Fundraising</h2>
+    <p>
+      Any launch can opt in — never opt out, and never implied. The launcher sets a target and a
+      pitch; backers give from ₦1,000 up, optionally with a message and optionally anonymously.
+      The owner sees settings where everyone else sees the progress bar.
+    </p>
+    <p>
+      <strong>Keep what you raise.</strong> A confirmed contribution is final and missing the
+      target costs nothing. There is no pledge state and no deadline, which is why the running
+      total can be incremented on confirmation and trusted from then on.
+    </p>
+    <p>Guards, all enforced server-side:</p>
+    <ul>
+      <li>The amount is priced and split on the server; the client sends a figure and nothing else.</li>
+      <li>You cannot back your own launch.</li>
+      <li>Below the floor or above the ceiling is refused.</li>
+      <li>A raise that is disabled or closed takes nothing.</li>
+      <li>
+        Turning a raise off stops new money but leaves the history and total alone — what was
+        given was given, and hiding it would misstate the record.
+      </li>
+    </ul>
+    <p>
+      The progress bar caps at 100% so it cannot overflow, while the figures beneath it tell the
+      truth about an over-funded raise.
+    </p>
+
+    <!-- ==================================================== advertising -->
+    <h2>9 · Advertising</h2>
+    <p>
+      Makers buy a slot on Home, Discover or the daily board for 7, 14 or 30 days. The price is
+      derived on the server from a rate card; the payload carries no price.
+    </p>
+
+    <div class="note why">
+      <span class="label">Why — review happens before payment</span>
+      <p>
+        Charging first would mean owing a refund every time an ad is turned down, and Deck has no
+        refund flow. The order of those two steps is the difference between a rejection being a
+        non-event and being a support ticket about somebody's money.
+      </p>
+    </div>
+
+    <p>Two things an advertiser deliberately cannot set:</p>
+    <ul>
+      <li>
+        <strong>The destination.</strong> A paid slot redirecting wherever the caller asked would
+        be an open redirect carrying Deck's endorsement. The link comes from the campaign's own
+        launch, server-side.
+      </li>
+      <li>
+        <strong>Markup.</strong> The creative is stored as fields and rendered in Deck's styling,
+        so an ad cannot run a script, restyle the page, or pass itself off as editorial. It is
+        labelled and dashed-bordered, and the label is not optional.
+      </li>
+    </ul>
+    <p>
+      Rotation is least-served-first, so delivery stays even over a short run. Scheduled, running
+      and finished are derived from the window rather than stored — a stored copy would need a
+      job to stay honest.
+    </p>
+
+    <h3>Google AdSense</h3>
+    <p>
+      A slot shows the paid Deck ad, else a Google unit, else nothing. The fallback chain lives
+      in one component, so pages only declare <em>where</em> a slot is.
+    </p>
+    <p>
+      <strong>Nothing loads before consent.</strong> The tag is injected on demand rather than
+      sitting in <code>index.html</code>, which would hit googlesyndication.com on every page
+      load, for every visitor, before anyone agreed — and on pages with no ad slot at all.
+    </p>
+    <table class="checks">
+      <thead><tr><th>State</th><th>Third-party requests</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>No publisher ID configured — and no banner, since there is nothing to ask about</td></tr>
+        <tr><td>0</td><td>Configured, reader has not answered</td></tr>
+        <tr><td>0</td><td>Reader declined</td></tr>
+        <tr><td>✓</td><td>Reader allowed — tag loads, unit renders, labelled</td></tr>
+      </tbody>
+    </table>
+    <p>
+      An unanswered banner is treated exactly as a decline, and a <code>localStorage</code>
+      failure fails closed. The two buttons differ only in which is filled — a decline hidden
+      behind a settings page is the pattern regulators call a dark pattern.
+    </p>
+
+    <div class="note gap">
+      <span class="label">Gap — this is not a certified CMP</span>
+      <p>
+        The gate is honest and it works, but if you take meaningful EEA/UK traffic, Google
+        requires a Google-certified consent platform for personalised ads. Worth resolving before
+        switching AdSense on.
+      </p>
+    </div>
+
+    <!-- ========================================================= badges -->
+    <h2>10 · Badges</h2>
+    <p>
+      Fifteen badges across three families — <strong>making</strong>, <strong>community</strong>
+      and <strong>trade</strong> — so the set rewards more than shipping. A board that only
+      celebrates launches tells everyone who votes and comments that they are furniture.
+    </p>
+    <p>
+      The evaluator runs after votes, comments, launches and settled payments, and again on
+      profile view as a backstop — so a missed hook, or one added later, resolves the first time
+      anyone looks. It never throws: a badge that failed to save is not a reason to fail the
+      vote, and the next evaluation picks it up. A unique index absorbs concurrent evaluations
+      racing on the same milestone.
+    </p>
+    <p>
+      The trophy case shows unearned badges too, with progress. That is the difference between
+      &ldquo;locked&rdquo; and &ldquo;two more to go&rdquo;.
+    </p>
+
+    <div class="note warn">
+      <span class="label">Careful — a bug worth remembering</span>
+      <p>
+        Board-finish badges silently read zero for someone who had clearly topped a board.
+        <code>launchDateKey</code> was missing from the query projection, so the ranking
+        aggregation matched <code>[undefined]</code> and found no days at all — making every
+        board badge unwinnable, with no error anywhere. Found by checking the metric against the
+        raw board data rather than trusting it. Keep that field in the projection.
+      </p>
+    </div>
+
+    <!-- ====================================================== share kit -->
+    <h2>11 · The share kit</h2>
+    <p>Three artefacts, because it is three different jobs.</p>
+
+    <h3>A downloadable card</h3>
+    <p>
+      1200×600 PNG, rendered client-side in canvas. Not server-side, and for a specific reason:
+      the browser already has Archivo Black and Geist loaded. A server renderer would need those
+      fonts installed beside it and would silently fall back to something generic the day a
+      deploy forgot them — producing an off-brand brand card with nothing to alert anyone.
+    </p>
+
+    <h3>An embed badge</h3>
+    <p>
+      SVG, served from <code>/api/share/:slug/badge.svg</code>, cached an hour with
+      <code>stale-while-revalidate</code>. SVG because it is fetched on every view of every page
+      that embeds it, so it needs to be tiny and stay crisp. Supports a dark variant and a plain
+      style. Shown live in the panel from the same URL the snippet uses, so what you copy is
+      provably what you saw.
+    </p>
+
+    <h3>Link previews</h3>
+    <p>
+      Before this, <em>every</em> Deck link unfurled identically — share a launch anywhere and it
+      showed &ldquo;Deck&rdquo; with Deck's generic blurb, because crawlers do not run the
+      JavaScript that would fix it.
+    </p>
+    <p>
+      The backend now serves the built frontend with per-launch Open Graph tags injected, using
+      the product's own cover art — already uploaded, already a raster, already the picture of
+      the thing being shared. No image renderer needed. Relative paths are made absolute, and
+      the card upgrades to <code>summary_large_image</code> only when there is an image worth
+      showing large.
+    </p>
+
+    <!-- ===================================================== admin area -->
+    <h2>12 · The admin area</h2>
+    <p>
+      One gated area at <code>/admin</code> with six tabs. The shell itself is the guard, so any
+      admin route added later is protected by existing under it — there is nothing to remember
+      per page.
+    </p>
+    <table>
+      <thead><tr><th>Tab</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Overview</td><td>Work queues first, each one a person waiting. Tiles highlight only when they have work; badges appear only above zero</td></tr>
+        <tr><td>Review</td><td>Merch queue, oldest first, full description shown. Approve is one click; reject demands a reason</td></tr>
+        <tr><td>Orders</td><td>Fulfilment. Opens on paid-and-unposted, the only view with work in it</td></tr>
+        <tr><td>Payouts</td><td>The disbursement run</td></tr>
+        <tr><td>Ads</td><td>Campaign review — nothing here has been charged yet</td></tr>
+        <tr><td>People</td><td>Search, filter by role, promote and demote</td></tr>
+        <tr><td>Trail</td><td>The audit log</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Creating an admin</h3>
+    <pre><code>npm run create-admin -- --email you@example.com --name "Your Name"</code></pre>
+    <p>
+      Promotes an existing account, or creates one and prints a generated password once.
+      <code>--demote</code> reverses it.
+    </p>
+
+    <div class="note why">
+      <span class="label">Why — a command, not an endpoint</span>
+      <p>
+        Staff access hands over everything else: the catalogue, every order, the disbursement
+        run, other people's roles. An HTTP route granting it is a route worth attacking, and the
+        first admin has to come from somewhere that is not the internet. Running the command
+        needs shell access to the server and database, which is the right bar.
+      </p>
+      <p>
+        The password is generated rather than passed as an argument — a <code>--password</code>
+        flag would leave it in shell history and in <code>ps</code>.
+      </p>
+    </div>
+
+    <h3>Lockout guards</h3>
+    <ul>
+      <li><strong>You cannot demote yourself.</strong> The easiest way to lock every admin function behind a door nobody can open, and always a misclick.</li>
+      <li><strong>The last admin cannot be demoted</strong>, by the API or the CLI.</li>
+    </ul>
+
+    <h3>Order transitions</h3>
+    <p>
+      Forward only, one step at a time: paid → shipped → delivered. Skipping, repeating and
+      moving from a terminal state are all refused.
+    </p>
+
+    <div class="note why">
+      <span class="label">Why — an admin cannot cancel a paid order</span>
+      <p>
+        It implies a refund, which has to happen at the payment provider. Doing it here would
+        leave the ledger claiming a seller earned money that went back to the buyer. Until
+        refunds exist as a real flow, nobody can half-do one by accident.
+      </p>
+    </div>
+
+    <!-- ==================================================== audit trail -->
+    <h2>13 · The audit trail</h2>
+    <p>Thirteen privileged actions are recorded. Three properties make it a trail rather than a table.</p>
+
+    <h3>Append-only, enforced at the schema</h3>
+    <p>
+      <code>updateOne</code>, <code>updateMany</code>, <code>findOneAndUpdate</code>,
+      <code>findOneAndReplace</code>, <code>replaceOne</code>, <code>deleteOne</code>,
+      <code>deleteMany</code>, <code>findOneAndDelete</code> and <code>.save()</code> on an
+      existing document all throw. Putting the guard on the model rather than trusting callers
+      means a future handler — or a careless script — cannot quietly rewrite history. There is
+      no endpoint to amend it either.
+    </p>
+
+    <h3>Self-contained entries</h3>
+    <p>
+      Actor and target names are copied in, not joined. Normally a smell; here it is the point.
+      An entry has to still read correctly in a year, after the admin has left and the product
+      has been renamed. &ldquo;Ada approved Jonas's Field Cap&rdquo; survives that; two dangling
+      ObjectIds do not. Each entry also carries before/after snapshots.
+    </p>
+
+    <h3>Logging cannot break the action</h3>
+    <p>
+      The recorder never throws. The action being logged has usually already happened — a role is
+      changed, a parcel is posted, a bank transfer has left. Failing the request would roll back
+      the API's view of something the real world already did, which is worse than a gap in the
+      log. Failures are swallowed and shouted to stderr.
+    </p>
+    <p>
+      That reasoning only holds because no audited action's <em>sole</em> record is the audit
+      entry — each also writes its own row. The entry corroborates; it is not the only evidence.
+    </p>
+    <p>
+      Ordinary work is deliberately excluded. A seller editing their own listing produces no
+      entry; staff editing someone else's does. Logging everything would bury what matters.
+    </p>
+
+    <!-- ======================================================= security -->
+    <h2>14 · Security &amp; integrity</h2>
+    <p>The guards that were built deliberately, and verified by direct testing.</p>
+
+    <table>
+      <thead><tr><th>Area</th><th>Guard</th></tr></thead>
+      <tbody>
+        <tr><td>Auth</td><td>JWT, bcrypt-hashed passwords, <code>requireAuth</code> / <code>requireAdmin</code> middleware</td></tr>
+        <tr><td>Pricing</td><td>Every price derived server-side. Merch, contributions and ads all ignore any client-sent amount</td></tr>
+        <tr><td>Ownership</td><td>Listings, launches, orders, campaigns and contributions all check the caller owns the thing</td></tr>
+        <tr><td>Payments</td><td>Amount and currency re-verified against the provider before anything settles</td></tr>
+        <tr><td>Webhooks</td><td>HMAC SHA-512 over the raw body, timing-safe comparison, 401 on mismatch</td></tr>
+        <tr><td>Uploads</td><td>Magic-byte sniffing, server-generated filenames, <code>nosniff</code>, no SVG</td></tr>
+        <tr><td>Redirects</td><td>Ad destinations come from the campaign's own launch, never the request</td></tr>
+        <tr><td>Injection</td><td>Ad and merch creatives are fields, not markup. Search patterns are regex-escaped</td></tr>
+        <tr><td>Privacy</td><td>No third-party script loads without consent; unanswered is treated as declined</td></tr>
+        <tr><td>Audit</td><td>Append-only at the schema; role and money actions all recorded</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Verified by testing, not assumed</h3>
+    <p>Each of these was exercised against a running server and confirmed to behave:</p>
+    <ul>
+      <li>Price tampering ignored; sold-out and over-stock rejected; cross-user order access forbidden.</li>
+      <li>Split maths exact on a mixed basket — fee + net = gross, shipping allocated in full, nothing lost to rounding.</li>
+      <li>Full ledger cycle: unpaid earns nothing → paid lands → part payout → settled clears the run.</li>
+      <li>All nine audit mutation paths refused; the entry survived unchanged.</li>
+      <li>Every admin route 403s a member and 401s a signed-out caller.</li>
+      <li>Self-demotion and last-admin demotion both refused, via API and CLI.</li>
+      <li>Order transitions: skipping, repeating and terminal moves all refused.</li>
+      <li>Ad lifecycle: pay-before-review refused, self-approval refused, expired and future windows serve nothing, rotation even at 4/4.</li>
+      <li>AdSense: zero third-party requests in all three non-consenting states.</li>
+    </ul>
+
+    <div class="note warn">
+      <span class="label">Careful — the IP column</span>
+      <p>
+        The audit trail records <code>req.ip</code>, which behind a reverse proxy is the
+        <em>proxy</em> unless <code>TRUST_PROXY</code> is set. An IP column reading &ldquo;the
+        load balancer&rdquo; on every row is worse than no column — it looks like evidence and is
+        not. It is off by default because trusting <code>X-Forwarded-For</code> with no proxy in
+        front lets any client claim any address.
+      </p>
+    </div>
+
+    <!-- ======================================================== running -->
+    <h2>15 · Running it</h2>
+    <pre><code>Backend/                        Frontend/
+  npm run dev      watch mode      npm run dev      Vite
+  npm run seed     reset + seed    npm run build    production build
+  npm run build    tsc             npm run lint
+  npm run lint                     npm run typecheck
+  npm run typecheck
+  npm run create-admin -- --email you@example.com</code></pre>
+    <p>
+      Seeding wipes every collection it owns and creates 7 users, 30 launches, votes, comments
+      and 8 merch products. Sign in with any seeded account, e.g.
+      <code>ada@deck.dev</code> / <code>deck1234</code> — Ada is staff.
+    </p>
+
+    <h3>Configuration</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>MONGODB_URI</code></td><td>Database connection</td></tr>
+        <tr><td><code>JWT_SECRET</code></td><td>Token signing key</td></tr>
+        <tr><td><code>PAYSTACK_SECRET_KEY</code></td><td>Server-only. Without it the app runs but cannot take card payments</td></tr>
+        <tr><td><code>PAYSTACK_CALLBACK_URL</code></td><td>Where Paystack returns the customer</td></tr>
+        <tr><td><code>CURRENCY</code></td><td>Must be one your Paystack account is enabled for</td></tr>
+        <tr><td><code>SHIPPING_FLAT_MINOR</code><br /><code>FREE_SHIPPING_THRESHOLD_MINOR</code></td><td>Shipping rule, in minor units</td></tr>
+        <tr><td><code>PLATFORM_FEE_PERCENT</code></td><td>Deck's cut of goods. Clamped 0–50 so a typo cannot swallow a payout. Recorded even at 0, so switching it on later needs no backfill</td></tr>
+        <tr><td><code>MIN_CONTRIBUTION_MINOR</code><br /><code>MAX_CONTRIBUTION_MINOR</code></td><td>Fundraise bounds</td></tr>
+        <tr><td><code>AD_RATE_*_MINOR</code></td><td>Per-placement daily ad rates</td></tr>
+        <tr><td><code>TRUST_PROXY</code></td><td>Only when a proxy is genuinely in front (see §14)</td></tr>
+        <tr><td><code>CLIENT_ORIGIN</code></td><td>CORS allow-list; the first entry is the canonical public origin for share links</td></tr>
+        <tr><td><code>VITE_ADSENSE_CLIENT</code><br /><code>VITE_ADSENSE_SLOT</code></td><td>Frontend. Both needed before any Google unit can appear</td></tr>
+      </tbody>
+    </table>
+
+    <!-- =========================================================== gaps -->
+    <h2>16 · Known gaps</h2>
+    <p>Things deliberately not built, in rough order of how much they matter.</p>
+
+    <ol>
+      <li>
+        <strong>Email.</strong> No outbound mail at all — no receipts, no &ldquo;your listing was
+        approved&rdquo;, no rejection notice, no payout confirmation. Sellers currently learn they
+        were rejected by checking. This is the biggest hole in the product.
+      </li>
+      <li>
+        <strong>Refunds.</strong> None. This constrains design everywhere money moves: it is why
+        ads are reviewed before payment, and why an admin cannot cancel a paid order.
+      </li>
+      <li>
+        <strong>Seller bank details.</strong> Nothing records where to send a disbursement (§7).
+      </li>
+      <li>
+        <strong>A certified consent platform.</strong> Required by Google for personalised ads to
+        EEA/UK traffic (§9).
+      </li>
+      <li>
+        <strong>Impressions measure serves, not views.</strong> Fine for flat-rate billing where
+        the number is informational; it would need to be far more defensible before it could
+        price anything.
+      </li>
+      <li>
+        <strong>No automated tests.</strong> Everything in §14 was verified by driving a running
+        server, not by a suite that would catch a regression tomorrow.
+      </li>
+      <li>
+        <strong>Comment moderation is reactive.</strong> An admin finds a bad comment by chance.
+        Reports plus a queue would use the audit trail already in place.
+      </li>
+      <li>
+        <strong>Live Paystack was never exercised.</strong> No key was available in the
+        development environment. Every payment path is written to the API contract and verified
+        up to the provider boundary, but no real transaction has been made. Get a test-mode key
+        before this goes near real money.
+      </li>
+    </ol>
+
+    <div class="note why">
+      <span class="label">Suggested next steps</span>
+      <p>
+        Email first — it unblocks the seller and advertiser experience more than anything else on
+        this list. Then a test-mode Paystack key to close the last unverified boundary. Then
+        refunds, which several designs are currently working around.
+      </p>
+    </div>
+  </body>
+</html>

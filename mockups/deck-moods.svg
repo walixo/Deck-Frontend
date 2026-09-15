@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1500" width="1500" height="1500" role="img" aria-label="Twenty flat-vector Deck characters, each showing a different mood">
+<title>Deck moods — Lavender / Midnight</title>
+<desc>Shipped it, Curious, Focused, Overwhelmed, Calm, Surprised, Sceptical, Exhausted, Excited, Thinking, Nervous, Determined, Delighted, Confused, Bored, Relieved, Inspired, Frustrated, Content, Celebrating.</desc>
+<defs>
+  <clipPath id="cell"><rect width="300" height="375"/></clipPath>
+</defs>
+<rect width="1500" height="1500" fill="#faf9f5"/>
+  <g transform="translate(0 0)" clip-path="url(#cell)">
+    <title>Shipped it</title>
+    <rect width="300" height="375" fill="#5b46c9"/>
+    <path d="M52 375V286Q52 234 150 234Q248 234 248 286V375Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 214h32v32h-32Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 32c48 0 76 26 76 60 0 20-8 34-8 48 0 22-28 42-68 42s-68-20-68-42c0-14-8-28-8-48 0-34 28-60 76-60Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M112 136q14 -18 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M160 136q14 -18 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M120 176a30 30 0 0 0 60 0Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(300 0)" clip-path="url(#cell)">
+    <title>Curious</title>
+    <rect width="300" height="375" fill="#b8a9fa"/>
+    <path d="M94 375V250Q94 216 150 216Q206 216 206 250V375Z" fill="#332680" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 196h32v32h-32Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M96 60c0-18 24-32 54-32s54 14 54 32v112c0 18-24 32-54 32s-54-14-54-32V60Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="124" cy="120" r="15" fill="#faf9f5" stroke="#111111" stroke-width="4.5"/><circle cx="176" cy="120" r="15" fill="#faf9f5" stroke="#111111" stroke-width="4.5"/><circle cx="132" cy="120" r="6" fill="#111111"/><circle cx="184" cy="120" r="6" fill="#111111"/>
+    <circle cx="150" cy="168" r="6" fill="#111111"/>
+    
+  </g>
+  <g transform="translate(600 0)" clip-path="url(#cell)">
+    <title>Focused</title>
+    <rect width="300" height="375" fill="#faf9f5"/>
+    <path d="M64 375V210H236V375Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 190h32v32h-32Z" fill="#180f43" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M78 46h144v152H78V46Z" fill="#180f43" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M104 101h40v30h-40Z" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M156 101h40v30h-40Z" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M144 116h12" fill="none" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="124" cy="116" r="6" fill="#111111"/><circle cx="176" cy="116" r="6" fill="#111111"/>
+    <path d="M126 160h48" fill="none" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(900 0)" clip-path="url(#cell)">
+    <title>Overwhelmed</title>
+    <rect width="300" height="375" fill="#332680"/>
+    <path d="M52 375V274Q52 222 150 222Q248 222 248 274V375Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 202h32v32h-32Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 22 168 52l30-22 8 36 34-10-8 36 36 4-22 30 32 18-30 20 22 30-36 6 6 34-34-12-10 34-26-24-26 24-10-34-34 12 6-34-36-6 22-30-30-20 32-18-22-30 36-4-8-36 34 10 8-36 30 22L150 22Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="120" cy="112" r="9" fill="#111111"/><circle cx="180" cy="112" r="9" fill="#111111"/>
+    <path d="M124 158q9 -10 18 0t18 0t18 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M242 92c9 14 14 21 14 28a14 14 0 0 1 -28 0c0-7 5-14 14-28Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(1200 0)" clip-path="url(#cell)">
+    <title>Calm</title>
+    <rect width="300" height="375" fill="#180f43"/>
+    <path d="M48 375L86 208H214L252 375Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 188h32v32h-32Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 44c52 0 88 30 88 76s-36 76-88 76-88-30-88-76 36-76 88-76Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M112 114q14 16 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M160 114q14 16 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M126 152q24 22 48 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(0 375)" clip-path="url(#cell)">
+    <title>Surprised</title>
+    <rect width="300" height="375" fill="#b8a9fa"/>
+    <path d="M52 375V270Q52 218 150 218Q248 218 248 270V375Z" fill="#180f43" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 198h32v32h-32Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 34a86 86 0 1 1 0 172 86 86 0 0 1 0-172Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="124" cy="112" r="15" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5"/><circle cx="176" cy="112" r="15" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5"/><circle cx="124" cy="112" r="6" fill="#111111"/><circle cx="176" cy="112" r="6" fill="#111111"/>
+    <ellipse cx="150" cy="168" rx="17" ry="22" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5"/>
+    
+  </g>
+  <g transform="translate(300 375)" clip-path="url(#cell)">
+    <title>Sceptical</title>
+    <rect width="300" height="375" fill="#5b46c9"/>
+    <path d="M64 375V208H236V375Z" fill="#332680" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 188h32v32h-32Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M80 196V102a70 70 0 0 1 140 0v94H80Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="126" cy="122" r="8" fill="#111111"/><circle cx="174" cy="122" r="8" fill="#111111"/><path d="M112 106q14 -6 28 0" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M138 170q22 12 34 -10" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(600 375)" clip-path="url(#cell)">
+    <title>Exhausted</title>
+    <rect width="300" height="375" fill="#faf9f5"/>
+    <path d="M52 375V268Q52 216 150 216Q248 216 248 268V375Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 196h32v32h-32Z" fill="#332680" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 28c40 0 62 24 62 50 0 16-10 26-10 38s12 20 12 38c0 28-26 50-64 50s-64-22-64-50c0-18 12-26 12-38s-10-22-10-38c0-26 22-50 62-50Z" fill="#332680" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="124" cy="120" r="13" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5"/><circle cx="176" cy="120" r="13" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5"/><circle cx="124" cy="123" r="6" fill="#111111"/><circle cx="176" cy="123" r="6" fill="#111111"/><path d="M110 117h28" fill="none" stroke="#faf9f5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M162 117h28" fill="none" stroke="#faf9f5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M130 172q20 16 40 -4" fill="none" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(900 375)" clip-path="url(#cell)">
+    <title>Excited</title>
+    <rect width="300" height="375" fill="#180f43"/>
+    <path d="M52 375V264Q52 212 150 212Q248 212 248 264V375Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 192h32v32h-32Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 26c22 0 34 10 40 22 20-4 38 8 40 26 18 6 26 24 20 40 8 14 4 34-12 42-2 20-22 32-42 28-12 12-34 14-48 4-16 8-38 2-46-14-20 2-38-12-38-32-10-14-8-34 6-44-4-20 10-38 30-40 8-20 30-34 50-32Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="120" cy="116" r="9" fill="#111111"/><circle cx="180" cy="116" r="9" fill="#111111"/>
+    <path d="M116 160h68v8a34 34 0 0 1 -68 0v-8Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(1200 375)" clip-path="url(#cell)">
+    <title>Thinking</title>
+    <rect width="300" height="375" fill="#b8a9fa"/>
+    <path d="M94 375V242Q94 208 150 208Q206 208 206 242V375Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 188h32v32h-32Z" fill="#180f43" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M104 20h92v176h-92V20Z" fill="#180f43" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="124" cy="106" r="15" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5"/><circle cx="176" cy="106" r="15" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5"/><circle cx="124" cy="101" r="6" fill="#111111"/><circle cx="176" cy="101" r="6" fill="#111111"/>
+    <path d="M126 158h48" fill="none" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(0 750)" clip-path="url(#cell)">
+    <title>Nervous</title>
+    <rect width="300" height="375" fill="#332680"/>
+    <path d="M52 375V268Q52 216 150 216Q248 216 248 268V375Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 196h32v32h-32Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M96 60c0-18 24-32 54-32s54 14 54 32v112c0 18-24 32-54 32s-54-14-54-32V60Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="124" cy="118" r="17" fill="#faf9f5" stroke="#111111" stroke-width="4.5"/><circle cx="124" cy="118" r="7" fill="#111111"/><circle cx="178" cy="118" r="6" fill="#111111"/>
+    <path d="M124 168q9 -10 18 0t18 0t18 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M242 92c9 14 14 21 14 28a14 14 0 0 1 -28 0c0-7 5-14 14-28Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g transform="translate(300 750)" clip-path="url(#cell)">
+    <title>Determined</title>
+    <rect width="300" height="375" fill="#faf9f5"/>
+    <path d="M64 375V202H236V375Z" fill="#180f43" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 182h32v32h-32Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M84 190V78l-12-46 44 26h68l44-26-12 46v112H84Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="126" cy="127" r="8" fill="#faf9f5"/><circle cx="174" cy="127" r="8" fill="#faf9f5"/><path d="M110 112L140 120" fill="none" stroke="#faf9f5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M190 112L160 120" fill="none" stroke="#faf9f5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M126 166h48" fill="none" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(600 750)" clip-path="url(#cell)">
+    <title>Delighted</title>
+    <rect width="300" height="375" fill="#5b46c9"/>
+    <path d="M48 375L86 234H214L252 375Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 214h32v32h-32Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 32c48 0 76 26 76 60 0 20-8 34-8 48 0 22-28 42-68 42s-68-20-68-42c0-14-8-28-8-48 0-34 28-60 76-60Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M112 134q14 -18 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M160 134q14 -18 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M126 174q24 22 48 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(900 750)" clip-path="url(#cell)">
+    <title>Confused</title>
+    <rect width="300" height="375" fill="#b8a9fa"/>
+    <path d="M94 375V256Q94 222 150 222Q206 222 206 256V375Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 202h32v32h-32Z" fill="#332680" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 26 236 118l-86 92-86-92 86-92Z" fill="#332680" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="124" cy="112" r="17" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5"/><circle cx="124" cy="112" r="7" fill="#111111"/><circle cx="178" cy="112" r="6" fill="#faf9f5"/>
+    <path d="M124 158q9 -10 18 0t18 0t18 0" fill="none" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(1200 750)" clip-path="url(#cell)">
+    <title>Bored</title>
+    <rect width="300" height="375" fill="#180f43"/>
+    <path d="M64 375V206H236V375Z" fill="#332680" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 186h32v32h-32Z" fill="#d8d7d2" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M72 78c0-16 14-28 32-28h92c18 0 32 12 32 28v88c0 16-14 28-32 28h-92c-18 0-32-12-32-28V78Z" fill="#d8d7d2" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M112 112q14 16 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M160 112q14 16 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M126 162h48" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(0 1125)" clip-path="url(#cell)">
+    <title>Relieved</title>
+    <rect width="300" height="375" fill="#faf9f5"/>
+    <path d="M52 375V254Q52 202 150 202Q248 202 248 254V375Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 182h32v32h-32Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M92 190c-14-26-16-56-6-84 10-30 34-52 64-54 32-2 60 18 70 48 10 28 6 62-10 90H92Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M112 122q14 -18 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M160 122q14 -18 28 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M130 160q20 16 40 -4" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(300 1125)" clip-path="url(#cell)">
+    <title>Inspired</title>
+    <rect width="300" height="375" fill="#332680"/>
+    <path d="M94 375V252Q94 218 150 218Q206 218 206 252V375Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 198h32v32h-32Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 34a86 86 0 1 1 0 172 86 86 0 0 1 0-172Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="124" cy="118" r="15" fill="#faf9f5" stroke="#111111" stroke-width="4.5"/><circle cx="176" cy="118" r="15" fill="#faf9f5" stroke="#111111" stroke-width="4.5"/><circle cx="124" cy="118" r="6" fill="#111111"/><circle cx="176" cy="118" r="6" fill="#111111"/>
+    <path d="M126 168q24 22 48 0" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 40V26" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="150" cy="14" r="15" fill="#b8a9fa" stroke="#111111" stroke-width="4.5"/>
+  </g>
+  <g transform="translate(600 1125)" clip-path="url(#cell)">
+    <title>Frustrated</title>
+    <rect width="300" height="375" fill="#b8a9fa"/>
+    <path d="M64 375V210H236V375Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 190h32v32h-32Z" fill="#180f43" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M78 46h144v152H78V46Z" fill="#180f43" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="126" cy="121" r="8" fill="#faf9f5"/><circle cx="174" cy="121" r="8" fill="#faf9f5"/><path d="M110 106L140 114" fill="none" stroke="#faf9f5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M190 106L160 114" fill="none" stroke="#faf9f5" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M116 155h68v22h-68Z" fill="#faf9f5" stroke="#faf9f5" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M130 155v22" fill="none" stroke="#faf9f5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M144 155v22" fill="none" stroke="#faf9f5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M158 155v22" fill="none" stroke="#faf9f5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M172 155v22" fill="none" stroke="#faf9f5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(900 1125)" clip-path="url(#cell)">
+    <title>Content</title>
+    <rect width="300" height="375" fill="#5b46c9"/>
+    <path d="M52 375V258Q52 206 150 206Q248 206 248 258V375Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 186h32v32h-32Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 30 232 92 200 194H100L68 92 150 30Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="126" cy="116" r="7" fill="#111111"/><circle cx="174" cy="116" r="7" fill="#111111"/>
+    <path d="M138 164q22 12 34 -10" fill="none" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+  </g>
+  <g transform="translate(1200 1125)" clip-path="url(#cell)">
+    <title>Celebrating</title>
+    <rect width="300" height="375" fill="#180f43"/>
+    <path d="M52 375V286Q52 234 150 234Q248 234 248 286V375Z" fill="#5b46c9" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M134 214h32v32h-32Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M150 32c48 0 76 26 76 60 0 20-8 34-8 48 0 22-28 42-68 42s-68-20-68-42c0-14-8-28-8-48 0-34 28-60 76-60Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="120" cy="124" r="9" fill="#111111"/><circle cx="180" cy="124" r="9" fill="#111111"/>
+    <path d="M116 166h68v8a34 34 0 0 1 -68 0v-8Z" fill="#faf9f5" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M198 360v-74a18 18 0 0 1 18-18h30a18 18 0 0 1 18 18v74Z" fill="#b8a9fa" stroke="#111111" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M216 272v30M231 268v34M246 272v30" fill="none" stroke="#111111" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

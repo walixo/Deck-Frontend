@@ -1,6 +1,6 @@
 # Handbook generator
 
-One source, three outputs. `content.js` holds the handbook as structured data;
+One source, three outputs. `content.cjs` holds the handbook as structured data;
 the two scripts render it.
 
 ```
@@ -24,7 +24,7 @@ f.flavor = None
 f.save('scripts/handbook/fonts/ArchivoBlack.ttf')"
 ```
 
-Numbers in `content.js` are counted by hand from the repository. Check them
+Numbers in `content.cjs` are counted by hand from the repository. Check them
 before a release:
 
 ```

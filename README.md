@@ -48,7 +48,7 @@ so the catalogue can be managed straight away.
 npm install && npm run dev
 ```
 
-Serves `http://localhost:5173`. Vite proxies `/api` to port 4200, so the browser stays on one
+Serves `http://localhost:3000`. Vite proxies `/api` to port 4200, so the browser stays on one
 origin and never hits CORS in development.
 
 ### Signing in to the demo data
@@ -78,10 +78,10 @@ The API's `.env`, in the `Deck-Backend` checkout (see its `.env.example`):
 | `MONGODB_URI` | `mongodb://127.0.0.1:27017/deck` | |
 | `JWT_SECRET` | — | Replace before deploying anywhere real |
 | `JWT_EXPIRES_IN` | `7d` | |
-| `CLIENT_ORIGIN` | `http://localhost:5173` | Comma-separated allowlist for CORS |
+| `CLIENT_ORIGIN` | `http://localhost:3000` | Comma-separated allowlist for CORS |
 | `UPLOAD_DIR` | `uploads` | Where uploads are written when Cloudinary is not configured, relative to the API's root |
 | `PAYSTACK_SECRET_KEY` | — | Server-only. Blank runs the shop without card payments |
-| `PAYSTACK_CALLBACK_URL` | `http://localhost:5173/orders/callback` | Where Paystack returns the customer |
+| `PAYSTACK_CALLBACK_URL` | `http://localhost:3000/orders/callback` | Where Paystack returns the customer |
 | `CURRENCY` | `NGN` | Must be enabled on your Paystack account |
 | `SHIPPING_FLAT_MINOR` | `250000` | ₦2,500, in minor units of `CURRENCY` |
 | `FREE_SHIPPING_THRESHOLD_MINOR` | `5000000` | Free over ₦50,000 |

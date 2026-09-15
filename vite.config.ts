@@ -11,7 +11,11 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
+    /* Fixed, and `strictPort` so Vite fails loudly rather than quietly taking
+       the next free port — a dev server that moves is a dev server whose origin
+       no longer matches the API's CLIENT_ORIGIN, and CORS then fails for a
+       reason nothing on screen explains. */
+    port: 3000,
     strictPort: true,
     proxy: {
       // Keeps the browser on a single origin in development — no CORS round trips.

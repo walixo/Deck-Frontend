@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
+import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ConsentProvider } from '@/context/ConsentContext';
@@ -46,15 +47,16 @@ createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <ConsentProvider>
         <CurrencyProvider>
-        <ThemeProvider>
-          <BrowserRouter>
-            <AuthProvider>
-              <CartProvider>
-                <App />
-              </CartProvider>
-            </AuthProvider>
-          </BrowserRouter>
-        </ThemeProvider>
+          <ThemeProvider>
+            <BrowserRouter>
+              <AuthProvider>
+                <CartProvider>
+                  <App />
+                  <Analytics />
+                </CartProvider>
+              </AuthProvider>
+            </BrowserRouter>
+          </ThemeProvider>
         </CurrencyProvider>
       </ConsentProvider>
     </QueryClientProvider>

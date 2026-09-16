@@ -1,12 +1,26 @@
+import { ChatBubbleOvalLeftIcon, EyeIcon } from '@heroicons/react/24/solid';
 import { Link } from 'react-router-dom';
 import { CategoryIcon, CategoryLabel } from '@/components/illustrations/CategoryIcon';
 import { Badge } from '@/components/ui/Badge';
 import { Stars } from '@/components/ui/Stars';
-import { MEDAL_STYLES, cn, PRICING_LABELS } from '@/lib/utils';
+import { MEDAL_STYLES, cn, formatNumber, PRICING_LABELS } from '@/lib/utils';
 import type { Item } from '@/types';
 import { ItemLogo } from './ItemLogo';
 import { CommentButton } from './CommentButton';
 import { VoteButton } from './VoteButton';
+
+/**
+ * How many views a launch needs before the number is shown at all.
+ *
+ * Not zero, on purpose. A launch posted twenty minutes ago honestly has eleven
+ * views, and printing that on the card is worse than printing nothing: social
+ * proof runs in both directions, and a visible "3 views" tells every reader
+ * who scrolls past that nobody else is here. Below the floor the row simply
+ * omits it, exactly as it omits the rating before the first review.
+ *
+ * Set it to 1 to show the count from the very first visit.
+ */
+const VIEWS_SHOWN_FROM = 25;
 
 interface ItemCardProps {
   item: Item;
@@ -90,7 +104,29 @@ export function ItemCard({
   if (item.reviewCount > 0) {
     meta.push({
       key: 'rating',
-      node: (
+      /*
+       * One star on the plain rows, five on the card.
+       *
+       * The five-star strip is 104px of an itemised row that has 274px in
+       * total, and at 13px the glyphs are a texture rather than something
+       * anybody counts — the "4.0" beside them is what actually gets read.
+       * Collapsing it to a single accent star and the number frees the width
+       * that the view count needed, and loses nothing a reader was using.
+       * The bordered card is not under that pressure and keeps the full strip,
+       * where the stars are large enough to be worth reading as stars.
+       */
+      node: plain ? (
+        <span
+          className="inline-flex shrink-0 items-center gap-1"
+          role="img"
+          aria-label={`Rated ${item.ratingAvg.toFixed(1)} out of 5`}
+        >
+          <span aria-hidden="true" className="text-[13px] leading-none text-accent">
+            ★
+          </span>
+          <span className="tabular-nums">{item.ratingAvg.toFixed(1)}</span>
+        </span>
+      ) : (
         <span className="inline-flex shrink-0 items-center gap-1.5">
           <Stars value={item.ratingAvg} />
           <span className="tabular-nums">{item.ratingAvg.toFixed(1)}</span>
@@ -99,12 +135,49 @@ export function ItemCard({
     });
   }
 
+  /*
+   * Counts are a glyph and a number, not a glyph and a sentence.
+   *
+   * "3 comments" was fine while it was the last thing on the row. It is not
+   * fine with views beside it: at Discover's two-column width the row has
+   * 274px and the worded version needs 336, so the fourth item was never once
+   * visible — and the third was being cut in half to hide it. Icons put all
+   * four back inside the box with room to spare, and the word survives for a
+   * screen reader, which is where it was doing the real work anyway.
+   *
+   * Abbreviated past a thousand. "1.2k" holds a column width that "1,248"
+   * does not, and the exact figure is nobody's business at a glance.
+   */
   if (item.commentCount > 0) {
     meta.push({
       key: 'comments',
       node: (
-        <span className="shrink-0 tabular-nums">
-          {item.commentCount} {item.commentCount === 1 ? 'comment' : 'comments'}
+        <span className="inline-flex shrink-0 items-center gap-1">
+          <ChatBubbleOvalLeftIcon className="size-3.5" aria-hidden="true" />
+          <span className="tabular-nums">{formatNumber(item.commentCount)}</span>
+          <span className="sr-only">{item.commentCount === 1 ? 'comment' : 'comments'}</span>
+        </span>
+      ),
+    });
+  }
+
+  /*
+   * Views go last, because they are the weakest claim on the row.
+   *
+   * A rating is an opinion and a comment is an argument; a view is only
+   * somebody who did not bounce. Worth showing — reach is what makers most
+   * want to know, and what a reader uses to gauge whether a launch is alive —
+   * but it should never be the first number the eye lands on, and on the
+   * narrowest card it is the one that may honestly be clipped.
+   */
+  if (item.viewCount >= VIEWS_SHOWN_FROM) {
+    meta.push({
+      key: 'views',
+      node: (
+        <span className="inline-flex shrink-0 items-center gap-1">
+          <EyeIcon className="size-3.5" aria-hidden="true" />
+          <span className="tabular-nums">{formatNumber(item.viewCount)}</span>
+          <span className="sr-only">views</span>
         </span>
       ),
     });

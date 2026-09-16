@@ -59,6 +59,13 @@ export interface Item {
   featured: boolean;
   /** On the Future Gen showcase. Staff-set — see the page for what it is. */
   futureGen: boolean;
+  /**
+   * People who opened this launch, deduped per viewer per 12 hours.
+   *
+   * Counted server-side on the launch fetch, not by a beacon — so it does not
+   * move when a card scrolls past, only when somebody opens the page.
+   */
+  viewCount: number;
   voteCount: number;
   commentCount: number;
   reviewCount: number;

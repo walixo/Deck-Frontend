@@ -2,6 +2,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+/* The `/react` entry, not `/next`. The Next build imports `next/navigation`
+   for its router hooks, and in a Vite app there is no `next` to import from —
+   rolldown resolves it to an empty optional-peer stub and the named exports
+   come back missing. Same component, same beacon; this one hooks the History
+   API instead of a framework router. */
+import { Analytics } from '@vercel/analytics/react';
 import { App } from './App';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -46,15 +52,16 @@ createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <ConsentProvider>
         <CurrencyProvider>
-        <ThemeProvider>
-          <BrowserRouter>
-            <AuthProvider>
-              <CartProvider>
-                <App />
-              </CartProvider>
-            </AuthProvider>
-          </BrowserRouter>
-        </ThemeProvider>
+          <ThemeProvider>
+            <BrowserRouter>
+              <AuthProvider>
+                <CartProvider>
+                  <App />
+                  <Analytics />
+                </CartProvider>
+              </AuthProvider>
+            </BrowserRouter>
+          </ThemeProvider>
         </CurrencyProvider>
       </ConsentProvider>
     </QueryClientProvider>

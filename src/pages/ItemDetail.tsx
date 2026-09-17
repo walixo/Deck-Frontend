@@ -24,7 +24,16 @@ import { Stars } from '@/components/ui/Stars';
 import { VerifiedMark } from '@/components/ui/VerifiedMark';
 import { useAuth } from '@/hooks/useAuth';
 import { useDeleteItem, useItem } from '@/hooks/useItems';
-import { colourFor, editWindow, formatFullDate, PRICING_LABELS, prettyUrl, relativeTime, profilePath } from '@/lib/utils';
+import {
+  colourFor,
+  editWindow,
+  formatFullDate,
+  formatNumber,
+  PRICING_LABELS,
+  prettyUrl,
+  relativeTime,
+  profilePath,
+} from '@/lib/utils';
 
 export function ItemDetail() {
   const { slug = '' } = useParams();
@@ -238,6 +247,14 @@ export function ItemDetail() {
               )}
 
               <dl className="mt-5 space-y-2 border-t border-edge pt-4 font-mono text-[11px] font-bold uppercase">
+                {/* First, because it is the widest number here and the one the
+                    others are a fraction of — the list reads as a funnel.
+                    Abbreviated like everywhere else once it passes a thousand;
+                    this column is narrow and "12.4k" fits where "12,412" wraps. */}
+                <div className="flex justify-between gap-2">
+                  <dt className="text-muted">Views</dt>
+                  <dd className="tabular-nums">{formatNumber(item.viewCount)}</dd>
+                </div>
                 <div className="flex justify-between gap-2">
                   <dt className="text-muted">Votes</dt>
                   <dd className="tabular-nums">{item.voteCount}</dd>

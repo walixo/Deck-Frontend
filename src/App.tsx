@@ -33,6 +33,7 @@ import { Disbursements } from '@/pages/Disbursements';
 import { SellerDashboard } from '@/pages/SellerDashboard';
 import { ListingForm } from '@/pages/ListingForm';
 import { AccountShell } from '@/components/account/AccountShell';
+import { AuthCallback } from '@/pages/AuthCallback';
 import { AccountGames } from '@/pages/account/AccountGames';
 import { AccountLaunches } from '@/pages/account/AccountLaunches';
 import { AccountOverview } from '@/pages/account/AccountOverview';
@@ -81,6 +82,9 @@ export function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        {/* Where a provider sign-in returns. Not linked from anywhere — the
+            API redirects here with the token in the fragment. */}
+        <Route path="/auth/callback" element={<AuthCallback />} />
         {/* A workbench, not a page: deliberately unlinked from the nav. */}
         <Route path="/styleguide" element={<Styleguide />} />
 
@@ -137,21 +141,21 @@ export function App() {
         </Route>
 
         {/*
-          * People live at `/@name`.
-          *
-          * Not `/@:username`: React Router's matcher only recognises a
-          * parameter that directly follows a slash — `\/:([\w-]+)` — so an `@`
-          * glued to the front of one is compiled as a literal and the route
-          * matches nothing but the string `/@:username`. The segment therefore
-          * has to be claimed whole, and the sigil checked in JavaScript.
-          *
-          * Claiming a whole top-level segment is safe because route ranking
-          * scores a static segment above a dynamic one: `/discover` still wins
-          * over `/:handle`, and always will, whatever gets added later. What it
-          * does mean is that this route now sees every unmatched one-segment
-          * URL, which is why it answers with the same 404 as the catch-all
-          * whenever the handle is not a handle.
-          */}
+         * People live at `/@name`.
+         *
+         * Not `/@:username`: React Router's matcher only recognises a
+         * parameter that directly follows a slash — `\/:([\w-]+)` — so an `@`
+         * glued to the front of one is compiled as a literal and the route
+         * matches nothing but the string `/@:username`. The segment therefore
+         * has to be claimed whole, and the sigil checked in JavaScript.
+         *
+         * Claiming a whole top-level segment is safe because route ranking
+         * scores a static segment above a dynamic one: `/discover` still wins
+         * over `/:handle`, and always will, whatever gets added later. What it
+         * does mean is that this route now sees every unmatched one-segment
+         * URL, which is why it answers with the same 404 as the catch-all
+         * whenever the handle is not a handle.
+         */}
         <Route path="/:handle" element={<ProfileRoute />} />
 
         {/* The shape profile links had until now. Kept as a redirect rather

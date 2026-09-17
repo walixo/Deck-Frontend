@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthShell } from '@/components/auth/AuthShell';
+import { ProviderButtons } from '@/components/auth/ProviderButtons';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Field';
 import { InlineAlert } from '@/components/ui/States';
@@ -51,6 +52,8 @@ export function Register() {
         </>
       }
     >
+      <ProviderButtons action="Sign up" />
+
       <form onSubmit={submit} className="space-y-4" noValidate>
         {error && !error.fields.length && <InlineAlert>{error.message}</InlineAlert>}
 

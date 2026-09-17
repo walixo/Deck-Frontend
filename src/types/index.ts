@@ -201,6 +201,29 @@ export interface ItemDetail extends Item {
   };
 }
 
+/** One launch's traffic over the requested window, padded to the shared axis. */
+export interface LaunchViewSeries {
+  id: string;
+  slug: string;
+  name: string;
+  logoUrl?: string;
+  /** Lifetime views. Usually larger than the window — most launches are older. */
+  total: number;
+  /** Views inside the window only. */
+  windowViews: number;
+  /** One entry per day in `LaunchViews.days`, same order. Zeroes are real. */
+  series: number[];
+}
+
+export interface LaunchViews {
+  /** The shared date axis, oldest first, as YYYY-MM-DD UTC day keys. */
+  days: string[];
+  launches: LaunchViewSeries[];
+}
+
+/** Social sign-in methods the API can offer, when keys are configured. */
+export type OAuthProvider = 'github' | 'google';
+
 export interface RankedItem extends Item {
   rank: number;
 }

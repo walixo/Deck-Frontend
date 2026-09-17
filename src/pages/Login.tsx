@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthShell } from '@/components/auth/AuthShell';
+import { ProviderButtons } from '@/components/auth/ProviderButtons';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Field';
 import { InlineAlert } from '@/components/ui/States';
@@ -17,6 +18,12 @@ export function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state ?? {}) as RedirectState;
+
+  /* A failed social sign-in comes back as a redirect, so its message arrives
+     in the URL rather than in a caught exception. Read once; the OAuth
+     controller is the only thing that sets it. */
+  const [params] = useSearchParams();
+  const providerError = params.get('error');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,16 +55,16 @@ export function Login() {
       footer={
         <>
           New to Deck?{' '}
-          <Link
-            to="/register"
-            className="font-bold text-accent underline-offset-4 hover:underline"
-          >
+          <Link to="/register" className="font-bold text-accent underline-offset-4 hover:underline">
             Create an account
           </Link>
         </>
       }
     >
+      <ProviderButtons action="Sign in" />
+
       <form onSubmit={submit} className="space-y-4" noValidate>
+        {providerError && !error && <InlineAlert>{providerError}</InlineAlert>}
         {error && <InlineAlert>{error.message}</InlineAlert>}
 
         <Input
@@ -87,22 +94,36 @@ export function Login() {
         </Button>
       </form>
 
-      <div className="mt-6 border border-dashed border-edge p-3.5">
-        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
-          Trying the demo data?
-        </p>
-        <p className="mt-1.5 text-xs leading-relaxed text-muted">
-          Any seeded account works — for example{' '}
-          <code className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
-            ada@deck.dev
-          </code>{' '}
-          with password{' '}
-          <code className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
-            deck1234
-          </code>
-          .
-        </p>
-      </div>
+      {/*
+       * Development only, and gone from production by the time the bundle is
+       * written — `import.meta.env.DEV` is a literal `false` in a build, so
+       * this block is dropped rather than hidden. Printing a working email and
+       * password on a live sign-in page tells anyone who reads it which
+       * accounts exist, and invites them to try the same password against the
+       * ones that are not seeded.
+       *
+       * Kept behind the flag rather than deleted because the seed still makes
+       * these accounts, and the next person running the project locally should
+       * not have to go looking through seed data for a way in.
+       */}
+      {import.meta.env.DEV && (
+        <div className="mt-6 border border-dashed border-edge p-3.5">
+          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
+            Trying the demo data?
+          </p>
+          <p className="mt-1.5 text-xs leading-relaxed text-muted">
+            Any seeded account works — for example{' '}
+            <code className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
+              ada@deck.dev
+            </code>{' '}
+            with password{' '}
+            <code className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
+              deck1234
+            </code>
+            .
+          </p>
+        </div>
+      )}
     </AuthShell>
   );
 }

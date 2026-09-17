@@ -19,6 +19,8 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   login: (credentials: Credentials) => Promise<AuthUser>;
   register: (payload: RegisterPayload) => Promise<AuthUser>;
+  /** Signs in with a token the server already issued — see the OAuth return. */
+  adoptToken: (token: string) => Promise<AuthUser>;
   logout: () => void;
   updateUser: (user: AuthUser) => void;
 }
@@ -74,6 +76,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [authenticate],
   );
 
+  /*
+   * Adopting a token the API minted elsewhere.
+   *
+   * Social sign-in finishes on the server: by the time the browser is back
+   * here the account exists and a token has been signed, so there are no
+   * credentials to post — only a token to accept and an identity to go and
+   * fetch. Same ending as `authenticate`, different beginning.
+   */
+  const adoptToken = useCallback(
+    async (token: string) => {
+      setStoredToken(token);
+      const current = await request<AuthUser>('get', '/auth/me');
+      setUser(current);
+      await queryClient.invalidateQueries();
+      return current;
+    },
+    [queryClient],
+  );
+
   const logout = useCallback(() => {
     setStoredToken(null);
     setUser(null);
@@ -87,10 +108,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: Boolean(user),
       login,
       register,
+      adoptToken,
       logout,
       updateUser: setUser,
     }),
-    [user, isLoading, login, register, logout],
+    [user, isLoading, login, register, adoptToken, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

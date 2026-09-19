@@ -22,7 +22,11 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
             <Logo className="h-7 w-auto" />
           </div>
 
-          <div className="rounded-slab border border-edge bg-surface p-6 shadow-hard-xl sm:p-8">
+          {/* `shadow-hard`, not `-xl`. The hard-shadow scale is 3 / 5 / 8 / 12px
+              and the top of it is sized for something small and clickable — on
+              a card this large a 12px offset stops reading as depth and starts
+              reading as a second card behind the first. */}
+          <div className="rounded-slab border border-edge bg-surface p-6 shadow-hard sm:p-8">
             <h1 className="display-tight text-2xl uppercase text-balance">{title}</h1>
             <p className="mt-2.5 text-sm leading-relaxed text-muted text-pretty">{subtitle}</p>
 

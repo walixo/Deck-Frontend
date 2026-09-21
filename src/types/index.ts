@@ -221,6 +221,35 @@ export interface LaunchViews {
   launches: LaunchViewSeries[];
 }
 
+export type NotificationKind =
+  | 'comment.received'
+  | 'comment.replied'
+  | 'review.received'
+  | 'launch.milestone'
+  | 'launch.ranked'
+  | 'account.verified'
+  | 'fundraise.reviewed'
+  | 'acquisition.reviewed'
+  | 'merch.reviewed'
+  | 'game.reviewed'
+  | 'custom.reviewed'
+  | 'content.moderated'
+  | 'fundraise.contribution'
+  | 'order.status';
+
+export interface AppNotification {
+  id: string;
+  kind: NotificationKind;
+  title: string;
+  body?: string;
+  /** An in-app path. Always routed, never opened as an external link. */
+  link: string;
+  read: boolean;
+  createdAt: string;
+  /** Who caused it, when a person did. Absent for staff and system events. */
+  actor?: PublicUser;
+}
+
 /** Social sign-in methods the API can offer, when keys are configured. */
 export type OAuthProvider = 'github' | 'google';
 

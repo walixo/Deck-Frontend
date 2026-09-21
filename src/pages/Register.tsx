@@ -109,6 +109,27 @@ export function Register() {
         <Button type="submit" size="lg" className="w-full" loading={submitting}>
           Create account
         </Button>
+
+        {/*
+         * Stated at the point of agreement, not buried in the footer.
+         *
+         * The terms are only binding if the person had a fair chance to see
+         * them before agreeing, and a link in the footer of a different page
+         * is not that. No tick-box: under the GDPR consent has to be separable
+         * from accepting terms, and bundling the two into one checkbox is the
+         * usual way of making both worthless.
+         */}
+        <p className="text-center text-xs leading-relaxed text-muted text-pretty">
+          By creating an account you agree to our{' '}
+          <Link to="/terms" className="font-bold text-accent underline-offset-4 hover:underline">
+            terms of service
+          </Link>{' '}
+          and{' '}
+          <Link to="/privacy" className="font-bold text-accent underline-offset-4 hover:underline">
+            privacy policy
+          </Link>
+          .
+        </p>
       </form>
     </AuthShell>
   );

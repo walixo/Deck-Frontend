@@ -7,6 +7,7 @@ import { Button, ButtonLink } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
 import { cn, profilePath } from '@/lib/utils';
 import { Logo } from './Logo';
+import { NotificationBell } from './NotificationBell';
 import { SoundToggle } from './SoundToggle';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -37,7 +38,11 @@ const NAV_LINKS: NavItem[] = [
     to: '/discover',
     label: 'Discover',
     children: [
-      { to: '/discover', label: 'All launches', blurb: 'Everything on Deck, filtered how you like' },
+      {
+        to: '/discover',
+        label: 'All launches',
+        blurb: 'Everything on Deck, filtered how you like',
+      },
       { to: '/spotlight', label: 'Picks', blurb: 'The handful Deck is pointing at this week' },
     ],
   },
@@ -177,6 +182,17 @@ export function Navbar() {
               </span>
             )}
           </Link>
+
+          {/*
+           * Before the preference toggles, and only when signed in.
+           *
+           * Sound and theme are settings — you change them once and forget
+           * them. The bell is content: it changes on its own and carries a
+           * count, so it belongs with the cart, which is the other thing in
+           * this row that does. Signed-out readers get the header exactly as
+           * it was, which is most of the traffic.
+           */}
+          {isAuthenticated && <NotificationBell />}
 
           <SoundToggle />
 

@@ -46,6 +46,7 @@ import { Spotlight } from '@/pages/Spotlight';
 import { GameDetail } from '@/pages/GameDetail';
 import { Games } from '@/pages/Games';
 import { Handbook } from '@/pages/Handbook';
+import { Privacy, Terms } from '@/pages/Legal';
 import { Home } from '@/pages/Home';
 import { ItemDetail } from '@/pages/ItemDetail';
 import { Leaderboard } from '@/pages/Leaderboard';
@@ -78,6 +79,11 @@ export function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/handbook" element={<Handbook />} />
+
+        {/* Public and unauthenticated by design: a privacy policy nobody can
+            read without an account is not a privacy policy. */}
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/shop/:slug" element={<MerchDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />

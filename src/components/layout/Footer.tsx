@@ -139,6 +139,22 @@ export function Footer() {
 
           <div className="flex flex-wrap items-center gap-4">
             <CurrencyPicker />
+            {/* Beside the cookie control rather than up in the Deck column.
+                Someone looking for the privacy policy is looking at the bottom
+                of the page for the legal strip, and the three belong together:
+                what we collect, what you agreed to, and the rules. */}
+            <Link
+              to="/privacy"
+              className="font-mono text-[11px] uppercase text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
+            >
+              Privacy
+            </Link>
+            <Link
+              to="/terms"
+              className="font-mono text-[11px] uppercase text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
+            >
+              Terms
+            </Link>
             <CookieChoices />
             <p className="font-mono text-[11px] uppercase text-muted">
               Launches shown are demo data

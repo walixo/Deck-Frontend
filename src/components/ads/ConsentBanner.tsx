@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { useConsent } from '@/hooks/useConsent';
 
@@ -93,6 +94,17 @@ export function ConsentBanner() {
                 Google&apos;s advertising script, and embedded video players on launch pages. Both
                 are third parties that would see your visit. Neither loads until you say yes.
               </dd>
+            </div>
+            {/* The summary above is the honest short version; the policy is the
+                complete one, and a consent notice that does not link to it is
+                asking for agreement to something the reader cannot go and read. */}
+            <div className="sm:col-span-2">
+              <Link
+                to="/privacy"
+                className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] underline underline-offset-4 transition-colors hover:text-accent"
+              >
+                Read the full privacy policy
+              </Link>
             </div>
           </dl>
         )}

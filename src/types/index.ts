@@ -78,10 +78,28 @@ export interface Item {
   /** The id of the first launch in this product's chain. */
   lineage: string;
   ratingAvg: number;
+  /**
+   * What the maker says the product earns each month.
+   *
+   * Absent unless they published a figure — which most launches have not, so
+   * check for the key rather than for a zero. A zero that *is* present is a
+   * real answer meaning pre-revenue.
+   */
+  revenue?: LaunchRevenue;
   createdAt: string;
   hasVoted: boolean;
   submittedBy: PublicUser;
   fundraise: Fundraise;
+}
+
+export interface LaunchRevenue {
+  /** Integer minor units per month, in `currency`. */
+  monthlyMinor: number;
+  currency: string;
+  /** The maker's claim that it covers its costs. False means "not claimed". */
+  profitable: boolean;
+  /** When the maker last confirmed it. Shown, and marked once it ages. */
+  reportedAt: string | null;
 }
 
 /** The authored state of a launch at one point in time. */

@@ -7,6 +7,7 @@ export const adKeys = {
   slot: (placement: string) => ['ad-slot', placement] as const,
   mine: () => ['my-ads'] as const,
   pending: () => ['pending-ads'] as const,
+  running: () => ['running-ads'] as const,
 };
 
 /**
@@ -102,6 +103,29 @@ export function useReviewAd() {
       ),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: adKeys.pending() });
+      await queryClient.invalidateQueries({ queryKey: ['ad-slot'] });
+    },
+  });
+}
+
+/** Paid campaigns that have not finished — running now or booked to start. */
+export function useRunningAds(enabled = true) {
+  return useQuery({
+    queryKey: adKeys.running(),
+    queryFn: () => request<AdCampaign[]>('get', '/ads/running'),
+    enabled,
+  });
+}
+
+/** Takes a paid campaign down. Does not refund — see `pullAd` on the API. */
+export function usePullAd() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ reference, reason }: { reference: string; reason: string }) =>
+      request<AdCampaign>('post', `/ads/${reference}/pull`, { reason }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: adKeys.running() });
       await queryClient.invalidateQueries({ queryKey: ['ad-slot'] });
     },
   });

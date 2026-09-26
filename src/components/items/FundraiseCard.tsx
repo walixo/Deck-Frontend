@@ -181,8 +181,11 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
               : `Give ${amount ? formatMoney(Number(amount) * 100) : ''}`}
           </Button>
 
+          {/* Says what actually happens to the money — it settles with Deck and
+              is passed on — because this line is read by backers and payment
+              reviewers alike, and "straight to the maker" was not true. */}
           <p className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-muted">
-            Paid securely through Paystack, straight to the maker
+            Paid securely through Paystack. Deck collects it and passes it to the maker
           </p>
         </form>
       )}

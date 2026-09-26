@@ -3,6 +3,7 @@ import { CategoryIcon, CategoryLabel } from '@/components/illustrations/Category
 import { FutureGenToggle } from '@/components/items/FutureGenToggle';
 import { ListForAcquisition } from '@/components/items/ListForAcquisition';
 import { FundraiseCard } from '@/components/items/FundraiseCard';
+import { FundraiseCta } from '@/components/items/FundraiseCta';
 import { FundraiseSettings } from '@/components/items/FundraiseSettings';
 import { SharePanel } from '@/components/items/SharePanel';
 import { CommentSection } from '@/components/items/CommentSection';
@@ -11,6 +12,7 @@ import { VersionStrip } from '@/components/items/VersionStrip';
 import { ItemGallery } from '@/components/items/ItemGallery';
 import { ItemCard } from '@/components/items/ItemCard';
 import { ItemLogo } from '@/components/items/ItemLogo';
+import { LaunchRevenueChip, ReportRevenue } from '@/components/items/LaunchRevenue';
 import { ManageImages } from '@/components/items/ManageImages';
 import { VoteButton } from '@/components/items/VoteButton';
 import { Avatar } from '@/components/ui/Avatar';
@@ -149,6 +151,15 @@ export function ItemDetail() {
                     Source ↗
                   </ExternalButtonLink>
                 )}
+
+                {/* Conditions unchanged — the button only appears when the
+                    server says the raise is open, or that the maker has the
+                    traction to apply. See the component. */}
+                <FundraiseCta item={item} />
+
+                {/* After the controls, not among them: this is something to
+                    read, and the things you can act on should come first. */}
+                {item.revenue && <LaunchRevenueChip revenue={item.revenue} />}
               </div>
             </div>
           </div>
@@ -202,8 +213,11 @@ export function ItemDetail() {
           </div>
 
           <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-            {/* The owner manages the raise; everyone else sees it. */}
-            {isOwner ? <FundraiseSettings item={item} /> : <FundraiseCard item={item} />}
+            {/* The owner manages the raise; everyone else sees it. The id is
+                what the hero's raise button scrolls to, on both branches. */}
+            <div id="fundraise" className="scroll-mt-24">
+              {isOwner ? <FundraiseSettings item={item} /> : <FundraiseCard item={item} />}
+            </div>
 
             {/* The share kit is for the person who made the thing. Everyone
                 else already has the URL in their address bar. */}
@@ -271,6 +285,11 @@ export function ItemDetail() {
 
               {isOwner && (
                 <div className="mt-5 space-y-3 border-t border-edge pt-4">
+                  {/* Not gated on the edit window, unlike the button below it —
+                      revenue is a measurement that has to stay current, not
+                      part of the pitch people voted on. */}
+                  <ReportRevenue item={item} />
+
                   <ManageImages item={item} />
 
                   {/* Offered only while the server would accept it. A button

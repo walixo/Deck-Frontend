@@ -13,9 +13,10 @@ import {
   SquaresPlusIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Avatar } from '@/components/ui/Avatar';
+import { SectionSkeleton } from '@/components/ui/Skeleton';
 import { useAdminOverview } from '@/hooks/useAdmin';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -272,7 +273,11 @@ export function AdminShell() {
           })}
         </nav>
 
-        <Outlet />
+        {/* Each section is its own chunk. A boundary here, rather than only the
+            one in Layout, keeps the sidebar on screen while a section loads. */}
+        <Suspense fallback={<SectionSkeleton />}>
+          <Outlet />
+        </Suspense>
       </div>
     </div>
   );

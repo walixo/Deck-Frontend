@@ -1,5 +1,5 @@
-import { LostCardIllustration } from '@/components/illustrations/Illustrations';
 import { Backdrop } from '@/components/ui/Ambient';
+import { ToppledBricks } from '@/components/ui/Bricks';
 import { ButtonLink } from '@/components/ui/Button';
 
 export function NotFound() {
@@ -8,7 +8,9 @@ export function NotFound() {
       <Backdrop pattern="stripes" />
 
       <div className="relative mx-auto flex min-h-[65dvh] max-w-lg flex-col items-center justify-center px-4 py-16 text-center">
-        <LostCardIllustration className="w-64 animate-[var(--animate-slam)] sm:w-72" />
+        {/* The brand mark, knocked over — the one state the logo is never in
+            anywhere else on the site, which is the joke. */}
+        <ToppledBricks className="w-56 animate-[var(--animate-slam)] text-edge sm:w-64" />
 
         <p className="mt-3 border border-edge bg-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-canvas">
           Error 404

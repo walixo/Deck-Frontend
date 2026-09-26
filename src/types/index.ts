@@ -559,6 +559,7 @@ export const AUDIT_ACTIONS = [
   'game.removed',
   'ad.approved',
   'ad.rejected',
+  'ad.pulled',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -703,6 +704,9 @@ export interface AdCampaign {
   status: AdStatus;
   phase: AdPhase;
   rejectionReason?: string;
+  /** Set when staff pulled a paid campaign; see `pullAd` on the API. */
+  cancelReason?: string;
+  cancelledAt?: string;
   impressions: number;
   clicks: number;
   clickRate: number;
@@ -724,6 +728,8 @@ export interface ServedAd {
 export interface AdRateCard {
   currency: string;
   durations: number[];
+  /** How many ads run in one slot at once. 1 means a booking buys the slot outright. */
+  capacity: number;
   placements: {
     placement: AdPlacement;
     label: string;

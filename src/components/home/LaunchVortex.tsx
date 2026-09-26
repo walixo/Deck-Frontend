@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { STATS_SHOWN_FROM } from '@/lib/thresholds';
 import { ButtonLink } from '@/components/ui/Button';
 import { formatNumber } from '@/lib/utils';
 import type { Item } from '@/types';
@@ -534,7 +535,13 @@ export function LaunchVortex({ items, total }: VortexProps) {
               Everything that has shipped here
             </p>
             <h2 className="mt-2 display-tight text-3xl uppercase text-balance sm:text-4xl">
-              {total ? `${formatNumber(total)} launches` : 'The whole board'}
+              {/* The hero's threshold, shared rather than restated. Below it
+                  the hero shows no numbers, and this saying "3 launches"
+                  further down would undercut that — so both switch to numbers
+                  on the same day. */}
+              {total && total >= STATS_SHOWN_FROM.launches
+                ? `${formatNumber(total)} launches`
+                : 'The whole board'}
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">
               Every name going past is a real one. Somebody built it, posted it here, and waited to

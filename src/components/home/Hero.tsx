@@ -2,6 +2,8 @@ import { HeroAvatar } from '@/components/home/HeroAvatar';
 import { PixelSky } from '@/components/home/PixelSky';
 import { Backdrop } from '@/components/ui/Ambient';
 import { ButtonLink } from '@/components/ui/Button';
+import { BrickStack } from '@/components/ui/Bricks';
+import { STATS_SHOWN_FROM } from '@/lib/thresholds';
 import { formatNumber } from '@/lib/utils';
 import type { PlatformStats } from '@/types';
 
@@ -10,16 +12,22 @@ interface HeroProps {
 }
 
 /*
- * The launch/maker/vote tiles are parked, not deleted — flip this back to true
- * to bring them home. Typed as `boolean` rather than left to infer `false` so
- * the branch below stays live code to the compiler.
+ * The stat tiles used to be switched off by hand with a `SHOW_STATS` flag —
+ * the right instinct aimed the wrong way. The problem was never the tiles, it
+ * was a hero announcing "0 launches, 0 makers" to the first people through the
+ * door. A flag has to be remembered and flipped; a threshold flips itself the
+ * day the board is busy enough to boast about. See `lib/thresholds`.
  */
-const SHOW_STATS: boolean = false;
 
 /* The mascots, parked the same way. `HeroAvatar` keeps its whole implementation
    — the rAF loop, the drag handling, the sphere-projected eyes — so bringing
    them back is this one flag, not a rebuild. */
 const SHOW_MASCOTS: boolean = false;
+
+/* The founding-board card ("Still being built"), parked the same way. Below
+   the stats threshold the slot is now simply empty; the stat tiles still take
+   it over on the day the board clears `STATS_SHOWN_FROM`. */
+const SHOW_FOUNDING_BOARD: boolean = false;
 
 /** The headline, minus the highlighted phrase, which animates separately. */
 const HEADLINE = ['Where', 'new', 'tech', 'gets', 'its'];
@@ -117,10 +125,10 @@ export function Hero({ stats }: HeroProps) {
 
       {/*
        * Deliberately shallow. This block was proportioned around two mascots
-       * standing in the gutters and three stat tiles below the buttons; with
-       * all five gone, the same padding just left the headline marooned in
-       * whitespace. A launch board should get you to the launches quickly, so
-       * the hero says its piece and hands over to the wall.
+       * standing in the gutters and three stat tiles below the buttons. The
+       * mascots are still parked, and so is the founding-board invitation; the
+       * stat tiles come back in this slot once the board clears the threshold,
+       * so the padding did not need to grow to take them back.
        */}
       <div className="relative mx-auto max-w-6xl px-4 pb-11 pt-12 sm:px-6 sm:pb-14 sm:pt-16 lg:px-8">
         {/*
@@ -243,19 +251,70 @@ export function Hero({ stats }: HeroProps) {
             </ButtonLink>
           </div>
 
-          {SHOW_STATS && stats && (
-            <dl
-              className="mx-auto mt-14 grid max-w-xl animate-[var(--animate-slide-up)] grid-cols-3 gap-3"
-              style={{ animationDelay: '300ms' }}
-            >
-              <Stat label="Launches" value={formatNumber(stats.launches)} tone="bg-surface" />
-              <Stat label="Makers" value={formatNumber(stats.makers)} tone="bg-pop text-on-pop" />
-              <Stat label="Votes cast" value={formatNumber(stats.votes)} tone="bg-grey text-ink" />
-            </dl>
-          )}
+          {stats &&
+            (stats.launches >= STATS_SHOWN_FROM.launches &&
+            stats.makers >= STATS_SHOWN_FROM.makers ? (
+              <dl
+                className="mx-auto mt-14 grid max-w-xl animate-[var(--animate-slide-up)] grid-cols-3 gap-3"
+                style={{ animationDelay: '300ms' }}
+              >
+                <Stat label="Launches" value={formatNumber(stats.launches)} tone="bg-surface" />
+                <Stat label="Makers" value={formatNumber(stats.makers)} tone="bg-pop text-on-pop" />
+                <Stat
+                  label="Votes cast"
+                  value={formatNumber(stats.votes)}
+                  tone="bg-grey text-ink"
+                />
+              </dl>
+            ) : (
+              SHOW_FOUNDING_BOARD && <FoundingBoard launches={stats.launches} />
+            ))}
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * What the stat band says before there is anything to count.
+ *
+ * An invitation instead of a scoreboard. A small number in a big tile reads as
+ * "nobody is here"; the same fact drawn as a short stack of bricks with room
+ * on top reads as "you would be early" — which is true, and is the only thing
+ * worth saying to somebody arriving at a board this new.
+ *
+ * No figure is printed. The stack *is* the count, capped at a dozen, and the
+ * exact number would only invite the comparison this block exists to avoid.
+ */
+function FoundingBoard({ launches }: { launches: number }) {
+  return (
+    <div
+      className="mx-auto mt-14 flex max-w-xl animate-[var(--animate-slide-up)] items-center gap-5 border border-edge bg-surface p-4 text-left shadow-hard sm:p-5"
+      style={{ animationDelay: '300ms' }}
+    >
+      <BrickStack
+        count={launches}
+        className="h-20 w-14 shrink-0 text-accent"
+        label={
+          launches === 0
+            ? 'An empty board, waiting for its first launch'
+            : 'A short stack of launches, with room for more'
+        }
+      />
+      <div className="min-w-0">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+          The first board
+        </p>
+        <p className="mt-1 font-display text-lg uppercase leading-tight text-balance">
+          {launches === 0 ? 'Nobody has launched yet' : 'Still being built'}
+        </p>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted text-pretty">
+          {launches === 0
+            ? 'The first launch on Deck takes the top of the first board. It could be yours.'
+            : 'Early launches get seen by everyone who arrives after them. There is room at the top.'}
+        </p>
+      </div>
+    </div>
   );
 }
 

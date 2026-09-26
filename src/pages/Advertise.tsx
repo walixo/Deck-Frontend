@@ -119,6 +119,15 @@ export function Advertise() {
               </div>
             ))}
           </dl>
+          {/* Said up front, because it changes what the price buys. Dates are
+              held by paying, not by booking — the API explains the clash and
+              names the next opening if somebody else pays first. */}
+          <p className="mt-4 max-w-xl text-xs leading-relaxed text-muted text-pretty">
+            {rates.capacity === 1
+              ? 'One ad per slot at a time: for the days you buy, the slot is yours alone.'
+              : `Up to ${rates.capacity} ads share each slot, taking turns.`}{' '}
+            Dates are held once you pay, so the first approved booking to pay gets them.
+          </p>
         </section>
       )}
 
@@ -298,6 +307,12 @@ function CampaignRow({ campaign }: { campaign: AdCampaign }) {
 
           {campaign.phase === 'rejected' && campaign.rejectionReason && (
             <p className="mt-2 text-xs leading-relaxed text-muted">{campaign.rejectionReason}</p>
+          )}
+
+          {campaign.phase === 'cancelled' && campaign.cancelReason && (
+            <p className="mt-2 text-xs leading-relaxed text-muted">
+              Taken down by Deck: {campaign.cancelReason}
+            </p>
           )}
 
           {/* Numbers only once there are some — a row of zeroes on a campaign

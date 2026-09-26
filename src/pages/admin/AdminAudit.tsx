@@ -36,6 +36,7 @@ const ACTION_STYLE: Record<AuditAction, { label: string; tone: string }> = {
   'game.removed': { label: 'Game removed', tone: 'bg-edge text-canvas' },
   'ad.approved': { label: 'Ad approved', tone: 'bg-deep text-on-deep' },
   'ad.rejected': { label: 'Ad rejected', tone: 'bg-grey text-ink' },
+  'ad.pulled': { label: 'Ad pulled', tone: 'bg-edge text-canvas' },
   'order.shipped': { label: 'Shipped', tone: 'bg-pop text-on-pop' },
   'order.delivered': { label: 'Delivered', tone: 'bg-pop text-on-pop' },
   'item.edited': { label: 'Launch edited', tone: 'bg-grey text-ink' },

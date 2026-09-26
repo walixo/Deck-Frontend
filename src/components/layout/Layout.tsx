@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { ConsentBanner } from '@/components/ads/ConsentBanner';
+import { PageSkeleton } from '@/components/ui/Skeleton';
 import { Footer } from './Footer';
 import { Navbar } from './Navbar';
 
@@ -24,7 +25,12 @@ export function Layout() {
       <Navbar />
 
       <main id="main" className="flex-1">
-        <Outlet />
+        {/* Most routes are code-split (see `App`). The boundary sits here,
+            inside the chrome, so a route arriving cold swaps only the page
+            area for a skeleton — the navbar and footer never blink. */}
+        <Suspense fallback={<PageSkeleton />}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <Footer />

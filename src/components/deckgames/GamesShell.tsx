@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Wordmark } from '@/components/layout/Wordmark';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
@@ -152,15 +153,23 @@ export function GamesShell() {
   );
 }
 
+/**
+ * Deck's own wordmark, with "games" set beside it.
+ *
+ * The same vector mark as the launch board's header, filled with
+ * `currentColor` so it reads in white over the hero and in ink on the glass
+ * header. Without the lavender flicker Deck's header gives it: lavender has
+ * no place in this world's palette.
+ */
 export function GamesWordmark({ className }: { className?: string }) {
   return (
     <Link
       to="/games"
       aria-label="Deck Games home"
-      className={cn('group flex items-baseline gap-1.5 text-[19px] leading-none', className)}
+      className={cn('group flex items-center gap-2 leading-none', className)}
     >
-      <span className="font-semibold tracking-[-0.055em]">deck</span>
-      <span className="font-normal tracking-[-0.04em] opacity-60 transition-opacity duration-300 group-hover:opacity-100">
+      <Wordmark className="h-5 w-auto" />
+      <span className="text-[19px] font-normal tracking-[-0.04em] opacity-60 transition-opacity duration-300 group-hover:opacity-100">
         games
       </span>
       <span
@@ -247,8 +256,9 @@ function GamesFooter() {
     <footer className="border-t border-g-line bg-g-paper">
       <div className="mx-auto grid max-w-[1400px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1fr_auto]">
         <div>
-          <p className="text-[clamp(3rem,10vw,8rem)] font-semibold leading-[0.85] tracking-[-0.07em] text-g-line">
-            deck games
+          <p className="flex flex-wrap items-end gap-x-[0.25em] text-[clamp(3rem,10vw,8rem)] font-normal leading-[0.85] tracking-[-0.06em] text-g-line">
+            <Wordmark title="Deck" className="h-[0.72em] w-auto" />
+            <span>games</span>
           </p>
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-g-mute">
             Games made across Africa and beyond, played in the browser. A world inside{' '}

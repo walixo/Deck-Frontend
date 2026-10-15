@@ -1,4 +1,5 @@
 import { useId, useRef, useState } from 'react';
+import { ImageFramer } from '@/components/ui/ImageFramer';
 import { RequestError, uploadImages } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
@@ -32,6 +33,15 @@ export function ImageUpload({
   const [dragging, setDragging] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
+  /*
+   * Images waiting for the maker to size them, one at a time, and the ones
+   * already decided. Nothing is uploaded until the whole batch has been
+   * through the preview — so cancelling halfway leaves no orphaned files on
+   * Cloudinary from the images that were framed before it.
+   */
+  const [queue, setQueue] = useState<File[]>([]);
+  const ready = useRef<File[]>([]);
+
   const remaining = max - value.length;
   const full = remaining <= 0;
 
@@ -53,9 +63,38 @@ export function ImageUpload({
       setLocalError(`Only ${remaining} more ${remaining === 1 ? 'image' : 'images'} will fit`);
     }
 
+    /* GIFs skip the preview. Drawing one onto a canvas keeps only its first
+       frame, so "framing" an animated GIF would silently turn it into a still
+       — the opposite of what anybody uploading a GIF wants. */
+    ready.current = batch.filter((file) => file.type === 'image/gif');
+    const toFrame = batch.filter((file) => file.type !== 'image/gif');
+
+    if (toFrame.length === 0) {
+      await upload(ready.current);
+      ready.current = [];
+      return;
+    }
+    setQueue(toFrame);
+  };
+
+  /** Moves past the image in the preview, keeping it (framed or not) or not. */
+  const advance = (keep?: File) => {
+    if (keep) ready.current.push(keep);
+    const rest = queue.slice(1);
+    setQueue(rest);
+
+    if (rest.length === 0) {
+      const files = ready.current;
+      ready.current = [];
+      if (files.length > 0) void upload(files);
+      else if (inputRef.current) inputRef.current.value = '';
+    }
+  };
+
+  const upload = async (files: File[]) => {
     setUploading(true);
     try {
-      const urls = await uploadImages(batch);
+      const urls = await uploadImages(files);
       onChange([...value, ...urls].slice(0, max));
     } catch (caught) {
       setLocalError(caught instanceof RequestError ? caught.message : 'That upload failed');
@@ -102,7 +141,10 @@ export function ImageUpload({
                 src={url}
                 alt=""
                 className={cn(
-                  'w-full border border-edge object-cover',
+                  /* Contain, not cover: this thumbnail is the maker's check on
+                     how the image will look, and a crop here would hide the
+                     exact problem the preview exists to catch. */
+                  'w-full border border-edge bg-surface-2 object-contain',
                   aspect === 'square' ? 'aspect-square' : 'aspect-video',
                 )}
               />
@@ -181,6 +223,19 @@ export function ImageUpload({
         </p>
       ) : (
         hint && <p className="mt-1.5 text-xs text-muted">{hint}</p>
+      )}
+
+      {/* Keyed on the file so each image in a batch gets a fresh preview —
+          zoom and position from the last one must not carry over. */}
+      {queue.length > 0 && (
+        <ImageFramer
+          key={`${queue[0].name}-${queue[0].size}-${queue[0].lastModified}`}
+          file={queue[0]}
+          shape={aspect}
+          onDone={(framed) => advance(framed)}
+          onUseOriginal={() => advance(queue[0])}
+          onCancel={() => advance()}
+        />
       )}
     </div>
   );

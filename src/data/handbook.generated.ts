@@ -19,10 +19,10 @@ export interface HandbookSection {
 export const handbookMeta = {
   title: "Deck — Build Handbook",
   subtitle: "Where new tech gets its first fans — a launch board with a forum, a shop, custom printing, fundraises, acquisitions, an ad service and a staff back office.",
-  generated: "2026-09-15",
+  generated: "2026-10-15",
   facts: [
     ["Stack", "React 19 · Vite · TypeScript · Tailwind 4 — Express 4 · Mongoose 8 · MongoDB"],
-    ["Payments", "Paystack, collected centrally and disbursed by Deck"],
+    ["Payments", "Bachs: collected centrally, transferred to sellers' sub-accounts after a 14-day hold"],
     ["Shape", "18 models · 23 controllers · 123 endpoints · 52 pages · 65 components"],
     ["Size", "~13,900 lines of backend TypeScript · ~26,800 of frontend"],
     ["Status", "Typechecks, lints and builds clean in both packages"],
@@ -42,7 +42,7 @@ export interface HandbookDownload {
 }
 
 export const handbookDownloads: readonly HandbookDownload[] = [
-  { file: "Deck-Handbook.pdf", kind: "PDF", size: "58 KB" },
+  { file: "Deck-Handbook.pdf", kind: "PDF", size: "59 KB" },
   { file: "Deck-Handbook.docx", kind: "DOCX", size: "20 KB" },
 ];
 
@@ -188,13 +188,15 @@ export const handbookSections: readonly HandbookSection[] = [
     n: 10,
     title: "How money moves",
     body: [
-      "Every charge lands in Deck's Paystack account. Deck then owes sellers, which makes the arithmetic more important rather than less, because nothing external will catch a discrepancy.",
+      "Every charge lands in Deck's Bachs account. Deck then owes sellers, which makes the arithmetic more important rather than less, because nothing external will catch a discrepancy. What is owed is never stored: it is derived each time from paid orders and contributions, minus transfers already sent.",
+      "Sellers are paid by transfer to their own Bachs sub-account. Each sale is held for PAYOUT_HOLD_DAYS (14) to cover refunds, then an hourly in-process run sends whatever has cleared. A pending payout row is written before Bachs is called and its id is the idempotency key, so a crash mid-run cannot pay twice.",
       "There is one rounding rule in one place. The fee is rounded and the net is defined as the remainder, never rounded independently, so fee and net always add back to gross exactly. Shipping is split across sellers by largest-remainder allocation so the parts sum to the whole; commission is charged on goods only, since taking a cut of postage would mean profiting from the courier.",
       "What a seller earned on a sale is frozen at checkout. The fee percentage can change next week; that sale cannot.",
     ],
     bullets: [
       ["Shop", "Platform fee percentage from env, charged on goods."],
-      ["Fundraise", "Same fee machinery. Nothing counts until Paystack confirms the charge."],
+      ["Fundraise", "Same fee machinery. Nothing counts until Bachs confirms the charge."],
+      ["Games", "Deck Games: in-game purchases split 80/20 (GAME_FEE_PERCENT), frozen at the sale, test purchases never earn. Paid through the same hold and transfer run."],
       ["Acquisitions", "8%, its own constant, copied onto each deal at acceptance so a rate change never rewrites a past sale."],
       ["Escrow", "None. Deck records the agreed price and invoices its commission; it does not hold acquisition funds."],
     ],
@@ -279,7 +281,7 @@ export const handbookSections: readonly HandbookSection[] = [
       ["Seed", "npm run seed, then seed-artwork, seed-future-gen, seed-forum, seed-acquisitions."],
       ["Admin", "npm run create-admin."],
       ["Tokens", "npm run tokens && npm run check:contrast from the repo root after editing tokens.json."],
-      ["Env", "MONGODB_URI, JWT_SECRET, PAYSTACK_SECRET_KEY, CURRENCY. Optional: IMAGE_API_KEY for lifestyle renders, ACQUISITION_FEE_PERCENT, EDIT_WINDOW_HOURS."],
+      ["Env", "MONGODB_URI, JWT_SECRET, BACHS_SECRET_KEY, BACHS_WEBHOOK_SECRET, PAYMENT_RETURN_URL, CURRENCY. Optional: IMAGE_API_KEY for lifestyle renders, ACQUISITION_FEE_PERCENT, EDIT_WINDOW_HOURS."],
     ],
   },
   {

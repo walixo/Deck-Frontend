@@ -59,7 +59,7 @@ export function Checkout() {
         onSuccess: (order) => {
           clear();
           if (order.authorizationUrl) {
-            // Hand off to Paystack's hosted checkout.
+            // Hand off to the hosted checkout.
             window.location.href = order.authorizationUrl;
             return;
           }
@@ -89,7 +89,7 @@ export function Checkout() {
       <header className="mb-8">
         <h1 className="display-tight text-3xl uppercase sm:text-4xl">Checkout</h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
-          Where should this go? Payment happens on Paystack's secure page — Deck never sees your
+          Where should this go? Payment happens on Bachs's secure page — Deck never sees your
           card details.
         </p>
       </header>

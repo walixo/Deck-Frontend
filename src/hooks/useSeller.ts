@@ -1,6 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { request, requestWithMeta } from '@/lib/api';
-import type { MerchProduct, OwedRow, Payout, SellerBalance, SellerEarnings } from '@/types';
+import type {
+  MerchProduct,
+  OwedMeta,
+  OwedRow,
+  Payout,
+  PayoutAccount,
+  SellerBalance,
+  SellerEarnings,
+  TransferRunResult,
+} from '@/types';
 
 export const sellerKeys = {
   earnings: () => ['seller-earnings'] as const,
@@ -8,6 +17,7 @@ export const sellerKeys = {
   myListings: () => ['my-listings'] as const,
   pendingListings: () => ['pending-listings'] as const,
   owed: () => ['payouts-owed'] as const,
+  payoutAccount: () => ['payout-account'] as const,
 };
 
 /**
@@ -31,6 +41,39 @@ export function useMyPayouts(enabled = true) {
     queryKey: sellerKeys.payouts(),
     queryFn: () => requestWithMeta<Payout[], SellerBalance>('/sellers/payouts'),
     enabled,
+  });
+}
+
+/** Whether this seller has a sub-account Deck can transfer to. */
+export function usePayoutAccount(enabled = true) {
+  return useQuery({
+    queryKey: sellerKeys.payoutAccount(),
+    queryFn: () => request<PayoutAccount>('get', '/sellers/payout-account'),
+    enabled,
+  });
+}
+
+/**
+ * Mints a hosted onboarding link. Bachs collects identity and bank details on
+ * its own page — the caller just sends the browser there.
+ */
+export function useStartPayoutOnboarding(from: 'sell' | 'games' = 'sell') {
+  return useMutation({
+    mutationFn: () =>
+      request<{ url: string }>('post', '/sellers/payout-account/onboarding', { from }),
+  });
+}
+
+/**
+ * Asks the server to re-read the account from Bachs. Used on the way back from
+ * onboarding: arriving at the return URL proves nothing on its own.
+ */
+export function useRefreshPayoutAccount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => request<PayoutAccount>('post', '/sellers/payout-account/refresh'),
+    onSuccess: (account) => queryClient.setQueryData(sellerKeys.payoutAccount(), account),
   });
 }
 
@@ -105,25 +148,20 @@ export function usePendingListings(enabled = true) {
 export function useOwed(enabled = true) {
   return useQuery({
     queryKey: sellerKeys.owed(),
-    queryFn: () =>
-      requestWithMeta<OwedRow[], { currency: string; totalOwedMinor: number; sellers: number }>(
-        '/payouts/owed',
-      ),
+    queryFn: () => requestWithMeta<OwedRow[], OwedMeta>('/payouts/owed'),
     enabled,
   });
 }
 
-/** Records a disbursement that has already left Deck's bank. */
-export function useRecordPayout() {
+/**
+ * Runs the transfer job now rather than waiting for the hourly tick. The same
+ * code path as the scheduler, so it carries the same safeguards.
+ */
+export function useRunTransfers() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: {
-      sellerId: string;
-      amount: number;
-      destination?: string;
-      note?: string;
-    }) => request<Payout & { remainingOwedMinor: number }>('post', '/payouts', input),
+    mutationFn: () => request<TransferRunResult>('post', '/payouts/run'),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: sellerKeys.owed() });
       await queryClient.invalidateQueries({ queryKey: sellerKeys.earnings() });

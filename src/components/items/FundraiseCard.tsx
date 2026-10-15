@@ -59,7 +59,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
         message: message.trim() || undefined,
         anonymous,
       });
-      // Hand off to Paystack. Nothing counts until the server verifies it.
+      // Hand off to hosted checkout. Nothing counts until the server verifies it.
       window.location.assign(created.authorizationUrl);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'That did not go through');
@@ -83,7 +83,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
       </div>
 
       <h2 id="fundraise-heading" className="display-tight mt-4 text-2xl uppercase text-balance">
-        Back {item.name}
+        Back <span className="normal-case">{item.name}</span>
       </h2>
 
       {live.pitch && (
@@ -185,7 +185,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
               is passed on — because this line is read by backers and payment
               reviewers alike, and "straight to the maker" was not true. */}
           <p className="text-center font-mono text-[10px] uppercase tracking-[0.08em] text-muted">
-            Paid securely through Paystack. Deck collects it and passes it to the maker
+            Paid securely through Bachs. Deck collects it and passes it to the maker
           </p>
         </form>
       )}

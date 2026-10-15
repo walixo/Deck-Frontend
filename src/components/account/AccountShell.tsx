@@ -48,7 +48,8 @@ const GROUPS: { label: string; items: NavItem[] }[] = [
     items: [
       { to: '/settings/launches', label: 'Launches', icon: RocketLaunchIcon },
       { to: '/settings/writing', label: 'Writing', icon: DocumentTextIcon },
-      { to: '/settings/games', label: 'Games', icon: PuzzlePieceIcon },
+      /* Lives in Deck Games now; the sidebar points there. */
+      { to: '/games/developers', label: 'Games', icon: PuzzlePieceIcon },
       { to: '/settings/prints', label: 'Custom prints', icon: PaintBrushIcon },
       { to: '/settings/orders', label: 'Orders', icon: ShoppingBagIcon },
     ],

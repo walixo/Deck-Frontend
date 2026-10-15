@@ -94,9 +94,7 @@ function TickerItem({ item, focusable }: { item: Item; focusable: boolean }) {
           </span>
         )}
 
-        <span className="whitespace-nowrap font-display text-sm uppercase tracking-tight">
-          {item.name}
-        </span>
+        <span className="whitespace-nowrap font-display text-sm tracking-tight">{item.name}</span>
 
         <span className="whitespace-nowrap font-mono text-[11px] font-bold tabular-nums opacity-70">
           ▲{formatNumber(item.voteCount)}
@@ -106,11 +104,7 @@ function TickerItem({ item, focusable }: { item: Item; focusable: boolean }) {
       {/* The separator between entries. A star rather than a bullet, from the
           same set the nav marker uses — at this size a `·` disappears against
           the band and the names run together. */}
-      <Star
-        name="glint"
-        className="size-3 shrink-0 text-on-deep opacity-50"
-        spin={12}
-      />
+      <Star name="glint" className="size-3 shrink-0 text-on-deep opacity-50" spin={12} />
     </>
   );
 }

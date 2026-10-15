@@ -99,15 +99,33 @@ export function useOrder(reference: string) {
   });
 }
 
-/** Confirms payment with the server, which asks Paystack directly. */
+/**
+ * What the server says about a payment, whichever of the three flows it was.
+ *
+ * One return URL serves orders, contributions and ad campaigns, and the
+ * reference alone does not say which — so the server answers with a `kind`,
+ * and the return page routes on it.
+ */
+export type PaymentResult =
+  | ({ kind: 'order' } & Order)
+  | { kind: 'contribution'; reference: string; status: string; itemSlug: string | null }
+  | { kind: 'ad'; reference: string; status: string }
+  | { kind: 'game'; reference: string; status: string; game: string | null };
+
+/** Confirms a payment with the server, which asks the provider directly. */
 export function useVerifyPayment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (reference: string) => request<Order>('post', `/orders/${reference}/verify`),
-    onSuccess: async (order) => {
-      queryClient.setQueryData(merchKeys.order(order.reference), order);
-      await queryClient.invalidateQueries({ queryKey: merchKeys.orders() });
+    mutationFn: (reference: string) =>
+      request<PaymentResult>('post', `/orders/${reference}/verify`),
+    onSuccess: async (result) => {
+      /* Only an order belongs in the order cache. This used to write every
+         result there, so a contribution would be filed as an order. */
+      if (result.kind === 'order') {
+        queryClient.setQueryData(merchKeys.order(result.reference), result);
+        await queryClient.invalidateQueries({ queryKey: merchKeys.orders() });
+      }
     },
   });
 }

@@ -24,11 +24,26 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
         Screenshots
       </h2>
 
-      <figure className="border border-edge shadow-hard">
+      {/*
+       * The whole screenshot, always, with its own colours behind it.
+       *
+       * It was already `object-contain`, so nothing was cropped here — but a
+       * tall phone screenshot in a 16:9 frame sat between two flat grey slabs
+       * that read as a broken layout. The blurred copy fills that space with
+       * the image's own palette instead. Images sized through the upload
+       * preview already match the frame, so this only shows on older ones.
+       */}
+      <figure className="relative aspect-video w-full overflow-hidden border border-edge bg-surface-2 shadow-hard">
+        <img
+          src={current}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 size-full scale-110 object-cover opacity-40 blur-2xl"
+        />
         <img
           src={current}
           alt={`${name} screenshot ${active + 1} of ${images.length}`}
-          className="aspect-video w-full bg-grey/30 object-contain"
+          className="relative size-full object-contain"
         />
       </figure>
 
@@ -46,7 +61,9 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
                   index === active ? 'border-accent' : 'border-edge opacity-60 hover:opacity-100',
                 )}
               >
-                <img src={image} alt="" className="h-14 w-24 bg-grey/30 object-cover" />
+                {/* Contain here too: a thumbnail that crops is a thumbnail of
+                    a different picture from the one it opens. */}
+                <img src={image} alt="" className="h-14 w-24 bg-surface-2 object-contain" />
               </button>
             </li>
           ))}

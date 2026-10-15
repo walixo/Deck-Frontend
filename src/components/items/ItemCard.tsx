@@ -236,18 +236,23 @@ export function ItemCard({
               className={cn(
                 'truncate text-base leading-tight',
                 /*
-                 * Plain rows set their titles in Geist, sentence case.
+                 * Plain rows set their titles in Geist; the bordered card keeps
+                 * the display face. Neither forces capitals.
                  *
-                 * Discover is the only place this variant is used, and it is the
-                 * one screen that is nothing but titles — two columns of them,
-                 * twelve at a time. Archivo Black is a display face: it earns
-                 * its weight on a hero, and repeated twelve times down a list it
-                 * stops reading as emphasis and starts reading as noise. Caps
-                 * compound that, and they also throw away a real signal — the
-                 * shape of a product's own name. "Tinder Box" is how its maker
-                 * writes it; "TINDER BOX" is how a stylesheet writes it.
+                 * Discover is the only place the plain variant is used, and it
+                 * is the one screen that is nothing but titles — two columns,
+                 * twelve at a time. Archivo Black earns its weight on a hero,
+                 * and repeated twelve times down a list it stops reading as
+                 * emphasis and starts reading as noise.
+                 *
+                 * Capitals came off everywhere a launch's name appears, for the
+                 * reason this comment always gave: they throw away a real
+                 * signal, the shape of the product's own name. "Tinder Box" is
+                 * how its maker writes it; "TINDER BOX" is how a stylesheet
+                 * writes it. In a heading like "Edit Tinder Box", the word
+                 * "Edit" keeps the capitals — only the name is the maker's.
                  */
-                plain ? 'font-sans font-normal' : 'uppercase',
+                plain && 'font-sans font-normal',
               )}
             >
               {/* The whole card is clickable via this stretched link. */}

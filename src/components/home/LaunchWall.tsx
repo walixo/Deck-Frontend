@@ -288,7 +288,7 @@ function FlatPreview({
 
         <span
           className={cn(
-            'min-w-0 truncate font-display uppercase tracking-tight',
+            'min-w-0 truncate font-display tracking-tight',
             narrow ? 'text-sm' : 'text-base',
           )}
         >

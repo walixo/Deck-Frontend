@@ -28,6 +28,9 @@ const GLYPH: Record<NotificationKind, string> = {
   'content.moderated': '!',
   'fundraise.contribution': '₦',
   'order.status': '⬈',
+  'payouts.ready': '✓',
+  'payout.sent': '₦',
+  'game.sale': '▶',
 };
 
 function Row({ item, onNavigate }: { item: AppNotification; onNavigate: () => void }) {

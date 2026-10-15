@@ -65,7 +65,7 @@ export function useCreateAd() {
   });
 }
 
-/** Opens Paystack for an approved campaign. Only reachable after review. */
+/** Opens hosted checkout for an approved campaign. Only reachable after review. */
 export function usePayForAd() {
   return useMutation({
     mutationFn: (reference: string) =>

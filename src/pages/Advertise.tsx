@@ -5,6 +5,7 @@ import { Button, ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input, Select, Textarea } from '@/components/ui/Field';
 import { ImageUpload } from '@/components/ui/ImageUpload';
+import { PaymentOutcome } from '@/components/ui/PaymentOutcome';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/States';
 import { useAdRates, useCreateAd, useMyAds, usePayForAd } from '@/hooks/useAds';
@@ -93,6 +94,12 @@ export function Advertise() {
           anything is charged — if it is turned down, you pay nothing.
         </p>
       </header>
+
+      <PaymentOutcome
+        confirmed="Payment confirmed. Your campaign is booked — it goes live on its start date."
+        pending="Payment received. Your campaign will show as booked as soon as the provider confirms it."
+        cancelled="You left checkout before paying, so nothing was charged. Your approved campaign is still waiting below."
+      />
 
       {rates && (
         <section aria-labelledby="rates-heading" className="mb-12">

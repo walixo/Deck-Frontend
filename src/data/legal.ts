@@ -107,6 +107,10 @@ export const PRIVACY_POLICY: LegalDocument = {
               'When you back a fundraise or commission a custom print.',
             ],
             [
+              'Payout account status and transfer history',
+              'When you sell on Deck or raise funds and set up payouts. Your bank and identity details are collected by Bachs on their own page; we receive an account reference, whether transfers are switched on, and the transfers we have sent.',
+            ],
+            [
               'IP address',
               'Recorded against staff moderation actions in an audit log, and used transiently for rate limiting sign-in attempts.',
             ],
@@ -114,7 +118,7 @@ export const PRIVACY_POLICY: LegalDocument = {
         },
         {
           kind: 'note',
-          text: 'Deck never sees your card details. Payments are handled entirely by Paystack on their own systems; we receive a reference, an amount and whether it succeeded.',
+          text: 'Deck never sees your card details. Payments are handled entirely by Bachs on their own systems; we receive a reference, an amount and whether it succeeded.',
         },
       ],
     },
@@ -225,10 +229,17 @@ export const PRIVACY_POLICY: LegalDocument = {
             ['Render', 'Runs the application server.'],
             ['Vercel', 'Serves the website and provides aggregate traffic analytics.'],
             ['Cloudinary', 'Stores and delivers uploaded images.'],
-            ['Paystack', 'Takes payments. They are a controller in their own right for card data.'],
+            [
+              'Bachs',
+              'Takes payments, and verifies and pays sellers and makers. They are a controller in their own right for card, bank and identity data.',
+            ],
             ['GitHub, Google', 'Only if you choose to sign in with them.'],
             ['Google AdSense', 'Only after you consent to advertising.'],
           ],
+        },
+        {
+          kind: 'p',
+          text: 'Games on Deck Games are made by independent developers, who are not our suppliers. When you play one that uses Deck sign-in, its developer receives a random player ID that is unique to you in that game and different in every other, your display name, and what you buy in their game. They never receive your email address, password or Deck username. What they do with that information is covered by their own privacy policy.',
         },
         {
           kind: 'p',
@@ -534,6 +545,25 @@ export const TERMS_OF_SERVICE: LegalDocument = {
     },
 
     {
+      title: 'Getting paid',
+      blocks: [
+        {
+          kind: 'p',
+          text: 'If you sell in the shop, run a fundraise or sell inside a game on Deck Games, buyers, backers and players pay Deck, and Deck pays your share to a payout account you connect with Bachs, our payments provider. Setting one up means agreeing to Bachs’s own terms for connected accounts and giving them the identity and bank details they ask for. We cannot pay you until they have switched transfers on.',
+        },
+        {
+          kind: 'list',
+          items: [
+            'Each sale or contribution is held for 14 days before it can be sent, to cover refunds, withdrawals and disputes. After that it goes out automatically with the next transfer run.',
+            'Balances below a small minimum wait until there is enough to send.',
+            'If a payment is refunded, reversed or found to be fraudulent, we may hold back or deduct the amount from what we owe you.',
+            'You are responsible for your own tax on what you are paid.',
+          ],
+        },
+      ],
+    },
+
+    {
       title: 'Acquisitions',
       blocks: [
         {
@@ -559,6 +589,31 @@ export const TERMS_OF_SERVICE: LegalDocument = {
         {
           kind: 'p',
           text: 'The games are there for fun. Submitting scores you did not earn — by modifying the game, automating play or tampering with requests — gets the scores removed and may cost you your account.',
+        },
+        {
+          kind: 'p',
+          text: 'Most games on Deck Games are made by independent developers and run from their own servers inside a sandboxed player. Deck reviews each game before it is listed, but the developer is responsible for the game, its content and anything you buy inside it. Deck will never ask for your password inside a game; if a game does, do not enter it and tell us.',
+        },
+        {
+          kind: 'p',
+          text: 'In-game purchases are paid to Deck, which passes 80% to the developer. If something you bought does not arrive, contact us at {{Support contact email}} with the purchase reference and we will chase it, and refund you if it cannot be delivered.',
+        },
+      ],
+    },
+
+    {
+      title: 'Developing for Deck Games',
+      blocks: [
+        {
+          kind: 'list',
+          items: [
+            'You keep the rights to your game. You give Deck permission to list it, show its name, cover and description, and run it in the Deck Games player.',
+            'You host your game yourself, over https, and are responsible for it — including keeping it free of malware, deceptive practices and anything that breaks these terms. It must never collect passwords or payment details; purchases go only through the Deck Games SDK.',
+            'Every game is reviewed before it is listed, and its address and write-up are fixed once approved. We may remove or stop framing a game at any time if it breaks these rules or puts players at risk.',
+            'Of every in-game purchase you receive 80% and Deck keeps 20%. Your share is paid under the terms of Getting paid above, including the 14-day hold.',
+            'Your API keys and webhook secret are yours to keep safe. Anything done with them is treated as done by you.',
+            'Player IDs and display names are given to you only to run your game. Do not use them to identify players outside it, or sell or share them.',
+          ],
         },
       ],
     },

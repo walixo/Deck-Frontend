@@ -1,33 +1,59 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { Input, Textarea } from '@/components/ui/Field';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { EmptyState } from '@/components/ui/States';
-import { useOwed, useRecordPayout } from '@/hooks/useSeller';
+import { EmptyState, InlineAlert } from '@/components/ui/States';
+import { useOwed, useRunTransfers } from '@/hooks/useSeller';
 import { formatMoney, profilePath } from '@/lib/utils';
-import type { OwedRow } from '@/types';
+import type { OwedMeta, OwedRow, PayoutAccountStatus } from '@/types';
+
+const ACCOUNT: Record<PayoutAccountStatus, { label: string; tone: string }> = {
+  active: { label: 'Paid automatically', tone: 'bg-deep text-on-deep' },
+  pending: { label: 'Onboarding', tone: 'bg-grey text-ink' },
+  none: { label: 'No payout account', tone: 'bg-edge text-canvas' },
+};
 
 /**
- * The disbursement run.
+ * Who Deck owes, and whether the money can move.
  *
- * Deck holds everyone's money, so this page is the other half of that promise:
- * who is owed what, and a place to write down that it has been sent. The
- * transfer itself happens in Deck's bank — this only records it, which is why
- * every row asks for a destination note. Without one, a payout six months old
- * is an amount with no way to trace it.
+ * Transfers to sellers' Bachs sub-accounts run on their own every hour. Staff
+ * no longer record bank transfers by hand — the only way a payout row is
+ * written now is by the transfer run, against a transfer Bachs made. This page
+ * is for seeing where money is stuck: a seller with no payout account, or a
+ * balance still inside the refund hold, and nothing staff can do about either
+ * but wait or nudge. "Run now" exists for the day you would rather not wait an
+ * hour.
  */
 export function Disbursements() {
   const { data: owed, isLoading } = useOwed();
-  const [openFor, setOpenFor] = useState<string | null>(null);
+  const run = useRunTransfers();
 
   return (
     <div>
-      <p className="mb-6 max-w-xl text-sm leading-relaxed text-muted text-pretty">
-        Everyone Deck currently owes. Send the transfer from the bank, then record it here so the
-        balance clears.
-      </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <p className="max-w-xl text-sm leading-relaxed text-muted text-pretty">
+          Everyone Deck currently owes. Cleared balances go to each seller’s payout account
+          automatically, every hour. Sales are held{' '}
+          {owed ? `${owed.meta.holdDays} days` : 'for a while'} first to cover refunds.
+        </p>
+        <Button size="sm" onClick={() => run.mutate()} loading={run.isPending}>
+          Run transfers now
+        </Button>
+      </div>
+
+      {run.isError && (
+        <div className="mb-6">
+          <InlineAlert>{run.error.message}</InlineAlert>
+        </div>
+      )}
+      {run.data && (
+        <div className="mb-6">
+          <InlineAlert tone="success">
+            {run.data.sent} sent · {run.data.retried} retried · {run.data.failed} refused ·{' '}
+            {run.data.awaitingAccount} waiting on a payout account
+          </InlineAlert>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="space-y-3">
@@ -42,24 +68,29 @@ export function Disbursements() {
         />
       ) : (
         <>
-          <div className="mb-6 border border-edge bg-pop px-4 py-4 text-on-pop shadow-hard">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
-              Outstanding across {owed.meta.sellers}{' '}
-              {owed.meta.sellers === 1 ? 'seller' : 'sellers'}
-            </p>
-            <p className="mt-1 font-display text-3xl tabular-nums">
-              {formatMoney(owed.meta.totalOwedMinor, owed.meta.currency)}
-            </p>
-          </div>
+          <dl className="mb-6 grid gap-3 sm:grid-cols-2">
+            <div className="border border-edge bg-pop px-4 py-4 text-on-pop shadow-hard">
+              <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
+                Owed across {owed.meta.sellers} {owed.meta.sellers === 1 ? 'seller' : 'sellers'}
+              </dt>
+              <dd className="mt-1 font-display text-3xl tabular-nums">
+                {formatMoney(owed.meta.totalOwedMinor, owed.meta.currency)}
+              </dd>
+            </div>
+            <div className="border border-edge bg-surface px-4 py-4 shadow-hard">
+              <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+                Cleared — can be sent now
+              </dt>
+              <dd className="mt-1 font-display text-3xl tabular-nums">
+                {formatMoney(owed.meta.totalAvailableMinor, owed.meta.currency)}
+              </dd>
+            </div>
+          </dl>
 
           <ul className="space-y-3">
             {owed.data.map((row) => (
               <li key={row.sellerId}>
-                <OwedCard
-                  row={row}
-                  open={openFor === row.sellerId}
-                  onToggle={() => setOpenFor(openFor === row.sellerId ? null : row.sellerId)}
-                />
+                <OwedCard row={row} meta={owed.meta} />
               </li>
             ))}
           </ul>
@@ -69,45 +100,37 @@ export function Disbursements() {
   );
 }
 
-function OwedCard({ row, open, onToggle }: { row: OwedRow; open: boolean; onToggle: () => void }) {
-  const record = useRecordPayout();
-  /* Defaults to the full balance — the common case is clearing it entirely. */
-  const [amount, setAmount] = useState<number | ''>(row.owedMinor / 100);
-  const [destination, setDestination] = useState('');
-  const [note, setNote] = useState('');
-  const [error, setError] = useState<string | null>(null);
+/** Why this balance has not gone out, in the order a seller would ask. */
+function waitingOn(row: OwedRow, meta: OwedMeta): string | null {
+  if (row.availableMinor <= 0) return `All inside the ${meta.holdDays}-day hold`;
+  if (row.payoutAccount === 'none') return 'Waiting for them to set up payouts';
+  if (row.payoutAccount === 'pending') return 'Waiting on Bachs to switch on transfers';
+  if (row.availableMinor < meta.minTransferMinor) {
+    return `Under the ${formatMoney(meta.minTransferMinor, row.currency)} minimum — waits for the next sale`;
+  }
+  return null;
+}
 
-  const submit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setError(null);
-    try {
-      await record.mutateAsync({
-        sellerId: row.sellerId,
-        amount: Number(amount),
-        destination: destination.trim() || undefined,
-        note: note.trim() || undefined,
-      });
-      onToggle();
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'We could not record that');
-    }
-  };
+function OwedCard({ row, meta }: { row: OwedRow; meta: OwedMeta }) {
+  const account = ACCOUNT[row.payoutAccount];
+  const reason = waitingOn(row, meta);
+  const heldMinor = row.owedMinor - row.availableMinor;
 
   return (
-    <div className="rounded-slab border border-edge bg-surface shadow-hard">
-      <div className="flex flex-wrap items-center gap-4 p-4">
-        {row.seller ? (
-          <Avatar user={row.seller} size="md" />
-        ) : (
-          <span
-            aria-hidden="true"
-            className="flex size-10 items-center justify-center border border-edge bg-surface-2 font-mono text-xs font-bold"
-          >
-            ?
-          </span>
-        )}
+    <div className="flex flex-wrap items-center gap-4 rounded-slab border border-edge bg-surface p-4 shadow-hard">
+      {row.seller ? (
+        <Avatar user={row.seller} size="md" />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="flex size-10 items-center justify-center border border-edge bg-surface-2 font-mono text-xs font-bold"
+        >
+          ?
+        </span>
+      )}
 
-        <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
           <p className="font-display text-base uppercase">
             {row.seller ? (
               <Link to={profilePath(row.seller.username)} className="hover:underline">
@@ -117,73 +140,35 @@ function OwedCard({ row, open, onToggle }: { row: OwedRow; open: boolean; onTogg
               'Unknown seller'
             )}
           </p>
-          <p className="mt-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
-            {row.email ?? '—'}
-          </p>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
-            Earned {formatMoney(row.earnedMinor, row.currency)} &middot; paid{' '}
-            {formatMoney(row.paidOutMinor, row.currency)}
-          </p>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-3">
-          <span className="font-display text-xl tabular-nums">
-            {formatMoney(row.owedMinor, row.currency)}
+          <span
+            className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${account.tone}`}
+          >
+            {account.label}
           </span>
-          <Button size="sm" variant={open ? 'secondary' : 'primary'} onClick={onToggle}>
-            {open ? 'Cancel' : 'Record payout'}
-          </Button>
         </div>
+        <p className="mt-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          {row.email ?? '—'}
+        </p>
+        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
+          Earned {formatMoney(row.earnedMinor, row.currency)} &middot; paid{' '}
+          {formatMoney(row.paidOutMinor, row.currency)}
+          {heldMinor > 0 && <> &middot; held {formatMoney(heldMinor, row.currency)}</>}
+        </p>
+        {reason && (
+          <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.06em]">
+            {reason}
+          </p>
+        )}
       </div>
 
-      {open && (
-        <form onSubmit={submit} className="space-y-4 border-t border-edge p-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input
-              label="Amount sent"
-              type="number"
-              inputMode="decimal"
-              min={1}
-              max={row.owedMinor / 100}
-              step={100}
-              value={amount}
-              onChange={(event) =>
-                setAmount(event.target.value === '' ? '' : Number(event.target.value))
-              }
-              required
-              hint={`At most ${formatMoney(row.owedMinor, row.currency)}`}
-            />
-            <Input
-              label="Sent to"
-              value={destination}
-              onChange={(event) => setDestination(event.target.value)}
-              maxLength={200}
-              hint="Bank, account or transfer id, so this can be traced later"
-            />
-          </div>
-
-          <Textarea
-            label="Note (optional)"
-            rows={2}
-            maxLength={400}
-            value={note}
-            onChange={(event) => setNote(event.target.value)}
-          />
-
-          {error && (
-            <p
-              role="alert"
-              className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
-            >
-              {error}
-            </p>
-          )}
-
-          <Button type="submit" loading={record.isPending}>
-            Record this payout
-          </Button>
-        </form>
-      )}
+      <div className="shrink-0 text-right">
+        <p className="font-display text-xl tabular-nums">
+          {formatMoney(row.owedMinor, row.currency)}
+        </p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
+          {formatMoney(row.availableMinor, row.currency)} cleared
+        </p>
+      </div>
     </div>
   );
 }

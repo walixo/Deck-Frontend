@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Layout } from '@/components/layout/Layout';
@@ -45,9 +46,22 @@ const Privacy = lazyNamed(() => import('@/pages/Legal'), 'Privacy');
 const Terms = lazyNamed(() => import('@/pages/Legal'), 'Terms');
 const Profile = lazyNamed(() => import('@/pages/Profile'), 'Profile');
 
-/* The arcade. The heaviest pages in the app: each game is a canvas engine. */
-const Games = lazyNamed(() => import('@/pages/Games'), 'Games');
-const GameDetail = lazyNamed(() => import('@/pages/GameDetail'), 'GameDetail');
+/*
+ * Deck Games — its own world under `/games`, with its own shell rather than
+ * Deck's Layout. The heaviest pages in the app: the four originals are canvas
+ * engines, and the home page carries two scroll scenes.
+ */
+const GamesShell = lazyNamed(() => import('@/components/deckgames/GamesShell'), 'GamesShell');
+const GamesHome = lazyNamed(() => import('@/pages/games/GamesHome'), 'GamesHome');
+const GamePage = lazyNamed(() => import('@/pages/games/GamePage'), 'GamePage');
+const DevHome = lazyNamed(() => import('@/pages/games/DevHome'), 'DevHome');
+const DevDocs = lazyNamed(() => import('@/pages/games/DevDocs'), 'DevDocs');
+const DevNewGame = lazyNamed(() => import('@/pages/games/DevNewGame'), 'DevNewGame');
+const DevGame = lazyNamed(() => import('@/pages/games/DevGame'), 'DevGame');
+const PurchaseComplete = lazyNamed(
+  () => import('@/pages/games/PurchaseComplete'),
+  'PurchaseComplete',
+);
 
 /* Signing in. */
 const Login = lazyNamed(() => import('@/pages/Login'), 'Login');
@@ -88,7 +102,6 @@ const AccountLaunches = lazyNamed(
   'AccountLaunches',
 );
 const AccountWriting = lazyNamed(() => import('@/pages/account/AccountWriting'), 'AccountWriting');
-const AccountGames = lazyNamed(() => import('@/pages/account/AccountGames'), 'AccountGames');
 const AccountPrints = lazyNamed(() => import('@/pages/account/AccountPrints'), 'AccountPrints');
 
 /* The staff area. */
@@ -115,6 +128,27 @@ const Styleguide = lazyNamed(() => import('@/pages/Styleguide'), 'Styleguide');
 export function App() {
   return (
     <Routes>
+      {/* Deck Games. Static segments outrank `:slug`, and the API reserves
+          these words so no game can be slugged into their way. */}
+      <Route
+        path="/games"
+        element={
+          <Suspense fallback={null}>
+            <GamesShell />
+          </Suspense>
+        }
+      >
+        <Route index element={<GamesHome />} />
+        <Route path="developers" element={<DevHome />} />
+        <Route path="developers/docs" element={<DevDocs />} />
+        <Route element={<RequireAuth />}>
+          <Route path="developers/new" element={<DevNewGame />} />
+          <Route path="developers/:slug" element={<DevGame />} />
+          <Route path="purchase/complete" element={<PurchaseComplete />} />
+        </Route>
+        <Route path=":slug" element={<GamePage />} />
+      </Route>
+
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/discover" element={<Discover />} />
@@ -126,8 +160,6 @@ export function App() {
         <Route path="/acquisitions/:slug" element={<AcquisitionDetail />} />
         <Route path="/forum" element={<Forum />} />
         <Route path="/forum/:slug" element={<TopicDetail />} />
-        <Route path="/games" element={<Games />} />
-        <Route path="/games/:slug" element={<GameDetail />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
@@ -157,7 +189,8 @@ export function App() {
             <Route path="password" element={<AccountPassword />} />
             <Route path="launches" element={<AccountLaunches />} />
             <Route path="writing" element={<AccountWriting />} />
-            <Route path="games" element={<AccountGames />} />
+            {/* Games moved to Deck Games' developer area. */}
+            <Route path="games" element={<Navigate to="/games/developers" replace />} />
             <Route path="prints" element={<AccountPrints />} />
             {/* Orders already had a page; this points the sidebar at it rather
                 than growing a second list of the same rows. */}

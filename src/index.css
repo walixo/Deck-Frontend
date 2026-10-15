@@ -95,6 +95,9 @@
  */
 @import './styles/tokens.generated.css';
 
+/* Deck Games' own tokens and motion — a separate world. See the file. */
+@import './styles/games.css';
+
 /*
  * Everything the system is made of that is NOT colour.
  *

@@ -253,7 +253,10 @@ export type NotificationKind =
   | 'custom.reviewed'
   | 'content.moderated'
   | 'fundraise.contribution'
-  | 'order.status';
+  | 'order.status'
+  | 'payouts.ready'
+  | 'payout.sent'
+  | 'game.sale';
 
 export interface AppNotification {
   id: string;
@@ -442,6 +445,22 @@ export interface Payout {
   destination?: string;
   note?: string;
   paidAt: string;
+  /** `manual` rows predate sub-accounts; `bachs` rows are real transfers. */
+  provider: 'manual' | 'bachs';
+  /** `pending` is sent but unconfirmed; `failed` went back into what is owed. */
+  status: 'pending' | 'paid' | 'failed';
+}
+
+/**
+ * Whether a seller can be paid. `none` — never started onboarding; `pending` —
+ * started, but Bachs has not switched on transfers yet; `active` — paid
+ * automatically on each transfer run.
+ */
+export type PayoutAccountStatus = 'none' | 'pending' | 'active';
+
+export interface PayoutAccount {
+  status: PayoutAccountStatus;
+  holdDays: number;
 }
 
 /** The ledger position: earned, paid out, and still owed. */
@@ -464,9 +483,15 @@ export interface SellerEarnings {
   feePercent: number;
   merch: { netMinor: number; shippingMinor: number; feeMinor: number; orders: number };
   fundraise: { netMinor: number; feeMinor: number; contributions: number };
+  games: { netMinor: number; feeMinor: number; sales: number };
   earnedMinor: number;
   paidOutMinor: number;
   owedMinor: number;
+  /** Owed and past the hold — what the next transfer run sends. */
+  availableMinor: number;
+  /** Owed but still inside the hold, kept back to cover refunds. */
+  heldMinor: number;
+  holdDays: number;
   listings: Partial<Record<MerchStatus, number>>;
 }
 
@@ -600,11 +625,31 @@ export interface AuditEvent {
 export interface OwedRow {
   sellerId: string;
   earnedMinor: number;
+  clearedMinor: number;
   paidOutMinor: number;
   owedMinor: number;
+  availableMinor: number;
   currency: string;
   seller: PublicUser | null;
   email: string | null;
+  payoutAccount: PayoutAccountStatus;
+}
+
+export interface OwedMeta {
+  currency: string;
+  totalOwedMinor: number;
+  totalAvailableMinor: number;
+  sellers: number;
+  holdDays: number;
+  /** Smaller balances wait for the next sale rather than going out alone. */
+  minTransferMinor: number;
+}
+
+export interface TransferRunResult {
+  sent: number;
+  retried: number;
+  failed: number;
+  awaitingAccount: number;
 }
 
 export interface MerchProductDetail extends MerchProduct {
@@ -1109,8 +1154,98 @@ export interface GameSummary {
   reviewNote: string;
   plays: number;
   featured: boolean;
+  /** The shape it is built for; the player sizes its frame from this. */
+  orientation: GameOrientation;
+  /** Talks to Deck through the SDK — players, purchases, scores. */
+  sdk: boolean;
+  /** Shown as the maker. Empty means the author's own name. */
+  studio: string;
   createdAt: string;
   author: PublicUser | null;
+}
+
+export type GameOrientation = 'landscape' | 'portrait' | 'both';
+
+export const GAME_ORIENTATION_LABELS: Record<GameOrientation, string> = {
+  landscape: 'Landscape',
+  portrait: 'Portrait',
+  both: 'Any orientation',
+};
+
+export type GameMode = 'test' | 'live';
+
+export interface GameProduct {
+  productId: string;
+  name: string;
+  description: string;
+  priceMinor: number;
+  currency: string;
+  type: 'one_off' | 'consumable';
+  active: boolean;
+}
+
+export interface GameSession {
+  token: string;
+  playerId: string;
+  displayName: string;
+  mode: GameMode;
+  expiresAt: string;
+}
+
+export interface GamePurchase {
+  reference: string;
+  status: 'pending' | 'paid' | 'failed';
+  mode: GameMode;
+  productId: string;
+  productName: string;
+  productType: 'one_off' | 'consumable';
+  playerId: string;
+  priceMinor: number;
+  currency: string;
+  paidAt: string | null;
+  deliveredAt: string | null;
+  createdAt: string;
+}
+
+export interface GameSale extends GamePurchase {
+  developerShareMinor: number;
+  platformFeeMinor: number;
+  webhook: {
+    state: 'none' | 'pending' | 'delivered' | 'failed';
+    attempts: number;
+    lastStatus: number | null;
+    lastError: string;
+    lastAttemptAt: string | null;
+  };
+}
+
+export interface GameSalesTotals {
+  sales: number;
+  grossMinor: number;
+  developerShareMinor: number;
+  undelivered: number;
+}
+
+export interface GameDeveloperView {
+  game: GameDetail;
+  settings: {
+    orientation: GameOrientation;
+    sdk: boolean;
+    studio: string;
+    testUrl: string | null;
+    webhookUrl: string | null;
+    hasWebhookSecret: boolean;
+    keys: Record<GameMode, { hint: string; createdAt: string } | null>;
+  };
+  products: GameProduct[];
+  sales: { live: GameSalesTotals; test: GameSalesTotals; currency: string };
+  feePercent: number;
+}
+
+export interface WebhookDelivery {
+  ok: boolean;
+  status: number | null;
+  error: string;
 }
 
 export interface GameDetail extends GameSummary {
@@ -1124,6 +1259,9 @@ export interface GameDraft {
   genre: GameGenre;
   coverUrl?: string;
   playUrl: string;
+  orientation?: GameOrientation;
+  sdk?: boolean;
+  studio?: string;
 }
 
 export interface ScoreRow {

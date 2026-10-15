@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -7,7 +8,7 @@ import { EmptyState } from '@/components/ui/States';
 import { Textarea } from '@/components/ui/Field';
 import { useGameQueue, useReviewGame } from '@/hooks/useGames';
 import { cn, formatNumber, relativeTime } from '@/lib/utils';
-import { GAME_GENRE_LABELS, type GameSummary } from '@/types';
+import { GAME_GENRE_LABELS, GAME_ORIENTATION_LABELS, type GameSummary } from '@/types';
 
 /**
  * The arcade's review queue.
@@ -81,7 +82,9 @@ export function AdminGames() {
 function ReviewCard({ game }: { game: GameSummary }) {
   const review = useReviewGame();
   const [note, setNote] = useState('');
-  const [embeddable, setEmbeddable] = useState(false);
+  /* SDK games are built to run in Deck's player, so framing starts on for
+     them; anything else still has to be cleared deliberately. */
+  const [embeddable, setEmbeddable] = useState(game.sdk);
   const [featured, setFeatured] = useState(false);
 
   return (
@@ -92,8 +95,15 @@ function ReviewCard({ game }: { game: GameSummary }) {
             <h3 className="text-lg uppercase">{game.title}</h3>
             <p className="mt-1 text-sm text-muted text-pretty">{game.tagline}</p>
             <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
-              {GAME_GENRE_LABELS[game.genre]} · submitted {relativeTime(game.createdAt)}
+              {GAME_GENRE_LABELS[game.genre]} · {GAME_ORIENTATION_LABELS[game.orientation]}
+              {game.sdk && ' · Deck Games SDK'} · submitted {relativeTime(game.createdAt)}
             </p>
+            <Link
+              to={`/games/${game.slug}?mode=test`}
+              className="mt-3 mr-3 inline-block font-mono text-[11px] font-bold uppercase tracking-[0.06em] underline underline-offset-4 hover:text-accent"
+            >
+              Try it in the player →
+            </Link>
 
             {game.playUrl && (
               <a

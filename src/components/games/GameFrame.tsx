@@ -1,6 +1,7 @@
 import type { ReactNode, RefObject } from 'react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+import { useArcadeSkin } from './skin';
 
 /**
  * The furniture every game in the arcade shares.
@@ -78,6 +79,9 @@ export function GameFrame({
   boardClassName = 'bg-surface-2',
   scrimClassName = 'bg-canvas/85 text-body',
 }: GameFrameProps) {
+  const skin = useArcadeSkin();
+  const soft = skin === 'games';
+
   return (
     /*
      * Board and scores side by side from xl, stacked below it.
@@ -86,7 +90,14 @@ export function GameFrame({
      * stretching to the board's height — a ten-row list centred against a
      * 420px board leaves a gap above it that reads as a mistake.
      */
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_17rem] xl:items-start">
+    <div
+      className={cn(
+        'grid gap-6',
+        /* Deck Games shows its own board beside the player, so the aside is
+           dropped there rather than shown twice. */
+        !soft && 'xl:grid-cols-[minmax(0,1fr)_17rem] xl:items-start',
+      )}
+    >
       <div className="min-w-0">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4">
@@ -103,7 +114,12 @@ export function GameFrame({
               /* Labelled rather than iconographic: a crossed-out speaker is the
                one control everybody has to click twice to understand. */
               aria-label={muted ? 'Turn sound on' : 'Turn sound off'}
-              className="border border-edge bg-surface px-2 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors hover:bg-surface-2"
+              className={cn(
+                'font-mono text-[11px] uppercase tracking-[0.06em] transition-colors',
+                soft
+                  ? 'rounded-full border border-g-line px-3 py-1 text-g-mute hover:text-g-ink'
+                  : 'border border-edge bg-surface px-2 py-1 font-bold hover:bg-surface-2',
+              )}
             >
               {muted ? 'Sound off' : 'Sound on'}
             </button>
@@ -112,7 +128,10 @@ export function GameFrame({
 
         <div
           className={cn(
-            'relative overflow-hidden rounded-slab border border-edge shadow-hard',
+            'relative overflow-hidden',
+            soft
+              ? 'rounded-2xl shadow-[0_30px_70px_-30px_rgb(0_0_0/0.45)]'
+              : 'rounded-slab border border-edge shadow-hard',
             boardClassName,
           )}
         >
@@ -132,7 +151,12 @@ export function GameFrame({
               )}
             >
               <div>
-                <h3 className="display-tight text-2xl uppercase sm:text-3xl">
+                <h3
+                  className={cn(
+                    'text-2xl sm:text-3xl',
+                    soft ? 'font-medium tracking-[-0.04em]' : 'display-tight uppercase',
+                  )}
+                >
                   {phase === 'over' ? overTitle : title}
                 </h3>
                 {/* Inherits from the scrim rather than naming a theme colour, so
@@ -141,7 +165,17 @@ export function GameFrame({
                   {phase === 'over' ? overBlurb : idleBlurb}
                 </p>
                 <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-                  <Button onClick={onStart}>{phase === 'over' ? 'Play again' : 'Start'}</Button>
+                  {soft ? (
+                    <button
+                      type="button"
+                      onClick={onStart}
+                      className="rounded-[3px] bg-g-ember px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-on-ember transition-[filter] hover:brightness-110"
+                    >
+                      {phase === 'over' ? 'Play again' : 'Start'}
+                    </button>
+                  ) : (
+                    <Button onClick={onStart}>{phase === 'over' ? 'Play again' : 'Start'}</Button>
+                  )}
                   <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
                     or press space
                   </span>
@@ -154,18 +188,26 @@ export function GameFrame({
         <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">{hint}</p>
       </div>
 
-      {aside}
+      {!soft && aside}
     </div>
   );
 }
 
 function Readout({ label, value }: Readout) {
+  const soft = useArcadeSkin() === 'games';
   return (
     <div className="flex items-baseline gap-2">
       <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
         {label}
       </span>
-      <span className="font-display text-lg tabular-nums">{value}</span>
+      <span
+        className={cn(
+          'text-lg tabular-nums',
+          soft ? 'font-medium tracking-[-0.03em]' : 'font-display',
+        )}
+      >
+        {value}
+      </span>
     </div>
   );
 }

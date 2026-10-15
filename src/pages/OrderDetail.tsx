@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PageBanner } from '@/components/ui/Ambient';
 import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -12,12 +12,16 @@ export function OrderDetail() {
   const { reference = '' } = useParams();
   const [params] = useSearchParams();
   const order = useOrder(reference);
-  const verify = useVerifyPayment();
+  const { mutateAsync: verify } = useVerifyPayment();
+  /* Set only when the check finishes; while one is due and this is still
+     null, it is in flight. */
+  const [checked, setChecked] = useState<{ error: string | null } | null>(null);
 
-  // Arriving back from Paystack: confirm with the server exactly once. The
-  // browser's own redirect proves nothing, so the server asks Paystack.
+  // Arriving back from checkout: confirm with the server exactly once. The
+  // browser's own redirect proves nothing, so the server asks the provider.
   const attempted = useRef(false);
-  const justReturned = params.get('from') === 'paystack';
+  const justReturned = params.get('from') === 'checkout';
+  const cancelled = params.get('cancelled') === '1';
 
   useEffect(() => {
     if (attempted.current || !reference) return;
@@ -25,7 +29,17 @@ export function OrderDetail() {
     if (order.isLoading) return;
 
     attempted.current = true;
-    verify.mutate(reference);
+    /* Tracked here rather than read off the mutation: under StrictMode's
+       double mount the mutation's own `isPending` never cleared, so a paid
+       order said "Confirming your payment…" beside "Payment confirmed"
+       indefinitely. The hook still writes the result into the order cache. */
+    verify(reference).then(
+      () => setChecked({ error: null }),
+      (cause: unknown) =>
+        setChecked({
+          error: cause instanceof Error ? cause.message : 'We could not confirm that payment.',
+        }),
+    );
   }, [justReturned, order.data?.status, order.isLoading, reference, verify]);
 
   if (order.isLoading) {
@@ -58,6 +72,8 @@ export function OrderDetail() {
   if (!data) return null;
 
   const paid = data.status === 'paid' || data.status === 'shipped' || data.status === 'delivered';
+  const checkDue = justReturned || data.status === 'awaiting_payment';
+  const check = { pending: checkDue && checked === null, error: checked?.error ?? null };
 
   return (
     <div className="relative isolate mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
@@ -82,19 +98,15 @@ export function OrderDetail() {
         </div>
       </header>
 
-      {verify.isPending && (
+      {check.pending && !paid && (
         <div className="mb-6">
-          <InlineAlert tone="success">Confirming your payment with Paystack…</InlineAlert>
+          <InlineAlert tone="success">Confirming your payment…</InlineAlert>
         </div>
       )}
 
-      {verify.isError && (
+      {check.error && (
         <div className="mb-6">
-          <InlineAlert>
-            {verify.error instanceof Error
-              ? verify.error.message
-              : 'We could not confirm that payment.'}
-          </InlineAlert>
+          <InlineAlert>{check.error}</InlineAlert>
         </div>
       )}
 
@@ -106,11 +118,12 @@ export function OrderDetail() {
         </div>
       )}
 
-      {data.status === 'awaiting_payment' && !verify.isPending && (
+      {data.status === 'awaiting_payment' && !check.pending && (
         <div className="mb-6">
           <InlineAlert>
-            This order has not been paid yet. If you closed the payment page, place the order again
-            from your cart.
+            {cancelled
+              ? 'You left checkout before paying, so nothing was charged. Your items are held for about an hour — after that, place the order again from your cart.'
+              : 'This order has not been paid yet. If you closed the payment page, place the order again from your cart.'}
           </InlineAlert>
         </div>
       )}
@@ -191,18 +204,25 @@ export function OrderDetail() {
 }
 
 /**
- * Landing route for Paystack's `callback_url`. Paystack appends its own
- * `reference`, which is our order reference, so this just forwards to the order
- * page with a flag that triggers verification.
+ * Where every hosted checkout returns — orders, contributions and ad campaigns.
+ *
+ * It used to forward every reference to the order page, which only knows
+ * orders. So a backer who had just funded a launch, or an advertiser who had
+ * just paid for a slot, landed on "could not find that order" — the payment
+ * had gone through, and the page told them it had not. It now asks the
+ * server first and routes on the kind of payment the reference turns out to
+ * be. A cancelled checkout is asked about too: that is the only way to learn
+ * where to send them back to.
  */
 export function PaymentCallback() {
   const [params] = useSearchParams();
   const reference = params.get('reference');
+  const cancelled = params.get('cancelled') === '1';
 
   if (!reference) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
-        <ErrorState message="That payment link is missing its order reference." />
+        <ErrorState message="That payment link is missing its reference." />
         <div className="mt-6 text-center">
           <Link
             to="/orders"
@@ -215,18 +235,81 @@ export function PaymentCallback() {
     );
   }
 
-  return <RedirectToOrder reference={reference} />;
+  return <ConfirmAndRoute reference={reference} cancelled={cancelled} />;
 }
 
-function RedirectToOrder({ reference }: { reference: string }) {
+function ConfirmAndRoute({ reference, cancelled }: { reference: string; cancelled: boolean }) {
+  const navigate = useNavigate();
+  const { mutateAsync } = useVerifyPayment();
+  const started = useRef(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    window.location.replace(`/orders/${reference}?from=paystack`);
-  }, [reference]);
+    if (started.current) return;
+    started.current = true;
+
+    /* The promise, not `mutate(…, { onSuccess })`. Per-call callbacks are
+       dropped if the observer resubscribes in between — which StrictMode's
+       double mount does — and this page would sit on "Confirming…" forever
+       with the payment already confirmed. */
+    mutateAsync(reference).then(
+      (result) => {
+        /* Paid-but-unconfirmed is normal: the person can beat the webhook
+           back. Saying "pending" there is honest; saying "failed" is not. */
+        const settled =
+          result.kind === 'contribution'
+            ? result.status === 'paid'
+            : result.kind === 'ad'
+              ? !['pending_review', 'rejected', 'awaiting_payment'].includes(result.status)
+              : false;
+        const outcome = `payment=${cancelled ? 'cancelled' : settled ? 'confirmed' : 'pending'}`;
+
+        if (result.kind === 'game') {
+          const gameOutcome = cancelled
+            ? 'cancelled'
+            : result.status === 'paid'
+              ? 'confirmed'
+              : 'pending';
+          const query = new URLSearchParams({ reference, payment: gameOutcome });
+          if (result.game) query.set('game', result.game);
+          navigate(`/games/purchase/complete?${query.toString()}`, { replace: true });
+        } else if (result.kind === 'contribution' && result.itemSlug) {
+          navigate(`/item/${result.itemSlug}?${outcome}`, { replace: true });
+        } else if (result.kind === 'ad') {
+          navigate(`/advertise?${outcome}`, { replace: true });
+        } else {
+          navigate(`/orders/${reference}?${cancelled ? 'cancelled=1' : 'from=checkout'}`, {
+            replace: true,
+          });
+        }
+      },
+      (cause: unknown) =>
+        setError(cause instanceof Error ? cause.message : 'We could not confirm that payment.'),
+    );
+  }, [cancelled, mutateAsync, navigate, reference]);
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
+        <ErrorState
+          message={`${error} If you were charged, it is safe — we confirm payments directly with the provider, and it will appear shortly.`}
+        />
+        <div className="mt-6 text-center">
+          <Link
+            to="/orders"
+            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+          >
+            ← Your orders
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[50dvh] items-center justify-center px-4">
-      <p className="font-mono text-[12px] font-bold uppercase text-muted">
-        Confirming your payment…
+      <p className="font-mono text-[12px] font-bold uppercase text-muted" role="status">
+        {cancelled ? 'Taking you back…' : 'Confirming your payment…'}
       </p>
     </div>
   );

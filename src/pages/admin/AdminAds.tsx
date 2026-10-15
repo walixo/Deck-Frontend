@@ -284,7 +284,7 @@ function RunningCard({ campaign }: { campaign: AdCampaign }) {
             maxLength={400}
             value={reason}
             onChange={(event) => setReason(event.target.value)}
-            hint="Shown to the advertiser. This does not refund them — return any unused days from the Paystack dashboard."
+            hint="Shown to the advertiser. This does not refund them — return any unused days from the Bachs dashboard."
           />
           <div className="flex flex-wrap gap-2">
             <Button

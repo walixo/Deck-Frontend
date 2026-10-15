@@ -24,10 +24,12 @@ export function ListForAcquisition({ item, feePercent = 8 }: { item: Item; feePe
 
   return (
     <div className="space-y-3 border-t border-edge pt-4">
-      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">Sell this product</p>
+      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+        Sell this product
+      </p>
       <p className="text-xs leading-relaxed text-muted text-pretty">
-        List it for acquisition and take offers. Deck reviews every listing, and takes{' '}
-        {feePercent}% only when a sale completes.
+        List it for acquisition and take offers. Deck reviews every listing, and takes {feePercent}%
+        only when a sale completes.
       </p>
 
       <Button variant="secondary" size="sm" className="w-full" onClick={() => setOpen(true)}>
@@ -112,7 +114,7 @@ function ListingDialog({
     >
       <form onSubmit={submit} className="p-5 sm:p-6" noValidate>
         <h2 id="list-heading" className="border-b border-edge pb-3 font-display text-lg uppercase">
-          List {item.name} for acquisition
+          List <span className="normal-case">{item.name}</span> for acquisition
         </h2>
 
         <p className="mt-3 text-xs leading-relaxed text-muted text-pretty">
@@ -163,8 +165,8 @@ function ListingDialog({
                 Open to offers
               </span>
               <span className="mt-0.5 block text-muted text-pretty">
-                Uncheck for a firm price — Deck will refuse anything under it rather than passing
-                it to you.
+                Uncheck for a firm price — Deck will refuse anything under it rather than passing it
+                to you.
               </span>
             </span>
           </label>

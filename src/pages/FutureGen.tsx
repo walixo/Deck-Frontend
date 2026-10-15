@@ -136,7 +136,7 @@ function Entry({ item, last }: { item: Item; last: boolean }) {
             <div className="min-w-0 flex-1">
               <Link
                 to={`/item/${item.slug}`}
-                className="font-display text-xl uppercase leading-tight underline-offset-4 hover:underline sm:text-2xl"
+                className="font-display text-xl leading-tight underline-offset-4 hover:underline sm:text-2xl"
               >
                 {item.name}
               </Link>

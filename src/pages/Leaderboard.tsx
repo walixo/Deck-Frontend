@@ -239,7 +239,7 @@ export function Leaderboard() {
                         <span className="w-4 shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">
                           {item.rank}
                         </span>
-                        <span className="min-w-0 flex-1 truncate font-display text-[13px] uppercase group-hover:text-accent">
+                        <span className="min-w-0 flex-1 truncate font-display text-[13px] group-hover:text-accent">
                           {item.name}
                         </span>
                         <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">
@@ -282,7 +282,7 @@ function PodiumCard({
       )}
     >
       <span className="font-display text-3xl leading-none tabular-nums">#{item.rank}</span>
-      <span className="mt-3 line-clamp-1 font-display text-sm uppercase">{item.name}</span>
+      <span className="mt-3 line-clamp-1 font-display text-sm">{item.name}</span>
       <span className="mt-1 line-clamp-2 text-xs leading-relaxed opacity-80">{item.tagline}</span>
       <span className="mt-3 font-mono text-[11px] font-bold uppercase tabular-nums">
         ▲ {item.voteCount} votes

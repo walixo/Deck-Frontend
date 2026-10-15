@@ -1,3 +1,4 @@
+import { PayoutAccountPanel } from '@/components/seller/PayoutAccountPanel';
 import { PageBanner } from '@/components/ui/Ambient';
 import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -58,6 +59,9 @@ export function SellerDashboard() {
   }
 
   const nothingYet = earnings?.earnedMinor === 0 && !listings?.length;
+  /* Refused transfers are listed but never counted — their money went back
+     into what is owed. */
+  const sent = payouts?.data.filter((payout) => payout.status !== 'failed').length ?? 0;
 
   return (
     <div className="relative isolate mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
@@ -70,8 +74,8 @@ export function SellerDashboard() {
           </p>
           <h1 className="display-tight text-3xl uppercase text-balance">Your shop</h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
-            Buyers pay Deck, and Deck pays you in regular disbursements. Shipping on your orders is
-            yours too.
+            Buyers pay Deck, and Deck transfers your share to your payout account once each sale
+            clears the hold. Shipping on your orders is yours too.
           </p>
         </div>
         <ButtonLink to="/sell/new">List a product</ButtonLink>
@@ -108,15 +112,17 @@ export function SellerDashboard() {
                 <Figure
                   label="Paid out"
                   value={formatMoney(earnings.paidOutMinor, earnings.currency)}
-                  note={`${payouts?.data.length ?? 0} ${
-                    payouts?.data.length === 1 ? 'disbursement' : 'disbursements'
-                  }`}
+                  note={`${sent} ${sent === 1 ? 'disbursement' : 'disbursements'}`}
                   tone="bg-surface"
                 />
                 <Figure
                   label="Awaiting payout"
                   value={formatMoney(earnings.owedMinor, earnings.currency)}
-                  note="Held by Deck, sent in the next run"
+                  note={
+                    earnings.heldMinor > 0
+                      ? `${formatMoney(earnings.availableMinor, earnings.currency)} ready · ${formatMoney(earnings.heldMinor, earnings.currency)} in the ${earnings.holdDays}-day hold`
+                      : 'Ready for the next transfer run'
+                  }
                   tone="bg-pop text-on-pop"
                 />
               </dl>
@@ -146,6 +152,8 @@ export function SellerDashboard() {
             </section>
           )}
 
+          {earnings && <PayoutAccountPanel holdDays={earnings.holdDays} />}
+
           {payouts && payouts.data.length > 0 && (
             <section aria-labelledby="payouts-heading" className="mb-12">
               <h2
@@ -162,8 +170,21 @@ export function SellerDashboard() {
                   >
                     <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
                       {dateOf(payout.paidAt)} &middot; {payout.reference}
+                      {payout.status !== 'paid' && (
+                        <span
+                          className={`ml-2 border border-edge px-1.5 py-0.5 ${
+                            payout.status === 'failed' ? 'bg-edge text-canvas' : 'bg-surface-2'
+                          }`}
+                        >
+                          {payout.status === 'failed' ? 'Refused — back in owed' : 'Sending'}
+                        </span>
+                      )}
                     </span>
-                    <span className="font-display text-base tabular-nums">
+                    <span
+                      className={`font-display text-base tabular-nums ${
+                        payout.status === 'failed' ? 'text-muted line-through' : ''
+                      }`}
+                    >
                       {formatMoney(payout.amountMinor, payout.currency)}
                     </span>
                   </li>

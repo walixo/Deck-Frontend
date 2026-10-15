@@ -101,7 +101,7 @@ export function FutureGenStory() {
                     <div className="flex items-start gap-3">
                       <ItemLogo item={entry} size="md" />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-display text-sm uppercase group-hover:underline">
+                        <p className="truncate font-display text-sm group-hover:underline">
                           {entry.name}
                         </p>
                         <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-muted text-pretty">

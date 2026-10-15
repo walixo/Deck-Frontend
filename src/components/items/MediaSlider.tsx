@@ -61,12 +61,34 @@ export function MediaSlider({ slides, label, className }: MediaSliderProps) {
             {slide.kind === 'video' ? (
               <VideoSlide src={slide.src} />
             ) : (
-              <img
-                src={slide.src}
-                alt=""
-                loading={i === 0 ? undefined : 'lazy'}
-                className="size-full object-cover"
-              />
+              /*
+               * Contain, with a blurred copy behind it.
+               *
+               * This was `object-cover`, which filled the 16:9 frame by cutting
+               * off whatever did not fit — so a tall phone screenshot lost its
+               * top and bottom, and a wide one lost its sides. Contain shows
+               * the whole image, always. The blurred, dimmed copy fills the
+               * leftover space with the image's own colours, so the letterbox
+               * reads as part of the picture rather than as empty bars.
+               *
+               * Images framed through the upload preview already match the
+               * frame exactly, so for those the backdrop is never visible.
+               */
+              <>
+                <img
+                  src={slide.src}
+                  alt=""
+                  aria-hidden="true"
+                  loading={i === 0 ? undefined : 'lazy'}
+                  className="absolute inset-0 size-full scale-110 object-cover opacity-40 blur-2xl"
+                />
+                <img
+                  src={slide.src}
+                  alt=""
+                  loading={i === 0 ? undefined : 'lazy'}
+                  className="relative size-full object-contain"
+                />
+              </>
             )}
           </div>
         ))}

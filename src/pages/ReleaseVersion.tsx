@@ -55,7 +55,7 @@ export function ReleaseVersion() {
           New version
         </p>
         <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
-          Ship the next {item.name}
+          Ship the next <span className="normal-case">{item.name}</span>
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">
           This goes up as its own launch on today&apos;s board, starting from zero votes.{' '}
@@ -63,8 +63,8 @@ export function ReleaseVersion() {
             {item.name}
             {item.version ? ` ${item.version}` : ''}
           </Link>{' '}
-          keeps its {item.voteCount} {item.voteCount === 1 ? 'vote' : 'votes'} and stays where it is,
-          launched {relativeTime(item.launchDate)}.
+          keeps its {item.voteCount} {item.voteCount === 1 ? 'vote' : 'votes'} and stays where it
+          is, launched {relativeTime(item.launchDate)}.
         </p>
       </header>
 

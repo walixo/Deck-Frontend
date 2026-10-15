@@ -83,7 +83,9 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
         <div key={active.id} className="animate-[var(--animate-slam)]">
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <Badge tone="pop">★ Spotlight</Badge>
-            <Badge tone="outline"><CategoryLabel slug={active.category} /></Badge>
+            <Badge tone="outline">
+              <CategoryLabel slug={active.category} />
+            </Badge>
             <Badge tone="outline">{PRICING_LABELS[active.pricing]}</Badge>
           </div>
 
@@ -138,9 +140,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
               >
                 <ItemLogo item={item} size="sm" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-display text-[13px] uppercase">
-                    {item.name}
-                  </span>
+                  <span className="block truncate font-display text-[13px]">{item.name}</span>
                   <span className="block truncate font-mono text-[10px] uppercase text-muted">
                     <CategoryLabel slug={item.category} />
                   </span>

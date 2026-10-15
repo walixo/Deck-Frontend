@@ -20,6 +20,7 @@ import { Backdrop } from '@/components/ui/Ambient';
 import { Badge } from '@/components/ui/Badge';
 import { Button, ButtonLink, ExternalButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { PaymentOutcome } from '@/components/ui/PaymentOutcome';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/States';
 import { Stars } from '@/components/ui/Stars';
@@ -101,9 +102,7 @@ export function ItemDetail() {
 
             <div className="min-w-0 flex-1 animate-[var(--animate-slide-up)]">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
-                  {item.name}
-                </h1>
+                <h1 className="display-tight text-3xl text-balance sm:text-4xl">{item.name}</h1>
                 {item.featured && <Badge tone="pop">★ Spotlight</Badge>}
               </div>
 
@@ -174,7 +173,7 @@ export function ItemDetail() {
           <div className="min-w-0">
             <section aria-labelledby="about-heading">
               <h2 id="about-heading" className="text-xl uppercase">
-                About {item.name}
+                About <span className="normal-case">{item.name}</span>
               </h2>
               <div className="mt-4 space-y-4 text-sm leading-relaxed text-body text-pretty sm:text-base">
                 {item.description
@@ -216,6 +215,11 @@ export function ItemDetail() {
             {/* The owner manages the raise; everyone else sees it. The id is
                 what the hero's raise button scrolls to, on both branches. */}
             <div id="fundraise" className="scroll-mt-24">
+              <PaymentOutcome
+                confirmed="Thank you — your backing is confirmed and counted in the total."
+                pending="Payment received. It will show in the total as soon as the provider confirms it, usually within a minute."
+                cancelled="You left checkout before paying, so nothing was charged."
+              />
               {isOwner ? <FundraiseSettings item={item} /> : <FundraiseCard item={item} />}
             </div>
 

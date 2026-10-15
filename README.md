@@ -80,9 +80,11 @@ The API's `.env`, in the `Deck-Backend` checkout (see its `.env.example`):
 | `JWT_EXPIRES_IN` | `7d` | |
 | `CLIENT_ORIGIN` | `http://localhost:3000` | Comma-separated allowlist for CORS |
 | `UPLOAD_DIR` | `uploads` | Where uploads are written when Cloudinary is not configured, relative to the API's root |
-| `PAYSTACK_SECRET_KEY` | — | Server-only. Blank runs the shop without card payments |
-| `PAYSTACK_CALLBACK_URL` | `http://localhost:3000/orders/callback` | Where Paystack returns the customer |
-| `CURRENCY` | `NGN` | Must be enabled on your Paystack account |
+| `BACHS_SECRET_KEY` | — | Server-only. Blank runs the shop without payments |
+| `BACHS_WEBHOOK_SECRET` | — | Signing secret for the Bachs webhook endpoint |
+| `PAYMENT_RETURN_URL` | `http://localhost:3000/orders/callback` | Where checkout returns the customer. Must be public in production |
+| `PAYOUT_HOLD_DAYS` | `14` | Days a sale is held before it can be transferred to the seller |
+| `CURRENCY` | `NGN` | Must be enabled on your Bachs account |
 | `SHIPPING_FLAT_MINOR` | `250000` | ₦2,500, in minor units of `CURRENCY` |
 | `FREE_SHIPPING_THRESHOLD_MINOR` | `5000000` | Free over ₦50,000 |
 
@@ -173,8 +175,8 @@ storefront, no extra services.
 Every price is an **integer in minor units** (kobo for NGN, cents for USD) from the database to the
 API to the browser. Floats cannot represent 0.1 exactly, so a cart of three 19,999 tees would drift.
 `formatMoney` in `lib/utils.ts` is the single boundary where a price becomes a decimal, and its
-output never feeds back into arithmetic. This is also exactly the unit Paystack expects, so nothing
-is converted on the way out.
+output never feeds back into arithmetic. Bachs takes decimal strings, so `services/bachs.ts` converts
+at that one boundary, both ways, and rejects anything that does not parse exactly.
 
 ### What the client is trusted with
 
@@ -194,30 +196,41 @@ Other guards worth knowing about:
 - **Catalogue writes are admin-only**; the seed makes `ada@deck.dev` staff.
 - Retiring a product **soft-deletes** it (`active: false`) so existing orders keep their references.
 
-### Payments — Paystack
+### Payments — Bachs
 
 | Variable | Purpose |
 | --- | --- |
-| `PAYSTACK_SECRET_KEY` | Server-only. Never sent to the browser. |
-| `PAYSTACK_CALLBACK_URL` | Where Paystack returns the customer after checkout. |
-| `CURRENCY` | Must be a currency your Paystack account is enabled for (NGN, GHS, ZAR, KES, USD). |
+| `BACHS_SECRET_KEY` | Server-only. Never sent to the browser. `sk_sandbox_…` or `sk_live_…`. |
+| `BACHS_WEBHOOK_SECRET` | Verifies webhook signatures. |
+| `PAYMENT_RETURN_URL` | Where checkout returns the customer — the frontend's `/orders/callback`. |
+| `PAYOUT_HOLD_DAYS` | Days each sale is held before it is transferable. Default 14. |
+| `CURRENCY` | Must be a currency your Bachs account is enabled for. |
 | `SHIPPING_FLAT_MINOR` / `FREE_SHIPPING_THRESHOLD_MINOR` | Shipping rule, in minor units of `CURRENCY`. |
 
 The flow: placing an order reserves stock, creates the order `awaiting_payment`, and opens a
-Paystack transaction using the order reference as the transaction reference. The browser is handed
-only an `authorization_url` to redirect to.
+Bachs checkout session carrying the order reference. The browser is handed only the hosted
+checkout URL to redirect to. Contributions and ad campaigns use the same flow and the same return
+page, which asks the server what kind of payment the reference is and routes accordingly.
 
 **An order is never marked paid because the browser came back.** The customer controls that
-redirect. Payment is confirmed only by asking Paystack directly (`POST /api/orders/:reference/verify`)
+redirect. Payment is confirmed only by asking Bachs directly (`POST /api/orders/:reference/verify`)
 or by a webhook, and both paths re-verify against the provider and check that the amount and
 currency match the order before settling it.
 
-The webhook (`POST /api/payments/paystack/webhook`) validates an HMAC SHA-512 of the **raw** request
-body. It is mounted ahead of `express.json()` in `app.ts` — once that has parsed and discarded the
+The webhook (`POST /api/payments/bachs/webhook`) validates an HMAC SHA-256 of
+`"{timestamp}.{raw body}"` from the `X-Bachs-Signature-V2` header, and refuses anything more than five
+minutes old. It is mounted ahead of `express.json()` in `app.ts` — once that has parsed and discarded the
 buffer the signature can never be recomputed, so moving that line breaks webhook verification.
-Handling is idempotent: the callback and the webhook routinely both arrive for the same transaction.
+Handling is idempotent: each event id is recorded once, and the return page and the webhook routinely
+both arrive for the same payment.
 
-With no `PAYSTACK_SECRET_KEY` set the shop still works end to end — orders are created
+**Getting paid.** Sellers and launchers connect a Bachs sub-account from `/sell` (hosted onboarding;
+bank and identity details never touch Deck). Earnings are derived from paid orders and contributions,
+held for `PAYOUT_HOLD_DAYS`, then sent by an hourly in-process transfer run. Each transfer is written as
+a pending payout row *before* Bachs is called, and that row's id is the idempotency key — so a crash
+mid-run can never send the same money twice.
+
+With no `BACHS_SECRET_KEY` set the shop still works end to end — orders are created
 `awaiting_payment` with no redirect — so the demo runs without keys.
 
 ## API
@@ -315,8 +328,20 @@ Replies never carry a rating — a rating applies to the product, not to another
 | POST | `/api/orders` | ✓ | Place an order — SKUs and quantities only, server prices it |
 | GET | `/api/orders` | ✓ | Your orders |
 | GET | `/api/orders/:reference` | ✓ owner | One order |
-| POST | `/api/orders/:reference/verify` | ✓ owner | Confirm payment with Paystack |
-| POST | `/api/payments/paystack/webhook` | signature | Paystack webhook (raw body) |
+| POST | `/api/orders/:reference/verify` | ✓ owner | Confirm any payment with Bachs; answers with its `kind` |
+| POST | `/api/payments/bachs/webhook` | signature | Bachs webhook (raw body) |
+| GET | `/api/sellers/payout-account` | ✓ | Sub-account status: `none`, `pending`, `active` |
+| POST | `/api/sellers/payout-account/onboarding` | ✓ | Hosted onboarding link |
+| POST | `/api/sellers/payout-account/refresh` | ✓ | Re-read status after onboarding |
+| GET | `/api/payouts/owed` | staff | Everyone owed, cleared vs held, account status |
+| POST | `/api/payouts/run` | staff | Run the transfer job now |
+| POST | `/api/games/:slug/session` | ✓ | Deck Games: a 15-minute session token for the SDK |
+| POST | `/api/games/:slug/purchases` | ✓ | Deck Games: start an in-game purchase (test mode settles instantly) |
+| GET | `/api/games/purchases/:reference` | ✓ | Deck Games: one purchase, for the buyer, its developer or staff |
+| GET/PATCH | `/api/games/:slug/developer` | ✓ owner | Developer view and settings (orientation, test build, webhook) |
+| POST | `/api/games/:slug/keys` | ✓ owner | Mint a `dk_test_`/`dk_live_` key, shown once |
+| POST | `/api/games/:slug/products` | ✓ owner | Add an in-game product |
+| — | `/api/games/v1/*` | API key | Server API for developers: verify sessions, read and deliver purchases |
 | GET | `/api/health` | Liveness check |
 
 ## Design system

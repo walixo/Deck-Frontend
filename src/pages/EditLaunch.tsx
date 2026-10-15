@@ -69,7 +69,7 @@ export function EditLaunch() {
         </p>
 
         <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
-          Edit {item.name}
+          Edit <span className="normal-case">{item.name}</span>
         </h1>
 
         <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">

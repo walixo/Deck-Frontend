@@ -53,10 +53,10 @@ export function useUpdateFundraise(slug: string) {
 }
 
 /**
- * Starts a contribution and returns the Paystack URL to send the backer to.
+ * Starts a contribution and returns the checkout URL to send the backer to.
  *
  * Nothing is counted here — the raise total only moves when the server has
- * asked Paystack directly whether the charge actually happened.
+ * asked the payment provider directly whether the charge actually happened.
  */
 export function useContribute(slug: string) {
   return useMutation({

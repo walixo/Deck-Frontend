@@ -11,30 +11,31 @@ type Size = 'sm' | 'md' | 'lg';
  * active state slams it all the way down, so a press feels physical.
  */
 const BASE =
-  'inline-flex items-center justify-center gap-2 border border-edge font-bold whitespace-nowrap ' +
-  'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] ' +
-  'hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-[3px] active:translate-y-[3px] ' +
-  'active:shadow-none disabled:pointer-events-none disabled:opacity-40 rounded-slab';
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[4px] font-mono font-medium uppercase ' +
+  'transition-[background-color,color,border-color,box-shadow,transform,filter] duration-300 ease-[var(--ease-snap)] ' +
+  'active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40';
 
+/*
+ * The arcade's buttons, everywhere: small square-cornered blocks with mono
+ * capitals, in the one accent colour for the primary action and ink or a
+ * hairline for everything else. No hard shadows and no press-down offset —
+ * a press is a slight scale, a hover is a change of fill.
+ */
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-pop text-on-pop shadow-hard-sm hover:bg-pop-hover hover:shadow-hard',
-  secondary: 'bg-surface text-body shadow-hard-sm hover:bg-surface-2 hover:shadow-hard',
-  accent: 'bg-deep text-on-deep shadow-hard-sm hover:bg-deep-hover hover:shadow-hard',
-  // Inverted rather than a third colour: black-on-white in light, the reverse in dark.
-  /* Red rather than inversion. A destructive action is the one place a
-     reader should not have to read the label to know what they are about to
-     do — and it still carries its word. See CONTRACT rule 6. */
-  danger: 'bg-danger text-bone shadow-hard-sm hover:shadow-hard',
-  // The one exception: no block, no shadow — for tertiary actions inside dense UI.
-  ghost:
-    'border-transparent text-muted shadow-none hover:translate-x-0 hover:translate-y-0 ' +
-    'active:translate-x-0 active:translate-y-0 hover:bg-surface-2 hover:text-body',
+  primary: 'bg-pop text-on-pop hover:bg-pop-hover',
+  secondary: 'border border-line bg-surface text-body hover:border-edge',
+  accent:
+    'bg-deep text-on-deep hover:bg-deep-hover dark:bg-body dark:text-canvas dark:hover:opacity-90',
+  /* Red, and it still carries its word. See CONTRACT rule 6. */
+  danger: 'bg-danger text-bone hover:brightness-110',
+  // No block — for tertiary actions inside dense UI.
+  ghost: 'text-muted hover:bg-surface-2 hover:text-body',
 };
 
 const SIZES: Record<Size, string> = {
-  sm: 'h-9 px-3.5 text-[13px]',
-  md: 'h-11 px-5 text-sm',
-  lg: 'h-13 px-7 text-base',
+  sm: 'h-9 px-3.5 text-[10px] tracking-[0.14em]',
+  md: 'h-11 px-5 text-[11px] tracking-[0.16em]',
+  lg: 'h-12 px-7 text-[12px] tracking-[0.16em]',
 };
 
 interface CommonProps {
@@ -67,7 +68,7 @@ export function Button({
       {loading && (
         <span
           aria-hidden="true"
-          className="size-3.5 shrink-0 animate-spin border border-current border-t-transparent"
+          className="size-3.5 shrink-0 animate-spin rounded-full border border-current border-t-transparent"
         />
       )}
       {children}

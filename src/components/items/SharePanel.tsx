@@ -76,13 +76,13 @@ export function SharePanel({ item }: { item: Item }) {
 
   return (
     <Card className="p-5">
-      <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+      <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
         Share this launch
       </h2>
 
       <div className="mt-4 space-y-5">
         <div>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
             An image to post
           </p>
           <p className="mt-1 text-xs leading-relaxed text-muted">
@@ -105,11 +105,11 @@ export function SharePanel({ item }: { item: Item }) {
                 aria-checked={cut === variant}
                 onClick={() => setCut(variant)}
                 className={cn(
-                  'rounded-slab border border-edge px-1.5 py-1.5',
-                  'font-mono text-[10px] font-bold uppercase tracking-[0.04em]',
-                  'transition-colors duration-[120ms]',
+                  'rounded-slab border border-line px-1.5 py-1.5',
+                  'font-mono text-[10px] font-medium uppercase tracking-[0.04em]',
+                  'transition-colors duration-300',
                   cut === variant
-                    ? 'bg-pop text-on-pop shadow-hard-sm'
+                    ? 'bg-edge text-canvas'
                     : 'bg-surface text-body hover:bg-surface-2',
                 )}
               >
@@ -132,7 +132,7 @@ export function SharePanel({ item }: { item: Item }) {
         </div>
 
         <div>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
             A badge for your site
           </p>
           {/* Shown as the real thing, served from the same URL the snippet
@@ -159,10 +159,10 @@ export function SharePanel({ item }: { item: Item }) {
         </div>
 
         <div>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
             Something to say
           </p>
-          <p className="mt-2 whitespace-pre-line border border-edge bg-surface-2 p-3 text-xs leading-relaxed">
+          <p className="rounded-2xl mt-2 whitespace-pre-line border border-line bg-surface-2 p-3 text-xs leading-relaxed">
             {kit.post}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -179,7 +179,7 @@ export function SharePanel({ item }: { item: Item }) {
       {error && (
         <p
           role="alert"
-          className="mt-4 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-4 border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
         >
           {error}
         </p>

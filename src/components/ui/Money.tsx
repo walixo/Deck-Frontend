@@ -76,7 +76,7 @@ export function CurrencyPicker({ className }: { className?: string }) {
       <select
         value={display}
         onChange={(event) => setDisplay(event.target.value)}
-        className="select-chevron border border-edge bg-surface py-1 pl-2 pr-7 font-mono text-[11px] font-bold uppercase tracking-[0.06em] focus:border-accent focus:outline-none"
+        className="rounded-2xl select-chevron border border-line bg-surface py-1 pl-2 pr-7 font-mono text-[11px] font-medium uppercase tracking-[0.06em] focus:border-accent focus:outline-none"
       >
         {options.map((code) => (
           <option key={code} value={code}>

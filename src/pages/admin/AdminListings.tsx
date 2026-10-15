@@ -69,18 +69,18 @@ function ReviewCard({ product }: { product: MerchProduct }) {
   };
 
   return (
-    <article className="rounded-slab border border-edge bg-surface shadow-hard">
+    <article className="rounded-slab border border-line bg-surface shadow-hard">
       <div className="flex flex-wrap gap-4 p-4">
         {product.images[0] ? (
           <img
             src={product.images[0]}
             alt=""
-            className="size-24 shrink-0 border border-edge object-cover"
+            className="size-24 shrink-0 border border-line object-cover"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="flex size-24 shrink-0 items-center justify-center border border-edge bg-surface-2 font-display text-lg"
+            className="flex size-24 shrink-0 items-center justify-center border border-line bg-surface-2 font-display text-lg"
           >
             {product.name.slice(0, 2).toUpperCase()}
           </span>
@@ -88,8 +88,8 @@ function ReviewCard({ product }: { product: MerchProduct }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-display text-lg uppercase">{product.name}</h3>
-            <span className="border border-edge bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+            <h3 className="font-display text-lg">{product.name}</h3>
+            <span className="rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
               {MERCH_CATEGORY_LABELS[product.category] ?? product.category}
             </span>
           </div>
@@ -102,13 +102,13 @@ function ReviewCard({ product }: { product: MerchProduct }) {
               className="mt-3 inline-flex items-center gap-2 hover:underline underline-offset-2"
             >
               <Avatar user={product.seller} size="sm" />
-              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+              <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
                 {product.seller.name}
               </span>
             </Link>
           )}
 
-          <dl className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          <dl className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
             <div className="flex gap-1.5">
               <dt className="sr-only">Price</dt>
               <dd className="tabular-nums text-body">
@@ -133,13 +133,13 @@ function ReviewCard({ product }: { product: MerchProduct }) {
       </div>
 
       {/* The full description matters here — it is the thing being reviewed. */}
-      <div className="border-t border-edge px-4 py-3">
+      <div className="border-t border-line px-4 py-3">
         <p className="whitespace-pre-line text-sm leading-relaxed text-muted text-pretty">
           {product.description}
         </p>
       </div>
 
-      <div className="border-t border-edge p-4">
+      <div className="border-t border-line p-4">
         {rejecting ? (
           <div className="space-y-3">
             <Textarea
@@ -178,7 +178,7 @@ function ReviewCard({ product }: { product: MerchProduct }) {
         {error && (
           <p
             role="alert"
-            className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+            className="mt-3 border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
           >
             {error}
           </p>

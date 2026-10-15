@@ -12,16 +12,11 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, action, illustration }: EmptyStateProps) {
   return (
-    <div className="relative overflow-hidden rounded-slab border border-dashed border-edge px-6 py-12 text-center">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-halftone text-edge opacity-[0.06]"
-      />
-
+    <div className="relative overflow-hidden rounded-3xl bg-surface-2 px-6 py-14 text-center">
       {/* Sized by its widest child (the title), so the narrower art still centres. */}
       <div className="relative flex flex-col items-center">
         {illustration ?? <EmptyDeckIllustration />}
-        <h3 className="mt-3 text-lg uppercase">{title}</h3>
+        <h3 className="mt-4 text-xl tracking-[-0.03em]">{title}</h3>
         {description && (
           <p className="mx-auto mt-2 max-w-sm text-sm text-muted text-pretty">{description}</p>
         )}
@@ -38,15 +33,15 @@ interface ErrorStateProps {
 
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
-    <div className="rounded-slab border border-edge bg-edge px-6 py-9 text-center shadow-hard">
+    <div className="rounded-3xl border border-line bg-surface px-6 py-10 text-center">
       <span
         aria-hidden="true"
-        className="mx-auto mb-3 flex size-12 items-center justify-center border border-canvas bg-canvas font-display text-2xl text-edge"
+        className="mx-auto mb-4 flex size-10 items-center justify-center rounded-full bg-danger/10 font-mono text-base text-danger dark:text-danger-soft"
       >
         !
       </span>
-      <h3 className="text-lg uppercase text-canvas">That did not load</h3>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-canvas/90 text-pretty">
+      <h3 className="text-xl tracking-[-0.03em]">That did not load</h3>
+      <p className="mx-auto mt-2 max-w-sm text-sm text-muted text-pretty">
         {message ?? 'Something went wrong while fetching this.'}
       </p>
       {onRetry && (
@@ -65,13 +60,13 @@ export function InlineAlert({
   children: ReactNode;
   tone?: 'error' | 'success';
 }) {
-  const styles = tone === 'error' ? 'bg-edge text-canvas' : 'bg-deep text-on-deep';
+  /* Soft tinted panels: red for a problem, green for done. The words carry the
+     meaning; the tint only says which kind. */
+  const styles =
+    tone === 'error' ? 'bg-danger/10 text-danger dark:text-danger-soft' : 'bg-success/10 text-body';
 
   return (
-    <div
-      role="alert"
-      className={`rounded-slab border border-edge px-4 py-3 text-sm font-medium shadow-hard-sm ${styles}`}
-    >
+    <div role="alert" className={`rounded-2xl px-4 py-3 text-[13px] leading-relaxed ${styles}`}>
       {children}
     </div>
   );

@@ -85,7 +85,7 @@ export function Ghost({
     <div
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute whitespace-nowrap font-display uppercase leading-none text-transparent opacity-[0.12] [-webkit-text-stroke:3px_var(--edge)]',
+        'pointer-events-none absolute whitespace-nowrap font-display leading-none text-transparent opacity-[0.12] [-webkit-text-stroke:3px_var(--edge)]',
         className,
       )}
       style={{ transform: `translateX(${drift}px)`, ...style }}
@@ -108,7 +108,7 @@ export function Mono({
   return (
     <span
       className={cn(
-        'font-mono text-[17px] font-bold uppercase tracking-[0.14em] text-muted',
+        'font-mono text-[17px] font-medium uppercase tracking-[0.14em] text-muted',
         className,
       )}
       style={style}

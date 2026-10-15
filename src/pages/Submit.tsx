@@ -7,10 +7,10 @@ export function Submit() {
       <PageBanner />
 
       <header className="mb-8 max-w-2xl">
-        <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           New launch
         </p>
-        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
+        <h1 className="display-tight text-3xl text-balance sm:text-4xl">
           Put your product on the board
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">

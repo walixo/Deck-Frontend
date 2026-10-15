@@ -18,13 +18,13 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
     <article
       style={style}
       className={cn(
-        'group relative flex flex-col rounded-slab border border-edge bg-surface shadow-hard',
-        'transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)]',
-        'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
+        'group relative flex flex-col rounded-slab border border-line bg-surface shadow-hard',
+        'transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)]',
+        'hover:-translate-y-0.5 hover:shadow-hard-lg',
         className,
       )}
     >
-      <div className="relative border-b border-edge">
+      <div className="relative border-b border-line">
         {image ? (
           <img
             src={image}
@@ -42,9 +42,7 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
               colour.ink,
             )}
           >
-            <span className="font-display text-5xl uppercase tracking-tight">
-              {product.name.slice(0, 2)}
-            </span>
+            <span className="font-display text-5xl tracking-tight">{product.name.slice(0, 2)}</span>
           </div>
         )}
 
@@ -61,7 +59,7 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-base uppercase leading-tight">
+        <h3 className="text-base leading-tight">
           <Link to={`/shop/${product.slug}`} className="hover:underline">
             <span className="absolute inset-0 z-0" aria-hidden="true" />
             <span className="relative">{product.name}</span>
@@ -72,7 +70,7 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
             their profile, which is the point of a marketplace — the seller is
             a person on the board, not an anonymous warehouse. The link sits
             above the card's full-bleed overlay so it stays clickable. */}
-        <p className="relative z-10 mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+        <p className="relative z-10 mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
           {product.seller ? (
             <Link
               to={profilePath(product.seller.username)}
@@ -93,7 +91,7 @@ export function MerchCard({ product, className, style }: MerchCardProps) {
           <span className="font-display text-lg">
             <Money minor={product.priceMinor} approxClassName="block text-[11px] font-normal" />
           </span>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-muted">
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-muted">
             {MERCH_CATEGORY_LABELS[product.category] ?? product.category}
           </span>
         </div>

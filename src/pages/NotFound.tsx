@@ -12,10 +12,10 @@ export function NotFound() {
             anywhere else on the site, which is the joke. */}
         <ToppledBricks className="w-56 animate-[var(--animate-slam)] text-edge sm:w-64" />
 
-        <p className="mt-3 border border-edge bg-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-canvas">
+        <p className="rounded-full mt-3 border border-line bg-edge px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-canvas">
           Error 404
         </p>
-        <h1 className="display-tight mt-4 text-4xl uppercase text-balance sm:text-5xl">
+        <h1 className="display-tight mt-4 text-4xl text-balance sm:text-5xl">
           This page never launched
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-muted text-pretty">

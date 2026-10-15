@@ -63,7 +63,9 @@ const FLAT_COLOURS: FlatColour[] = [
   { bg: 'bg-surface-2', ink: 'text-body' },
   { bg: 'bg-grey-soft', ink: 'text-ink' },
   { bg: 'bg-grey', ink: 'text-ink' },
-  { bg: 'bg-ink', ink: 'text-bone' },
+  /* Themed ink, not fixed black: avatars have no border now, so a black disc
+     on the dark canvas would vanish. */
+  { bg: 'bg-edge', ink: 'text-canvas' },
 ];
 
 function hashOf(seed: string): number {

@@ -50,7 +50,7 @@ export function PaymentOutcome({
           <button
             type="button"
             onClick={dismiss}
-            className="shrink-0 font-mono text-[11px] font-bold uppercase underline-offset-4 hover:underline"
+            className="shrink-0 font-mono text-[11px] font-medium uppercase underline-offset-4 hover:underline"
           >
             Dismiss
           </button>

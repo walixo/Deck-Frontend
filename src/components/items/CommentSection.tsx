@@ -31,10 +31,10 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
        card links to #discussion, so the thread needs a scroll anchor. */
     <section id="discussion" aria-labelledby="discussion-heading" className="mt-12">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <h2 id="discussion-heading" className="text-xl uppercase">
+        <h2 id="discussion-heading" className="text-xl">
           Discussion
           {roots.length > 0 && (
-            <span className="ml-2 font-mono text-sm font-bold tabular-nums text-muted">
+            <span className="ml-2 font-mono text-sm font-medium tabular-nums text-muted">
               {roots.length}
             </span>
           )}
@@ -49,9 +49,9 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
                 onClick={() => setFilter(option)}
                 aria-pressed={filter === option}
                 className={cn(
-                  'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase transition-colors duration-[120ms]',
+                  'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase transition-colors duration-300',
                   filter === option
-                    ? 'bg-pop text-on-pop'
+                    ? 'bg-edge text-canvas'
                     : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                 )}
               >
@@ -65,7 +65,7 @@ export function CommentSection({ slug, itemName }: { slug: string; itemName: str
       {isAuthenticated ? (
         <CommentComposer slug={slug} itemName={itemName} />
       ) : (
-        <div className="border border-dashed border-edge px-5 py-6 text-center">
+        <div className="border border-dashed border-line px-5 py-6 text-center">
           <p className="text-sm text-muted">Sign in to review {itemName} or join the discussion.</p>
           <div className="mt-4 flex justify-center gap-2">
             <ButtonLink to="/login" size="sm">
@@ -154,10 +154,7 @@ function CommentComposer({
   };
 
   return (
-    <form
-      onSubmit={submit}
-      className="rounded-slab border border-edge bg-surface p-4 shadow-hard"
-    >
+    <form onSubmit={submit} className="rounded-slab border border-line bg-surface p-4 shadow-hard">
       <div className="flex gap-3">
         {user && <Avatar user={user} size="sm" className="mt-1" />}
         <div className="min-w-0 flex-1">
@@ -170,14 +167,14 @@ function CommentComposer({
             onChange={(event) => setBody(event.target.value)}
             rows={parent ? 2 : 3}
             placeholder={parent ? 'Write a reply…' : `What do you think of ${itemName}?`}
-            className="w-full resize-y rounded-slab border border-edge bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none"
+            className="w-full resize-y rounded-slab border border-line bg-surface px-3.5 py-2.5 text-sm leading-relaxed shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-300 placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none"
           />
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             {/* Replies are part of a thread, not a rating of the product. */}
             {!parent ? (
               <div className="flex items-center gap-3">
-                <span className="font-mono text-[11px] font-bold uppercase text-muted">
+                <span className="font-mono text-[11px] font-medium uppercase text-muted">
                   Rate it
                 </span>
                 <StarPicker value={rating} onChange={setRating} />
@@ -189,7 +186,7 @@ function CommentComposer({
             <div className="flex items-center gap-3">
               <span
                 className={cn(
-                  'font-mono text-[11px] font-bold tabular-nums',
+                  'font-mono text-[11px] font-medium tabular-nums',
                   tooLong ? 'bg-edge px-1 text-canvas' : 'text-muted',
                 )}
               >
@@ -241,7 +238,7 @@ function CommentRow({
   const deleteComment = useDeleteComment(slug);
 
   return (
-    <article className="rounded-slab border border-edge bg-surface p-4 shadow-hard">
+    <article className="rounded-slab border border-line bg-surface p-4 shadow-hard">
       <div className="flex gap-3">
         <Link to={profilePath(comment.user.username)} className="shrink-0">
           <Avatar user={comment.user} size="sm" />
@@ -251,12 +248,10 @@ function CommentRow({
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <Link
               to={profilePath(comment.user.username)}
-              className="font-display text-sm uppercase hover:underline"
+              className="font-display text-sm hover:underline"
             >
               {comment.user.name}
-              {comment.user.verified && (
-                <VerifiedMark name={comment.user.name} className="ml-1" />
-              )}
+              {comment.user.verified && <VerifiedMark name={comment.user.name} className="ml-1" />}
             </Link>
             <span className="font-mono text-[11px] text-muted">@{comment.user.username}</span>
             <span aria-hidden="true" className="text-muted/50">
@@ -264,7 +259,7 @@ function CommentRow({
             </span>
             <time
               dateTime={comment.createdAt}
-              className="font-mono text-[11px] font-bold uppercase text-muted"
+              className="font-mono text-[11px] font-medium uppercase text-muted"
             >
               {relativeTime(comment.createdAt)}
             </time>
@@ -285,7 +280,7 @@ function CommentRow({
               <button
                 type="button"
                 onClick={() => setReplying((open) => !open)}
-                className="font-mono text-[11px] font-bold uppercase text-muted transition-colors hover:text-body"
+                className="font-mono text-[11px] font-medium uppercase text-muted transition-colors hover:text-body"
               >
                 {replying ? 'Cancel' : 'Reply'}
               </button>
@@ -295,7 +290,7 @@ function CommentRow({
                 type="button"
                 onClick={() => deleteComment.mutate(comment.id)}
                 disabled={deleteComment.isPending}
-                className="font-mono text-[11px] font-bold uppercase text-muted transition-colors hover:bg-edge hover:px-1 hover:text-canvas disabled:opacity-50"
+                className="font-mono text-[11px] font-medium uppercase text-muted transition-colors hover:bg-edge hover:px-1 hover:text-canvas disabled:opacity-50"
               >
                 Delete
               </button>
@@ -314,7 +309,7 @@ function CommentRow({
           )}
 
           {replies.length > 0 && (
-            <ul className="mt-4 space-y-3 border-l border-edge pl-4">
+            <ul className="mt-4 space-y-3 border-l border-line pl-4">
               {replies.map((reply) => (
                 <li key={reply.id}>
                   <div className="flex gap-2.5">
@@ -325,7 +320,7 @@ function CommentRow({
                       <div className="flex flex-wrap items-center gap-x-2">
                         <Link
                           to={profilePath(reply.user.username)}
-                          className="font-display text-xs uppercase hover:underline"
+                          className="font-display text-xs hover:underline"
                         >
                           {reply.user.name}
                           {reply.user.verified && (
@@ -334,7 +329,7 @@ function CommentRow({
                         </Link>
                         <time
                           dateTime={reply.createdAt}
-                          className="font-mono text-[11px] font-bold uppercase text-muted"
+                          className="font-mono text-[11px] font-medium uppercase text-muted"
                         >
                           {relativeTime(reply.createdAt)}
                         </time>
@@ -342,7 +337,7 @@ function CommentRow({
                           <button
                             type="button"
                             onClick={() => deleteComment.mutate(reply.id)}
-                            className="font-mono text-[10px] font-bold uppercase text-muted transition-colors hover:bg-edge hover:px-1 hover:text-canvas"
+                            className="font-mono text-[10px] font-medium uppercase text-muted transition-colors hover:bg-edge hover:px-1 hover:text-canvas"
                           >
                             Delete
                           </button>

@@ -26,7 +26,7 @@ export function Backdrop({ pattern = 'grid', className }: BackdropProps) {
     >
       <div
         className={cn(
-          'absolute inset-0 text-edge opacity-[0.07]',
+          'absolute inset-0 text-edge opacity-[0.035]',
           pattern === 'grid' && 'bg-gridlines',
           pattern === 'halftone' && 'bg-halftone',
           pattern === 'stripes' && 'bg-stripes',
@@ -36,21 +36,17 @@ export function Backdrop({ pattern = 'grid', className }: BackdropProps) {
   );
 }
 
-/** Thin banded strip for the top of a page header. */
+/** Warm light at the top of a page — the arcade's amber, kept faint. */
 export function PageBanner({ className }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 overflow-hidden',
+        'pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 overflow-hidden',
         className,
       )}
     >
-      <div className="absolute inset-0 bg-halftone text-edge opacity-[0.09]" />
-      {/* A hairline rule with no border of its own, so it takes the themed
-          mark — a 6px lime bar on the bone canvas is 1.15:1 and reads as
-          nothing at all. */}
-      <div className="absolute inset-x-0 top-0 h-1.5 bg-accent" />
+      <div className="absolute -top-40 left-1/2 h-80 w-[min(1100px,140%)] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(247_165_49/0.16),transparent)] blur-2xl dark:bg-[radial-gradient(closest-side,rgb(255_106_61/0.12),transparent)]" />
     </div>
   );
 }

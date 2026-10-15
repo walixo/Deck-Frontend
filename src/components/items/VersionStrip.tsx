@@ -25,12 +25,12 @@ export function VersionStrip({ versions, totals }: VersionStripProps) {
   return (
     <section
       aria-labelledby="versions-heading"
-      className="rounded-slab border border-edge bg-surface p-5 shadow-hard"
+      className="rounded-slab border border-line bg-surface p-5 shadow-hard"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2
           id="versions-heading"
-          className="font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           Versions
         </h2>
@@ -39,8 +39,9 @@ export function VersionStrip({ versions, totals }: VersionStripProps) {
           {totals.reviewCount > 0 && (
             <>
               {' · '}
-              <span className="tabular-nums text-body">{totals.ratingAvg.toFixed(1)}</span> from{' '}
-              {totals.reviewCount} {totals.reviewCount === 1 ? 'review' : 'reviews'}
+              <span className="tabular-nums text-body">
+                {totals.ratingAvg.toFixed(1)}
+              </span> from {totals.reviewCount} {totals.reviewCount === 1 ? 'review' : 'reviews'}
             </>
           )}
         </p>
@@ -62,7 +63,7 @@ export function VersionStrip({ versions, totals }: VersionStripProps) {
               ) : (
                 <Link
                   to={`/item/${version.slug}`}
-                  className="flex items-center gap-3 border border-edge bg-canvas px-3 py-2 transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm"
+                  className="rounded-2xl flex items-center gap-3 border border-line bg-canvas px-3 py-2 transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-sm"
                 >
                   <VersionChip label={label} />
                   <VersionMeta version={version} />
@@ -80,8 +81,8 @@ function VersionChip({ label, current = false }: { label: string; current?: bool
   return (
     <span
       className={cn(
-        'shrink-0 border border-edge px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.04em]',
-        current ? 'bg-pop text-on-pop' : 'bg-surface-2 text-body',
+        'rounded-full shrink-0 border border-line px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.04em]',
+        current ? 'bg-edge text-canvas' : 'bg-surface-2 text-body',
       )}
     >
       {label}
@@ -96,7 +97,7 @@ function VersionMeta({ version }: { version: ItemVersion }) {
         {formatFullDate(version.launchDate)}
         {version.current && ' · you are here'}
       </span>
-      <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">
+      <span className="shrink-0 font-mono text-[11px] font-medium tabular-nums text-muted">
         ▲ {version.voteCount}
       </span>
     </>

@@ -41,10 +41,10 @@ export function Shop() {
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-5">
         <div>
-          <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
             Shop
           </p>
-          <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">Deck merch</h1>
+          <h1 className="display-tight text-3xl text-balance sm:text-4xl">Deck merch</h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
             Small runs, printed properly. Every order helps keep the board free to use.
           </p>
@@ -53,9 +53,9 @@ export function Shop() {
         {count > 0 && (
           <Link
             to="/cart"
-            className="flex items-center gap-3 border border-edge bg-surface px-4 py-2.5 shadow-hard-sm transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard"
+            className="rounded-2xl flex items-center gap-3 border border-line bg-surface px-4 py-2.5 shadow-hard-sm transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard"
           >
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
               Cart · {count}
             </span>
             <span className="font-display text-sm">{formatMoney(subtotalMinor)}</span>
@@ -63,7 +63,7 @@ export function Shop() {
         )}
       </header>
 
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-edge pb-4">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
         <div className="flex flex-wrap items-center gap-2">
           <FilterPill active={!category} onClick={() => update({ category: undefined })}>
             All
@@ -81,7 +81,7 @@ export function Shop() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
             Sort
           </span>
           {SORTS.map((option) => (
@@ -91,9 +91,9 @@ export function Shop() {
               onClick={() => update({ sort: option.value })}
               aria-pressed={sort === option.value}
               className={cn(
-                'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.04em] transition-colors duration-[120ms]',
+                'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.04em] transition-colors duration-300',
                 sort === option.value
-                  ? 'bg-pop text-on-pop'
+                  ? 'bg-edge text-canvas'
                   : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
               )}
             >
@@ -158,9 +158,9 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
-        'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
-        active ? 'bg-pop text-on-pop shadow-hard-sm' : 'bg-surface text-body',
+        'rounded-full inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-line px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.04em]',
+        'transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-sm',
+        active ? 'bg-edge text-canvas' : 'bg-surface text-body',
       )}
     >
       {children}

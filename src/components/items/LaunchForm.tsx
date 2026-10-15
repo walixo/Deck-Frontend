@@ -119,7 +119,10 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
     if (editing && from) {
       /* Saving an edit returns to the launch rather than the form, because the
          thing the maker wants to see is whether the fix reads right in place. */
-      updateItem.mutate({ id: from.id, ...draft }, { onSuccess: () => navigate(`/item/${from.slug}`) });
+      updateItem.mutate(
+        { id: from.id, ...draft },
+        { onSuccess: () => navigate(`/item/${from.slug}`) },
+      );
       return;
     }
 
@@ -145,7 +148,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
 
         {releasing && (
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
               This version
             </h2>
 
@@ -174,7 +177,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
         )}
 
         <Card className="space-y-5 p-5 sm:p-6">
-          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             The basics
           </h2>
 
@@ -215,7 +218,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
         </Card>
 
         <Card className="space-y-5 p-5 sm:p-6">
-          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             Where it lives
           </h2>
 
@@ -257,7 +260,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
         </Card>
 
         <Card className="space-y-5 p-5 sm:p-6">
-          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             Images
           </h2>
 
@@ -299,7 +302,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
             hint="Up to 6 screenshots. Drag several in at once."
           />
 
-          <div className="border-t border-edge pt-5">
+          <div className="border-t border-line pt-5">
             <WallColourPicker
               value={wallColour}
               onChange={setWallColour}
@@ -310,7 +313,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
         </Card>
 
         <Card className="space-y-5 p-5 sm:p-6">
-          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             Details
           </h2>
 
@@ -345,7 +348,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
 
       {/* Live preview of the card as it will appear in listings. */}
       <aside className="lg:sticky lg:top-24 lg:self-start">
-        <p className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+        <p className="mb-3 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
           Live preview
         </p>
         <Card className="overflow-hidden">
@@ -353,7 +356,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
             <img
               src={cover[0]}
               alt=""
-              className="aspect-video w-full border-b border-edge object-cover"
+              className="aspect-video w-full border-b border-line object-cover"
             />
           )}
           <div className="flex items-start gap-3 p-4">
@@ -367,7 +370,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
               size="md"
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate font-display text-sm uppercase">
+              <p className="truncate font-display text-sm">
                 {form.name || 'Your product name'}
                 {releasing && form.version && (
                   <span className="ml-1.5 font-mono text-[11px] text-muted">{form.version}</span>
@@ -383,7 +386,7 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
                 <Badge tone="neutral">{PRICING_LABELS[form.pricing]}</Badge>
               </div>
             </div>
-            <span className="flex h-14 w-12 shrink-0 flex-col items-center justify-center border border-edge bg-surface font-mono text-muted">
+            <span className="flex h-14 w-12 shrink-0 flex-col items-center justify-center border border-line bg-surface font-mono text-muted">
               <span aria-hidden="true" className="text-[10px]">
                 ▲
               </span>
@@ -392,11 +395,11 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
           </div>
 
           {splitList(form.tags, 6).length > 0 && (
-            <div className="flex flex-wrap gap-1.5 border-t border-edge px-4 py-3">
+            <div className="flex flex-wrap gap-1.5 border-t border-line px-4 py-3">
               {splitList(form.tags, 6).map((tag) => (
                 <span
                   key={tag}
-                  className="border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-muted"
+                  className="rounded-full border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase text-muted"
                 >
                   #{tag.toLowerCase()}
                 </span>
@@ -405,8 +408,8 @@ export function LaunchForm({ mode, from }: LaunchFormProps) {
           )}
         </Card>
 
-        <div className="mt-5 border border-dashed border-edge p-4">
-          <h3 className="font-display text-xs uppercase">
+        <div className="mt-5 border border-dashed border-line p-4">
+          <h3 className="font-display text-xs">
             {releasing ? 'What carries over' : 'What makes a launch land'}
           </h3>
           <ul className="mt-2.5 space-y-1.5 text-xs leading-relaxed text-muted">

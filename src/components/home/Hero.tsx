@@ -116,7 +116,7 @@ export function Hero({ stats }: HeroProps) {
      * so redeclaring the token here changes nothing until something asks for it
      * again. Without `text-body` the headline is black on black.
      */
-    <section className="dark relative isolate overflow-hidden border-b border-edge bg-canvas text-body">
+    <section className="dark relative isolate overflow-hidden border-b border-line bg-canvas text-body">
       <Backdrop pattern="grid" />
 
       {/* Over the grid, under the words. `inset-0` rather than a fixed height
@@ -158,7 +158,7 @@ export function Hero({ stats }: HeroProps) {
         )}
 
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-6 inline-flex animate-[var(--animate-slam)] items-center gap-2 border border-edge bg-surface px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.1em] shadow-hard-sm">
+          <p className="rounded-full mb-6 inline-flex animate-[var(--animate-slam)] items-center gap-2 border border-line bg-surface px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.1em] shadow-hard-sm">
             {/* An 8px dot on a white surface: the themed mark, not lime. */}
             <span className="size-2 bg-accent" aria-hidden="true" />
             {stats?.todayLaunches
@@ -184,7 +184,7 @@ export function Hero({ stats }: HeroProps) {
               contract rather than the canvas guessing where the words are. */}
           <h1
             data-sky-keepout
-            className="display-tight text-[clamp(2.5rem,8vw,4.75rem)] uppercase text-balance"
+            className="display-tight text-[clamp(2.5rem,8vw,4.75rem)] text-balance"
           >
             <span className="sr-only">Where new tech gets its first fans</span>
 
@@ -223,7 +223,7 @@ export function Hero({ stats }: HeroProps) {
                 >
                   <span
                     aria-hidden="true"
-                    className="absolute -inset-x-2 inset-y-1 -rotate-1 border border-edge bg-deep"
+                    className="absolute -inset-x-2 inset-y-1 -rotate-1 border border-line bg-deep"
                   />
                   <span className="relative text-on-deep">first fans</span>
                 </span>
@@ -263,7 +263,7 @@ export function Hero({ stats }: HeroProps) {
                 <Stat
                   label="Votes cast"
                   value={formatNumber(stats.votes)}
-                  tone="bg-grey text-ink"
+                  tone="bg-surface-2 text-body"
                 />
               </dl>
             ) : (
@@ -289,7 +289,7 @@ export function Hero({ stats }: HeroProps) {
 function FoundingBoard({ launches }: { launches: number }) {
   return (
     <div
-      className="mx-auto mt-14 flex max-w-xl animate-[var(--animate-slide-up)] items-center gap-5 border border-edge bg-surface p-4 text-left shadow-hard sm:p-5"
+      className="rounded-2xl mx-auto mt-14 flex max-w-xl animate-[var(--animate-slide-up)] items-center gap-5 border border-line bg-surface p-4 text-left shadow-hard sm:p-5"
       style={{ animationDelay: '300ms' }}
     >
       <BrickStack
@@ -302,10 +302,10 @@ function FoundingBoard({ launches }: { launches: number }) {
         }
       />
       <div className="min-w-0">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
           The first board
         </p>
-        <p className="mt-1 font-display text-lg uppercase leading-tight text-balance">
+        <p className="mt-1 font-display text-lg leading-tight text-balance">
           {launches === 0 ? 'Nobody has launched yet' : 'Still being built'}
         </p>
         <p className="mt-1.5 text-sm leading-relaxed text-muted text-pretty">
@@ -320,9 +320,9 @@ function FoundingBoard({ launches }: { launches: number }) {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
-    <div className={`border border-edge px-3 py-4 shadow-hard ${tone}`}>
+    <div className={`border border-line px-3 py-4 shadow-hard ${tone}`}>
       <dd className="font-display text-2xl tabular-nums sm:text-3xl">{value}</dd>
-      <dt className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
+      <dt className="mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.1em] opacity-80">
         {label}
       </dt>
     </div>

@@ -37,7 +37,7 @@ export function RaiseBar({
         </p>
         <p
           className={cn(
-            'font-mono font-bold uppercase tracking-[0.08em] text-muted',
+            'font-mono font-medium uppercase tracking-[0.08em] text-muted',
             large ? 'text-[11px]' : 'text-[10px]',
           )}
         >
@@ -52,7 +52,7 @@ export function RaiseBar({
         aria-valuemax={100}
         aria-label={`${raise.percent}% of the target raised`}
         className={cn(
-          'mt-2 w-full overflow-hidden border border-edge bg-surface-2',
+          'mt-2 w-full overflow-hidden border border-line bg-surface-2',
           large ? 'h-5' : 'h-3',
         )}
       >
@@ -72,7 +72,7 @@ export function RaiseBar({
 
       <dl
         className={cn(
-          'mt-2.5 flex flex-wrap gap-x-5 gap-y-1 font-mono font-bold uppercase tracking-[0.08em] text-muted',
+          'mt-2.5 flex flex-wrap gap-x-5 gap-y-1 font-mono font-medium uppercase tracking-[0.08em] text-muted',
           large ? 'text-[11px]' : 'text-[10px]',
         )}
       >
@@ -130,7 +130,7 @@ export function BackerList({
 
   return (
     <div className={className}>
-      <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+      <h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
         Backers
         <span className="ml-2 tabular-nums text-muted">{backers.length}</span>
       </h3>
@@ -143,14 +143,14 @@ export function BackerList({
             ) : (
               <span
                 aria-hidden="true"
-                className="flex size-8 shrink-0 items-center justify-center border border-edge bg-surface-2 font-mono text-[11px] font-bold"
+                className="flex size-8 shrink-0 items-center justify-center border border-line bg-surface-2 font-mono text-[11px] font-medium"
               >
                 ?
               </span>
             )}
 
             <div className="min-w-0 flex-1">
-              <p className="flex flex-wrap items-baseline gap-x-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+              <p className="flex flex-wrap items-baseline gap-x-2 font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
                 {entry.supporter ? (
                   <Link
                     to={profilePath(entry.supporter.username)}
@@ -164,7 +164,7 @@ export function BackerList({
 
                 {/* The amount is the reason this row exists, so it is set as a
                     block rather than as trailing grey text. */}
-                <span className="border border-edge bg-surface-2 px-1.5 py-0.5 tabular-nums">
+                <span className="rounded-2xl border border-line bg-surface-2 px-1.5 py-0.5 tabular-nums">
                   {formatMoney(entry.amountMinor, entry.currency)}
                 </span>
 

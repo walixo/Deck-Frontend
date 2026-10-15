@@ -10,12 +10,7 @@ import { CharCount, Input, Select, Textarea } from '@/components/ui/Field';
 import { Star } from '@/components/ui/Star';
 import { Stars } from '@/components/ui/Stars';
 import { applyFontset, readFontset, type Fontset } from '@/lib/fontset';
-import {
-  ACTIVE_PALETTE,
-  PALETTE_IDS,
-  PALETTES,
-  type PaletteId,
-} from '@/lib/palettes.generated';
+import { ACTIVE_PALETTE, PALETTE_IDS, PALETTES, type PaletteId } from '@/lib/palettes.generated';
 import { cn } from '@/lib/utils';
 
 /**
@@ -36,7 +31,6 @@ import { cn } from '@/lib/utils';
  *
  * Deliberately not linked from the nav. It is a workbench, not a page.
  */
-
 
 /**
  * Fake launches whose logo colours are chosen to fight.
@@ -70,14 +64,14 @@ export function Styleguide() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
       <header className="mb-8">
-        <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           Workbench
         </p>
-        <h1 className="display-tight text-3xl uppercase sm:text-4xl">Style&nbsp;guide</h1>
+        <h1 className="display-tight text-3xl sm:text-4xl">Style&nbsp;guide</h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted text-pretty">
-          Every token and component, both themes at once, with the palette switchable live. Judge
-          a direction here before it touches the product. The rules are in{' '}
-          <code className="border border-edge bg-surface-2 px-1 py-0.5 font-mono text-[11px]">
+          Every token and component, both themes at once, with the palette switchable live. Judge a
+          direction here before it touches the product. The rules are in{' '}
+          <code className="rounded-full border border-line bg-surface-2 px-1 py-0.5 font-mono text-[11px]">
             design/CONTRACT.md
           </code>
           .
@@ -85,8 +79,8 @@ export function Styleguide() {
       </header>
 
       {/* --------------------------------------------------------- switcher */}
-      <div className="sticky top-16 z-20 mb-10 border border-edge bg-surface p-4 shadow-hard">
-        <p className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+      <div className="rounded-2xl sticky top-16 z-20 mb-10 border border-line bg-surface p-4 shadow-hard">
+        <p className="mb-3 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Palette direction
         </p>
         <div className="flex flex-wrap gap-2">
@@ -97,9 +91,9 @@ export function Styleguide() {
               onClick={() => setPalette(id)}
               aria-pressed={palette === id}
               className={cn(
-                'border border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-transform duration-[120ms] ease-[var(--ease-snap)]',
+                'border border-line px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-transform duration-300 ease-[var(--ease-snap)]',
                 palette === id
-                  ? 'bg-pop text-on-pop shadow-hard-sm'
+                  ? 'bg-edge text-canvas'
                   : 'bg-surface text-muted hover:-translate-y-0.5 hover:text-body',
               )}
             >
@@ -174,7 +168,7 @@ export function Styleguide() {
                 </a>{' '}
                 inside it, and <span className="text-muted">muted secondary text</span>.
               </p>
-              <div className="h-5 w-full overflow-hidden border border-edge bg-surface-2">
+              <div className="h-5 w-full overflow-hidden border border-line bg-surface-2">
                 <div className="h-full w-[62%] bg-accent" />
               </div>
               <input
@@ -222,11 +216,11 @@ export function Styleguide() {
 
           <Section title="Stars">
             <p className="mb-3 text-xs leading-relaxed text-muted text-pretty">
-              From the neobrutalism.dev set. Filled, not stroked, so they hold at 12px in the
-              navbar and at 80px on a page, and they take <code>currentColor</code> like every
-              other mark — a star inherits whatever it sits on and inverts with the theme.
-              <strong className="text-body"> Sparkle</strong> is the &ldquo;new&rdquo; marker;
-              it is the one on Future Gen.
+              From the neobrutalism.dev set. Filled, not stroked, so they hold at 12px in the navbar
+              and at 80px on a page, and they take <code>currentColor</code> like every other mark —
+              a star inherits whatever it sits on and inverts with the theme.
+              <strong className="text-body"> Sparkle</strong> is the &ldquo;new&rdquo; marker; it is
+              the one on Future Gen.
             </p>
             <div className="flex flex-wrap items-end gap-5">
               {(['sparkle', 'glint', 'burst', 'classic', 'seal', 'token'] as const).map((name) => (
@@ -242,7 +236,11 @@ export function Styleguide() {
 
           <Section title="Fields">
             <div className="space-y-3">
-              <Input label="Product name" defaultValue="Lumen 3" counter={<CharCount value="Lumen 3" max={70} />} />
+              <Input
+                label="Product name"
+                defaultValue="Lumen 3"
+                counter={<CharCount value="Lumen 3" max={70} />}
+              />
               <Select
                 label="Category"
                 options={[{ value: 'ai-model', label: 'AI Model' }]}
@@ -261,25 +259,23 @@ export function Styleguide() {
               {CLASH.map((item) => (
                 <div
                   key={item.name}
-                  className="flex items-center gap-3 rounded-slab border border-edge bg-surface p-3 shadow-hard-sm"
+                  className="flex items-center gap-3 rounded-slab border border-line bg-surface p-3 shadow-hard-sm"
                 >
                   <span
                     aria-hidden="true"
-                    className="flex size-10 shrink-0 items-center justify-center border border-edge font-display text-sm uppercase"
+                    className="flex size-10 shrink-0 items-center justify-center border border-line font-display text-sm"
                     style={{ background: item.logo, color: item.mark }}
                   >
                     {item.name.slice(0, 2)}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-display text-[13px] uppercase">
-                      {item.name}
-                    </span>
+                    <span className="block truncate font-display text-[13px]">{item.name}</span>
                     <span className="block truncate font-mono text-[10px] uppercase text-muted">
                       Developer tool · Free
                     </span>
                   </span>
                   <Badge tone="pop">★ Pick</Badge>
-                  <span className="flex h-11 w-10 shrink-0 flex-col items-center justify-center border border-edge bg-surface font-mono text-muted">
+                  <span className="flex h-11 w-10 shrink-0 flex-col items-center justify-center border border-line bg-surface font-mono text-muted">
                     <span aria-hidden="true" className="text-[9px]">
                       ▲
                     </span>
@@ -293,12 +289,12 @@ export function Styleguide() {
           <Section title="Cards and inversion">
             <div className="space-y-3">
               <Card className="p-4">
-                <h3 className="font-display text-sm uppercase">A surface card</h3>
+                <h3 className="font-display text-sm">A surface card</h3>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted">
                   Neutral, because a product will sit on it.
                 </p>
               </Card>
-              <p className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas">
+              <p className="border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas">
                 Errors are inversion, not a hue
               </p>
             </div>
@@ -332,14 +328,14 @@ const GEIST = "'Geist Variable', -apple-system, sans-serif";
 function DisplayFaceSplit() {
   return (
     <section className="mb-10">
-      <h2 className="mb-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+      <h2 className="mb-1 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
         Proposal — Geist Black instead of Archivo Black
       </h2>
       <p className="mb-4 max-w-2xl text-xs leading-relaxed text-muted text-pretty">
-        Left is the system as built. Right sets every heading in Geist at 900 — the same family
-        as body copy, one weight apart. If it holds, Deck drops a typeface and Archivo Black
-        comes out of the bundle. Judge the bottom two rows: 13px card titles and 12px nav are
-        where a text face pushed to Black usually loses its counters.
+        Left is the system as built. Right sets every heading in Geist at 900 — the same family as
+        body copy, one weight apart. If it holds, Deck drops a typeface and Archivo Black comes out
+        of the bundle. Judge the bottom two rows: 13px card titles and 12px nav are where a text
+        face pushed to Black usually loses its counters.
       </p>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -374,26 +370,26 @@ function FaceColumn({
   const head = { fontFamily: family, fontWeight: weight };
 
   return (
-    <div className="rounded-slab border border-edge bg-surface shadow-hard">
-      <div className="border-b border-edge bg-surface-2 px-4 py-2">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.12em]">{label}</p>
+    <div className="rounded-slab border border-line bg-surface shadow-hard">
+      <div className="border-b border-line bg-surface-2 px-4 py-2">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.12em]">{label}</p>
         <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.04em] text-muted">
           {note}
         </p>
       </div>
 
-      <div className="divide-y divide-edge">
+      <div className="divide-y divide-line">
         <Row tier="h1 · hero · 44px">
           <p
             style={{ ...head, lineHeight: 0.95, letterSpacing: '-0.03em' }}
-            className="text-[44px] uppercase"
+            className="text-[44px]"
           >
             First fans
           </p>
         </Row>
 
         <Row tier="h2 · section · 20px">
-          <p style={{ ...head, letterSpacing: '-0.02em' }} className="text-[20px] uppercase">
+          <p style={{ ...head, letterSpacing: '-0.02em' }} className="text-[20px]">
             Launching today
           </p>
         </Row>
@@ -404,11 +400,11 @@ function FaceColumn({
             {['Lumen 3', 'Standup Scribe', 'Changelog Cartographer'].map((name) => (
               <div
                 key={name}
-                className="flex items-center gap-3 border border-edge bg-canvas p-2.5"
+                className="rounded-2xl flex items-center gap-3 border border-line bg-canvas p-2.5"
               >
-                <span className="size-8 shrink-0 border border-edge bg-grey-soft" />
+                <span className="size-8 shrink-0 border border-line bg-grey-soft" />
                 <span className="min-w-0">
-                  <span style={head} className="block truncate text-[13px] uppercase">
+                  <span style={head} className="block truncate text-[13px]">
                     {name}
                   </span>
                   <span className="block truncate font-mono text-[10px] uppercase text-muted">
@@ -443,7 +439,7 @@ function FaceColumn({
         {/* Counters and diagonals are where a text face at 900 gives itself
             away: the eye of an R, the join of a K, the aperture of an S. */}
         <Row tier="counters · 28px">
-          <p style={{ ...head, letterSpacing: '-0.02em' }} className="text-[28px] uppercase">
+          <p style={{ ...head, letterSpacing: '-0.02em' }} className="text-[28px]">
             REGS 8 &amp; 0 · @#%
           </p>
         </Row>
@@ -498,13 +494,13 @@ function FontsetSwitch({
   });
 
   return (
-    <div className="mb-10 rounded-slab border border-edge bg-surface p-4 shadow-hard">
+    <div className="mb-10 rounded-slab border border-line bg-surface p-4 shadow-hard">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Heading face — previews across the whole site
         </p>
         {fontset !== 'deck' && (
-          <span className="border border-edge bg-pop px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-on-pop">
+          <span className="rounded-full border border-line bg-pop px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-on-pop">
             Preview active
           </span>
         )}
@@ -518,13 +514,13 @@ function FontsetSwitch({
             onClick={() => onChange(option.id)}
             aria-pressed={fontset === option.id}
             className={cn(
-              'border border-edge px-3 py-2 text-left transition-transform duration-[120ms] ease-[var(--ease-snap)]',
+              'border border-line px-3 py-2 text-left transition-transform duration-300 ease-[var(--ease-snap)]',
               fontset === option.id
-                ? 'bg-pop text-on-pop shadow-hard-sm'
+                ? 'bg-edge text-canvas'
                 : 'bg-surface text-muted hover:-translate-y-0.5 hover:text-body',
             )}
           >
-            <span className="block font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+            <span className="block font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
               {option.label}
               {option.id === 'deck' && ' ·  built'}
             </span>
@@ -542,13 +538,13 @@ function FontsetSwitch({
 
       <p className="mt-3 max-w-3xl text-xs leading-relaxed text-muted text-pretty">
         This one does not stay on the workbench. It re-points{' '}
-        <code className="border border-edge bg-surface-2 px-1 py-0.5 font-mono text-[11px]">
+        <code className="rounded-full border border-line bg-surface-2 px-1 py-0.5 font-mono text-[11px]">
           --font-display
         </code>{' '}
-        on the document and remembers the choice, so every page you visit stays in the chosen
-        face until you come back and switch it off. Case, tracking and sizes are held
-        constant — only the family and the weight move, because a comparison that changes four
-        things at once answers nothing.
+        on the document and remembers the choice, so every page you visit stays in the chosen face
+        until you come back and switch it off. Case, tracking and sizes are held constant — only the
+        family and the weight move, because a comparison that changes four things at once answers
+        nothing.
       </p>
       <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
         Nothing is written to the codebase. One attribute on &lt;html&gt;, one localStorage key.
@@ -577,14 +573,14 @@ function FontsetSwitch({
 function TypeSplit() {
   return (
     <section className="mb-10">
-      <h2 className="mb-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+      <h2 className="mb-1 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
         Proposal — split display from heading
       </h2>
       <p className="mb-4 max-w-2xl text-xs leading-relaxed text-muted text-pretty">
         Left is the system as built: Archivo Black for every heading level. Right keeps Archivo
-        Black for the display role only — h1, hero statements, the wordmark — and hands every
-        other heading to Space Grotesk 700. Judge the bottom two rows: card titles and
-        navigation are where Deck actually spends its headings, dozens per page.
+        Black for the display role only — h1, hero statements, the wordmark — and hands every other
+        heading to Space Grotesk 700. Judge the bottom two rows: card titles and navigation are
+        where Deck actually spends its headings, dozens per page.
       </p>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -622,26 +618,26 @@ function TypeColumn({
   const head = { fontFamily: heading, fontWeight: headingWeight };
 
   return (
-    <div className="rounded-slab border border-edge bg-surface shadow-hard">
-      <div className="border-b border-edge bg-surface-2 px-4 py-2">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.12em]">{label}</p>
+    <div className="rounded-slab border border-line bg-surface shadow-hard">
+      <div className="border-b border-line bg-surface-2 px-4 py-2">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.12em]">{label}</p>
         <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.04em] text-muted">
           {note}
         </p>
       </div>
 
-      <div className="divide-y divide-edge">
+      <div className="divide-y divide-line">
         <Row tier="h1 · hero · 44px">
           <p
             style={{ fontFamily: display, lineHeight: 0.95, letterSpacing: '-0.03em' }}
-            className="text-[44px] uppercase"
+            className="text-[44px]"
           >
             First fans
           </p>
         </Row>
 
         <Row tier="h2 · section · 20px">
-          <p style={{ ...head, letterSpacing: '-0.02em' }} className="text-[20px] uppercase">
+          <p style={{ ...head, letterSpacing: '-0.02em' }} className="text-[20px]">
             Launching today
           </p>
         </Row>
@@ -652,11 +648,11 @@ function TypeColumn({
             {['Lumen 3', 'Standup Scribe', 'Changelog Cartographer'].map((name) => (
               <div
                 key={name}
-                className="flex items-center gap-3 border border-edge bg-canvas p-2.5"
+                className="rounded-2xl flex items-center gap-3 border border-line bg-canvas p-2.5"
               >
-                <span className="size-8 shrink-0 border border-edge bg-grey-soft" />
+                <span className="size-8 shrink-0 border border-line bg-grey-soft" />
                 <span className="min-w-0">
-                  <span style={head} className="block truncate text-[13px] uppercase">
+                  <span style={head} className="block truncate text-[13px]">
                     {name}
                   </span>
                   <span className="block truncate font-mono text-[10px] uppercase text-muted">
@@ -703,11 +699,11 @@ function TwoUp({ palette, children }: { palette: string; children: React.ReactNo
              `&:where(.dark, .dark *)`, so a wrapper flips only its subtree and
              both themes can coexist on one page. */
           className={cn(
-            'overflow-hidden rounded-slab border border-edge bg-canvas',
+            'overflow-hidden rounded-slab border border-line bg-canvas',
             theme === 'dark' && 'dark',
           )}
         >
-          <p className="border-b border-edge bg-surface-2 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-body">
+          <p className="border-b border-line bg-surface-2 px-4 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-body">
             {theme}
           </p>
           <div className="space-y-7 p-4 text-body">{children}</div>
@@ -720,7 +716,7 @@ function TwoUp({ palette, children }: { palette: string; children: React.ReactNo
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 border-b border-edge pb-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-body">
+      <h2 className="mb-3 border-b border-line pb-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-body">
         {title}
       </h2>
       {children}
@@ -732,7 +728,7 @@ function Swatch({ className, label }: { className: string; label: string }) {
   return (
     <div
       className={cn(
-        'flex min-h-14 items-end border border-edge px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase',
+        'flex min-h-14 items-end border border-line px-2.5 py-1.5 font-mono text-[10px] font-medium uppercase',
         className,
       )}
     >

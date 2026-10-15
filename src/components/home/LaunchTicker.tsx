@@ -35,7 +35,7 @@ export function LaunchTicker({ items, className }: LaunchTickerProps) {
     <section
       aria-labelledby="launch-ticker-heading"
       className={cn(
-        'group/ticker relative overflow-hidden border-b border-edge bg-deep py-2.5',
+        'group/ticker relative overflow-hidden border-b border-line bg-deep py-2.5',
         className,
       )}
     >
@@ -73,7 +73,7 @@ function TickerItem({ item, focusable }: { item: Item; focusable: boolean }) {
       <Link
         to={`/item/${item.slug}`}
         tabIndex={focusable ? undefined : -1}
-        className="flex shrink-0 items-center gap-2.5 px-4 text-on-deep transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+        className="flex shrink-0 items-center gap-2.5 px-4 text-on-deep transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5"
       >
         {/* The app mark, same as everywhere else. On a bone tile rather than
             transparent: most logos are drawn to sit on white, and a dark one on
@@ -88,7 +88,7 @@ function TickerItem({ item, focusable }: { item: Item; focusable: boolean }) {
         ) : (
           <span
             aria-hidden="true"
-            className="squircle flex size-8 shrink-0 items-center justify-center bg-bone font-display text-[11px] uppercase text-ink"
+            className="squircle flex size-8 shrink-0 items-center justify-center bg-bone font-display text-[11px] text-ink"
           >
             {item.name.slice(0, 2)}
           </span>
@@ -96,7 +96,7 @@ function TickerItem({ item, focusable }: { item: Item; focusable: boolean }) {
 
         <span className="whitespace-nowrap font-display text-sm tracking-tight">{item.name}</span>
 
-        <span className="whitespace-nowrap font-mono text-[11px] font-bold tabular-nums opacity-70">
+        <span className="whitespace-nowrap font-mono text-[11px] font-medium tabular-nums opacity-70">
           ▲{formatNumber(item.voteCount)}
         </span>
       </Link>

@@ -24,7 +24,7 @@ export function AdminCustom() {
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="display-tight text-3xl uppercase">Custom prints</h1>
+        <h1 className="display-tight text-3xl">Custom prints</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted text-pretty">
           Artwork people have sent in to be printed. Approving one clears it to be ordered — check
           it is theirs to print, and that it is not something Deck would rather not post.
@@ -32,7 +32,7 @@ export function AdminCustom() {
       </header>
 
       <section>
-        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           {data ? `${data.submitted.length} waiting on a decision` : 'Waiting on a decision'}
         </h2>
 
@@ -66,23 +66,21 @@ export function AdminCustom() {
 function Ledger({ title, designs }: { title: string; designs: CustomDesign[] }) {
   return (
     <section>
-      <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+      <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
         {title}
       </h2>
       <ul className="space-y-2">
         {designs.map((design) => (
           <li
             key={design.id}
-            className="flex flex-wrap items-center gap-3 rounded-slab border border-edge bg-surface p-3 shadow-hard-sm"
+            className="flex flex-wrap items-center gap-3 rounded-slab border border-line bg-surface p-3 shadow-hard-sm"
           >
             <Artwork url={design.artworkUrl} className="size-10" />
-            <span className="min-w-0 flex-1 truncate font-display text-[13px] uppercase">
-              {design.name}
-            </span>
+            <span className="min-w-0 flex-1 truncate font-display text-[13px]">{design.name}</span>
             <span className="shrink-0 font-mono text-[10px] uppercase text-muted">
               {design.reference} · {design.product}
             </span>
-            <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums">
+            <span className="shrink-0 font-mono text-[11px] font-medium tabular-nums">
               {formatMoney(design.priceMinor, design.currency)}
             </span>
           </li>
@@ -103,7 +101,7 @@ function Ledger({ title, designs }: { title: string; designs: CustomDesign[] }) 
 function Artwork({ url, className }: { url: string; className?: string }) {
   return (
     <span
-      className={cn('shrink-0 border border-edge bg-white', className)}
+      className={cn('shrink-0 border border-line bg-white', className)}
       style={{
         backgroundImage:
           'linear-gradient(45deg,#d8d8d8 25%,transparent 25%),linear-gradient(-45deg,#d8d8d8 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#d8d8d8 75%),linear-gradient(-45deg,transparent 75%,#d8d8d8 75%)',
@@ -142,7 +140,7 @@ function ReviewCard({ design }: { design: CustomDesign }) {
           <Artwork url={design.artworkUrl} className="size-40" />
 
           <div className="min-w-0 flex-1">
-            <p className="font-display text-lg uppercase">{design.name}</p>
+            <p className="font-display text-lg">{design.name}</p>
             <p className="mt-1 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase text-muted">
               {design.owner && <Avatar user={design.owner} size="sm" />}
               <span>{design.owner?.name}</span>
@@ -161,19 +159,13 @@ function ReviewCard({ design }: { design: CustomDesign }) {
                 value={PLACEMENT_LABELS[design.placement] ?? design.placement}
               />
               <Fact label="Size" value={design.size ?? '—'} />
-              <Fact
-                label="Artwork"
-                value={`${design.analysis.width}×${design.analysis.height}`}
-              />
+              <Fact label="Artwork" value={`${design.analysis.width}×${design.analysis.height}`} />
               <Fact label="Prints to" value={`${design.analysis.maxInchesAtGoodDpi}"`} />
               <Fact
                 label="Background"
                 value={design.analysis.transparent ? 'Transparent' : 'Solid'}
               />
-              <Fact
-                label="Coverage"
-                value={`${Math.round(design.analysis.inkCoverage * 100)}%`}
-              />
+              <Fact label="Coverage" value={`${Math.round(design.analysis.inkCoverage * 100)}%`} />
             </dl>
 
             {design.analysis.warnings.length > 0 && (
@@ -181,7 +173,7 @@ function ReviewCard({ design }: { design: CustomDesign }) {
                 {design.analysis.warnings.map((warning) => (
                   <li
                     key={warning}
-                    className="border border-edge bg-warning px-2.5 py-1.5 text-xs leading-relaxed text-ink text-pretty"
+                    className="border border-line bg-warning px-2.5 py-1.5 text-xs leading-relaxed text-ink text-pretty"
                   >
                     {warning}
                   </li>
@@ -190,14 +182,14 @@ function ReviewCard({ design }: { design: CustomDesign }) {
             )}
           </div>
 
-          <p className="shrink-0 self-start border border-edge bg-pop px-2.5 py-1 font-display text-sm text-on-pop">
+          <p className="shrink-0 self-start border border-line bg-pop px-2.5 py-1 font-display text-sm text-on-pop">
             {formatMoney(design.priceMinor, design.currency)}
           </p>
         </div>
 
-        <div className="mt-5 space-y-3 border-t border-edge pt-4">
+        <div className="mt-5 space-y-3 border-t border-line pt-4">
           <label className="block">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
               Note to them
             </span>
             <input
@@ -205,12 +197,12 @@ function ReviewCard({ design }: { design: CustomDesign }) {
               onChange={(event) => setNote(event.target.value)}
               maxLength={300}
               placeholder="Clean file, good to print"
-              className="mt-1 h-10 w-full border border-edge bg-surface px-3 text-sm placeholder:text-muted/70 focus:border-accent focus:outline-none"
+              className="mt-1 h-10 w-full border border-line bg-surface px-3 text-sm placeholder:text-muted/70 focus:border-accent focus:outline-none"
             />
           </label>
 
           {error && (
-            <p role="alert" className="font-mono text-[11px] font-bold uppercase text-red">
+            <p role="alert" className="font-mono text-[11px] font-medium uppercase text-red">
               {error}
             </p>
           )}
@@ -236,7 +228,7 @@ function ReviewCard({ design }: { design: CustomDesign }) {
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-edge bg-surface-2 px-2.5 py-1.5">
+    <div className="rounded-2xl border border-line bg-surface-2 px-2.5 py-1.5">
       <dd className="truncate font-display text-xs">{value}</dd>
       <dt className="mt-0.5 text-[9px] font-bold text-muted">{label}</dt>
     </div>

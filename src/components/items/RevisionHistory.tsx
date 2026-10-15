@@ -61,7 +61,7 @@ export function RevisionHistory({ slug, editCount }: { slug: string; editCount: 
 
   return (
     <details
-      className="group rounded-slab border border-edge bg-surface shadow-hard"
+      className="group rounded-slab border border-line bg-surface shadow-hard"
       onToggle={(event) => setOpen((event.currentTarget as HTMLDetailsElement).open)}
     >
       <summary
@@ -71,20 +71,20 @@ export function RevisionHistory({ slug, editCount }: { slug: string; editCount: 
           'focus-visible:outline-3 focus-visible:outline-offset-2',
         )}
       >
-        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Edit history
         </span>
-        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
           <span className="tabular-nums text-body">{editCount}</span>{' '}
           {editCount === 1 ? 'edit' : 'edits'}
         </span>
         <ChevronDownIcon
           aria-hidden="true"
-          className="ml-auto size-4 shrink-0 transition-transform duration-[160ms] ease-[var(--ease-snap)] group-open:rotate-180"
+          className="ml-auto size-4 shrink-0 transition-transform duration-300 ease-[var(--ease-snap)] group-open:rotate-180"
         />
       </summary>
 
-      <div className="border-t border-edge p-4">
+      <div className="border-t border-line p-4">
         {isLoading && <Skeleton className="h-24 w-full" />}
 
         {revisions && (
@@ -109,12 +109,12 @@ function RevisionRow({ revision, previous }: { revision: Revision; previous?: Re
   const original = !previous;
 
   return (
-    <li className="border border-edge bg-canvas p-3.5">
+    <li className="rounded-2xl border border-line bg-canvas p-3.5">
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <span className="border border-edge bg-pop px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums text-on-pop">
+        <span className="rounded-full border border-line bg-pop px-1.5 py-0.5 font-mono text-[10px] font-medium tabular-nums text-on-pop">
           v{revision.version}
         </span>
-        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
           {original ? 'As posted' : 'Edited'}
         </span>
         <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
@@ -135,7 +135,7 @@ function RevisionRow({ revision, previous }: { revision: Revision; previous?: Re
         <ul className="mt-2.5 space-y-2">
           {revision.changed.map((field) => (
             <li key={field}>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
                 {FIELD_LABELS[field] ?? field}
               </p>
               {QUOTED.includes(field) ? (

@@ -39,7 +39,16 @@ export function Discover() {
   /* The archive's selection. Empty means all time. */
   const on = params.get('on') ?? '';
 
-  const query = useItems({ category, pricing, tag, sort, search, on: on || undefined, page, limit: PAGE_SIZE });
+  const query = useItems({
+    category,
+    pricing,
+    tag,
+    sort,
+    search,
+    on: on || undefined,
+    page,
+    limit: PAGE_SIZE,
+  });
 
   /** Writes a filter to the URL — the URL is the single source of truth here. */
   const update = (changes: Record<string, string | undefined>, resetPage = true) => {
@@ -71,8 +80,8 @@ export function Discover() {
        * launch.
        */}
       <header className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">Discover</h1>
-        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+        <h1 className="display-tight text-3xl text-balance sm:text-4xl">Discover</h1>
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
           {query.isLoading ? 'Loading' : `${total} ${total === 1 ? 'launch' : 'launches'}`}
         </p>
       </header>
@@ -94,214 +103,219 @@ export function Discover() {
        */}
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_14rem]">
         <div className="min-w-0">
+          {/*
+           * Search, sort and pricing on one line instead of three stacked blocks.
+           *
+           * They were 76px, 59px and 97px of vertical space — 232px of controls
+           * above a list, for three inputs that between them are about forty
+           * characters wide. Stacking them was never a layout decision, just the
+           * order they were added in. The labels come off too: a search box with a
+           * placeholder, a select reading "Trending" and one reading "Any" are each
+           * self-describing, and `aria-label` carries what the eye no longer needs.
+           */}
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <form
+              role="search"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const value = new FormData(event.currentTarget).get('search');
+                update({ search: String(value ?? '').trim() || undefined });
+              }}
+              className="flex min-w-[16rem] flex-1 gap-2"
+            >
+              <label className="flex-1">
+                <span className="sr-only">Search launches</span>
+                {/* Uncontrolled and keyed to the URL: remounts when the query changes elsewhere. */}
+                <input
+                  key={search}
+                  name="search"
+                  type="search"
+                  defaultValue={search}
+                  placeholder="SEARCH LAUNCHES"
+                  className="h-9 w-full rounded-slab border border-line bg-surface px-3 font-mono text-[12px] font-medium uppercase tracking-[0.06em] shadow-[inset_2px_2px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-300 placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none"
+                />
+              </label>
+              <Button type="submit" size="sm">
+                Search
+              </Button>
+            </form>
 
-      {/*
-       * Search, sort and pricing on one line instead of three stacked blocks.
-       *
-       * They were 76px, 59px and 97px of vertical space — 232px of controls
-       * above a list, for three inputs that between them are about forty
-       * characters wide. Stacking them was never a layout decision, just the
-       * order they were added in. The labels come off too: a search box with a
-       * placeholder, a select reading "Trending" and one reading "Any" are each
-       * self-describing, and `aria-label` carries what the eye no longer needs.
-       */}
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <form
-          role="search"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const value = new FormData(event.currentTarget).get('search');
-            update({ search: String(value ?? '').trim() || undefined });
-          }}
-          className="flex min-w-[16rem] flex-1 gap-2"
-        >
-          <label className="flex-1">
-            <span className="sr-only">Search launches</span>
-            {/* Uncontrolled and keyed to the URL: remounts when the query changes elsewhere. */}
-            <input
-              key={search}
-              name="search"
-              type="search"
-              defaultValue={search}
-              placeholder="SEARCH LAUNCHES"
-              className="h-9 w-full rounded-slab border border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] shadow-[inset_2px_2px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none"
+            <NeoSelect
+              label="Sort launches"
+              value={sort}
+              options={SORTS.map((option) => ({ value: option.value, label: option.label }))}
+              onChange={(next) => update({ sort: next })}
+              tone="grey"
+              className="w-36"
             />
-          </label>
-          <Button type="submit" size="sm">
-            Search
-          </Button>
-        </form>
 
-        <NeoSelect
-          label="Sort launches"
-          value={sort}
-          options={SORTS.map((option) => ({ value: option.value, label: option.label }))}
-          onChange={(next) => update({ sort: next })}
-          tone="grey"
-          className="w-36"
-        />
-
-        <NeoSelect
-          label="Filter by pricing"
-          value={pricing ?? ''}
-          /* An explicit "Any" row rather than relying on somebody knowing to
+            <NeoSelect
+              label="Filter by pricing"
+              value={pricing ?? ''}
+              /* An explicit "Any" row rather than relying on somebody knowing to
              click the selected chip again to clear it — which is what the
              previous chips required and nobody discovers. */
-          options={[
-            { value: '', label: 'Any price' },
-            ...PRICING.map((option) => ({ value: option, label: PRICING_LABELS[option] })),
-          ]}
-          onChange={(next) => update({ pricing: next || undefined })}
-          placeholder="Any price"
-          tone="grey"
-          className="w-36"
-        />
-      </div>
+              options={[
+                { value: '', label: 'Any price' },
+                ...PRICING.map((option) => ({ value: option, label: PRICING_LABELS[option] })),
+              ]}
+              onChange={(next) => update({ pricing: next || undefined })}
+              placeholder="Any price"
+              tone="grey"
+              className="w-36"
+            />
+          </div>
 
-      {/* Category pills */}
-      <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
-        <FilterPill active={!category} onClick={() => update({ category: undefined })}>
-          All
-        </FilterPill>
-        {categories?.map((entry) => (
-          <FilterPill
-            key={entry.slug}
-            active={category === entry.slug}
-            onClick={() => update({ category: entry.slug })}
-          >
-            <CategoryIcon category={entry.slug} className="size-3.5" />
-            {entry.label}
-            <span className="tabular-nums opacity-60">{entry.count}</span>
-          </FilterPill>
-        ))}
-      </div>
-
-      {on && (
-        <p className="mb-4 flex flex-wrap items-center gap-2 border-b border-edge pb-3 font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
-          <span className="text-muted">Showing</span>
-          <span className="border border-edge bg-pop px-2 py-0.5 text-on-pop">
-            {describeScope(on)}
-          </span>
-          <button
-            type="button"
-            onClick={() => update({ on: undefined })}
-            className="text-muted underline-offset-2 hover:text-body hover:underline"
-          >
-            Clear
-          </button>
-        </p>
-      )}
-
-      {activeFilters > 0 && (
-        <div className="mb-5 flex flex-wrap items-center gap-2">
-          <span className="font-mono text-[11px] font-bold uppercase text-muted">
-            {query.isLoading ? 'Filtering' : `${total} ${total === 1 ? 'result' : 'results'}`}
-          </span>
-          {search && (
-            <RemovableChip onRemove={() => update({ search: undefined })}>“{search}”</RemovableChip>
-          )}
-          {category && (
-            <RemovableChip onRemove={() => update({ category: undefined })}>
-              <CategoryLabel slug={category} />
-            </RemovableChip>
-          )}
-          {pricing && (
-            <RemovableChip onRemove={() => update({ pricing: undefined })}>
-              {PRICING_LABELS[pricing]}
-            </RemovableChip>
-          )}
-          {tag && <RemovableChip onRemove={() => update({ tag: undefined })}>#{tag}</RemovableChip>}
-          <button
-            type="button"
-            onClick={() => setParams(new URLSearchParams({ sort }), { preventScrollReset: true })}
-            className="font-mono text-[11px] font-bold uppercase text-muted underline-offset-2 hover:text-body hover:underline"
-          >
-            Clear all
-          </button>
-        </div>
-      )}
-
-      {query.isLoading ? (
-        <ItemCardSkeletonList count={6} />
-      ) : query.isError ? (
-        <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />
-      ) : query.data?.data.length ? (
-        <>
-          {/*
-           * A list of launches, with nothing drawn between them.
-           *
-           * No rules, no boxes — the separation is space alone, which is why the
-           * rows carry generous vertical padding. Anything drawn between two
-           * launches is a line the eye has to cross to get from one to the next,
-           * and thirty of them turn a list into a ledger.
-           */}
-          {/*
-           * Two columns from md, with nothing drawn between them.
-           *
-           * The separation is space alone — anything drawn between two launches
-           * is a line the eye has to cross to get from one to the next, and
-           * thirty of them turn a list into a ledger.
-           *
-           * Going two-up is what actually pays for the vertical space: a single
-           * column showed four launches on a 900px screen, and no amount of
-           * trimming chrome fixes that on its own. `measure` comes off with it —
-           * it existed to stop the vote button being flung to the far edge of a
-           * 900px column, and a half-width column does that job itself.
-           */}
-          <div className="grid gap-x-5 gap-y-1 md:grid-cols-2">
-            {query.data.data.map((item, index) => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                variant="plain"
-                /* Hidden here for now. Commenting is unaffected — it lives on
-                   the launch page, and the count is still in the metadata row. */
-                showComment={false}
-                className="animate-[var(--animate-slide-up)]"
-                style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
-              />
+          {/* Category pills */}
+          <div className="no-scrollbar -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+            <FilterPill active={!category} onClick={() => update({ category: undefined })}>
+              All
+            </FilterPill>
+            {categories?.map((entry) => (
+              <FilterPill
+                key={entry.slug}
+                active={category === entry.slug}
+                onClick={() => update({ category: entry.slug })}
+              >
+                <CategoryIcon category={entry.slug} className="size-3.5" />
+                {entry.label}
+                <span className="tabular-nums opacity-60">{entry.count}</span>
+              </FilterPill>
             ))}
           </div>
 
-          {pages > 1 && (
-            <nav
-              aria-label="Pagination"
-              className="mt-10 flex items-center justify-between gap-4 border-t border-edge pt-6"
-            >
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => update({ page: String(page - 1) }, false)}
-              >
-                ← Previous
-              </Button>
-              <span className="font-mono text-[11px] font-bold uppercase tabular-nums text-muted">
-                Page {page} of {pages}
+          {on && (
+            <p className="mb-4 flex flex-wrap items-center gap-2 border-b border-line pb-3 font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
+              <span className="text-muted">Showing</span>
+              <span className="border border-line bg-pop px-2 py-0.5 text-on-pop">
+                {describeScope(on)}
               </span>
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={page >= pages}
-                onClick={() => update({ page: String(page + 1) }, false)}
+              <button
+                type="button"
+                onClick={() => update({ on: undefined })}
+                className="text-muted underline-offset-2 hover:text-body hover:underline"
               >
-                Next →
-              </Button>
-            </nav>
+                Clear
+              </button>
+            </p>
           )}
-        </>
-      ) : (
-        <EmptyState
-          illustration={<NoResultsIllustration />}
-          title="No launches match those filters"
-          description="Try widening your search or clearing a filter."
-          action={
-            <Button variant="secondary" onClick={() => setParams(new URLSearchParams())}>
-              Clear filters
-            </Button>
-          }
-        />
-      )}
+
+          {activeFilters > 0 && (
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[11px] font-medium uppercase text-muted">
+                {query.isLoading ? 'Filtering' : `${total} ${total === 1 ? 'result' : 'results'}`}
+              </span>
+              {search && (
+                <RemovableChip onRemove={() => update({ search: undefined })}>
+                  “{search}”
+                </RemovableChip>
+              )}
+              {category && (
+                <RemovableChip onRemove={() => update({ category: undefined })}>
+                  <CategoryLabel slug={category} />
+                </RemovableChip>
+              )}
+              {pricing && (
+                <RemovableChip onRemove={() => update({ pricing: undefined })}>
+                  {PRICING_LABELS[pricing]}
+                </RemovableChip>
+              )}
+              {tag && (
+                <RemovableChip onRemove={() => update({ tag: undefined })}>#{tag}</RemovableChip>
+              )}
+              <button
+                type="button"
+                onClick={() =>
+                  setParams(new URLSearchParams({ sort }), { preventScrollReset: true })
+                }
+                className="font-mono text-[11px] font-medium uppercase text-muted underline-offset-2 hover:text-body hover:underline"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+
+          {query.isLoading ? (
+            <ItemCardSkeletonList count={6} />
+          ) : query.isError ? (
+            <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />
+          ) : query.data?.data.length ? (
+            <>
+              {/*
+               * A list of launches, with nothing drawn between them.
+               *
+               * No rules, no boxes — the separation is space alone, which is why the
+               * rows carry generous vertical padding. Anything drawn between two
+               * launches is a line the eye has to cross to get from one to the next,
+               * and thirty of them turn a list into a ledger.
+               */}
+              {/*
+               * Two columns from md, with nothing drawn between them.
+               *
+               * The separation is space alone — anything drawn between two launches
+               * is a line the eye has to cross to get from one to the next, and
+               * thirty of them turn a list into a ledger.
+               *
+               * Going two-up is what actually pays for the vertical space: a single
+               * column showed four launches on a 900px screen, and no amount of
+               * trimming chrome fixes that on its own. `measure` comes off with it —
+               * it existed to stop the vote button being flung to the far edge of a
+               * 900px column, and a half-width column does that job itself.
+               */}
+              <div className="grid gap-x-5 gap-y-1 md:grid-cols-2">
+                {query.data.data.map((item, index) => (
+                  <ItemCard
+                    key={item.id}
+                    item={item}
+                    variant="plain"
+                    /* Hidden here for now. Commenting is unaffected — it lives on
+                   the launch page, and the count is still in the metadata row. */
+                    showComment={false}
+                    className="animate-[var(--animate-slide-up)]"
+                    style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
+                  />
+                ))}
+              </div>
+
+              {pages > 1 && (
+                <nav
+                  aria-label="Pagination"
+                  className="mt-10 flex items-center justify-between gap-4 border-t border-line pt-6"
+                >
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={page <= 1}
+                    onClick={() => update({ page: String(page - 1) }, false)}
+                  >
+                    ← Previous
+                  </Button>
+                  <span className="font-mono text-[11px] font-medium uppercase tabular-nums text-muted">
+                    Page {page} of {pages}
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={page >= pages}
+                    onClick={() => update({ page: String(page + 1) }, false)}
+                  >
+                    Next →
+                  </Button>
+                </nav>
+              )}
+            </>
+          ) : (
+            <EmptyState
+              illustration={<NoResultsIllustration />}
+              title="No launches match those filters"
+              description="Try widening your search or clearing a filter."
+              action={
+                <Button variant="secondary" onClick={() => setParams(new URLSearchParams())}>
+                  Clear filters
+                </Button>
+              }
+            />
+          )}
         </div>
 
         {/* The rail. Sticky under the header so it stays reachable while the
@@ -341,9 +355,9 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
-        'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
-        active ? 'bg-pop text-on-pop shadow-hard-sm' : 'bg-surface text-body',
+        'rounded-full inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-line px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.04em]',
+        'transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-sm',
+        active ? 'bg-edge text-canvas' : 'bg-surface text-body',
       )}
     >
       {children}
@@ -359,7 +373,7 @@ function RemovableChip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 border border-edge bg-surface-2 py-0.5 pl-2 pr-1 font-mono text-[11px] font-bold uppercase">
+    <span className="rounded-2xl inline-flex items-center gap-1.5 border border-line bg-surface-2 py-0.5 pl-2 pr-1 font-mono text-[11px] font-medium uppercase">
       {children}
       <button
         type="button"

@@ -37,12 +37,7 @@ interface ItemLogoProps {
 export function ItemLogo({ item, size = 'md', shape = 'app', className }: ItemLogoProps) {
   const app = shape === 'app';
 
-  const shared = cn(
-    'shrink-0',
-    app ? 'squircle' : 'border border-edge',
-    SIZES[size],
-    className,
-  );
+  const shared = cn('shrink-0', app ? 'squircle' : 'border border-line', SIZES[size], className);
 
   if (item.logoUrl) {
     return <img src={item.logoUrl} alt="" loading="lazy" className={cn(shared, 'object-cover')} />;
@@ -55,7 +50,7 @@ export function ItemLogo({ item, size = 'md', shape = 'app', className }: ItemLo
       aria-hidden="true"
       className={cn(
         shared,
-        'flex items-center justify-center font-display uppercase tracking-tight',
+        'flex items-center justify-center font-display tracking-tight',
         colour.bg,
         colour.ink,
       )}

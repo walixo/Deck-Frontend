@@ -59,14 +59,14 @@ export function ArcadeCoda() {
   }, [playing]);
 
   return (
-    <section aria-labelledby="arcade-heading" className="border-t border-edge">
+    <section aria-labelledby="arcade-heading" className="border-t border-line">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+            <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
               While you wait for midnight UTC
             </p>
-            <h2 id="arcade-heading" className="display-tight mt-2 text-2xl uppercase sm:text-3xl">
+            <h2 id="arcade-heading" className="display-tight mt-2 text-2xl sm:text-3xl">
               Play Sky Run
             </h2>
           </div>
@@ -101,7 +101,7 @@ export function ArcadeCoda() {
             <button
               type="button"
               onClick={() => setPlaying(true)}
-              className="group relative grid w-full place-items-center overflow-hidden rounded-slab border border-edge bg-surface-2 py-14 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg sm:py-20"
+              className="group relative grid w-full place-items-center overflow-hidden rounded-slab border border-line bg-surface-2 py-14 shadow-hard transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-lg sm:py-20"
             >
               <span
                 aria-hidden="true"
@@ -110,9 +110,9 @@ export function ArcadeCoda() {
               <span className="relative flex flex-col items-center gap-5">
                 <GameLogo
                   mark="sky-run"
-                  className="h-16 w-auto text-body transition-transform duration-[160ms] group-hover:-translate-y-1"
+                  className="h-16 w-auto text-body transition-transform duration-300 group-hover:-translate-y-1"
                 />
-                <span className="inline-flex items-center gap-2 border border-edge bg-pop px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.1em] text-on-pop shadow-hard-sm">
+                <span className="inline-flex items-center gap-2 border border-line bg-pop px-4 py-2 font-mono text-xs font-medium uppercase tracking-[0.1em] text-on-pop shadow-hard-sm">
                   ▶ Press to play
                 </span>
                 {/* "Signed in" is load-bearing: the reporter drops scores from

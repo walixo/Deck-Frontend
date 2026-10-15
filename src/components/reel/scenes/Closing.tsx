@@ -67,9 +67,9 @@ export function Wall({ t }: { t: number }) {
                 <span
                   key={index}
                   className={cn(
-                    'shrink-0 font-display text-[72px] uppercase leading-none',
+                    'shrink-0 font-display text-[72px] leading-none',
                     lifted
-                      ? 'border-[3px] border-edge bg-pop px-5 py-2 text-on-pop shadow-hard-lg'
+                      ? 'border-[3px] border-line bg-pop px-5 py-2 text-on-pop shadow-hard-lg'
                       : 'text-muted/70',
                   )}
                   style={
@@ -126,7 +126,7 @@ export function Rollcall({ t }: { t: number }) {
           return (
             <div
               key={entry.word}
-              className="absolute inset-x-0 top-0 font-display text-[200px] uppercase leading-none text-body display-tight"
+              className="absolute inset-x-0 top-0 font-display text-[200px] leading-none text-body display-tight"
             >
               <Rise progress={snapIn(t, entry.from + (index === 0 ? 0.08 : 0), 0.26)} out={out}>
                 {entry.word}
@@ -194,7 +194,7 @@ export function EndCard({ t }: { t: number }) {
       <div className="absolute inset-x-0 top-[566px] text-center font-sans text-[44px] text-body">
         <Rise progress={snapIn(t, 28.35, 0.32)}>
           Where new tech gets its{' '}
-          <span className="border-[3px] border-edge bg-deep px-3 text-on-deep">first fans</span>
+          <span className="border-[3px] border-line bg-deep px-3 text-on-deep">first fans</span>
           <Stop />
         </Rise>
       </div>
@@ -202,7 +202,7 @@ export function EndCard({ t }: { t: number }) {
       {pill > 0 && (
         <div className="absolute inset-x-0 top-[690px] flex justify-center">
           <span
-            className="border-[3px] border-edge bg-pop px-7 py-3 font-mono text-[30px] font-bold tracking-[0.04em] text-on-pop shadow-hard"
+            className="border-[3px] border-line bg-pop px-7 py-3 font-mono text-[30px] font-medium tracking-[0.04em] text-on-pop shadow-hard"
             style={{ transform: `scale(${lerp(0.5, 1, pill)})` }}
           >
             onedeck.africa ↗

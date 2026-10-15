@@ -61,14 +61,14 @@ export function EditLaunch() {
 
       <header className="mb-8 max-w-2xl">
         <p
-          className={`mb-3 inline-block border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] ${
+          className={`rounded-full mb-3 inline-block border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.12em] ${
             window.open ? 'bg-warning text-ink' : 'bg-edge text-canvas'
           }`}
         >
           {window.open ? `${window.label} left to edit` : 'Editing as staff'}
         </p>
 
-        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
+        <h1 className="display-tight text-3xl text-balance sm:text-4xl">
           Edit <span className="normal-case">{item.name}</span>
         </h1>
 

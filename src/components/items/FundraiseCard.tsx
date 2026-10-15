@@ -69,20 +69,20 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
   return (
     <section
       aria-labelledby="fundraise-heading"
-      className="rounded-slab border border-edge bg-surface p-5 shadow-hard-lg sm:p-6"
+      className="rounded-slab border border-line bg-surface p-5 shadow-hard-lg sm:p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           {funded ? 'Funded' : 'Raising'}
         </p>
         {live.closed && (
-          <p className="border border-edge bg-edge px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-canvas">
+          <p className="rounded-full border border-line bg-edge px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-canvas">
             Closed
           </p>
         )}
       </div>
 
-      <h2 id="fundraise-heading" className="display-tight mt-4 text-2xl uppercase text-balance">
+      <h2 id="fundraise-heading" className="display-tight mt-4 text-2xl text-balance">
         Back <span className="normal-case">{item.name}</span>
       </h2>
 
@@ -95,15 +95,15 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
 
       {/* Who can give, and who cannot. */}
       {!live.open ? (
-        <p className="mt-6 border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+        <p className="rounded-2xl mt-6 border border-line bg-surface-2 px-4 py-3 text-sm text-muted">
           This raise is not taking contributions right now.
         </p>
       ) : isOwner ? (
-        <p className="mt-6 border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+        <p className="rounded-2xl mt-6 border border-line bg-surface-2 px-4 py-3 text-sm text-muted">
           This is your launch. Share it — you cannot back it yourself.
         </p>
       ) : !isAuthenticated ? (
-        <p className="mt-6 border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+        <p className="rounded-2xl mt-6 border border-line bg-surface-2 px-4 py-3 text-sm text-muted">
           <Link to="/login" className="font-bold underline underline-offset-2">
             Sign in
           </Link>{' '}
@@ -112,7 +112,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
       ) : (
         <form onSubmit={submit} className="mt-6 space-y-4">
           <fieldset>
-            <legend className="mb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+            <legend className="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               Amount
             </legend>
             <div className="flex flex-wrap gap-2">
@@ -122,9 +122,9 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
                   type="button"
                   onClick={() => setAmount(preset)}
                   aria-pressed={amount === preset}
-                  className={`border border-edge px-3 py-1.5 font-mono text-[12px] font-bold tabular-nums transition-colors duration-[120ms] ${
+                  className={`rounded-2xl border border-line px-3 py-1.5 font-mono text-[12px] font-medium tabular-nums transition-colors duration-300 ${
                     amount === preset
-                      ? 'bg-pop text-on-pop'
+                      ? 'bg-edge text-canvas'
                       : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
                   }`}
                 >
@@ -156,12 +156,12 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
             counter={`${message.length}/280`}
           />
 
-          <label className="flex items-center gap-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
+          <label className="flex items-center gap-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
             <input
               type="checkbox"
               checked={anonymous}
               onChange={(event) => setAnonymous(event.target.checked)}
-              className="size-4 border border-edge accent-pop"
+              className="size-4 border border-line accent-pop"
             />
             Give anonymously
           </label>
@@ -169,7 +169,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
           {error && (
             <p
               role="alert"
-              className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+              className="border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
             >
               {error}
             </p>
@@ -191,7 +191,7 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
       )}
 
       {supporters && (
-        <BackerList backers={supporters.data} className="mt-7 border-t border-edge pt-5" />
+        <BackerList backers={supporters.data} className="mt-7 border-t border-line pt-5" />
       )}
     </section>
   );

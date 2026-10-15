@@ -34,7 +34,7 @@ export function AccountOverview() {
         <div className="flex items-center gap-4">
           <Avatar user={user} size="lg" />
           <div className="min-w-0">
-            <h1 className="flex items-center gap-2 display-tight text-3xl uppercase">
+            <h1 className="flex items-center gap-2 display-tight text-3xl">
               {user.name}
               {user.verified && <VerifiedMark name={user.name} />}
             </h1>
@@ -48,7 +48,7 @@ export function AccountOverview() {
       </header>
 
       <section>
-        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Your numbers
         </h2>
         <dl className="grid gap-3 sm:grid-cols-4">
@@ -60,7 +60,7 @@ export function AccountOverview() {
       </section>
 
       <section>
-        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Pick up where you left off
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -98,9 +98,9 @@ export function AccountOverview() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-edge bg-surface px-4 py-3 shadow-hard-sm">
+    <div className="rounded-2xl border border-line bg-surface px-4 py-3 shadow-hard-sm">
       <dd className="font-display text-xl tabular-nums">{value}</dd>
-      <dt className="mt-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+      <dt className="mt-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
         {label}
       </dt>
     </div>
@@ -110,8 +110,8 @@ function Stat({ label, value }: { label: string; value: string }) {
 function Shortcut({ to, title, detail }: { to: string; title: string; detail: string }) {
   return (
     <Link to={to} className="block">
-      <Card className="p-4 transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg">
-        <p className="font-display text-base uppercase">{title}</p>
+      <Card className="p-4 transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-lg">
+        <p className="font-display text-base">{title}</p>
         <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
           {detail}
         </p>

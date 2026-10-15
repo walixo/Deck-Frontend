@@ -94,7 +94,7 @@ export function Hook({ t }: { t: number }) {
           <Rise
             key={current.line}
             progress={snapIn(t, current.from, 0.24)}
-            className="display-tight font-display text-[150px] uppercase text-body"
+            className="display-tight font-display text-[150px] text-body"
           >
             {current.line}
             <Stop />
@@ -102,7 +102,7 @@ export function Hook({ t }: { t: number }) {
         )}
 
         {resolved && (
-          <div className="display-tight font-display text-[132px] uppercase text-body">
+          <div className="display-tight font-display text-[132px] text-body">
             <Rise progress={snapIn(t, 3.1, 0.26)}>
               New tech
               <Stop />
@@ -110,7 +110,7 @@ export function Hook({ t }: { t: number }) {
             {/* The hero's device: the payoff phrase on a solid deep block, text
                 in the block's partner colour so it holds in both themes. */}
             <Rise progress={snapIn(t, 3.3, 0.26)} className="mt-2">
-              <span className="inline-block border-[3px] border-edge bg-deep px-6 text-on-deep shadow-hard-lg">
+              <span className="inline-block border-[3px] border-line bg-deep px-6 text-on-deep shadow-hard-lg">
                 First fans.
               </span>
             </Rise>

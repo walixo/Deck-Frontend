@@ -32,7 +32,7 @@ export function AdminGames() {
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="display-tight text-3xl uppercase">Games</h1>
+        <h1 className="display-tight text-3xl">Games</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted text-pretty">
           Games people have submitted to the arcade. Deck links out to them rather than framing
           them, so the risk is what you are recommending, not what you are running.
@@ -40,7 +40,7 @@ export function AdminGames() {
       </header>
 
       <section>
-        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           {isLoading ? 'Waiting on a decision' : `${pending.length} waiting on a decision`}
         </h2>
 
@@ -62,7 +62,7 @@ export function AdminGames() {
       </section>
 
       <section>
-        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Already decided
         </h2>
         {decided.length ? (
@@ -92,7 +92,7 @@ function ReviewCard({ game }: { game: GameSummary }) {
       <Card className="p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 max-w-2xl">
-            <h3 className="text-lg uppercase">{game.title}</h3>
+            <h3 className="text-lg">{game.title}</h3>
             <p className="mt-1 text-sm text-muted text-pretty">{game.tagline}</p>
             <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
               {GAME_GENRE_LABELS[game.genre]} · {GAME_ORIENTATION_LABELS[game.orientation]}
@@ -100,7 +100,7 @@ function ReviewCard({ game }: { game: GameSummary }) {
             </p>
             <Link
               to={`/games/${game.slug}?mode=test`}
-              className="mt-3 mr-3 inline-block font-mono text-[11px] font-bold uppercase tracking-[0.06em] underline underline-offset-4 hover:text-accent"
+              className="mt-3 mr-3 inline-block font-mono text-[11px] font-medium uppercase tracking-[0.06em] underline underline-offset-4 hover:text-accent"
             >
               Try it in the player →
             </Link>
@@ -110,7 +110,7 @@ function ReviewCard({ game }: { game: GameSummary }) {
                 href={game.playUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-block break-all border border-edge bg-surface-2 px-2 py-1 font-mono text-[11px] tracking-[0.04em] underline-offset-4 hover:text-accent hover:underline"
+                className="rounded-full mt-3 inline-block break-all border border-line bg-surface-2 px-2 py-1 font-mono text-[11px] tracking-[0.04em] underline-offset-4 hover:text-accent hover:underline"
               >
                 {game.playUrl} ↗
               </a>
@@ -132,11 +132,11 @@ function ReviewCard({ game }: { game: GameSummary }) {
           <img
             src={game.coverUrl}
             alt=""
-            className="mt-4 max-h-48 w-auto rounded-slab border border-edge"
+            className="mt-4 max-h-48 w-auto rounded-slab border border-line"
           />
         )}
 
-        <div className="mt-4 space-y-3 border-t border-edge pt-4">
+        <div className="mt-4 space-y-3 border-t border-line pt-4">
           <Textarea
             label="Note (required to reject)"
             rows={2}
@@ -199,12 +199,12 @@ function Toggle({
   label: string;
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+    <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
       <input
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="size-4 shrink-0 border border-edge accent-accent"
+        className="size-4 shrink-0 border border-line accent-accent"
       />
       {label}
     </label>
@@ -213,9 +213,9 @@ function Toggle({
 
 function DecidedRow({ game }: { game: GameSummary }) {
   return (
-    <li className="flex flex-wrap items-center justify-between gap-3 border border-edge bg-surface px-4 py-3">
+    <li className="rounded-2xl flex flex-wrap items-center justify-between gap-3 border border-line bg-surface px-4 py-3">
       <div className="min-w-0">
-        <p className="truncate text-sm font-bold uppercase">{game.title}</p>
+        <p className="truncate text-sm font-bold">{game.title}</p>
         <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
           {GAME_GENRE_LABELS[game.genre]} · {formatNumber(game.plays)} plays
           {game.embeddable && ' · framed'}
@@ -224,7 +224,7 @@ function DecidedRow({ game }: { game: GameSummary }) {
       </div>
       <span
         className={cn(
-          'border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase',
+          'rounded-full border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase',
           game.status === 'approved' ? 'bg-success text-ink' : 'bg-edge text-canvas',
         )}
       >

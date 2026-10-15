@@ -14,7 +14,7 @@ export function Orders() {
       <PageBanner />
 
       <header className="mb-8">
-        <h1 className="display-tight text-3xl uppercase sm:text-4xl">Your orders</h1>
+        <h1 className="display-tight text-3xl sm:text-4xl">Your orders</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">
           Everything you have bought from the Deck shop.
         </p>
@@ -30,12 +30,12 @@ export function Orders() {
             <li key={order.id}>
               <Link
                 to={`/orders/${order.reference}`}
-                className="block rounded-slab border border-edge bg-surface p-4 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg"
+                className="block rounded-slab border border-line bg-surface p-4 shadow-hard transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-lg"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span className="font-display text-lg uppercase">{order.reference}</span>
+                  <span className="font-display text-lg">{order.reference}</span>
                   <span
-                    className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                    className={`rounded-full border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase ${
                       ORDER_STATUS_TONE[order.status] ?? 'bg-surface-2 text-body'
                     }`}
                   >
@@ -43,7 +43,7 @@ export function Orders() {
                   </span>
                 </div>
 
-                <p className="mt-2 font-mono text-[11px] font-bold uppercase text-muted">
+                <p className="mt-2 font-mono text-[11px] font-medium uppercase text-muted">
                   {formatFullDate(order.createdAt)} ·{' '}
                   {order.lines.reduce((total, line) => total + line.quantity, 0)} items
                 </p>

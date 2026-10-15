@@ -22,10 +22,10 @@ export function Leaderboard({ slug, className }: { slug: string; className?: str
 
   return (
     <section aria-labelledby={`board-${slug}`} className={className}>
-      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 border-b border-edge pb-2">
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-2">
         <h3
           id={`board-${slug}`}
-          className="font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           High scores
         </h3>
@@ -56,7 +56,7 @@ export function Leaderboard({ slug, className }: { slug: string; className?: str
               >
                 <span
                   className={cn(
-                    'w-6 shrink-0 text-right font-mono text-[12px] font-bold tabular-nums',
+                    'w-6 shrink-0 text-right font-mono text-[12px] font-medium tabular-nums',
                     row.rank <= 3 ? 'text-accent' : 'text-muted',
                   )}
                 >
@@ -96,13 +96,13 @@ export function Leaderboard({ slug, className }: { slug: string; className?: str
 
       {/* Where you stand, even when that is nowhere near the top ten. */}
       {data?.you && !data.scores.some((row) => row.player && user && row.player.id === user.id) && (
-        <p className="mt-3 border-t border-edge pt-2 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
+        <p className="mt-3 border-t border-line pt-2 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
           You are {ordinal(data.you.rank)} with {formatNumber(data.you.score)}
         </p>
       )}
 
       {!user && (
-        <p className="mt-3 border-t border-edge pt-2 text-xs leading-relaxed text-muted text-pretty">
+        <p className="mt-3 border-t border-line pt-2 text-xs leading-relaxed text-muted text-pretty">
           <Link to="/login" className="font-bold text-body underline underline-offset-2">
             Sign in
           </Link>{' '}

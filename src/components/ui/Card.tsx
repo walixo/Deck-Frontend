@@ -12,9 +12,9 @@ export function Card({ children, className, interactive = false }: CardProps) {
   return (
     <div
       className={cn(
-        'rounded-slab border border-edge bg-surface shadow-hard',
+        'rounded-3xl border border-line bg-surface',
         interactive &&
-          'transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
+          'transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:border-edge/20 hover:shadow-hard-lg',
         className,
       )}
     >
@@ -38,11 +38,11 @@ export function SectionHeading({
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="max-w-2xl">
         {eyebrow && (
-          <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
             {eyebrow}
           </p>
         )}
-        <h2 className="display-tight text-2xl uppercase text-balance sm:text-3xl">{title}</h2>
+        <h2 className="display-tight text-[clamp(1.75rem,3.4vw,2.5rem)] text-balance">{title}</h2>
         {description && (
           <p className="mt-2.5 text-sm leading-relaxed text-muted text-pretty">{description}</p>
         )}

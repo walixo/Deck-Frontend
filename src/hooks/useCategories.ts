@@ -31,6 +31,10 @@ export function useActiveCategories() {
   return { ...rest, data: data?.filter((category) => category.active) ?? [] };
 }
 
+/* Initialisms that a slug flattens to lowercase. Labels used to be shown in
+   capitals, which hid "Ai model"; in mixed case it shows. */
+const INITIALISMS = new Set(['ai', 'api', 'ui', 'ux', 'ml', 'ar', 'vr', 'cli', 'sdk', 'saas']);
+
 /**
  * Turns a slug into something readable when the list has not arrived, or when
  * the category behind it no longer exists.
@@ -41,8 +45,12 @@ export function useActiveCategories() {
  * authored label, but never blank.
  */
 function humanise(slug: string): string {
-  const words = slug.replace(/-/g, ' ').trim();
-  return words.charAt(0).toUpperCase() + words.slice(1);
+  const words = slug
+    .split('-')
+    .filter(Boolean)
+    .map((word) => (INITIALISMS.has(word) ? word.toUpperCase() : word));
+  const label = words.join(' ');
+  return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 /** The display label for a category slug. Never empty. */

@@ -125,7 +125,7 @@ export function HowItWorks() {
   const live = currentPhase(now);
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-edge py-14 sm:py-20">
+    <section className="relative isolate overflow-hidden border-b border-line py-14 sm:py-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <Heading />
 
@@ -146,8 +146,8 @@ export function HowItWorks() {
                     'relative rounded-slab border bg-surface p-5 shadow-hard sm:p-6',
                     /* The live beat gets the accent edge — the only panel that
                        changes, so the eye finds "now" without reading. */
-                    step.phase === live ? 'border-accent' : 'border-edge',
-                    'transition-[transform,box-shadow] duration-[140ms] ease-[var(--ease-snap)]',
+                    step.phase === live ? 'border-accent' : 'border-line',
+                    'transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)]',
                     '[transform:rotate(var(--tilt))] hover:[transform:rotate(0deg)]',
                     'hover:shadow-hard-lg',
                   )}
@@ -157,7 +157,7 @@ export function HowItWorks() {
                     {/* The figure, in the block it belongs to. Fixed size in
                         both directions so the three panels agree on where
                         their text column starts. */}
-                    <div className="grid size-24 shrink-0 place-items-center rounded-slab border border-edge bg-pop sm:size-28">
+                    <div className="grid size-24 shrink-0 place-items-center rounded-slab border border-line bg-pop sm:size-28">
                       <step.mark />
                     </div>
 
@@ -165,20 +165,18 @@ export function HowItWorks() {
                       <div className="flex items-baseline gap-3">
                         <span
                           aria-hidden="true"
-                          className="font-mono text-[11px] font-bold tabular-nums text-muted"
+                          className="font-mono text-[11px] font-medium tabular-nums text-muted"
                         >
                           {String(index + 1).padStart(2, '0')}
                         </span>
-                        <h3 className="display-tight text-xl uppercase sm:text-2xl">
-                          {step.title}
-                        </h3>
+                        <h3 className="display-tight text-xl sm:text-2xl">{step.title}</h3>
                       </div>
                       <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted text-pretty">
                         {step.body}
                       </p>
 
                       {step.phase === live && (
-                        <p className="mt-3 inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-accent">
+                        <p className="mt-3 inline-flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-accent">
                           {/* A shape as well as a colour, so "now" survives
                               greyscale — per the house rule. */}
                           <span aria-hidden="true" className="size-2 animate-pulse bg-accent" />
@@ -216,11 +214,11 @@ export function HowItWorks() {
  */
 function Heading() {
   return (
-    <h2 className="display-tight max-w-2xl text-3xl uppercase text-balance sm:text-4xl">
+    <h2 className="display-tight max-w-2xl text-3xl text-balance sm:text-4xl">
       How your launch day{' '}
       <span className="relative inline-block align-middle">
         <Lozenge className="absolute -inset-x-3 -inset-y-1 -z-10 h-[calc(100%+0.5rem)] w-[calc(100%+1.5rem)] text-pop" />
-        <span className="px-1 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-on-pop">
+        <span className="px-1 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-on-pop">
           actually
         </span>
       </span>{' '}

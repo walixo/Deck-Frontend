@@ -50,7 +50,7 @@ export function MediaSlider({ slides, label, className }: MediaSliderProps) {
         if (event.key === 'ArrowRight') step(1);
       }}
     >
-      <div className="relative aspect-video w-full overflow-hidden border border-edge bg-surface-2">
+      <div className="relative aspect-video w-full overflow-hidden border border-line bg-surface-2">
         {slides.map((slide, i) => (
           <div
             key={slide.src}
@@ -113,7 +113,7 @@ export function MediaSlider({ slides, label, className }: MediaSliderProps) {
               /* A bar, not a dot. Dots at 8px are both hard to hit and hard to
                  count; a 24px bar is a real target and reads as a position. */
               className={cn(
-                'h-2 w-6 border border-edge transition-colors duration-[120ms]',
+                'h-2 w-6 border border-line transition-colors duration-300',
                 i === at ? 'bg-accent' : 'bg-surface hover:bg-surface-2',
               )}
             />
@@ -121,7 +121,7 @@ export function MediaSlider({ slides, label, className }: MediaSliderProps) {
 
           <span
             aria-live="polite"
-            className="ml-auto font-mono text-[10px] font-bold uppercase tabular-nums tracking-[0.08em] text-muted"
+            className="ml-auto font-mono text-[10px] font-medium uppercase tabular-nums tracking-[0.08em] text-muted"
           >
             {at + 1} / {slides.length}
           </span>
@@ -139,8 +139,8 @@ function Arrow({ direction, onClick }: { direction: 'left' | 'right'; onClick: (
       aria-label={direction === 'left' ? 'Previous' : 'Next'}
       className={cn(
         'absolute top-1/2 flex size-9 -translate-y-1/2 items-center justify-center',
-        'border border-edge bg-surface text-body shadow-hard-sm',
-        'transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:scale-105',
+        'border border-line bg-surface text-body shadow-hard-sm',
+        'transition-transform duration-300 ease-[var(--ease-snap)] hover:scale-105',
         direction === 'left' ? 'left-2' : 'right-2',
       )}
     >
@@ -191,7 +191,7 @@ function VideoSlide({ src }: { src: string }) {
           <button
             type="button"
             onClick={() => setPlaying(true)}
-            className="border border-bone bg-bone px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-ink transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+            className="border border-bone bg-bone px-4 py-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-ink transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5"
           >
             Play video
           </button>
@@ -205,7 +205,7 @@ function VideoSlide({ src }: { src: string }) {
             href={src}
             target="_blank"
             rel="noopener noreferrer"
-            className="border border-bone bg-bone px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-ink transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+            className="border border-bone bg-bone px-4 py-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-ink transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5"
           >
             Watch on {videoHost(src)} ↗
           </a>

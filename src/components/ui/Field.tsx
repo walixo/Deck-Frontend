@@ -13,12 +13,12 @@ import { cn } from '@/lib/utils';
  * the edge turns the accent colour and the inset shadow snaps off.
  */
 const CONTROL =
-  'w-full rounded-slab border border-edge bg-surface px-3.5 py-2.5 text-sm text-body ' +
-  'shadow-[inset_3px_3px_0_var(--surface-2)] transition-[box-shadow,border-color] duration-[120ms] ' +
-  'placeholder:text-muted/70 focus:border-accent focus:shadow-none focus:outline-none';
+  'w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-[14px] text-body ' +
+  'transition-[box-shadow,border-color] duration-300 ease-[var(--ease-snap)] ' +
+  'placeholder:text-muted/70 focus:border-edge focus:outline-none focus:ring-4 focus:ring-accent/15';
 
-// Invalid fields keep the ink edge; the inverted message below carries the signal.
-const INVALID = 'shadow-[inset_3px_3px_0_var(--edge)] focus:shadow-none';
+// Invalid fields take the danger edge; the message below says what to fix.
+const INVALID = 'border-danger/60 focus:border-danger focus:ring-danger/15';
 
 interface FieldShellProps {
   label: string;
@@ -33,10 +33,7 @@ function FieldShell({ label, htmlFor, hint, error, counter, children }: FieldShe
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
-        <label
-          htmlFor={htmlFor}
-          className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-body"
-        >
+        <label htmlFor={htmlFor} className="text-[13px] font-medium tracking-[-0.01em] text-body">
           {label}
         </label>
         {counter}
@@ -45,15 +42,14 @@ function FieldShell({ label, htmlFor, hint, error, counter, children }: FieldShe
       {error ? (
         <p
           role="alert"
-          /* Warning, not danger: a field that needs another look is not a
-             failure, and colouring it like one teaches people to panic at
-             typos. The invalid field itself still uses inversion. */
-          className="mt-1.5 inline-block border border-edge bg-warning px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-ink"
+          /* Plain red type, no block: the field's own red edge already says
+             where; this says what. Lighter on dark to keep 4.5:1. */
+          className="mt-1.5 text-[12px] text-danger dark:text-danger-soft"
         >
           {error}
         </p>
       ) : (
-        hint && <p className="mt-1.5 text-xs text-muted">{hint}</p>
+        hint && <p className="mt-1.5 text-[12px] leading-relaxed text-muted">{hint}</p>
       )}
     </div>
   );
@@ -140,9 +136,9 @@ export function CharCount({ value, max }: { value: string; max: number }) {
   return (
     <span
       className={cn(
-        'font-mono text-[11px] font-bold tabular-nums',
+        'font-mono text-[11px] font-medium tabular-nums',
         remaining < 0
-          ? 'bg-edge px-1 text-canvas'
+          ? 'text-danger dark:text-danger-soft'
           : remaining < max * 0.15
             ? 'text-accent'
             : 'text-muted',

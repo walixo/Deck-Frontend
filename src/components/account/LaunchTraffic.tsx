@@ -25,7 +25,7 @@ export function LaunchTraffic({ views, days }: LaunchTrafficProps) {
   const window = `${days.length} days`;
 
   return (
-    <div className="mt-1 flex items-center gap-4 rounded-slab border border-edge bg-surface-2/40 px-3.5 py-2">
+    <div className="mt-1 flex items-center gap-4 rounded-slab border border-line bg-surface-2/40 px-3.5 py-2">
       {/* The colour the line inherits. Muted when there is nothing to show, so
           a flat baseline does not read as a real reading at zero. */}
       <div className={quiet ? 'min-w-0 flex-1 text-muted/40' : 'min-w-0 flex-1 text-accent'}>

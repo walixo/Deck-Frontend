@@ -16,7 +16,7 @@ import type { MerchStatus } from '@/types';
 /** How each review state reads. Rejection inverts, like every other refusal. */
 const STATUS_TONE: Record<MerchStatus, string> = {
   draft: 'bg-surface-2 text-muted',
-  pending: 'bg-grey text-ink',
+  pending: 'bg-surface-2 text-body',
   approved: 'bg-deep text-on-deep',
   rejected: 'bg-edge text-canvas',
 };
@@ -69,10 +69,10 @@ export function SellerDashboard() {
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
             Selling
           </p>
-          <h1 className="display-tight text-3xl uppercase text-balance">Your shop</h1>
+          <h1 className="display-tight text-3xl text-balance">Your shop</h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
             Buyers pay Deck, and Deck transfers your share to your payout account once each sale
             clears the hold. Shipping on your orders is yours too.
@@ -93,7 +93,7 @@ export function SellerDashboard() {
             <section aria-labelledby="ledger-heading" className="mb-12">
               <h2
                 id="ledger-heading"
-                className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+                className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
               >
                 Your money
               </h2>
@@ -158,7 +158,7 @@ export function SellerDashboard() {
             <section aria-labelledby="payouts-heading" className="mb-12">
               <h2
                 id="payouts-heading"
-                className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+                className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
               >
                 Disbursements
               </h2>
@@ -166,13 +166,13 @@ export function SellerDashboard() {
                 {payouts.data.map((payout) => (
                   <li
                     key={payout.id}
-                    className="flex flex-wrap items-center justify-between gap-3 border border-edge bg-surface px-4 py-3"
+                    className="rounded-2xl flex flex-wrap items-center justify-between gap-3 border border-line bg-surface px-4 py-3"
                   >
-                    <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+                    <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
                       {dateOf(payout.paidAt)} &middot; {payout.reference}
                       {payout.status !== 'paid' && (
                         <span
-                          className={`ml-2 border border-edge px-1.5 py-0.5 ${
+                          className={`rounded-2xl ml-2 border border-line px-1.5 py-0.5 ${
                             payout.status === 'failed' ? 'bg-edge text-canvas' : 'bg-surface-2'
                           }`}
                         >
@@ -196,7 +196,7 @@ export function SellerDashboard() {
           <section aria-labelledby="listings-heading">
             <h2
               id="listings-heading"
-              className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+              className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
             >
               Your listings
             </h2>
@@ -222,12 +222,12 @@ export function SellerDashboard() {
                         <img
                           src={product.images[0]}
                           alt=""
-                          className="size-16 shrink-0 border border-edge object-cover"
+                          className="size-16 shrink-0 border border-line object-cover"
                         />
                       ) : (
                         <span
                           aria-hidden="true"
-                          className="flex size-16 shrink-0 items-center justify-center border border-edge bg-surface-2 font-display"
+                          className="flex size-16 shrink-0 items-center justify-center border border-line bg-surface-2 font-display"
                         >
                           {product.name.slice(0, 2).toUpperCase()}
                         </span>
@@ -235,19 +235,19 @@ export function SellerDashboard() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="font-display text-base uppercase">{product.name}</p>
+                          <p className="font-display text-base">{product.name}</p>
                           <span
-                            className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${STATUS_TONE[product.status]}`}
+                            className={`rounded-full border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] ${STATUS_TONE[product.status]}`}
                           >
                             {STATUS_LABEL[product.status]}
                           </span>
                           {!product.active && (
-                            <span className="border border-edge bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-muted">
+                            <span className="rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-[10px] font-medium uppercase text-muted">
                               Retired
                             </span>
                           )}
                         </div>
-                        <p className="mt-1 font-mono text-[11px] font-bold tabular-nums text-muted">
+                        <p className="mt-1 font-mono text-[11px] font-medium tabular-nums text-muted">
                           {formatMoney(product.priceMinor, product.currency)} &middot;{' '}
                           {product.totalStock} in stock
                         </p>
@@ -266,7 +266,7 @@ export function SellerDashboard() {
                           <button
                             type="button"
                             onClick={() => retire.mutate(product.id)}
-                            className="border border-edge px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted transition-colors duration-[120ms] hover:bg-edge hover:text-canvas"
+                            className="border border-line px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted transition-colors duration-300 hover:bg-edge hover:text-canvas"
                           >
                             Retire
                           </button>
@@ -296,8 +296,8 @@ function Figure({
   tone: string;
 }) {
   return (
-    <div className={`border border-edge px-4 py-5 shadow-hard ${tone}`}>
-      <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
+    <div className={`border border-line px-4 py-5 shadow-hard ${tone}`}>
+      <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] opacity-80">
         {label}
       </dt>
       <dd className="mt-1.5 font-display text-2xl tabular-nums">{value}</dd>

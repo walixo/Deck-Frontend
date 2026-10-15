@@ -53,7 +53,7 @@ export function TopicDetail() {
         <div className="mt-6 text-center">
           <Link
             to="/forum"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← Back to the forum
           </Link>
@@ -71,7 +71,7 @@ export function TopicDetail() {
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
       <nav
         aria-label="Breadcrumb"
-        className="mb-6 flex items-center gap-2 font-mono text-[11px] font-bold uppercase text-muted"
+        className="mb-6 flex items-center gap-2 font-mono text-[11px] font-medium uppercase text-muted"
       >
         <Link to="/forum" className="hover:text-body">
           Forum
@@ -85,20 +85,18 @@ export function TopicDetail() {
       <header>
         <div className="flex flex-wrap items-center gap-2">
           {topic.pinned && (
-            <span className="inline-flex items-center gap-1 border border-edge bg-pop px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-on-pop">
+            <span className="rounded-full inline-flex items-center gap-1 border border-line bg-pop px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.08em] text-on-pop">
               <Star name="glint" className="size-2" /> Pinned
             </span>
           )}
           {topic.locked && (
-            <span className="border border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-canvas">
+            <span className="rounded-full border border-line bg-edge px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.08em] text-canvas">
               Locked
             </span>
           )}
         </div>
 
-        <h1 className="display-tight mt-3 text-3xl uppercase text-balance sm:text-4xl">
-          {topic.title}
-        </h1>
+        <h1 className="display-tight mt-3 text-3xl text-balance sm:text-4xl">{topic.title}</h1>
       </header>
 
       {/* The opening post, set apart from the replies by weight rather than by
@@ -108,7 +106,7 @@ export function TopicDetail() {
         <Prose body={topic.body} className="mt-4" />
 
         {(isAuthor || isStaff) && (
-          <div className="mt-5 flex flex-wrap gap-2 border-t border-edge pt-4">
+          <div className="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
             <Button
               variant="danger"
               size="sm"
@@ -162,7 +160,7 @@ export function TopicDetail() {
       <section aria-labelledby="replies-heading" className="mt-10">
         <h2
           id="replies-heading"
-          className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           {topic.replies.length} {topic.replies.length === 1 ? 'reply' : 'replies'}
         </h2>
@@ -179,13 +177,13 @@ export function TopicDetail() {
 
         <div className="mt-8">
           {topic.locked ? (
-            <p className="border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+            <p className="rounded-2xl border border-line bg-surface-2 px-4 py-3 text-sm text-muted">
               This topic is locked. Nobody can add to it.
             </p>
           ) : isAuthenticated ? (
             <ReplyForm slug={topic.slug} />
           ) : (
-            <p className="border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+            <p className="rounded-2xl border border-line bg-surface-2 px-4 py-3 text-sm text-muted">
               <Link to="/login" className="font-bold underline underline-offset-2">
                 Sign in
               </Link>{' '}
@@ -195,7 +193,7 @@ export function TopicDetail() {
         </div>
       </section>
 
-      <div className="mt-12 border-t border-edge pt-6">
+      <div className="mt-12 border-t border-line pt-6">
         <ButtonLink to="/forum" variant="secondary" size="sm">
           ← All topics
         </ButtonLink>
@@ -253,7 +251,7 @@ function ReplyRow({ reply, slug }: { reply: Reply; slug: string }) {
   const mine = user?.id === reply.author?.id;
 
   return (
-    <article className="rounded-slab border border-edge bg-surface p-4">
+    <article className="rounded-slab border border-line bg-surface p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <Byline user={reply.author} at={reply.createdAt} />
 
@@ -263,7 +261,7 @@ function ReplyRow({ reply, slug }: { reply: Reply; slug: string }) {
             onClick={() => {
               if (window.confirm('Delete this reply?')) remove.mutate(reply.id);
             }}
-            className="shrink-0 font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-muted underline-offset-2 hover:text-body hover:underline"
+            className="shrink-0 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-muted underline-offset-2 hover:text-body hover:underline"
           >
             Delete
           </button>

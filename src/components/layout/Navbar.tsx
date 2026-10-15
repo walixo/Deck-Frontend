@@ -117,7 +117,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-edge bg-canvas">
+    <header className="sticky top-0 z-50 border-b border-line bg-canvas/75 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Logo />
 
@@ -171,13 +171,13 @@ export function Navbar() {
           <Link
             to="/cart"
             aria-label={cartCount > 0 ? `Cart, ${cartCount} items` : 'Cart, empty'}
-            className="relative flex size-9 items-center justify-center rounded-slab border border-edge bg-surface shadow-hard-sm transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard"
+            className="relative flex size-9 items-center justify-center rounded-full border border-line bg-surface transition-[border-color,background-color] duration-300 ease-[var(--ease-snap)] hover:border-edge"
           >
             <span aria-hidden="true" className="text-sm">
               ▣
             </span>
             {cartCount > 0 && (
-              <span className="absolute -right-2 -top-2 flex min-w-5 items-center justify-center border border-edge bg-red px-1 font-mono text-[10px] font-bold tabular-nums text-white">
+              <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red px-1 font-mono text-[10px] font-medium tabular-nums text-white">
                 {cartCount}
               </span>
             )}
@@ -210,7 +210,7 @@ export function Navbar() {
                   onClick={() => setAccountOpen(!accountOpen)}
                   aria-expanded={accountOpen}
                   aria-haspopup="menu"
-                  className="flex transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+                  className="flex transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5"
                 >
                   <Avatar user={user} size="sm" />
                   <span className="sr-only">Your account</span>
@@ -219,10 +219,10 @@ export function Navbar() {
                 {accountOpen && (
                   <div
                     role="menu"
-                    className="absolute right-0 top-12 w-56 animate-[var(--animate-slam)] border border-edge bg-surface p-1.5 shadow-hard-lg"
+                    className="absolute right-0 top-12 w-60 animate-[var(--animate-slam)] rounded-2xl border border-line bg-surface p-1.5 shadow-hard-lg"
                   >
-                    <div className="border-b border-edge px-3 py-2.5">
-                      <p className="truncate font-display text-sm uppercase">{user.name}</p>
+                    <div className="mb-1 border-b border-line px-3 py-2.5">
+                      <p className="truncate text-sm font-medium">{user.name}</p>
                       <p className="truncate font-mono text-[11px] text-muted">@{user.username}</p>
                     </div>
                     {/* Public page first: it is what most people are looking for when they
@@ -241,7 +241,7 @@ export function Navbar() {
                         logout();
                         navigate('/');
                       }}
-                      className="mt-0.5 block w-full px-3 py-2 text-left font-mono text-[12px] font-bold uppercase text-muted transition-colors hover:bg-edge hover:text-canvas"
+                      className="mt-0.5 block w-full rounded-xl px-3 py-2 text-left text-[13px] text-muted transition-colors hover:bg-surface-2 hover:text-body"
                     >
                       Sign out
                     </button>
@@ -274,15 +274,15 @@ export function Navbar() {
       </div>
 
       {menuOpen && (
-        <div className="animate-[var(--animate-slam)] border-t border-edge bg-surface px-4 pb-4 pt-3 lg:hidden">
+        <div className="animate-[var(--animate-slam)] border-t border-line bg-canvas px-4 pb-5 pt-3 lg:hidden">
           <form onSubmit={onSearch} role="search" className="mb-3">
             <input
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="SEARCH LAUNCHES"
+              placeholder="Search launches"
               aria-label="Search launches"
-              className="h-11 w-full border border-edge bg-canvas px-3.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+              className="h-11 w-full rounded-full border border-line bg-surface px-4 text-[14px] placeholder:text-muted/70 focus:border-edge focus:outline-none focus:ring-4 focus:ring-accent/15"
             />
           </form>
 
@@ -290,7 +290,7 @@ export function Navbar() {
               disclosure. There is no shortage of vertical room in a sheet, and
               a menu that hides two links behind a tap is worse than a menu that
               is two rows longer. */}
-          <nav aria-label="Mobile" className="flex flex-col gap-1.5">
+          <nav aria-label="Mobile" className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <div key={link.to} className="contents">
                 <NavLink
@@ -298,8 +298,8 @@ export function Navbar() {
                   end={link.to === '/'}
                   className={({ isActive }) =>
                     cn(
-                      'flex items-center gap-1.5 border border-edge px-3 py-2.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em]',
-                      isActive ? 'bg-deep text-on-deep' : 'bg-canvas text-body',
+                      'flex items-center gap-1.5 border-b border-line py-3.5 text-2xl font-medium tracking-[-0.03em]',
+                      isActive ? 'text-accent' : 'text-body',
                     )
                   }
                 >
@@ -315,8 +315,8 @@ export function Navbar() {
                       to={child.to}
                       className={({ isActive }) =>
                         cn(
-                          'ml-5 border border-edge px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em]',
-                          isActive ? 'bg-deep text-on-deep' : 'bg-surface-2 text-muted',
+                          'ml-4 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.14em]',
+                          isActive ? 'text-accent' : 'text-muted',
                         )
                       }
                     >
@@ -327,7 +327,7 @@ export function Navbar() {
             ))}
           </nav>
 
-          <div className="mt-3 flex flex-col gap-2 border-t border-edge pt-3">
+          <div className="mt-5 flex flex-col gap-2">
             {isAuthenticated ? (
               <ButtonLink to="/submit" variant="accent" size="md" className="w-full">
                 Launch something
@@ -352,10 +352,8 @@ export function Navbar() {
 /** Shared between the plain links and the dropdown trigger, so they match. */
 const navClass = ({ isActive }: { isActive: boolean }) =>
   cn(
-    'flex items-center gap-1.5 whitespace-nowrap border px-2 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] xl:px-3',
-    isActive
-      ? 'border-edge bg-deep text-on-deep'
-      : 'border-transparent text-muted hover:border-edge hover:bg-surface-2 hover:text-body',
+    'flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300 xl:px-3',
+    isActive ? 'bg-surface-2 text-body' : 'text-muted hover:text-body',
   );
 
 /**
@@ -401,7 +399,7 @@ function NavDropdown({ item }: { item: NavItem }) {
           aria-expanded={open}
           aria-haspopup="true"
           aria-label={`${item.label} sections`}
-          className="ml-0.5 flex items-center border border-transparent px-1 text-muted transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2 hover:text-body"
+          className="ml-0.5 flex items-center rounded-full px-1.5 text-muted transition-colors duration-300 hover:bg-surface-2 hover:text-body"
         >
           <span aria-hidden="true" className="text-[9px] leading-none">
             ▼
@@ -413,18 +411,16 @@ function NavDropdown({ item }: { item: NavItem }) {
         <div
           /* `top-full` with no gap: a panel that starts a few pixels below its
              trigger loses the pointer on the way down and closes itself. */
-          className="absolute left-0 top-full z-50 w-64 animate-[var(--animate-slam)] border border-edge bg-surface p-1.5 shadow-hard-lg"
+          className="absolute left-0 top-full z-50 mt-1 w-72 animate-[var(--animate-slam)] rounded-2xl border border-line bg-surface p-1.5 shadow-hard-lg"
         >
           {item.children?.map((child) => (
             <Link
               key={child.to}
               to={child.to}
               onClick={() => setOpen(false)}
-              className="block border border-transparent px-2.5 py-2 transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2"
+              className="block rounded-xl px-3 py-2.5 transition-colors duration-300 hover:bg-surface-2"
             >
-              <span className="font-mono text-[12px] font-bold uppercase tracking-[0.06em]">
-                {child.label}
-              </span>
+              <span className="text-[14px] font-medium tracking-[-0.01em]">{child.label}</span>
               <span className="mt-0.5 block text-xs leading-snug text-muted text-pretty">
                 {child.blurb}
               </span>
@@ -441,7 +437,7 @@ function MenuLink({ to, children }: { to: string; children: React.ReactNode }) {
     <Link
       to={to}
       role="menuitem"
-      className="mt-0.5 block px-3 py-2 font-mono text-[12px] font-bold uppercase text-muted transition-colors hover:bg-deep hover:text-on-deep"
+      className="mt-0.5 block rounded-xl px-3 py-2 text-[13px] text-muted transition-colors hover:bg-surface-2 hover:text-body"
     >
       {children}
     </Link>

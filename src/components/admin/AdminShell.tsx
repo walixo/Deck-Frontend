@@ -108,7 +108,7 @@ export function AdminShell() {
         <span
           role="status"
           aria-label="Checking your session"
-          className="size-6 animate-spin border border-edge border-t-transparent"
+          className="size-6 animate-spin border border-line border-t-transparent"
         />
       </div>
     );
@@ -130,22 +130,22 @@ export function AdminShell() {
              list scrolls beside it. Hidden below md, where the horizontal strip
              below takes over — a 240px sidebar on a phone is the whole screen. */
           'sticky top-24 hidden shrink-0 self-start md:block',
-          'rounded-slab border border-edge bg-surface shadow-hard',
+          'rounded-slab border border-line bg-surface shadow-hard',
           collapsed ? 'w-16' : 'w-60',
         )}
       >
         {/* Brand block, in the accent. The one filled area in the sidebar, so
             the eye lands on it first and everything below reads as a list. */}
-        <div className="flex items-center gap-2.5 border-b border-edge bg-pop p-3">
+        <div className="flex items-center gap-2.5 border-b border-line bg-pop p-3">
           <Link
             to="/"
             aria-label="Back to Deck"
-            className="flex size-9 shrink-0 items-center justify-center border border-edge bg-canvas font-display text-sm uppercase text-body"
+            className="flex size-9 shrink-0 items-center justify-center border border-line bg-canvas font-display text-sm text-body"
           >
             D
           </Link>
           {!collapsed && (
-            <span className="truncate font-display text-sm uppercase text-on-pop">Deck admin</span>
+            <span className="truncate font-display text-sm text-on-pop">Deck admin</span>
           )}
         </div>
 
@@ -157,7 +157,7 @@ export function AdminShell() {
                    showing when there is no room for its name. */
                 <div aria-hidden="true" className="mx-2 my-2 border-t border-edge/30" />
               ) : (
-                <p className="px-2 pb-1 pt-2 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-muted">
+                <p className="px-2 pb-1 pt-2 font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-muted">
                   {group.label}
                 </p>
               )}
@@ -174,23 +174,25 @@ export function AdminShell() {
                         title={collapsed ? item.label : undefined}
                         className={({ isActive }) =>
                           cn(
-                            'flex items-center gap-2.5 border px-2.5 py-2 font-display text-[13px] uppercase transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
+                            'flex items-center gap-2.5 border px-2.5 py-2 font-display text-[13px] transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)]',
                             collapsed && 'justify-center px-0',
                             isActive
-                              ? 'border-edge bg-pop text-on-pop shadow-hard-sm'
+                              ? 'border-line bg-pop text-on-pop shadow-hard-sm'
                               : 'border-transparent text-body hover:border-edge hover:bg-surface-2',
                           )
                         }
                       >
                         <item.icon aria-hidden="true" className="size-5 shrink-0" />
-                        {!collapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
+                        {!collapsed && (
+                          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                        )}
 
                         {/* Only shown when there is something waiting — a
                             permanent "0" trains people to stop looking. */}
                         {count > 0 && (
                           <span
                             className={cn(
-                              'shrink-0 border border-edge bg-red text-center font-mono text-[10px] tabular-nums text-white',
+                              'shrink-0 border border-line bg-red text-center font-mono text-[10px] tabular-nums text-white',
                               collapsed
                                 ? 'absolute -mt-6 ml-6 size-4 leading-3'
                                 : 'min-w-5 px-1 leading-4',
@@ -210,11 +212,11 @@ export function AdminShell() {
 
         {/* Who is signed in, pinned to the bottom — the sidebar's answer to
             "whose actions is the trail about to record". */}
-        <div className="flex items-center gap-2.5 border-t border-edge p-3">
+        <div className="flex items-center gap-2.5 border-t border-line p-3">
           <Avatar user={user!} size="sm" />
           {!collapsed && (
             <span className="min-w-0 flex-1">
-              <span className="block truncate font-display text-[13px] uppercase">{user!.name}</span>
+              <span className="block truncate font-display text-[13px]">{user!.name}</span>
               <span className="block truncate font-mono text-[10px] uppercase text-muted">
                 Admin
               </span>
@@ -226,13 +228,16 @@ export function AdminShell() {
             aria-label={collapsed ? 'Expand the sidebar' : 'Collapse the sidebar'}
             aria-expanded={!collapsed}
             className={cn(
-              'flex size-7 shrink-0 items-center justify-center border border-edge bg-surface transition-transform duration-[120ms] hover:-translate-y-0.5',
+              'flex size-7 shrink-0 items-center justify-center border border-line bg-surface transition-transform duration-300 hover:-translate-y-0.5',
               collapsed && 'absolute -mt-16 ml-1',
             )}
           >
             <ChevronDoubleLeftIcon
               aria-hidden="true"
-              className={cn('size-3.5 transition-transform duration-[160ms]', collapsed && 'rotate-180')}
+              className={cn(
+                'size-3.5 transition-transform duration-300',
+                collapsed && 'rotate-180',
+              )}
             />
           </button>
         </div>
@@ -255,16 +260,16 @@ export function AdminShell() {
                 end={item.end}
                 className={({ isActive }) =>
                   cn(
-                    'flex shrink-0 items-center gap-2 border px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em]',
+                    'rounded-full flex shrink-0 items-center gap-2 border px-3 py-1.5 font-mono text-[12px] font-medium uppercase tracking-[0.06em]',
                     isActive
-                      ? 'border-edge bg-pop text-on-pop'
+                      ? 'border-line bg-pop text-on-pop'
                       : 'border-transparent text-muted hover:border-edge hover:text-body',
                   )
                 }
               >
                 {item.label}
                 {count > 0 && (
-                  <span className="min-w-5 border border-edge bg-red px-1 text-center text-[10px] tabular-nums text-white">
+                  <span className="min-w-5 border border-line bg-red px-1 text-center text-[10px] tabular-nums text-white">
                     {count}
                   </span>
                 )}

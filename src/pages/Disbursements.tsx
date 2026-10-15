@@ -9,7 +9,7 @@ import type { OwedMeta, OwedRow, PayoutAccountStatus } from '@/types';
 
 const ACCOUNT: Record<PayoutAccountStatus, { label: string; tone: string }> = {
   active: { label: 'Paid automatically', tone: 'bg-deep text-on-deep' },
-  pending: { label: 'Onboarding', tone: 'bg-grey text-ink' },
+  pending: { label: 'Onboarding', tone: 'bg-surface-2 text-body' },
   none: { label: 'No payout account', tone: 'bg-edge text-canvas' },
 };
 
@@ -69,16 +69,16 @@ export function Disbursements() {
       ) : (
         <>
           <dl className="mb-6 grid gap-3 sm:grid-cols-2">
-            <div className="border border-edge bg-pop px-4 py-4 text-on-pop shadow-hard">
-              <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
+            <div className="border border-line bg-pop px-4 py-4 text-on-pop shadow-hard">
+              <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] opacity-80">
                 Owed across {owed.meta.sellers} {owed.meta.sellers === 1 ? 'seller' : 'sellers'}
               </dt>
               <dd className="mt-1 font-display text-3xl tabular-nums">
                 {formatMoney(owed.meta.totalOwedMinor, owed.meta.currency)}
               </dd>
             </div>
-            <div className="border border-edge bg-surface px-4 py-4 shadow-hard">
-              <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+            <div className="rounded-2xl border border-line bg-surface px-4 py-4 shadow-hard">
+              <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
                 Cleared — can be sent now
               </dt>
               <dd className="mt-1 font-display text-3xl tabular-nums">
@@ -117,13 +117,13 @@ function OwedCard({ row, meta }: { row: OwedRow; meta: OwedMeta }) {
   const heldMinor = row.owedMinor - row.availableMinor;
 
   return (
-    <div className="flex flex-wrap items-center gap-4 rounded-slab border border-edge bg-surface p-4 shadow-hard">
+    <div className="flex flex-wrap items-center gap-4 rounded-slab border border-line bg-surface p-4 shadow-hard">
       {row.seller ? (
         <Avatar user={row.seller} size="md" />
       ) : (
         <span
           aria-hidden="true"
-          className="flex size-10 items-center justify-center border border-edge bg-surface-2 font-mono text-xs font-bold"
+          className="flex size-10 items-center justify-center border border-line bg-surface-2 font-mono text-xs font-medium"
         >
           ?
         </span>
@@ -131,7 +131,7 @@ function OwedCard({ row, meta }: { row: OwedRow; meta: OwedMeta }) {
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-display text-base uppercase">
+          <p className="font-display text-base">
             {row.seller ? (
               <Link to={profilePath(row.seller.username)} className="hover:underline">
                 {row.seller.name}
@@ -141,12 +141,12 @@ function OwedCard({ row, meta }: { row: OwedRow; meta: OwedMeta }) {
             )}
           </p>
           <span
-            className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${account.tone}`}
+            className={`rounded-full border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] ${account.tone}`}
           >
             {account.label}
           </span>
         </div>
-        <p className="mt-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+        <p className="mt-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
           {row.email ?? '—'}
         </p>
         <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
@@ -155,7 +155,7 @@ function OwedCard({ row, meta }: { row: OwedRow; meta: OwedMeta }) {
           {heldMinor > 0 && <> &middot; held {formatMoney(heldMinor, row.currency)}</>}
         </p>
         {reason && (
-          <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.06em]">
+          <p className="mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.06em]">
             {reason}
           </p>
         )}

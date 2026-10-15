@@ -96,11 +96,11 @@ export function ProviderButtons({ action, className }: ProviderButtonsProps) {
                it, and when it is set the redirect starts at the real API. */
             href={`${api.defaults.baseURL ?? '/api'}/auth/oauth/${provider}/start`}
             className={cn(
-              'flex h-11 items-center justify-center gap-2.5 rounded-slab border border-edge',
+              'flex h-11 items-center justify-center gap-2.5 rounded-slab border border-line',
               'bg-surface text-sm font-bold text-body shadow-hard-sm',
-              'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
-              'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-surface-2 hover:shadow-hard',
-              'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+              'transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)]',
+              'hover:-translate-y-0.5 hover:bg-surface-2 hover:shadow-hard',
+              'active:shadow-none',
             )}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4 shrink-0">
@@ -115,7 +115,7 @@ export function ProviderButtons({ action, className }: ProviderButtonsProps) {
 
       <div className="my-5 flex items-center gap-3" aria-hidden="true">
         <span className="h-px flex-1 bg-edge" />
-        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
           or {action.toLowerCase()} with email
         </span>
         <span className="h-px flex-1 bg-edge" />

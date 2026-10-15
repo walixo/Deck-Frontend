@@ -110,7 +110,7 @@ export function Midnight({ t }: { t: number }) {
           </div>
         )}
 
-        <div className="mt-6 font-display text-[72px] uppercase leading-none text-body display-tight">
+        <div className="mt-6 font-display text-[72px] leading-none text-body display-tight">
           <Rise progress={snapIn(t, 17.0, 0.26)}>
             A new board
             <Stop />

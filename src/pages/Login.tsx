@@ -107,17 +107,17 @@ export function Login() {
        * not have to go looking through seed data for a way in.
        */}
       {import.meta.env.DEV && (
-        <div className="mt-6 border border-dashed border-edge p-3.5">
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
+        <div className="mt-6 border border-dashed border-line p-3.5">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
             Trying the demo data?
           </p>
           <p className="mt-1.5 text-xs leading-relaxed text-muted">
             Any seeded account works — for example{' '}
-            <code className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
+            <code className="rounded-full border border-line bg-deep px-1.5 py-0.5 font-mono text-[11px] font-medium text-on-deep">
               ada@deck.dev
             </code>{' '}
             with password{' '}
-            <code className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[11px] font-bold text-on-deep">
+            <code className="rounded-full border border-line bg-deep px-1.5 py-0.5 font-mono text-[11px] font-medium text-on-deep">
               deck1234
             </code>
             .

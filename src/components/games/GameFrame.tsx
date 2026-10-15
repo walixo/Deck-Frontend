@@ -118,7 +118,7 @@ export function GameFrame({
                 'font-mono text-[11px] uppercase tracking-[0.06em] transition-colors',
                 soft
                   ? 'rounded-full border border-g-line px-3 py-1 text-g-mute hover:text-g-ink'
-                  : 'border border-edge bg-surface px-2 py-1 font-bold hover:bg-surface-2',
+                  : 'rounded-2xl border border-line bg-surface px-2 py-1 font-bold hover:bg-surface-2',
               )}
             >
               {muted ? 'Sound off' : 'Sound on'}
@@ -131,7 +131,7 @@ export function GameFrame({
             'relative overflow-hidden',
             soft
               ? 'rounded-2xl shadow-[0_30px_70px_-30px_rgb(0_0_0/0.45)]'
-              : 'rounded-slab border border-edge shadow-hard',
+              : 'rounded-slab border border-line shadow-hard',
             boardClassName,
           )}
         >
@@ -197,7 +197,7 @@ function Readout({ label, value }: Readout) {
   const soft = useArcadeSkin() === 'games';
   return (
     <div className="flex items-baseline gap-2">
-      <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
+      <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-muted">
         {label}
       </span>
       <span

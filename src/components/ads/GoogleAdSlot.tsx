@@ -39,7 +39,7 @@ export function GoogleAdSlot({ className }: { className?: string }) {
 
   return (
     <div className={className} data-testid="google-ad">
-      <p className="mb-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+      <p className="mb-1 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
         Advertisement
       </p>
       <ins

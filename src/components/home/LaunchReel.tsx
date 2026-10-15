@@ -156,12 +156,12 @@ export function LaunchReel() {
   }
 
   return (
-    <section aria-labelledby="reel-heading" className="border-b border-edge">
+    <section aria-labelledby="reel-heading" className="border-b border-line">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
           The thirty-second tour
         </p>
-        <h2 id="reel-heading" className="display-tight mt-2 text-2xl uppercase sm:text-3xl">
+        <h2 id="reel-heading" className="display-tight mt-2 text-2xl sm:text-3xl">
           Deck, start to finish
         </h2>
 
@@ -180,7 +180,7 @@ export function LaunchReel() {
         <div
           ref={frameRef}
           aria-hidden="true"
-          className="relative mt-6 aspect-video overflow-hidden rounded-slab border border-edge bg-canvas shadow-hard-lg"
+          className="relative mt-6 aspect-video overflow-hidden rounded-slab border border-line bg-canvas shadow-hard-lg"
         >
           {scale > 0 && (
             <div
@@ -199,7 +199,7 @@ export function LaunchReel() {
             aria-label={
               playing ? 'Pause the film' : replay ? 'Play the film again' : 'Play the film'
             }
-            className="flex size-10 shrink-0 items-center justify-center border border-edge bg-pop text-on-pop shadow-hard-sm transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-px hover:-translate-y-px hover:shadow-hard active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            className="flex size-10 shrink-0 items-center justify-center border border-line bg-pop text-on-pop shadow-hard-sm transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] hover:-translate-y-px hover:shadow-hard.5.5 active:shadow-none"
           >
             {playing ? (
               <PauseIcon className="size-5" />
@@ -222,7 +222,7 @@ export function LaunchReel() {
             className="h-2 min-w-0 flex-1 cursor-pointer accent-accent"
           />
 
-          <span className="shrink-0 font-mono text-[12px] font-bold tabular-nums text-muted">
+          <span className="shrink-0 font-mono text-[12px] font-medium tabular-nums text-muted">
             0:{String(Math.floor(t)).padStart(2, '0')} / 0:{REEL_DURATION}
           </span>
         </div>

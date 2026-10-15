@@ -54,7 +54,7 @@ export function Launch({ t }: { t: number }) {
   return (
     <div className="absolute inset-0 [perspective:1600px]">
       <div
-        className="absolute left-[370px] top-[156px] h-[572px] w-[1180px] rounded-slab border-[3px] border-edge bg-surface shadow-hard-xl"
+        className="absolute left-[370px] top-[156px] h-[572px] w-[1180px] rounded-slab border-[3px] border-line bg-surface shadow-hard-xl"
         style={{
           transform: `translateY(${lerp(80, 0, enter)}px) rotateX(${lerp(16, 0, enter)}deg)`,
           transformOrigin: '50% 100%',
@@ -67,7 +67,7 @@ export function Launch({ t }: { t: number }) {
 
         {posted && (
           <span
-            className="absolute -right-6 -top-6 border-[3px] border-edge bg-deep px-5 py-2.5 font-mono text-[18px] font-bold uppercase tracking-[0.12em] text-on-deep shadow-hard"
+            className="absolute -right-6 -top-6 border-[3px] border-line bg-deep px-5 py-2.5 font-mono text-[18px] font-medium uppercase tracking-[0.12em] text-on-deep shadow-hard"
             style={{ transform: `scale(${lerp(0.4, 1, kickIn(t, POSTED, 0.3))}) rotate(2deg)` }}
           >
             ● Live on today’s board
@@ -87,10 +87,10 @@ export function Launch({ t }: { t: number }) {
 
 function TitleBar({ posted }: { posted: boolean }) {
   return (
-    <div className="flex h-[58px] items-center border-b-[3px] border-edge px-5">
+    <div className="flex h-[58px] items-center border-b-[3px] border-line px-5">
       <div className="flex gap-2">
         {[0, 1, 2].map((index) => (
-          <span key={index} className="size-3.5 border-2 border-edge" />
+          <span key={index} className="size-3.5 border border-line" />
         ))}
       </div>
       <Mono className="flex-1 text-center text-[15px] normal-case tracking-[0.06em]">
@@ -115,7 +115,7 @@ function Field({
   return (
     <div>
       <Mono className="text-[15px]">{label}</Mono>
-      <div className="mt-2.5 flex h-[74px] items-center border-2 border-edge bg-canvas px-5 font-sans text-[32px] text-body">
+      <div className="mt-2.5 flex h-[74px] items-center border border-line bg-canvas px-5 font-sans text-[32px] text-body">
         {value}
         {active && cursorOn(t) && <span className="ml-1 h-9 w-3.5 bg-accent" />}
       </div>
@@ -142,7 +142,7 @@ function Form({ t }: { t: number }) {
               <span
                 key={category}
                 className={cn(
-                  'border-2 border-edge px-4 py-2 font-mono text-[17px] font-bold uppercase tracking-[0.08em]',
+                  'border border-line px-4 py-2 font-mono text-[17px] font-medium uppercase tracking-[0.08em]',
                   chosen && index === 0
                     ? 'bg-pop text-on-pop shadow-hard-sm'
                     : 'bg-canvas text-muted',
@@ -163,7 +163,7 @@ function Form({ t }: { t: number }) {
             shadow. */}
         <span
           className={cn(
-            'border-[3px] border-edge bg-pop px-8 py-4 font-sans text-[26px] font-semibold text-on-pop',
+            'border-[3px] border-line bg-pop px-8 py-4 font-sans text-[26px] font-semibold text-on-pop',
             pressed ? 'translate-x-[4px] translate-y-[4px] shadow-none' : 'shadow-hard',
           )}
         >
@@ -193,7 +193,7 @@ function Board({ t }: { t: number }) {
           <span
             key={rank}
             className={cn(
-              'absolute left-0 flex size-[64px] items-center justify-center border-[3px] border-edge font-display text-[28px]',
+              'absolute left-0 flex size-[64px] items-center justify-center border-[3px] border-line font-display text-[28px]',
               MEDAL_STYLES[rank],
             )}
             style={{ top: index * (ROW_H + ROW_GAP) + (ROW_H - 64) / 2 }}
@@ -204,7 +204,7 @@ function Board({ t }: { t: number }) {
 
         {RIVALS.map((rival, index) => (
           <Row key={rival} slot={rivalSlots[index]}>
-            <span className="size-[70px] shrink-0 border-2 border-edge bg-surface-2" />
+            <span className="size-[70px] shrink-0 border border-line bg-surface-2" />
             <div className="flex-1 space-y-3">
               <span className="block h-5 w-72 bg-edge/15" />
               <span className="block h-4 w-[26rem] bg-edge/10" />
@@ -216,11 +216,11 @@ function Board({ t }: { t: number }) {
         <Row slot={slot} highlight>
           {/* The product's own tile is content, so it is neutral: grey ground,
               ink initials — CONTRACT rule 1. */}
-          <span className="flex size-[70px] shrink-0 items-center justify-center border-2 border-edge bg-surface-2 font-display text-[26px] text-body">
+          <span className="flex size-[70px] shrink-0 items-center justify-center border border-line bg-surface-2 font-display text-[26px] text-body">
             YP
           </span>
           <div className="flex-1">
-            <div className="font-display text-[30px] uppercase leading-none text-body">{NAME}</div>
+            <div className="font-display text-[30px] leading-none text-body">{NAME}</div>
             <div className="mt-2 font-sans text-[22px] text-muted">{TAGLINE}</div>
           </div>
           <Votes count={votes} active />
@@ -242,7 +242,7 @@ function Row({
   return (
     <div
       className={cn(
-        'absolute left-[88px] right-0 flex items-center gap-6 border-edge bg-canvas px-6',
+        'absolute left-[88px] right-0 flex items-center gap-6 border-line bg-canvas px-6',
         highlight ? 'z-10 border-[3px] shadow-hard' : 'border-2',
       )}
       style={{ top: slot * (ROW_H + ROW_GAP), height: ROW_H }}
@@ -256,7 +256,7 @@ function Votes({ count, active }: { count: number; active?: boolean }) {
   return (
     <span
       className={cn(
-        'flex w-[92px] flex-col items-center border-2 border-edge py-2 font-mono font-bold tabular-nums',
+        'flex w-[92px] flex-col items-center border border-line py-2 font-mono font-medium tabular-nums',
         active ? 'bg-pop text-on-pop' : 'bg-surface text-muted',
       )}
     >
@@ -277,7 +277,7 @@ function Caption({ t }: { t: number }) {
   if (!current) return null;
 
   return (
-    <div className="absolute left-[150px] top-[768px] font-display text-[120px] uppercase leading-none text-body display-tight">
+    <div className="absolute left-[150px] top-[768px] font-display text-[120px] leading-none text-body display-tight">
       <Rise key={current.text} progress={snapIn(t, current.at, 0.22)}>
         {current.text}
         <Stop />

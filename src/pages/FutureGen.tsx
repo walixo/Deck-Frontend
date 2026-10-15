@@ -42,12 +42,12 @@ export function FutureGen() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-      <header className="border-b border-edge pb-8">
-        <p className="inline-flex items-center gap-2 border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop shadow-hard-sm">
+      <header className="border-b border-line pb-8">
+        <p className="rounded-full inline-flex items-center gap-2 border border-line bg-pop px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-on-pop shadow-hard-sm">
           <Star name="sparkle" className="size-3" spin={-8} /> New on Deck
         </p>
 
-        <h1 className="display-tight mt-5 text-[clamp(2.25rem,6vw,3.5rem)] uppercase text-balance">
+        <h1 className="display-tight mt-5 text-[clamp(2.25rem,6vw,3.5rem)] text-balance">
           Future Gen
         </h1>
 
@@ -115,7 +115,7 @@ function Entry({ item, last }: { item: Item; last: boolean }) {
       <div className="flex w-4 shrink-0 flex-col items-center sm:w-5">
         <span
           aria-hidden="true"
-          className="size-4 shrink-0 border border-edge bg-pop sm:size-5"
+          className="size-4 shrink-0 border border-line bg-pop sm:size-5"
           /* The maker's own colour on the node when they have one — the same
              logic the launch wall uses, and the only spot of content colour on
              an otherwise neutral page. */
@@ -125,11 +125,11 @@ function Entry({ item, last }: { item: Item; last: boolean }) {
       </div>
 
       <article className="min-w-0 flex-1 pb-8">
-        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
           {formatFullDate(item.launchDate)}
         </p>
 
-        <div className="mt-2 rounded-slab border border-edge bg-surface p-4 shadow-hard sm:p-5">
+        <div className="mt-2 rounded-slab border border-line bg-surface p-4 shadow-hard sm:p-5">
           <div className="flex items-start gap-3 sm:gap-4">
             <ItemLogo item={item} size="lg" />
 
@@ -144,7 +144,7 @@ function Entry({ item, last }: { item: Item; last: boolean }) {
                 {item.tagline}
               </p>
 
-              <p className="mt-3 flex flex-wrap items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-muted">
+              <p className="mt-3 flex flex-wrap items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-muted">
                 <Avatar user={item.submittedBy} size="sm" />
                 <Link to={profilePath(item.submittedBy.username)} className="hover:underline">
                   {item.submittedBy.name}
@@ -181,7 +181,7 @@ function Entry({ item, last }: { item: Item; last: boolean }) {
           {/* The raise. Every state gets a line, including "not raising" —
               a reader scanning the timeline should never have to work out
               whether a missing bar means no raise or a raise at zero. */}
-          <div className="mt-4 border-t border-edge pt-4">
+          <div className="mt-4 border-t border-line pt-4">
             <FundraiseStatus item={item} />
           </div>
 
@@ -225,7 +225,7 @@ function FundraiseStatus({ item }: { item: Item }) {
     const shortComments = Math.max(0, eligibility.commentsNeeded - eligibility.comments);
 
     return (
-      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+      <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
         Not raising yet —{' '}
         {[
           shortVotes > 0 && `${shortVotes} more ${shortVotes === 1 ? 'vote' : 'votes'}`,
@@ -240,7 +240,7 @@ function FundraiseStatus({ item }: { item: Item }) {
   }
 
   return (
-    <p className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+    <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
       Not raising
     </p>
   );
@@ -250,7 +250,7 @@ function StatusChip({ tone, children }: { tone: 'live' | 'quiet'; children: Reac
   return (
     <span
       className={cn(
-        'inline-block border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em]',
+        'rounded-full inline-block border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em]',
         /* `success` is the one green on Deck and it means "this worked" —
            CONTRACT rule 6. A live raise qualifies; a paused one is grey, not
            red, because nothing has gone wrong. */

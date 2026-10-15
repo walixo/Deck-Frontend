@@ -23,7 +23,7 @@ export function AdminFundraises() {
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="display-tight text-3xl uppercase">Fundraises</h1>
+        <h1 className="display-tight text-3xl">Fundraises</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted text-pretty">
           Launches applying to raise money, and every raise already running. Approving one opens
           contributions immediately — Deck is the name on the payment page.
@@ -34,20 +34,23 @@ export function AdminFundraises() {
           next to what has already been approved and how it is going. */}
       {data && data.approved.length > 0 && (
         <section>
-          <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             Money in flight
           </h2>
           <dl className="grid gap-3 sm:grid-cols-4">
             <Stat label="Raised" value={formatMoney(data.totals.raisedMinor)} />
             <Stat label="Across targets of" value={formatMoney(data.totals.targetMinor)} />
             <Stat label="Backers" value={String(data.totals.backers)} />
-            <Stat label="Taking money now" value={`${data.totals.live} of ${data.approved.length}`} />
+            <Stat
+              label="Taking money now"
+              value={`${data.totals.live} of ${data.approved.length}`}
+            />
           </dl>
         </section>
       )}
 
       <section>
-        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           {data ? `${data.pending.length} waiting on a decision` : 'Waiting on a decision'}
         </h2>
 
@@ -73,7 +76,7 @@ export function AdminFundraises() {
 
       {data && data.approved.length > 0 && (
         <section>
-          <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             {data.approved.length} approved
           </h2>
           <ul className="space-y-2">
@@ -89,9 +92,9 @@ export function AdminFundraises() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-edge bg-surface px-4 py-3 shadow-hard-sm">
+    <div className="rounded-2xl border border-line bg-surface px-4 py-3 shadow-hard-sm">
       <dd className="font-display text-xl tabular-nums">{value}</dd>
-      <dt className="mt-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+      <dt className="mt-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
         {label}
       </dt>
     </div>
@@ -108,22 +111,22 @@ function Stat({ label, value }: { label: string; value: string }) {
  */
 function ApprovedRow({ row }: { row: FundraiseApplicationRow }) {
   return (
-    <li className="rounded-slab border border-edge bg-surface p-3 shadow-hard-sm">
+    <li className="rounded-slab border border-line bg-surface p-3 shadow-hard-sm">
       <div className="flex flex-wrap items-center gap-3">
         <Link
           to={`/item/${row.slug}`}
-          className="min-w-0 flex-1 truncate font-display text-[13px] uppercase underline-offset-2 hover:underline"
+          className="min-w-0 flex-1 truncate font-display text-[13px] underline-offset-2 hover:underline"
         >
           {row.name}
         </Link>
 
         {!row.live && (
-          <span className="shrink-0 border border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-canvas">
+          <span className="rounded-full shrink-0 border border-line bg-edge px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase text-canvas">
             Paused
           </span>
         )}
 
-        <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums">
+        <span className="shrink-0 font-mono text-[11px] font-medium tabular-nums">
           {formatMoney(row.raisedMinor)}
           <span className="text-muted"> / {formatMoney(row.targetMinor)}</span>
         </span>
@@ -139,7 +142,7 @@ function ApprovedRow({ row }: { row: FundraiseApplicationRow }) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label={`${row.name} is ${row.percent}% funded`}
-        className="mt-2 h-2 w-full overflow-hidden border border-edge bg-surface-2"
+        className="mt-2 h-2 w-full overflow-hidden border border-line bg-surface-2"
       >
         <div className="h-full bg-accent" style={{ width: `${row.percent}%` }} />
       </div>
@@ -171,11 +174,11 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
   return (
     <li>
       <Card className="p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-edge pb-3">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line pb-3">
           <div className="min-w-0">
             <Link
               to={`/item/${row.slug}`}
-              className="font-display text-lg uppercase underline-offset-4 hover:underline"
+              className="font-display text-lg underline-offset-4 hover:underline"
             >
               {row.name}
             </Link>
@@ -183,14 +186,16 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
               <Avatar user={row.submittedBy} size="sm" />
               <span>
                 {row.submittedBy.name}
-                {row.submittedBy.verified && <VerifiedMark name={row.submittedBy.name} className="ml-1" />}
+                {row.submittedBy.verified && (
+                  <VerifiedMark name={row.submittedBy.name} className="ml-1" />
+                )}
               </span>
               <span aria-hidden="true">/</span>
               <span>applied {relativeTime(row.appliedAt)}</span>
             </p>
           </div>
 
-          <p className="shrink-0 border border-edge bg-pop px-2.5 py-1 font-display text-sm text-on-pop">
+          <p className="shrink-0 border border-line bg-pop px-2.5 py-1 font-display text-sm text-on-pop">
             {formatMoney(row.targetMinor)}
           </p>
         </div>
@@ -204,9 +209,9 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
           </div>
         </dl>
 
-        <div className="mt-5 space-y-3 border-t border-edge pt-4">
+        <div className="mt-5 space-y-3 border-t border-line pt-4">
           <label className="block">
-            <span className="mb-1.5 block font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
+            <span className="mb-1.5 block font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
               Note to the maker
             </span>
             <textarea
@@ -215,14 +220,14 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
               onChange={(event) => setNote(event.target.value)}
               maxLength={300}
               placeholder="Required if you turn it down — they see this."
-              className="w-full rounded-slab border border-edge bg-surface px-3 py-2 text-sm shadow-[inset_3px_3px_0_var(--surface-2)] focus:border-accent focus:shadow-none focus:outline-none"
+              className="w-full rounded-slab border border-line bg-surface px-3 py-2 text-sm shadow-[inset_3px_3px_0_var(--surface-2)] focus:border-accent focus:shadow-none focus:outline-none"
             />
           </label>
 
           {error && (
             <p
               role="alert"
-              className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+              className="border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
             >
               {error}
             </p>
@@ -250,7 +255,7 @@ function ApplicationCard({ row }: { row: FundraiseApplicationRow }) {
 function Field({ label, value }: { label: string; value?: string }) {
   return (
     <div>
-      <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+      <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
         {label}
       </dt>
       <dd className="mt-0.5 text-pretty">{value || '—'}</dd>

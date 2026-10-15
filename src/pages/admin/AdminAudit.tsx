@@ -20,52 +20,52 @@ const ACTION_STYLE: Record<AuditAction, { label: string; tone: string }> = {
      from strangers, so it is weighted with the access changes, not with the
      routine yes/no of a listing. */
   'fundraise.approved': { label: 'Fundraise approved', tone: 'bg-edge text-canvas' },
-  'fundraise.rejected': { label: 'Fundraise rejected', tone: 'bg-grey text-ink' },
-  'fundraise.changed': { label: 'Fundraise changed', tone: 'bg-grey text-ink' },
+  'fundraise.rejected': { label: 'Fundraise rejected', tone: 'bg-surface-2 text-body' },
+  'fundraise.changed': { label: 'Fundraise changed', tone: 'bg-surface-2 text-body' },
   'futuregen.added': { label: 'Future Gen added', tone: 'bg-deep text-on-deep' },
-  'futuregen.removed': { label: 'Future Gen removed', tone: 'bg-grey text-ink' },
+  'futuregen.removed': { label: 'Future Gen removed', tone: 'bg-surface-2 text-body' },
   'user.verified': { label: 'Verified', tone: 'bg-deep text-on-deep' },
-  'user.unverified': { label: 'Verification removed', tone: 'bg-grey text-ink' },
+  'user.unverified': { label: 'Verification removed', tone: 'bg-surface-2 text-body' },
   'merch.approved': { label: 'Approved', tone: 'bg-deep text-on-deep' },
-  'merch.rejected': { label: 'Rejected', tone: 'bg-grey text-ink' },
-  'merch.edited': { label: 'Listing edited', tone: 'bg-grey text-ink' },
-  'merch.retired': { label: 'Listing retired', tone: 'bg-grey text-ink' },
+  'merch.rejected': { label: 'Rejected', tone: 'bg-surface-2 text-body' },
+  'merch.edited': { label: 'Listing edited', tone: 'bg-surface-2 text-body' },
+  'merch.retired': { label: 'Listing retired', tone: 'bg-surface-2 text-body' },
   'game.approved': { label: 'Game approved', tone: 'bg-deep text-on-deep' },
-  'game.rejected': { label: 'Game rejected', tone: 'bg-grey text-ink' },
-  'game.edited': { label: 'Game edited', tone: 'bg-grey text-ink' },
+  'game.rejected': { label: 'Game rejected', tone: 'bg-surface-2 text-body' },
+  'game.edited': { label: 'Game edited', tone: 'bg-surface-2 text-body' },
   'game.removed': { label: 'Game removed', tone: 'bg-edge text-canvas' },
   'ad.approved': { label: 'Ad approved', tone: 'bg-deep text-on-deep' },
-  'ad.rejected': { label: 'Ad rejected', tone: 'bg-grey text-ink' },
+  'ad.rejected': { label: 'Ad rejected', tone: 'bg-surface-2 text-body' },
   'ad.pulled': { label: 'Ad pulled', tone: 'bg-edge text-canvas' },
   'order.shipped': { label: 'Shipped', tone: 'bg-pop text-on-pop' },
   'order.delivered': { label: 'Delivered', tone: 'bg-pop text-on-pop' },
-  'item.edited': { label: 'Launch edited', tone: 'bg-grey text-ink' },
+  'item.edited': { label: 'Launch edited', tone: 'bg-surface-2 text-body' },
   'item.deleted': { label: 'Launch deleted', tone: 'bg-edge text-canvas' },
   /* Moving a launch to another board day changes who it competes with, which
      is why it is staff-only and why it is here at all. */
-  'item.rescheduled': { label: 'Launch rescheduled', tone: 'bg-grey text-ink' },
-  'category.created': { label: 'Category added', tone: 'bg-grey text-ink' },
-  'category.updated': { label: 'Category edited', tone: 'bg-grey text-ink' },
+  'item.rescheduled': { label: 'Launch rescheduled', tone: 'bg-surface-2 text-body' },
+  'category.created': { label: 'Category added', tone: 'bg-surface-2 text-body' },
+  'category.updated': { label: 'Category edited', tone: 'bg-surface-2 text-body' },
   'category.removed': { label: 'Category removed', tone: 'bg-edge text-canvas' },
-  'post.created': { label: 'Post written', tone: 'bg-grey text-ink' },
+  'post.created': { label: 'Post written', tone: 'bg-surface-2 text-body' },
   'post.published': { label: 'Post published', tone: 'bg-deep text-on-deep' },
-  'post.unpublished': { label: 'Post pulled', tone: 'bg-grey text-ink' },
+  'post.unpublished': { label: 'Post pulled', tone: 'bg-surface-2 text-body' },
   'post.deleted': { label: 'Post deleted', tone: 'bg-edge text-canvas' },
-  'comment.deleted': { label: 'Comment removed', tone: 'bg-grey text-ink' },
-  'topic.edited': { label: 'Topic edited', tone: 'bg-grey text-ink' },
+  'comment.deleted': { label: 'Comment removed', tone: 'bg-surface-2 text-body' },
+  'topic.edited': { label: 'Topic edited', tone: 'bg-surface-2 text-body' },
   'topic.deleted': { label: 'Topic deleted', tone: 'bg-edge text-canvas' },
-  'topic.moderated': { label: 'Topic pinned/locked', tone: 'bg-grey text-ink' },
-  'reply.deleted': { label: 'Reply removed', tone: 'bg-grey text-ink' },
+  'topic.moderated': { label: 'Topic pinned/locked', tone: 'bg-surface-2 text-body' },
+  'reply.deleted': { label: 'Reply removed', tone: 'bg-surface-2 text-body' },
   /* A completed sale is the entry Deck later invoices its commission against,
      so it is weighted with the money actions rather than the approvals. */
   'acquisition.sold': { label: 'Acquisition sold', tone: 'bg-edge text-canvas' },
   'acquisition.approved': { label: 'Listing approved', tone: 'bg-deep text-on-deep' },
-  'acquisition.rejected': { label: 'Listing turned down', tone: 'bg-grey text-ink' },
+  'acquisition.rejected': { label: 'Listing turned down', tone: 'bg-surface-2 text-body' },
   'acquisition.removed': { label: 'Listing removed', tone: 'bg-edge text-canvas' },
   /* Approving a custom print commits Deck to putting a stranger's image on an
      object and posting it, so it sits with the consequential approvals. */
   'custom.approved': { label: 'Print approved', tone: 'bg-deep text-on-deep' },
-  'custom.rejected': { label: 'Print turned down', tone: 'bg-grey text-ink' },
+  'custom.rejected': { label: 'Print turned down', tone: 'bg-surface-2 text-body' },
 };
 
 /*
@@ -161,7 +161,7 @@ export function AdminAudit() {
 
         {FILTER_GROUPS.map((group) => (
           <div key={group.label} className="flex flex-wrap items-center gap-2">
-            <span className="w-16 shrink-0 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+            <span className="w-16 shrink-0 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
               {group.label}
             </span>
             {group.actions.map((value) => (
@@ -201,7 +201,7 @@ export function AdminAudit() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          <p className="mt-4 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
             Showing {events.data.length} of {events.meta.total}
           </p>
         </>
@@ -226,9 +226,9 @@ function FilterChip({
       type="button"
       onClick={() => onPick(value)}
       aria-pressed={current === value}
-      className={`border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
+      className={`rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300 ${
         current === value
-          ? 'bg-pop text-on-pop'
+          ? 'bg-edge text-canvas'
           : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
       }`}
     >
@@ -243,10 +243,10 @@ function Entry({ event }: { event: AuditEvent }) {
   const hasDetail = event.before !== undefined || event.after !== undefined;
 
   return (
-    <article className="rounded-slab border border-edge bg-surface">
+    <article className="rounded-slab border border-line bg-surface">
       <div className="flex flex-wrap items-start gap-3 p-3">
         <span
-          className={`shrink-0 border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${style.tone}`}
+          className={`rounded-full shrink-0 border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] ${style.tone}`}
         >
           {style.label}
         </span>
@@ -265,7 +265,7 @@ function Entry({ event }: { event: AuditEvent }) {
             type="button"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
-            className="shrink-0 border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-muted transition-colors duration-[120ms] hover:bg-surface-2 hover:text-body"
+            className="rounded-full shrink-0 border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-muted transition-colors duration-300 hover:bg-surface-2 hover:text-body"
           >
             {open ? 'Hide' : 'Detail'}
           </button>
@@ -275,7 +275,7 @@ function Entry({ event }: { event: AuditEvent }) {
       {/* The raw snapshot. Ugly on purpose — this is evidence, not a summary,
           and it should be obvious that nothing has been prettied up. */}
       {open && hasDetail && (
-        <div className="space-y-2 border-t border-edge px-3 py-3">
+        <div className="space-y-2 border-t border-line px-3 py-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
             {event.targetType}: {event.targetLabel}
           </p>
@@ -290,10 +290,10 @@ function Entry({ event }: { event: AuditEvent }) {
 function Snapshot({ label, value }: { label: string; value: unknown }) {
   return (
     <div>
-      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+      <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
         {label}
       </p>
-      <pre className="mt-1 overflow-x-auto border border-edge bg-surface-2 p-2 font-mono text-[11px]">
+      <pre className="rounded-2xl mt-1 overflow-x-auto border border-line bg-surface-2 p-2 font-mono text-[11px]">
         {JSON.stringify(value, null, 2)}
       </pre>
     </div>

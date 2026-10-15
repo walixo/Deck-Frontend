@@ -3,14 +3,16 @@
 /*
  * Self-hosted fonts, bundled by Vite rather than fetched from a CDN — no
  * third-party request, no render-blocking link, no FOUT offline.
- *   Archivo Black — display voice: headlines, wordmark, card titles
- *   Geist         — UI voice: body copy and long-form text
- *   Geist Mono    — labels, counts, chips: anything that reads as a machine value
+ *   Geist         — every voice but one: headlines (medium, set tight, mixed
+ *                   case) and body copy alike
+ *   Geist Mono    — labels, counts, chips and buttons: anything that reads as a
+ *                   machine value, in small spaced capitals
+ *
+ * Archivo Black, the old display face, is gone: one family instead of two is
+ * the cleaner look, and 47KB lighter.
  */
-@import '@fontsource/archivo-black';
 @import '@fontsource-variable/geist';
 @import '@fontsource-variable/geist-mono';
-
 
 /*
  * The heading-face preview, as one attribute on <html>.
@@ -107,15 +109,13 @@
  */
 @theme {
   /*
-   * Three voices, and they are not interchangeable.
-   *
-   * Archivo Black is the display face and carries every heading — it is a
-   * single-weight heavy grotesque, which is exactly why it works for headlines
-   * and why it is never asked to set a paragraph. Geist does the calm work.
-   * Geist Mono marks anything that reads as a machine value: counts, labels,
-   * chips, dates.
+   * Two families. Geist sets headings (medium weight, tight tracking) and body
+   * copy; Geist Mono marks anything that reads as a machine value. The display
+   * token is kept as a name so the styleguide's typeface preview still works.
    */
-  --font-display: 'Archivo Black', 'Helvetica Neue', Impact, -apple-system, sans-serif;
+  --font-display:
+    'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
   --font-sans:
     'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, sans-serif;
@@ -124,30 +124,31 @@
     Consolas, monospace;
 
   /*
-   * Hard offset shadows — no blur, no alpha. They read as a second solid edge,
-   * which is what gives the style its weight, and they take their colour from
-   * `--edge` so they invert with the theme like everything else.
+   * Soft shadows. The names are kept from the brutalist era so every component
+   * that asked for "a shadow" still gets one — but it is light now, not a
+   * second solid edge: a hairline of contact and a long, faint falloff.
    *
-   * Three tiers, on the canonical 3 / 5 / 8 scale: small for badges and chips,
-   * medium for cards and buttons, large for hero elements and overlays. The
-   * point of a fixed scale is restraint — when every card, chip and tooltip
-   * gets an equally aggressive shadow, the z-axis stops meaning anything.
+   * Four tiers, used with restraint: `-sm` for small raised controls, the base
+   * for cards that sit up off the page, `-lg` for overlays and `-xl` for the
+   * one element on a screen that should feel closest.
    */
-  --shadow-hard-sm: 3px 3px 0 var(--edge);
-  --shadow-hard: 5px 5px 0 var(--edge);
-  --shadow-hard-lg: 8px 8px 0 var(--edge);
-  --shadow-hard-xl: 12px 12px 0 var(--edge);
+  --shadow-hard-sm: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-hard: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -18px rgb(0 0 0 / 0.18);
+  --shadow-hard-lg: 0 2px 4px rgb(0 0 0 / 0.04), 0 30px 60px -30px rgb(0 0 0 / 0.3);
+  --shadow-hard-xl: 0 4px 8px rgb(0 0 0 / 0.04), 0 40px 90px -30px rgb(0 0 0 / 0.38);
 
-  --radius-slab: 6px;
+  /* Rounded and soft. Larger surfaces go further (rounded-3xl) on their own. */
+  --radius-slab: 16px;
 
-  /* Motion is mechanical: things snap into place rather than gliding. */
-  --ease-snap: cubic-bezier(0.2, 0.9, 0.3, 1);
-  --ease-kick: cubic-bezier(0.3, 1.6, 0.5, 1);
+  /* Motion eases. Things glide into place and settle — the token names are
+     kept so every transition already pointing at them changes together. */
+  --ease-snap: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-kick: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --animate-slam: slam 0.32s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  --animate-slam: slam 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   /* Per-word headline entry: rises out of its own clipped box, so the words
      appear to be set rather than to fade in. */
-  --animate-rise: rise 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  --animate-rise: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   /*
    * The headline's drift, once it has finished arriving.
@@ -167,10 +168,10 @@
    */
   --animate-float: float 6s ease-in-out infinite;
 
-  --animate-slide-up: slide-up 0.34s cubic-bezier(0.2, 0.9, 0.3, 1) both;
-  --animate-stamp: stamp 0.28s cubic-bezier(0.3, 1.6, 0.5, 1);
-  --animate-kick: kick 3.2s cubic-bezier(0.3, 1.6, 0.5, 1) infinite;
-  --animate-jitter: jitter 3.6s steps(1) infinite;
+  --animate-slide-up: slide-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-stamp: stamp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-kick: kick 6s ease-in-out infinite;
+  --animate-jitter: jitter 8s ease-in-out infinite;
   --animate-blink: blink 1.1s steps(1) infinite;
   --animate-marquee: marquee 70s linear infinite;
   --animate-marquee-reverse: marquee-reverse 70s linear infinite;
@@ -242,15 +243,17 @@
   }
 }
 
-/* An entrance that overshoots and settles — the display equivalent of a stamp. */
+/* An entrance that rises out of a soft blur and settles. */
 @keyframes slam {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.96);
+    transform: translateY(16px);
+    filter: blur(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
+    filter: none;
   }
 }
 
@@ -293,38 +296,32 @@
     transform: scale(1);
   }
   45% {
-    transform: scale(0.92);
+    transform: scale(0.97);
   }
   100% {
     transform: scale(1);
   }
 }
 
-/* Mostly still, with one nudge per cycle — a pulse, not a wobble. */
+/* A slow breath up and back — suspended, not nudged. */
 @keyframes kick {
   0%,
-  88%,
   100% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0);
   }
-  93% {
-    transform: translateY(-5px) rotate(-1.5deg);
+  50% {
+    transform: translateY(-6px);
   }
 }
 
-/* steps(1): discrete jumps, never a slide. Nothing here eases. */
+/* A gentle drift in warm air. */
 @keyframes jitter {
-  0% {
-    transform: translate(0, 0);
-  }
-  33% {
-    transform: translate(2px, -2px);
-  }
-  66% {
-    transform: translate(-2px, 1px);
-  }
+  0%,
   100% {
     transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(3px, -4px);
   }
 }
 
@@ -393,8 +390,8 @@
    * the pair it can actually see, so the ring is 9.3:1 light and 15.1:1 dark.
    */
   :focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
   }
 
   /* Selection is a block fill, so it takes the fixed pair rather than the
@@ -404,13 +401,16 @@
     color: var(--color-on-pop);
   }
 
-  /* Display type is set tight and never lighter than the face's single weight. */
+  /* Display type: Geist, medium weight, set tight, in mixed case. */
   h1,
   h2,
   h3,
-  h4 {
+  h4,
+  .font-display,
+  .display-tight {
     font-family: var(--font-display);
-    @apply tracking-tight;
+    font-weight: var(--font-display-weight, 500);
+    letter-spacing: -0.035em;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -425,21 +425,22 @@
   }
 }
 
-/* Flat textures. Nothing here blurs or fades — brutalism has no atmosphere. */
+/*
+ * The brutalist textures — halftone dots, grid lines, diagonal stripes — are
+ * retired. The site is clean surfaces and warm light now, so these utilities
+ * render nothing: every decoration that still names one simply goes quiet,
+ * without hunting down each call site.
+ */
 @utility bg-halftone {
-  background-image: radial-gradient(currentColor 1.5px, transparent 1.6px);
-  background-size: 12px 12px;
+  background-image: none;
 }
 
 @utility bg-gridlines {
-  background-image:
-    linear-gradient(currentColor 2px, transparent 2px),
-    linear-gradient(90deg, currentColor 2px, transparent 2px);
-  background-size: 64px 64px;
+  background-image: none;
 }
 
 @utility bg-stripes {
-  background-image: repeating-linear-gradient(-45deg, currentColor 0 6px, transparent 6px 14px);
+  background-image: none;
 }
 
 @layer utilities {
@@ -461,10 +462,10 @@
     text-wrap: pretty;
   }
 
-  /* Display type set in Archivo Black needs looser leading than its metrics give. */
+  /* Large display type: tight leading and tighter tracking, like the arcade. */
   .display-tight {
-    line-height: 0.95;
-    letter-spacing: -0.03em;
+    line-height: 1;
+    letter-spacing: -0.05em;
   }
 
   /*

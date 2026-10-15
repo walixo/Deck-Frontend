@@ -38,12 +38,10 @@ export function Blog() {
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-6">
         <div className="max-w-2xl">
-          <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+          <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
             The blog
           </p>
-          <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
-            Notes from Deck
-          </h1>
+          <h1 className="display-tight text-3xl text-balance sm:text-4xl">Notes from Deck</h1>
           <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">
             What we are learning from watching things launch — what lands, what does not, and how
             the board actually works. Anyone with an account can write here.
@@ -57,13 +55,13 @@ export function Blog() {
 
       {tag && (
         <div className="mb-6 flex items-center gap-2">
-          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
             Filtered by
           </span>
           <button
             type="button"
             onClick={() => setParams({})}
-            className="border border-edge bg-pop px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-on-pop"
+            className="rounded-full border border-line bg-pop px-2 py-0.5 font-mono text-[11px] font-medium uppercase text-on-pop"
           >
             {tag} ✕
           </button>
@@ -104,7 +102,7 @@ function PostCard({ post, index }: { post: PostSummary; index: number }) {
     <Link
       to={`/blog/${post.slug}`}
       style={{ animationDelay: `${index * 60}ms` }}
-      className="group block animate-[var(--animate-slide-up)] transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5"
+      className="group block animate-[var(--animate-slide-up)] transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5"
     >
       <Card className="h-full overflow-hidden group-hover:shadow-hard-lg">
         {post.coverUrl ? (
@@ -112,27 +110,25 @@ function PostCard({ post, index }: { post: PostSummary; index: number }) {
             src={post.coverUrl}
             alt=""
             loading="lazy"
-            className="aspect-video w-full border-b border-edge object-cover"
+            className="aspect-video w-full border-b border-line object-cover"
           />
         ) : (
           /* No cover: a flat neutral field with the texture, so a post without
              art still reads as a card rather than as a broken one. */
           <div
             aria-hidden="true"
-            className="relative aspect-video w-full border-b border-edge bg-surface-2"
+            className="relative aspect-video w-full border-b border-line bg-surface-2"
           >
             <div className="absolute inset-0 bg-halftone text-edge opacity-[0.12]" />
           </div>
         )}
 
         <div className="p-4">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
             {post.publishedAt ? formatFullDate(post.publishedAt) : 'Draft'} · {post.readMinutes} min
             read
           </p>
-          <h2 className="mt-2 font-display text-lg uppercase leading-tight text-balance">
-            {post.title}
-          </h2>
+          <h2 className="mt-2 font-display text-lg leading-tight text-balance">{post.title}</h2>
           <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted text-pretty">
             {post.excerpt}
           </p>
@@ -142,7 +138,7 @@ function PostCard({ post, index }: { post: PostSummary; index: number }) {
               {post.tags.slice(0, 3).map((entry) => (
                 <span
                   key={entry}
-                  className="border border-edge px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-muted"
+                  className="rounded-full border border-line px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase text-muted"
                 >
                   {entry}
                 </span>

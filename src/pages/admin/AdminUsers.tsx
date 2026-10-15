@@ -39,7 +39,7 @@ export function AdminUsers() {
           defaultValue={search}
           placeholder="NAME, HANDLE OR EMAIL"
           aria-label="Search people"
-          className="h-11 min-w-0 flex-1 border border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+          className="h-11 min-w-0 flex-1 border border-line bg-surface px-3 font-mono text-[12px] font-medium uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
         />
         <Button type="submit" variant="secondary">
           Search
@@ -57,9 +57,9 @@ export function AdminUsers() {
             type="button"
             onClick={() => setRole(option.value)}
             aria-pressed={role === option.value}
-            className={`border border-edge px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
+            className={`rounded-2xl border border-line px-3 py-1.5 font-mono text-[12px] font-medium uppercase tracking-[0.06em] transition-colors duration-300 ${
               role === option.value
-                ? 'bg-pop text-on-pop'
+                ? 'bg-edge text-canvas'
                 : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
             }`}
           >
@@ -85,7 +85,7 @@ export function AdminUsers() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          <p className="mt-4 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
             Showing {users.data.length} of {users.meta.total}
           </p>
         </>
@@ -127,30 +127,34 @@ function PersonRow({ person }: { person: AdminUser }) {
     if (!reason || reason.trim().length < 4) return;
 
     try {
-      await verify.mutateAsync({ id: person.id, verified: !person.verified, reason: reason.trim() });
+      await verify.mutateAsync({
+        id: person.id,
+        verified: !person.verified,
+        reason: reason.trim(),
+      });
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'That did not go through');
     }
   };
 
   return (
-    <div className="rounded-slab border border-edge bg-surface p-3">
+    <div className="rounded-slab border border-line bg-surface p-3">
       <div className="flex flex-wrap items-center gap-3">
         <Avatar user={person} size="sm" />
 
         <div className="min-w-0 flex-1">
-          <p className="flex flex-wrap items-center gap-2 font-display text-sm uppercase">
+          <p className="flex flex-wrap items-center gap-2 font-display text-sm">
             <Link to={profilePath(person.username)} className="hover:underline underline-offset-2">
               {person.name}
             </Link>
             {person.verified && <VerifiedMark name={person.name} />}
             {isAdmin && (
-              <span className="border border-edge bg-edge px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-canvas">
+              <span className="rounded-full border border-line bg-edge px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-canvas">
                 Staff
               </span>
             )}
             {isSelf && (
-              <span className="border border-edge bg-deep px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-on-deep">
+              <span className="rounded-full border border-line bg-deep px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-on-deep">
                 You
               </span>
             )}
@@ -197,7 +201,7 @@ function PersonRow({ person }: { person: AdminUser }) {
       {error && (
         <p
           role="alert"
-          className="mt-2 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-2 border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
         >
           {error}
         </p>

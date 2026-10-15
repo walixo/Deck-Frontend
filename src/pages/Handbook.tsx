@@ -24,12 +24,10 @@ export function Handbook() {
       <PageBanner />
 
       <header className="max-w-3xl">
-        <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           Build handbook
         </p>
-        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
-          How Deck is built
-        </h1>
+        <h1 className="display-tight text-3xl text-balance sm:text-4xl">How Deck is built</h1>
         <p className="mt-3 text-base leading-relaxed text-muted text-pretty">
           {handbookMeta.subtitle}
         </p>
@@ -37,13 +35,13 @@ export function Handbook() {
 
       {/* The cover's fact table, kept — it is the fastest answer to "what is
           this thing made of" and belongs above the contents, not inside them. */}
-      <dl className="mt-8 max-w-3xl border-t border-edge">
+      <dl className="mt-8 max-w-3xl border-t border-line">
         {handbookMeta.facts.map(([label, detail]) => (
           <div
             key={label}
-            className="flex flex-col gap-x-6 gap-y-1 border-b border-edge py-2.5 sm:flex-row"
+            className="flex flex-col gap-x-6 gap-y-1 border-b border-line py-2.5 sm:flex-row"
           >
-            <dt className="w-40 shrink-0 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
+            <dt className="w-40 shrink-0 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-muted">
               {label}
             </dt>
             <dd className="text-sm leading-relaxed text-pretty">{detail}</dd>
@@ -65,12 +63,12 @@ export function Handbook() {
               key={section.n}
               id={slug(section.title)}
               /* Cleared by the sticky header when jumped to from the rail. */
-              className="scroll-mt-24 border-t border-edge pt-8 first:border-t-0 first:pt-0"
+              className="scroll-mt-24 border-t border-line pt-8 first:border-t-0 first:pt-0"
             >
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-accent">
+              <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-accent">
                 {String(section.n).padStart(2, '0')}
               </p>
-              <h2 className="display-tight mt-1 text-2xl uppercase text-balance sm:text-3xl">
+              <h2 className="display-tight mt-1 text-2xl text-balance sm:text-3xl">
                 {section.title}
               </h2>
 
@@ -84,13 +82,13 @@ export function Handbook() {
               ))}
 
               {section.bullets.length > 0 && (
-                <dl className="mt-6 max-w-2xl border-t border-edge">
+                <dl className="mt-6 max-w-2xl border-t border-line">
                   {section.bullets.map(([label, detail]) => (
                     <div
                       key={label}
-                      className="flex flex-col gap-x-6 gap-y-1 border-b border-edge py-3 sm:flex-row"
+                      className="flex flex-col gap-x-6 gap-y-1 border-b border-line py-3 sm:flex-row"
                     >
-                      <dt className="w-44 shrink-0 font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
+                      <dt className="w-44 shrink-0 font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
                         {label}
                       </dt>
                       <dd className="text-sm leading-relaxed text-muted text-pretty">
@@ -105,7 +103,7 @@ export function Handbook() {
             </section>
           ))}
 
-          <p className="border-t border-edge pt-5 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
+          <p className="border-t border-line pt-5 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
             Generated {handbookMeta.generated} from the repository
           </p>
         </div>
@@ -114,7 +112,7 @@ export function Handbook() {
           aria-label="Handbook contents"
           className="order-last mb-10 shrink-0 lg:sticky lg:top-20 lg:mb-0 lg:w-56"
         >
-          <p className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <p className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             Contents
           </p>
           <ol className="mt-2 max-h-[70vh] space-y-px overflow-y-auto">
@@ -127,7 +125,7 @@ export function Handbook() {
                     href={`#${id}`}
                     aria-current={on ? 'true' : undefined}
                     className={cn(
-                      'flex gap-2 rounded-slab px-2 py-1.5 text-[13px] leading-snug transition-colors duration-[140ms]',
+                      'flex gap-2 rounded-slab px-2 py-1.5 text-[13px] leading-snug transition-colors duration-300',
                       on
                         ? 'bg-surface-2 font-bold text-body'
                         : 'text-muted hover:bg-surface-2/45 hover:text-body',
@@ -135,7 +133,7 @@ export function Handbook() {
                   >
                     <span
                       className={cn(
-                        'font-mono text-[11px] font-bold tabular-nums',
+                        'font-mono text-[11px] font-medium tabular-nums',
                         on ? 'text-accent' : 'text-muted/70',
                       )}
                     >
@@ -169,12 +167,12 @@ function Downloads() {
           key={file}
           href={`/${file}`}
           download
-          className="inline-flex items-center gap-2 rounded-slab border border-edge bg-surface px-3 py-2 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg"
+          className="inline-flex items-center gap-2 rounded-slab border border-line bg-surface px-3 py-2 shadow-hard transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-lg"
         >
-          <span className="border border-edge bg-pop px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-on-pop">
+          <span className="rounded-full border border-line bg-pop px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-on-pop">
             {kind}
           </span>
-          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
             Download
           </span>
           <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
@@ -203,7 +201,7 @@ function Prose({ text }: { text: string }) {
         i % 2 === 1 ? (
           <code
             key={i}
-            className="rounded-[3px] border border-edge bg-surface-2 px-1 py-px font-mono text-[0.85em]"
+            className="rounded-[3px] border border-line bg-surface-2 px-1 py-px font-mono text-[0.85em]"
           >
             {part}
           </code>

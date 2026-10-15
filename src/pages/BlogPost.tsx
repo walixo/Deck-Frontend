@@ -27,7 +27,7 @@ export function BlogPost() {
         <div className="mt-6 text-center">
           <Link
             to="/blog"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← Back to the blog
           </Link>
@@ -40,14 +40,14 @@ export function BlogPost() {
 
   return (
     <article>
-      <header className="relative isolate overflow-hidden border-b border-edge">
+      <header className="relative isolate overflow-hidden border-b border-line">
         <Backdrop pattern="halftone" />
 
         <div className="relative mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
           <nav aria-label="Breadcrumb" className="mb-6">
             <Link
               to="/blog"
-              className="font-mono text-[11px] font-bold uppercase text-muted hover:text-body"
+              className="font-mono text-[11px] font-medium uppercase text-muted hover:text-body"
             >
               ← The blog
             </Link>
@@ -56,14 +56,12 @@ export function BlogPost() {
           {/* Staff see drafts here; readers get a 404 instead, so this chip only
               ever appears for somebody who can act on it. */}
           {post.status === 'draft' && (
-            <p className="mb-4 inline-block border border-edge bg-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-canvas">
+            <p className="rounded-full mb-4 inline-block border border-line bg-edge px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-canvas">
               Draft — only staff can see this
             </p>
           )}
 
-          <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
-            {post.title}
-          </h1>
+          <h1 className="display-tight text-3xl text-balance sm:text-4xl">{post.title}</h1>
 
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted text-pretty">
             {post.excerpt}
@@ -73,16 +71,18 @@ export function BlogPost() {
             {post.author && (
               <>
                 <Avatar user={post.author} size="sm" />
-                <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+                <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
                   {post.author.name}
-                  {post.author.verified && <VerifiedMark name={post.author.name} className="ml-1" />}
+                  {post.author.verified && (
+                    <VerifiedMark name={post.author.name} className="ml-1" />
+                  )}
                 </span>
               </>
             )}
             <span aria-hidden="true" className="text-muted/50">
               /
             </span>
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
               {post.publishedAt ? formatFullDate(post.publishedAt) : 'Unpublished'} ·{' '}
               {post.readMinutes} min read
             </span>
@@ -95,7 +95,7 @@ export function BlogPost() {
           <img
             src={post.coverUrl}
             alt=""
-            className="aspect-[3/1] w-full border border-edge object-cover shadow-hard"
+            className="aspect-[3/1] w-full border border-line object-cover shadow-hard"
           />
         </div>
       )}
@@ -118,12 +118,12 @@ export function BlogPost() {
         </div>
 
         {post.tags.length > 0 && (
-          <div className="mt-10 flex flex-wrap gap-2 border-t border-edge pt-6">
+          <div className="mt-10 flex flex-wrap gap-2 border-t border-line pt-6">
             {post.tags.map((tag) => (
               <Link
                 key={tag}
                 to={`/blog?tag=${encodeURIComponent(tag)}`}
-                className="border border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-deep hover:text-on-deep"
+                className="rounded-full border border-line px-2 py-0.5 font-mono text-[11px] font-medium uppercase text-muted transition-colors duration-300 hover:bg-deep hover:text-on-deep"
               >
                 {tag}
               </Link>

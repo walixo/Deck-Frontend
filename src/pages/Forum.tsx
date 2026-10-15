@@ -45,13 +45,13 @@ export function Forum() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-      <header className="border-b border-edge pb-6">
+      <header className="border-b border-line pb-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="display-tight text-[clamp(2rem,5vw,3rem)] uppercase">Forum</h1>
+            <h1 className="display-tight text-[clamp(2rem,5vw,3rem)]">Forum</h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
-              Ask something, show what you are working on, or argue about Deck. Anyone can read;
-              you need an account to post.
+              Ask something, show what you are working on, or argue about Deck. Anyone can read; you
+              need an account to post.
             </p>
           </div>
 
@@ -69,7 +69,12 @@ export function Forum() {
 
       {/* Sections, then search. Both write to the URL. */}
       <div className="mt-6 flex flex-wrap items-center gap-2">
-        <SectionChip label="All" value="" current={section} onPick={(v) => setParam('section', v)} />
+        <SectionChip
+          label="All"
+          value=""
+          current={section}
+          onPick={(v) => setParam('section', v)}
+        />
         {TOPIC_SECTIONS.map((value) => (
           <SectionChip
             key={value}
@@ -95,7 +100,7 @@ export function Forum() {
           onChange={(event) => setDraft(event.target.value)}
           placeholder="SEARCH TOPICS"
           aria-label="Search topics"
-          className="h-10 min-w-0 flex-1 border border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+          className="h-10 min-w-0 flex-1 border border-line bg-surface px-3 font-mono text-[12px] font-medium uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
         />
         <Button type="submit" variant="secondary" size="sm">
           Search
@@ -157,9 +162,9 @@ function SectionChip({
       onClick={() => onPick(value)}
       aria-pressed={current === value}
       className={cn(
-        'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
+        'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
         current === value
-          ? 'bg-pop text-on-pop'
+          ? 'bg-edge text-canvas'
           : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
       )}
     >
@@ -189,7 +194,7 @@ function TopicRow({ topic }: { topic: TopicSummary }) {
   const last = topic.lastReplyBy;
 
   return (
-    <article className="group relative flex gap-3 px-1 py-4 transition-colors duration-[120ms] hover:bg-surface-2/60 sm:gap-4">
+    <article className="group relative flex gap-3 px-1 py-4 transition-colors duration-300 hover:bg-surface-2/60 sm:gap-4">
       {author ? (
         <Avatar user={author} size="md" className="relative z-10 shrink-0" />
       ) : (
@@ -200,9 +205,7 @@ function TopicRow({ topic }: { topic: TopicSummary }) {
         <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm leading-tight">
           <span className="font-bold">{author?.name ?? 'Deleted account'}</span>
           {author?.verified && <VerifiedMark name={author.name} />}
-          {author && (
-            <span className="font-mono text-[11px] text-muted">@{author.username}</span>
-          )}
+          {author && <span className="font-mono text-[11px] text-muted">@{author.username}</span>}
           <span aria-hidden="true" className="text-muted">
             ·
           </span>
@@ -215,18 +218,18 @@ function TopicRow({ topic }: { topic: TopicSummary }) {
           </time>
 
           {topic.pinned && (
-            <span className="ml-1 inline-flex items-center gap-1 border border-edge bg-pop px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em] text-on-pop">
+            <span className="rounded-full ml-1 inline-flex items-center gap-1 border border-line bg-pop px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.06em] text-on-pop">
               <Star name="glint" className="size-2" /> Pinned
             </span>
           )}
           {topic.locked && (
-            <span className="ml-1 border border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em] text-canvas">
+            <span className="rounded-full ml-1 border border-line bg-edge px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.06em] text-canvas">
               Locked
             </span>
           )}
         </p>
 
-        <h2 className="mt-1 font-display text-base uppercase leading-snug text-pretty sm:text-lg">
+        <h2 className="mt-1 font-display text-base leading-snug text-pretty sm:text-lg">
           <Link to={`/forum/${topic.slug}`} className="hover:underline">
             <span className="absolute inset-0 z-0" aria-hidden="true" />
             <span className="relative">{topic.title}</span>
@@ -253,9 +256,7 @@ function TopicRow({ topic }: { topic: TopicSummary }) {
           <span className="inline-flex items-center gap-1.5">
             <span aria-hidden="true">↩</span>
             <span className="tabular-nums">{topic.replyCount}</span>
-            <span className="sr-only">
-              {topic.replyCount === 1 ? 'reply' : 'replies'}
-            </span>
+            <span className="sr-only">{topic.replyCount === 1 ? 'reply' : 'replies'}</span>
           </span>
 
           {topic.replyCount > 0 && last && (
@@ -288,7 +289,7 @@ function Composer({ onDone }: { onDone: () => void }) {
   return (
     <Card className="mt-6 p-5 sm:p-6">
       <form onSubmit={submit} className="space-y-4" noValidate>
-        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Start a topic
         </h2>
 

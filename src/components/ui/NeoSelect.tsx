@@ -16,27 +16,17 @@ interface NeoSelectProps {
   /** Shown in the trigger when `value` matches no option — e.g. "Any". */
   placeholder?: string;
   /**
-   * `pop` is the accent fill of the published component — the right weight for
-   * a select that is the point of the screen it is on.
-   *
-   * `grey` is for the ones that are not. On Discover the selects sit beside a
-   * primary Search button and above the launches themselves, and three accent
-   * blocks in a row make the filter bar compete with the list it filters. Grey
-   * is a fixed pair, `ink` on `#9c9c99`, so it holds in both themes without the
-   * palette touching it.
+   * `pop` for a select that is the point of the screen it is on — a slightly
+   * firmer edge. `grey` for the ones that are not. Both are neutral pills: the
+   * accent is kept for the one action on a screen that should be pressed.
    */
   tone?: 'pop' | 'grey';
   className?: string;
 }
 
 /**
- * A select in the neobrutalism.dev shape.
- *
- * Traced from the published component: the trigger carries the accent fill
- * rather than a surface, corners are the 5px base radius, and — the detail that
- * makes it that component rather than any other dropdown — a hovered option is
- * marked by a **border**, not a fill. Everything in the panel is the same
- * colour; only the outline moves.
+ * A custom select: a rounded pill that opens a soft panel, with the row under
+ * the pointer or keyboard marked by a quiet fill.
  *
  * Hand-rolled rather than pulled in, because the published version is a Radix
  * wrapper and Deck has no Radix. Building on the native `<select>` was the other
@@ -57,7 +47,9 @@ export function NeoSelect({
   tone = 'pop',
   className,
 }: NeoSelectProps) {
-  const fill = tone === 'grey' ? 'bg-grey text-ink' : 'bg-pop text-on-pop';
+  /* Both tones are neutral pills now; `pop` keeps a slightly firmer edge so a
+     primary filter still reads as the one to reach for. */
+  const fill = tone === 'grey' ? 'bg-surface text-body' : 'bg-surface text-body border-edge/25';
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -156,20 +148,19 @@ export function NeoSelect({
         aria-expanded={open}
         aria-label={label}
         className={cn(
-          'flex h-9 w-full items-center justify-between gap-2 rounded-slab',
-          /* The hairline, matching the buttons. */
-          'border border-edge px-3',
+          'flex h-9 w-full items-center justify-between gap-2 rounded-full',
+          'border border-line px-3.5',
           fill,
-          'font-mono text-[12px] font-bold uppercase tracking-[0.06em]',
-          'transition-transform duration-[120ms] ease-[var(--ease-snap)]',
-          'hover:-translate-y-0.5 focus-visible:outline-none',
+          'font-mono text-[10px] font-medium uppercase tracking-[0.14em]',
+          'transition-[border-color] duration-300 ease-[var(--ease-snap)]',
+          'hover:border-edge focus-visible:outline-none',
         )}
       >
         <span className="truncate">{selected?.label ?? placeholder ?? label}</span>
         <span
           aria-hidden="true"
           className={cn(
-            'shrink-0 text-[9px] leading-none transition-transform duration-[140ms]',
+            'shrink-0 text-[9px] leading-none transition-transform duration-300',
             open && 'rotate-180',
           )}
         >
@@ -185,11 +176,8 @@ export function NeoSelect({
           tabIndex={-1}
           className={cn(
             'absolute left-0 top-full z-50 mt-1 max-h-80 min-w-full overflow-y-auto',
-            'animate-[var(--animate-slam)] rounded-slab border border-edge p-1',
-            /* The panel wears the trigger's fill. A grey trigger opening an
-               accent panel reads as two different controls. */
-            fill,
-            'shadow-hard',
+            'animate-[var(--animate-slam)] rounded-2xl border border-line bg-surface p-1.5 text-body',
+            'shadow-hard-lg',
           )}
         >
           {options.map((option, index) => {
@@ -203,25 +191,13 @@ export function NeoSelect({
                   onClick={() => commit(index)}
                   onMouseEnter={() => setActive(index)}
                   className={cn(
-                    'flex w-full items-center justify-between gap-2 rounded-slab px-2 py-1.5 text-left',
-                    /*
-                     * The published component's signature: the row is marked by
-                     * an outline appearing, not by the fill changing. Every row
-                     * reserves the border width so nothing shifts when it lands.
-                     *
-                     * One class or the other, never both. Emitting
-                     * `border-transparent` alongside a conditional `border-edge`
-                     * looks right and silently does nothing — two colour
-                     * utilities of equal specificity are decided by their order
-                     * in the compiled stylesheet, not in the class attribute,
-                     * and transparent happens to come later.
-                     */
-                    'border',
-                    index === active ? 'border-edge' : 'border-transparent',
+                    'flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left transition-colors duration-200',
+                    /* The row under the pointer or keyboard takes a soft fill. */
+                    index === active && 'bg-surface-2',
                   )}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate font-mono text-[12px] font-bold uppercase tracking-[0.06em]">
+                    <span className="block truncate text-[13px] font-medium tracking-[-0.01em]">
                       {option.label}
                     </span>
                     {option.hint && (

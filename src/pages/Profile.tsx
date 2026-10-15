@@ -9,7 +9,7 @@ import { ItemCardSkeletonList, Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useMeta';
-import { colourFor, formatFullDate, formatNumber, prettyUrl } from '@/lib/utils';
+import { formatFullDate, formatNumber, prettyUrl } from '@/lib/utils';
 import { VerifiedMark } from '@/components/ui/VerifiedMark';
 
 export function Profile() {
@@ -45,7 +45,7 @@ export function Profile() {
         <div className="mt-6 text-center">
           <Link
             to="/discover"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← Back to Discover
           </Link>
@@ -61,37 +61,30 @@ export function Profile() {
 
   return (
     <div>
-      <header className="relative isolate overflow-hidden border-b border-edge">
+      <header className="relative isolate overflow-hidden border-b border-line">
         <Backdrop pattern="halftone" />
-        {/* Flat colour bar keyed to the username, on the header's bottom edge. */}
-        <div
-          aria-hidden="true"
-          className={`pointer-events-none absolute inset-x-0 bottom-0 h-2 border-t border-edge ${colourFor(user.username).bg}`}
-        />
 
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
             <Avatar user={user} size="xl" className="animate-[var(--animate-slam)]" />
 
             <div className="min-w-0 flex-1 animate-[var(--animate-slide-up)]">
-              <h1 className="display-tight text-3xl uppercase">
+              <h1 className="display-tight text-3xl">
                 {user.name}
                 {user.verified && <VerifiedMark name={user.name} size="md" className="ml-2" />}
               </h1>
-              <p className="mt-1.5 font-mono text-[12px] font-bold uppercase text-muted">
+              <p className="mt-1.5 font-mono text-[12px] font-medium uppercase text-muted">
                 @{user.username}
               </p>
 
-              {user.headline && (
-                <p className="mt-3 font-display text-sm uppercase">{user.headline}</p>
-              )}
+              {user.headline && <p className="mt-3 font-display text-sm">{user.headline}</p>}
               {user.bio && (
                 <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted text-pretty">
                   {user.bio}
                 </p>
               )}
 
-              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11px] font-bold uppercase text-muted">
+              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11px] font-medium uppercase text-muted">
                 {user.websiteUrl && (
                   <a
                     href={user.websiteUrl}
@@ -131,10 +124,10 @@ export function Profile() {
           <BadgeCase badges={data.badges} />
         </div>
 
-        <h2 className="mb-5 text-xl uppercase">
+        <h2 className="mb-5 text-xl">
           {isSelf ? 'Your launches' : `Launches by ${user.name}`}
           {items.length > 0 && (
-            <span className="ml-2 font-mono text-sm font-bold tabular-nums text-muted">
+            <span className="ml-2 font-mono text-sm font-medium tabular-nums text-muted">
               {items.length}
             </span>
           )}
@@ -173,7 +166,7 @@ function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <Card className="px-4 py-3.5">
       <dd className="font-display text-2xl tabular-nums">{value}</dd>
-      <dt className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+      <dt className="mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
         {label}
       </dt>
     </Card>

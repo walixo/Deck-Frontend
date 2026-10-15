@@ -35,12 +35,12 @@ export function ConsentBanner() {
     <div
       role="region"
       aria-label="Cookie choices"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-edge bg-surface p-4 shadow-hard-lg"
+      className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-4xl rounded-3xl border border-line bg-surface/90 p-5 shadow-hard-xl backdrop-blur-xl sm:inset-x-6 sm:bottom-6"
     >
       <div className="mx-auto max-w-4xl">
         <div className="flex flex-wrap items-center gap-4">
           <p className="min-w-0 flex-1 text-sm leading-relaxed text-pretty">
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               Cookies
             </span>
             <br />
@@ -70,15 +70,15 @@ export function ConsentBanner() {
           type="button"
           onClick={() => setDetail(!detail)}
           aria-expanded={detail}
-          className="mt-2 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted underline-offset-2 hover:text-body hover:underline"
+          className="mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted underline-offset-2 hover:text-body hover:underline"
         >
           {detail ? 'Hide detail' : 'What is stored?'}
         </button>
 
         {detail && (
-          <dl className="mt-3 grid gap-3 border-t border-edge pt-3 text-xs leading-relaxed sm:grid-cols-2">
+          <dl className="mt-3 grid gap-3 border-t border-line pt-3 text-xs leading-relaxed sm:grid-cols-2">
             <div>
-              <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em]">
+              <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.08em]">
                 Always on
               </dt>
               <dd className="mt-1 text-muted text-pretty">
@@ -87,7 +87,7 @@ export function ConsentBanner() {
               </dd>
             </div>
             <div>
-              <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em]">
+              <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.08em]">
                 Only if you accept
               </dt>
               <dd className="mt-1 text-muted text-pretty">
@@ -101,7 +101,7 @@ export function ConsentBanner() {
             <div className="sm:col-span-2">
               <Link
                 to="/privacy"
-                className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] underline underline-offset-4 transition-colors hover:text-accent"
+                className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] underline underline-offset-4 transition-colors hover:text-accent"
               >
                 Read the full privacy policy
               </Link>

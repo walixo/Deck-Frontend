@@ -211,7 +211,7 @@ export function Globe({ t }: { t: number }) {
           <span className="size-3 bg-accent" />
           onedeck.africa
         </Mono>
-        <div className="mt-5 font-display text-[124px] uppercase leading-none text-body display-tight">
+        <div className="mt-5 font-display text-[124px] leading-none text-body display-tight">
           <Rise progress={snapIn(t, 19.4, 0.26)}>
             Launch here
             <Stop />
@@ -318,7 +318,7 @@ function Pin({
       />
       <span
         className={cn(
-          'absolute left-4 top-[-46px] whitespace-nowrap border-2 border-edge px-3 py-1 font-mono text-[16px] font-bold uppercase tracking-[0.1em] shadow-hard-sm',
+          'rounded-full absolute left-4 top-[-46px] whitespace-nowrap border border-line px-3 py-1 font-mono text-[16px] font-medium uppercase tracking-[0.1em] shadow-hard-sm',
           origin ? 'bg-pop text-on-pop' : 'bg-canvas text-body',
         )}
         style={{ transform: `scale(${lerp(0.5, 1, pop)})`, transformOrigin: '0 100%' }}

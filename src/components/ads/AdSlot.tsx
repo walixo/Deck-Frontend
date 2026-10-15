@@ -61,7 +61,7 @@ function DeckAd({ ad, className }: { ad: ServedAd; className?: string }) {
     <aside
       aria-label="Sponsored"
       className={cn(
-        'rounded-slab border border-edge bg-surface shadow-hard',
+        'rounded-slab border border-line bg-surface shadow-hard',
         /* Dashed rather than solid, so it reads as set apart from the page's
            own content at a glance rather than only via the label. */
         'border-dashed',
@@ -73,28 +73,28 @@ function DeckAd({ ad, className }: { ad: ServedAd; className?: string }) {
           <img
             src={ad.imageUrl}
             alt=""
-            className="size-14 shrink-0 border border-edge object-cover"
+            className="size-14 shrink-0 border border-line object-cover"
           />
         ) : ad.item?.logoUrl ? (
           <img
             src={ad.item.logoUrl}
             alt=""
-            className="size-14 shrink-0 border border-edge object-cover"
+            className="size-14 shrink-0 border border-line object-cover"
           />
         ) : null}
 
         <div className="min-w-0 flex-1">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
             Sponsored{ad.item ? ` · ${ad.item.name}` : ''}
           </p>
-          <h3 className="mt-1 font-display text-base uppercase leading-tight">{ad.headline}</h3>
+          <h3 className="mt-1 font-display text-base leading-tight">{ad.headline}</h3>
           <p className="mt-1 text-sm leading-relaxed text-muted text-pretty">{ad.body}</p>
         </div>
 
         <a
           href={ad.item ? `/item/${ad.item.slug}` : '/'}
           onClick={(event) => void go(event)}
-          className="shrink-0 border border-edge bg-pop px-3.5 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-on-pop transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+          className="shrink-0 border border-line bg-pop px-3.5 py-2 font-mono text-[12px] font-medium uppercase tracking-[0.06em] text-on-pop transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5"
         >
           {ad.ctaLabel}
         </a>

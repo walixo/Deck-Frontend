@@ -50,7 +50,7 @@ export function Hud({ t, chapter, act, acts }: HudProps) {
                 <span
                   key={index}
                   className={cn(
-                    'size-2.5 border border-edge',
+                    'size-2.5 border border-line',
                     index <= act ? 'bg-accent' : 'bg-transparent',
                   )}
                 />
@@ -102,7 +102,7 @@ export function Hud({ t, chapter, act, acts }: HudProps) {
 function Bracket({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <span
-      className={cn('absolute size-9 border-l-[3px] border-t-[3px] border-edge', className)}
+      className={cn('absolute size-9 border-l-[3px] border-t-[3px] border-line', className)}
       style={style}
     />
   );

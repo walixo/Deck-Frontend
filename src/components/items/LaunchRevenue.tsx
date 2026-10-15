@@ -91,10 +91,10 @@ export function LaunchRevenueChip({ revenue }: { revenue: Revenue }) {
       title={description}
       className={cn(
         'flex h-11 shrink-0 flex-col justify-center rounded-slab border px-3.5',
-        stale ? 'border-edge/60 bg-surface-2/30' : 'border-edge bg-surface-2/60',
+        stale ? 'border-edge/60 bg-surface-2/30' : 'border-line bg-surface-2/60',
       )}
     >
-      <span className="font-mono text-[10px] font-bold uppercase leading-none tracking-[0.08em] text-muted">
+      <span className="font-mono text-[10px] font-medium uppercase leading-none tracking-[0.08em] text-muted">
         Self-reported · {shortAsOf(revenue.reportedAt)}
       </span>
 

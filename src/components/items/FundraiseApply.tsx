@@ -54,8 +54,8 @@ export function FundraiseApply({ slug, itemName, fundraise, className }: Fundrai
        * will actually accept.
        */}
       {gated && (
-        <div className="mb-3 border border-edge bg-surface-2 px-3 py-2.5">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em]">
+        <div className="rounded-2xl mb-3 border border-line bg-surface-2 px-3 py-2.5">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em]">
             Not ready to raise yet
           </p>
           <p className="mt-1 text-xs leading-relaxed text-muted text-pretty">
@@ -64,11 +64,7 @@ export function FundraiseApply({ slug, itemName, fundraise, className }: Fundrai
           </p>
 
           <dl className="mt-3 space-y-2">
-            <Requirement
-              label="Votes"
-              have={eligibility.votes}
-              need={eligibility.votesNeeded}
-            />
+            <Requirement label="Votes" have={eligibility.votes} need={eligibility.votesNeeded} />
             <Requirement
               label="Comments"
               have={eligibility.comments}
@@ -95,8 +91,8 @@ export function FundraiseApply({ slug, itemName, fundraise, className }: Fundrai
       )}
 
       {rejected && fundraise.reviewNote && (
-        <p className="mt-2 border border-edge bg-surface-2 px-3 py-2 text-xs leading-relaxed text-muted text-pretty">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-body">
+        <p className="rounded-2xl mt-2 border border-line bg-surface-2 px-3 py-2 text-xs leading-relaxed text-muted text-pretty">
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-body">
             Not approved
           </span>
           <br />
@@ -104,9 +100,7 @@ export function FundraiseApply({ slug, itemName, fundraise, className }: Fundrai
         </p>
       )}
 
-      {open && (
-        <ApplyDialog slug={slug} itemName={itemName} onClose={() => setOpen(false)} />
-      )}
+      {open && <ApplyDialog slug={slug} itemName={itemName} onClose={() => setOpen(false)} />}
     </div>
   );
 }
@@ -125,10 +119,10 @@ function Requirement({ label, have, need }: { label: string; have: number; need:
   return (
     <div>
       <div className="flex items-baseline justify-between gap-2">
-        <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+        <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
           {label}
         </dt>
-        <dd className="font-mono text-[10px] font-bold tabular-nums">
+        <dd className="font-mono text-[10px] font-medium tabular-nums">
           <span className={met ? 'text-body' : 'text-muted'}>{have}</span>
           <span className="text-muted">/{need}</span>
         </dd>
@@ -139,7 +133,7 @@ function Requirement({ label, have, need }: { label: string; have: number; need:
         aria-valuemin={0}
         aria-valuemax={need}
         aria-label={`${label}: ${have} of ${need}`}
-        className="mt-1 h-1.5 w-full overflow-hidden border border-edge bg-surface"
+        className="mt-1 h-1.5 w-full overflow-hidden border border-line bg-surface"
       >
         {/* The themed mark. A fixed accent is unreadable against one canvas or
             the other at this height — see CONTRACT rule 3. */}
@@ -210,7 +204,7 @@ function ApplyDialog({
       onClose={onClose}
       aria-labelledby="apply-heading"
       className={cn(
-        'w-[min(34rem,92vw)] rounded-slab border border-edge bg-surface p-0 text-body shadow-hard-lg',
+        'w-[min(34rem,92vw)] rounded-slab border border-line bg-surface p-0 text-body shadow-hard-lg',
         /* `m-auto` restores centring. A modal <dialog> is centred by the UA
            sheet's `inset: 0; margin: auto`, and Tailwind's preflight zeroes
            every margin — which silently pins it to the top of the viewport. */
@@ -219,16 +213,13 @@ function ApplyDialog({
       )}
     >
       <form onSubmit={submit} className="p-5 sm:p-6" noValidate>
-        <h2
-          id="apply-heading"
-          className="border-b border-edge pb-3 font-display text-lg uppercase"
-        >
+        <h2 id="apply-heading" className="border-b border-line pb-3 font-display text-lg">
           Raise money for {itemName}
         </h2>
 
         <p className="mt-3 text-xs leading-relaxed text-muted text-pretty">
-          Deck reviews every fundraise before it opens. Tell us what you are raising for and how
-          the money gets spent — the clearer this is, the faster it goes through.
+          Deck reviews every fundraise before it opens. Tell us what you are raising for and how the
+          money gets spent — the clearer this is, the faster it goes through.
         </p>
 
         <div className="mt-5 space-y-4">
@@ -292,7 +283,7 @@ function ApplyDialog({
           />
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-edge pt-4">
+        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-4">
           <Button type="submit" loading={apply.isPending}>
             Submit application
           </Button>

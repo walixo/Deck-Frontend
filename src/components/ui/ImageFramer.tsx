@@ -213,7 +213,7 @@ export function ImageFramer({ file, shape, onDone, onUseOriginal, onCancel }: Im
       onClose={onCancel}
       aria-labelledby="framer-heading"
       className={cn(
-        'w-[min(46rem,94vw)] rounded-slab border border-edge bg-surface p-0 text-body shadow-hard-lg',
+        'w-[min(46rem,94vw)] rounded-slab border border-line bg-surface p-0 text-body shadow-hard-lg',
         /* `m-auto` restores the centring Tailwind's preflight removes from a
            modal dialog — the same fix the acquisition dialog carries. */
         'm-auto max-h-[92dvh] overflow-y-auto',
@@ -221,11 +221,11 @@ export function ImageFramer({ file, shape, onDone, onUseOriginal, onCancel }: Im
       )}
     >
       <div className="p-5 sm:p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-edge pb-3">
-          <h2 id="framer-heading" className="font-display text-lg uppercase">
+        <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3">
+          <h2 id="framer-heading" className="font-display text-lg">
             Size your image
           </h2>
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
             {label} frame — exactly as it will show
           </p>
         </div>
@@ -237,7 +237,7 @@ export function ImageFramer({ file, shape, onDone, onUseOriginal, onCancel }: Im
          * maker is deciding about.
          */}
         <div
-          className="mt-4 overflow-hidden rounded-slab border border-edge"
+          className="mt-4 overflow-hidden rounded-slab border border-line"
           style={{
             backgroundImage:
               'repeating-conic-gradient(var(--color-surface-2) 0% 25%, transparent 0% 50%)',
@@ -286,7 +286,7 @@ export function ImageFramer({ file, shape, onDone, onUseOriginal, onCancel }: Im
           </Button>
 
           <label className="ml-auto flex min-w-[12rem] flex-1 items-center gap-3 sm:flex-none">
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
               Zoom
             </span>
             <input
@@ -308,7 +308,7 @@ export function ImageFramer({ file, shape, onDone, onUseOriginal, onCancel }: Im
             rather than offering a choice that changes nothing visible. */}
         <fieldset className="mt-4 flex flex-wrap items-center gap-2">
           <legend className="sr-only">Background for any empty space</legend>
-          <span className="mr-1 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+          <span className="mr-1 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
             Empty space
           </span>
           {(['transparent', 'dark', 'light'] as Backdrop[]).map((option) => (
@@ -318,10 +318,10 @@ export function ImageFramer({ file, shape, onDone, onUseOriginal, onCancel }: Im
               aria-pressed={backdrop === option}
               onClick={() => setBackdrop(option)}
               className={cn(
-                'border px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors',
+                'rounded-full border px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors',
                 backdrop === option
                   ? 'border-accent bg-accent/10 text-body'
-                  : 'border-edge text-muted hover:text-body',
+                  : 'border-line text-muted hover:text-body',
               )}
             >
               {option === 'transparent' ? 'Clear' : option}
@@ -330,7 +330,7 @@ export function ImageFramer({ file, shape, onDone, onUseOriginal, onCancel }: Im
           <span className="text-xs text-muted">Clear matches whichever theme the page is in.</span>
         </fieldset>
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-edge pt-4">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
           <Button type="button" variant="ghost" size="sm" onClick={onUseOriginal}>
             Upload the original instead
           </Button>

@@ -203,10 +203,10 @@ export function ItemCard({
         /* Barely there on purpose. At 45% of surface-2 the tint reads as the
            row waking up rather than as a selection — enough to track the
            pointer down a long list, not enough to notice one at a time. */
-        plain && 'transition-colors duration-[140ms] hover:bg-surface-2/45',
-        !plain && 'rounded-slab border border-edge bg-surface p-3.5 shadow-hard',
-        !plain && 'transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)]',
-        !plain && 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
+        plain && 'transition-colors duration-300 hover:bg-surface-2/45',
+        !plain && 'rounded-slab border border-line bg-surface p-3.5 shadow-hard',
+        !plain && 'transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)]',
+        !plain && 'hover:-translate-y-0.5 hover:shadow-hard-lg',
         className,
       )}
     >
@@ -214,7 +214,7 @@ export function ItemCard({
         {rank !== undefined && (
           <span
             className={cn(
-              'mt-0.5 flex size-7 shrink-0 items-center justify-center border border-edge font-mono text-xs font-bold tabular-nums',
+              'mt-0.5 flex size-7 shrink-0 items-center justify-center border border-line font-mono text-xs font-medium tabular-nums',
               MEDAL_STYLES[rank] ?? 'bg-surface-2 text-muted',
             )}
             aria-label={`Rank ${rank}`}

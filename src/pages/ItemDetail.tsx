@@ -28,7 +28,6 @@ import { VerifiedMark } from '@/components/ui/VerifiedMark';
 import { useAuth } from '@/hooks/useAuth';
 import { useDeleteItem, useItem } from '@/hooks/useItems';
 import {
-  colourFor,
   editWindow,
   formatFullDate,
   formatNumber,
@@ -54,7 +53,7 @@ export function ItemDetail() {
         <div className="mt-6 text-center">
           <Link
             to="/discover"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← Back to Discover
           </Link>
@@ -66,11 +65,10 @@ export function ItemDetail() {
   if (!item) return null;
 
   const isOwner = user?.id === item.submittedBy.id || user?.role === 'admin';
-  const colour = colourFor(item.slug);
 
   return (
     <article>
-      <header className="relative isolate overflow-hidden border-b border-edge">
+      <header className="relative isolate overflow-hidden border-b border-line">
         <Backdrop pattern="halftone" />
 
         {item.coverUrl && (
@@ -78,7 +76,7 @@ export function ItemDetail() {
             <img
               src={item.coverUrl}
               alt=""
-              className="aspect-[3/1] w-full border border-edge object-cover shadow-hard"
+              className="aspect-[3/1] w-full border border-line object-cover shadow-hard"
             />
           </div>
         )}
@@ -86,7 +84,7 @@ export function ItemDetail() {
         <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <nav
             aria-label="Breadcrumb"
-            className="mb-6 flex items-center gap-2 font-mono text-[11px] font-bold uppercase text-muted"
+            className="mb-6 flex items-center gap-2 font-mono text-[11px] font-medium uppercase text-muted"
           >
             <Link to="/discover" className="hover:text-body">
               Discover
@@ -110,7 +108,7 @@ export function ItemDetail() {
                 {item.tagline}
               </p>
 
-              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[11px] font-bold uppercase tracking-[0.04em] text-muted">
+              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[11px] font-medium uppercase tracking-[0.04em] text-muted">
                 <Link
                   to={`/discover?category=${item.category}`}
                   className="inline-flex items-center gap-1.5 text-body hover:text-accent"
@@ -129,12 +127,12 @@ export function ItemDetail() {
               </div>
 
               {item.reviewCount > 0 && (
-                <div className="mt-4 inline-flex items-center gap-2.5 border border-edge bg-surface px-3 py-2 shadow-hard-sm">
+                <div className="rounded-2xl mt-4 inline-flex items-center gap-2.5 border border-line bg-surface px-3 py-2 shadow-hard-sm">
                   <Stars value={item.ratingAvg} size="md" />
                   <span className="font-display text-sm tabular-nums">
                     {item.ratingAvg.toFixed(1)}
                   </span>
-                  <span className="font-mono text-[11px] font-bold uppercase text-muted">
+                  <span className="font-mono text-[11px] font-medium uppercase text-muted">
                     {item.reviewCount} {item.reviewCount === 1 ? 'review' : 'reviews'}
                   </span>
                 </div>
@@ -163,16 +161,13 @@ export function ItemDetail() {
             </div>
           </div>
         </div>
-
-        {/* Colour bar keyed to the item, sitting on the header's bottom edge. */}
-        <div className={`h-2 border-t border-edge ${colour.bg}`} />
       </header>
 
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="min-w-0">
             <section aria-labelledby="about-heading">
-              <h2 id="about-heading" className="text-xl uppercase">
+              <h2 id="about-heading" className="text-xl">
                 About <span className="normal-case">{item.name}</span>
               </h2>
               <div className="mt-4 space-y-4 text-sm leading-relaxed text-body text-pretty sm:text-base">
@@ -190,7 +185,7 @@ export function ItemDetail() {
                     <Link
                       key={tag}
                       to={`/discover?tag=${encodeURIComponent(tag)}`}
-                      className="border border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-muted transition-colors duration-[120ms] hover:bg-deep hover:text-on-deep"
+                      className="rounded-full border border-line px-2 py-0.5 font-mono text-[11px] font-medium uppercase text-muted transition-colors duration-300 hover:bg-deep hover:text-on-deep"
                     >
                       #{tag}
                     </Link>
@@ -228,7 +223,7 @@ export function ItemDetail() {
             {isOwner && <SharePanel item={item} />}
 
             <Card className="p-5">
-              <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+              <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
                 Launched by
               </h2>
               <Link
@@ -237,7 +232,7 @@ export function ItemDetail() {
               >
                 <Avatar user={item.submittedBy} size="md" />
                 <span className="min-w-0">
-                  <span className="block truncate font-display text-sm uppercase group-hover:text-accent">
+                  <span className="block truncate font-display text-sm group-hover:text-accent">
                     {item.submittedBy.name}
                     {item.submittedBy.verified && (
                       <VerifiedMark name={item.submittedBy.name} className="ml-1" />
@@ -251,7 +246,7 @@ export function ItemDetail() {
 
               {item.makers.length > 0 && (
                 <div className="mt-5">
-                  <h3 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+                  <h3 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
                     Makers
                   </h3>
                   <ul className="mt-2.5 space-y-1.5">
@@ -264,7 +259,7 @@ export function ItemDetail() {
                 </div>
               )}
 
-              <dl className="mt-5 space-y-2 border-t border-edge pt-4 font-mono text-[11px] font-bold uppercase">
+              <dl className="mt-5 space-y-2 border-t border-line pt-4 font-mono text-[11px] font-medium uppercase">
                 {/* First, because it is the widest number here and the one the
                     others are a fraction of — the list reads as a funnel.
                     Abbreviated like everywhere else once it passes a thousand;
@@ -288,7 +283,7 @@ export function ItemDetail() {
               </dl>
 
               {isOwner && (
-                <div className="mt-5 space-y-3 border-t border-edge pt-4">
+                <div className="mt-5 space-y-3 border-t border-line pt-4">
                   {/* Not gated on the edit window, unlike the button below it —
                       revenue is a measurement that has to stay current, not
                       part of the pitch people voted on. */}
@@ -345,7 +340,7 @@ export function ItemDetail() {
             </Card>
 
             <Card className="p-5">
-              <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+              <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
                 Links
               </h2>
               <ul className="mt-3 space-y-2">
@@ -378,7 +373,7 @@ export function ItemDetail() {
 
         {item.related.length > 0 && (
           <section aria-labelledby="related-heading" className="mt-16">
-            <h2 id="related-heading" className="mb-5 text-xl uppercase">
+            <h2 id="related-heading" className="mb-5 text-xl">
               More in <CategoryLabel slug={item.category} />
             </h2>
             <div className="space-y-3">
@@ -396,7 +391,7 @@ export function ItemDetail() {
 function ItemDetailSkeleton() {
   return (
     <div>
-      <div className="border-b border-edge">
+      <div className="border-b border-line">
         <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6 lg:px-8">
           <div className="flex gap-6">
             <Skeleton className="size-20" />

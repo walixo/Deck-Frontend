@@ -33,7 +33,7 @@ export function BadgeCase({ badges }: { badges: ProfileBadge[] }) {
   const earned = badges.filter((badge) => badge.earned);
 
   return (
-    <details className="group rounded-slab border border-edge bg-surface shadow-hard">
+    <details className="group rounded-slab border border-line bg-surface shadow-hard">
       <summary
         className={cn(
           'flex cursor-pointer list-none items-center gap-3 p-4',
@@ -42,7 +42,9 @@ export function BadgeCase({ badges }: { badges: ProfileBadge[] }) {
           'focus-visible:outline-3 focus-visible:outline-offset-2',
         )}
       >
-        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.12em]">Badges</span>
+        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
+          Badges
+        </span>
 
         {/* A stack of the earned marks, so the row is worth looking at shut. */}
         <span aria-hidden="true" className="flex items-center -space-x-1.5">
@@ -52,7 +54,7 @@ export function BadgeCase({ badges }: { badges: ProfileBadge[] }) {
               <span
                 key={badge.id}
                 className={cn(
-                  'flex size-6 items-center justify-center border border-edge',
+                  'flex size-6 items-center justify-center border border-line',
                   art.tone,
                 )}
               >
@@ -62,17 +64,17 @@ export function BadgeCase({ badges }: { badges: ProfileBadge[] }) {
           })}
         </span>
 
-        <span className="ml-auto font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+        <span className="ml-auto font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
           <span className="tabular-nums text-body">{earned.length}</span> of {badges.length}
         </span>
 
         <ChevronDownIcon
           aria-hidden="true"
-          className="size-4 shrink-0 transition-transform duration-[160ms] ease-[var(--ease-snap)] group-open:rotate-180"
+          className="size-4 shrink-0 transition-transform duration-300 ease-[var(--ease-snap)] group-open:rotate-180"
         />
       </summary>
 
-      <ul className="grid gap-2 border-t border-edge p-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-2 border-t border-line p-4 sm:grid-cols-2 lg:grid-cols-3">
         {badges.map((badge) => (
           <li key={badge.id}>
             <Tile badge={badge} />
@@ -91,7 +93,7 @@ function Tile({ badge }: { badge: ProfileBadge }) {
   return (
     <div
       className={cn(
-        'flex h-full items-start gap-3 border border-edge p-3',
+        'flex h-full items-start gap-3 border border-line p-3',
         badge.earned ? 'bg-surface shadow-hard-sm' : 'bg-surface-2',
       )}
       /* One label for the whole tile, so an unearned badge is never announced
@@ -105,7 +107,7 @@ function Tile({ badge }: { badge: ProfileBadge }) {
       <span
         aria-hidden="true"
         className={cn(
-          'flex size-10 shrink-0 items-center justify-center border border-edge',
+          'flex size-10 shrink-0 items-center justify-center border border-line',
           badge.earned ? cn(art.tone, 'shadow-hard-sm') : 'bg-surface',
         )}
       >
@@ -118,12 +120,7 @@ function Tile({ badge }: { badge: ProfileBadge }) {
       </span>
 
       <div className="min-w-0">
-        <p
-          className={cn(
-            'font-display text-[13px] uppercase leading-tight',
-            !badge.earned && 'text-muted',
-          )}
-        >
+        <p className={cn('font-display text-[13px] leading-tight', !badge.earned && 'text-muted')}>
           {badge.name}
         </p>
         <p className="mt-0.5 text-[11px] leading-snug text-muted text-pretty">

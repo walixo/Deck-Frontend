@@ -77,7 +77,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="rounded-slab border border-edge bg-surface shadow-hard-lg"
+      className="rounded-slab border border-line bg-surface shadow-hard-lg"
     >
       <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
         <div key={active.id} className="animate-[var(--animate-slam)]">
@@ -92,7 +92,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
           <div className="flex items-start gap-4">
             <ItemLogo item={active} size="lg" />
             <div className="min-w-0">
-              <h3 className="display-tight text-2xl uppercase text-balance sm:text-3xl">
+              <h3 className="display-tight text-2xl text-balance sm:text-3xl">
                 <Link to={`/item/${active.slug}`} className="underline-offset-4 hover:underline">
                   {active.name}
                 </Link>
@@ -107,7 +107,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
             <VoteButton item={active} layout="inline" />
 
             {active.reviewCount > 0 && (
-              <span className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase text-muted">
+              <span className="inline-flex items-center gap-2 font-mono text-[11px] font-medium uppercase text-muted">
                 <Stars value={active.ratingAvg} size="md" />
                 <span className="tabular-nums">
                   {active.ratingAvg.toFixed(1)} / {active.reviewCount}{' '}
@@ -118,7 +118,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
 
             <Link
               to={`/item/${active.slug}`}
-              className="font-mono text-[11px] font-bold uppercase underline-offset-4 hover:underline"
+              className="font-mono text-[11px] font-medium uppercase underline-offset-4 hover:underline"
             >
               Read more →
             </Link>
@@ -135,7 +135,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
                 key={item.id}
                 type="button"
                 onClick={() => goTo(itemIndex)}
-                className="flex w-64 items-center gap-3 border border-edge bg-canvas p-2.5 text-left transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-1"
+                className="rounded-2xl flex w-64 items-center gap-3 border border-line bg-canvas p-2.5 text-left transition-transform duration-300 ease-[var(--ease-snap)]"
                 style={{ transform: `translateX(${(offset - 1) * 12}px)` }}
               >
                 <ItemLogo item={item} size="sm" />
@@ -145,7 +145,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
                     <CategoryLabel slug={item.category} />
                   </span>
                 </span>
-                <span className="font-mono text-[11px] font-bold tabular-nums text-muted">
+                <span className="font-mono text-[11px] font-medium tabular-nums text-muted">
                   ▲ {item.voteCount}
                 </span>
               </button>
@@ -155,7 +155,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
       </div>
 
       {/* Colour bar keyed to the active item — the only thing that changes hue. */}
-      <div className={cn('h-1.5 border-y border-edge', colour.bg)} />
+      <div className={cn('h-1.5 border-y border-line', colour.bg)} />
 
       <div className="flex items-center justify-between gap-4 px-5 py-3 sm:px-7">
         <div
@@ -172,7 +172,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
               aria-label={`Show ${item.name}`}
               onClick={() => goTo(itemIndex)}
               className={cn(
-                'h-3 border border-edge transition-[width,background-color] duration-[140ms]',
+                'h-3 border border-line transition-[width,background-color] duration-300',
                 /* A dot is a mark on the page, not a filled panel, so it takes
                    the themed accent — a fixed one would be 1.15:1 in light or
                    1.9:1 in dark depending on which half you picked. */
@@ -180,7 +180,7 @@ export function SpotlightSlider({ items, isLoading = false }: SpotlightSliderPro
               )}
             />
           ))}
-          <span className="ml-2 font-mono text-[11px] font-bold tabular-nums text-muted">
+          <span className="ml-2 font-mono text-[11px] font-medium tabular-nums text-muted">
             {index + 1}/{total}
           </span>
         </div>
@@ -206,7 +206,7 @@ function SliderArrow({
       type="button"
       onClick={onClick}
       aria-label={direction === 'next' ? 'Next spotlight' : 'Previous spotlight'}
-      className="flex size-8 items-center justify-center border border-edge bg-surface text-sm transition-[transform,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep active:translate-y-0"
+      className="flex size-8 items-center justify-center border border-line bg-surface text-sm transition-[transform,background-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep"
     >
       <span aria-hidden="true">{direction === 'next' ? '→' : '←'}</span>
     </button>

@@ -2,6 +2,14 @@
 
 Rules a palette must satisfy **before** anyone edits a component.
 
+> **The look, since the restyle.** Deck now speaks the Deck Games voice
+> everywhere: warm neutrals, hairline borders (`line`), soft shadows, generous
+> rounding, Geist headings set tight in mixed case, small mono capitals for
+> labels and buttons, eased motion — and one accent, ember, kept for the action
+> on a screen that should be pressed. Selected filters and tabs are ink pills;
+> ember is not spent on them. The rules below are about colour and still hold
+> as written.
+
 This file exists because Deck went through five full palette sweeps in one
 build — cobalt, lavender+amber, violet, back to lavender+amber, lime+slate —
 and each was evaluated by shipping it to fifty-odd files and then looking. Two
@@ -74,8 +82,9 @@ live, which is the only reason evaluating a palette is now cheap.
 ## 5. It has to survive greyscale.
 
 If two states are distinguishable only by hue, they are not distinguishable.
-Every filled block also carries a 2px border, and every status chip carries a
-word. Rank, state and category must all still read with the colour removed.
+A selected filter is an ink pill, not just a tinted one; every status chip
+carries a word. Rank, state and category must all still read with the colour
+removed.
 
 ## 6. Status has three colours, and only three.
 
@@ -103,14 +112,14 @@ Three constraints keep this from becoming a fourth palette:
 2. **They never carry meaning alone.** Every one is accompanied by a word —
    "Approved", "Delete", the error text itself. Rule 5 still applies: remove the
    colour and the state must still read.
-3. **Inversion is still the fallback** for anything that has no defined status,
-   and it is still how a form's invalid *field* is marked. The message beside it
-   is `warning`; the field itself is not.
+3. **Errors are soft red, not blocks.** An invalid field takes a red edge and a
+   line of red text under it (`danger`, or `danger-soft` on the dark canvas so
+   small type keeps 4.5:1). Alerts are a faint tint of the status colour with
+   the words in it.
 
 `success` is the only green that clears 3:1 against **both** canvases, which is
 why it is the darker of the candidates. `warning` is 1.5:1 against the light
-canvas and that is fine — it is a filled block with a 2px border, which is how
-every block in this system separates itself, and it is never used as a mark.
+canvas, so it is only ever a fill with ink on it, never a mark or a text colour.
 
 ---
 

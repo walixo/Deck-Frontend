@@ -90,6 +90,9 @@ expect('success block on light', success, light.canvas, MARK);
 expect('success block on dark', success, dark.canvas, MARK);
 expect('danger block on light', danger, light.canvas, MARK);
 expect('danger block on dark', danger, dark.canvas, MARK);
+/* Error text is danger on light and danger-soft on dark — small type, so 4.5. */
+expect('danger text on light', danger, light.canvas, TEXT);
+expect('danger-soft text on dark', tokens.fixed['danger-soft'], dark.canvas, TEXT);
 expect('ink on grey', ink, grey, TEXT);
 expect('ink on grey-soft', ink, greySoft, TEXT);
 expect('ink on bone', ink, bone, TEXT);

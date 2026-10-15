@@ -46,9 +46,9 @@ export function AdminOrders() {
             type="button"
             onClick={() => setStatus(filter.value)}
             aria-pressed={status === filter.value}
-            className={`border border-edge px-3 py-1.5 font-mono text-[12px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms] ${
+            className={`rounded-2xl border border-line px-3 py-1.5 font-mono text-[12px] font-medium uppercase tracking-[0.06em] transition-colors duration-300 ${
               status === filter.value
-                ? 'bg-pop text-on-pop'
+                ? 'bg-edge text-canvas'
                 : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
             }`}
           >
@@ -101,19 +101,19 @@ function OrderRow({ order }: { order: AdminOrder }) {
   };
 
   return (
-    <article className="rounded-slab border border-edge bg-surface p-4 shadow-hard">
+    <article className="rounded-slab border border-line bg-surface p-4 shadow-hard">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-display text-base uppercase">{order.reference}</h3>
+            <h3 className="font-display text-base">{order.reference}</h3>
             <span
-              className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${ORDER_STATUS_TONE[order.status]}`}
+              className={`rounded-full border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] ${ORDER_STATUS_TONE[order.status]}`}
             >
               {orderStatusLabel(order.status)}
             </span>
           </div>
 
-          <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          <p className="mt-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
             {dateOf(order.createdAt)} &middot; {order.buyer?.name ?? order.email}
           </p>
 
@@ -159,7 +159,7 @@ function OrderRow({ order }: { order: AdminOrder }) {
       {error && (
         <p
           role="alert"
-          className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-3 border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
         >
           {error}
         </p>

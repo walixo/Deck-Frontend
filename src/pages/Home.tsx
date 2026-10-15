@@ -69,7 +69,7 @@ export function Home() {
        */}
       <Suspense
         fallback={
-          <div className="border-b border-edge">
+          <div className="border-b border-line">
             <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
               <Skeleton className="h-3 w-40" />
               <Skeleton className="mt-3 h-8 w-72" />
@@ -99,7 +99,7 @@ export function Home() {
        * in the themed ink so they invert with it, at an opacity low enough to
        * read as material rather than pattern.
        */}
-      <div className="relative isolate overflow-hidden border-b border-edge bg-surface-2">
+      <div className="relative isolate overflow-hidden border-b border-line bg-surface-2">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-stripes text-edge opacity-[0.07]"
@@ -148,9 +148,7 @@ export function Home() {
 
       {/* One clear exit to the board, since it is no longer on this page. */}
       <div className="mx-auto max-w-6xl px-4 py-14 text-center sm:px-6 lg:px-8">
-        <h2 className="display-tight text-2xl uppercase text-balance sm:text-3xl">
-          See what shipped today
-        </h2>
+        <h2 className="display-tight text-2xl text-balance sm:text-3xl">See what shipped today</h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted text-pretty">
           Every launch of the day, ranked by votes. The board resets at midnight UTC.
         </p>

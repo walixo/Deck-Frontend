@@ -29,7 +29,7 @@ export function FutureGenStory() {
   return (
     <section
       aria-labelledby="future-gen-heading"
-      className="relative isolate overflow-hidden border-y border-edge bg-surface-2"
+      className="relative isolate overflow-hidden border-y border-line bg-surface-2"
     >
       <div
         aria-hidden="true"
@@ -38,13 +38,13 @@ export function FutureGenStory() {
 
       <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_1fr] lg:gap-14 lg:px-8">
         <div>
-          <p className="inline-flex items-center gap-2 border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop shadow-hard-sm">
+          <p className="rounded-full inline-flex items-center gap-2 border border-line bg-pop px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-on-pop shadow-hard-sm">
             <Star name="sparkle" className="size-3" spin={-8} /> Future Gen
           </p>
 
           <h2
             id="future-gen-heading"
-            className="display-tight mt-5 text-3xl uppercase text-balance sm:text-4xl"
+            className="display-tight mt-5 text-3xl text-balance sm:text-4xl"
           >
             The next makers are building it on a workbench
           </h2>
@@ -96,7 +96,7 @@ export function FutureGenStory() {
                 <li key={entry.id}>
                   <Link
                     to={`/item/${entry.slug}`}
-                    className="group block rounded-slab border border-edge bg-surface p-4 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg"
+                    className="group block rounded-slab border border-line bg-surface p-4 shadow-hard transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-lg"
                   >
                     <div className="flex items-start gap-3">
                       <ItemLogo item={entry} size="md" />
@@ -117,8 +117,8 @@ export function FutureGenStory() {
               ))}
             </ul>
           ) : (
-            <div className="rounded-slab border border-dashed border-edge bg-surface/60 p-6 text-center">
-              <p className="font-display text-lg uppercase">The first prototypes are on the way</p>
+            <div className="rounded-slab border border-dashed border-line bg-surface/60 p-6 text-center">
+              <p className="font-display text-lg">The first prototypes are on the way</p>
               <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-muted text-pretty">
                 Future Gen entries appear here as staff approve them. The page explains how it works
                 in the meantime.

@@ -59,7 +59,7 @@ export function OrderDetail() {
         <div className="mt-6 text-center">
           <Link
             to="/orders"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← Your orders
           </Link>
@@ -80,19 +80,19 @@ export function OrderDetail() {
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           Order
         </p>
-        <h1 className="display-tight text-3xl uppercase sm:text-4xl">{data.reference}</h1>
+        <h1 className="display-tight text-3xl sm:text-4xl">{data.reference}</h1>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <span
-            className={`border border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase ${
+            className={`rounded-full border border-line px-2 py-0.5 font-mono text-[11px] font-medium uppercase ${
               ORDER_STATUS_TONE[data.status] ?? 'bg-surface-2 text-body'
             }`}
           >
             {orderStatusLabel(data.status)}
           </span>
-          <span className="font-mono text-[11px] font-bold uppercase text-muted">
+          <span className="font-mono text-[11px] font-medium uppercase text-muted">
             {formatFullDate(data.createdAt)}
           </span>
         </div>
@@ -129,7 +129,7 @@ export function OrderDetail() {
       )}
 
       <Card className="p-5 sm:p-6">
-        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Items
         </h2>
 
@@ -137,8 +137,8 @@ export function OrderDetail() {
           {data.lines.map((line) => (
             <li key={line.sku} className="flex items-start justify-between gap-4">
               <span className="min-w-0">
-                <span className="block font-display text-sm uppercase">{line.name}</span>
-                <span className="font-mono text-[10px] font-bold uppercase text-muted">
+                <span className="block font-display text-sm">{line.name}</span>
+                <span className="font-mono text-[10px] font-medium uppercase text-muted">
                   {[line.size, line.colour].filter(Boolean).join(' · ') || line.sku} ×{' '}
                   {line.quantity} @ {formatMoney(line.unitPriceMinor, data.currency)}
                 </span>
@@ -150,7 +150,7 @@ export function OrderDetail() {
           ))}
         </ul>
 
-        <dl className="mt-5 space-y-2 border-t border-edge pt-4 text-sm">
+        <dl className="mt-5 space-y-2 border-t border-line pt-4 text-sm">
           <div className="flex justify-between gap-3">
             <dt className="text-muted">Subtotal</dt>
             <dd className="tabular-nums">{formatMoney(data.subtotalMinor, data.currency)}</dd>
@@ -161,8 +161,8 @@ export function OrderDetail() {
               {data.shippingMinor === 0 ? 'Free' : formatMoney(data.shippingMinor, data.currency)}
             </dd>
           </div>
-          <div className="flex justify-between gap-3 border-t border-edge pt-2">
-            <dt className="font-display uppercase">Total</dt>
+          <div className="flex justify-between gap-3 border-t border-line pt-2">
+            <dt className="font-display">Total</dt>
             <dd className="font-display text-lg tabular-nums">
               {formatMoney(data.totalMinor, data.currency)}
             </dd>
@@ -171,7 +171,7 @@ export function OrderDetail() {
       </Card>
 
       <Card className="mt-5 p-5 sm:p-6">
-        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Shipping to
         </h2>
         <address className="mt-3 text-sm not-italic leading-relaxed">
@@ -226,7 +226,7 @@ export function PaymentCallback() {
         <div className="mt-6 text-center">
           <Link
             to="/orders"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← Your orders
           </Link>
@@ -297,7 +297,7 @@ function ConfirmAndRoute({ reference, cancelled }: { reference: string; cancelle
         <div className="mt-6 text-center">
           <Link
             to="/orders"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← Your orders
           </Link>
@@ -308,7 +308,7 @@ function ConfirmAndRoute({ reference, cancelled }: { reference: string; cancelle
 
   return (
     <div className="flex min-h-[50dvh] items-center justify-center px-4">
-      <p className="font-mono text-[12px] font-bold uppercase text-muted" role="status">
+      <p className="font-mono text-[12px] font-medium uppercase text-muted" role="status">
         {cancelled ? 'Taking you back…' : 'Confirming your payment…'}
       </p>
     </div>

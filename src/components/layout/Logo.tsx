@@ -41,7 +41,7 @@ export function Logo({ onClick, className, still = false }: LogoProps) {
       onClick={onClick}
       aria-label="Deck — home"
       className={cn(
-        'group inline-flex items-center transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
+        'group inline-flex items-center transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5',
         !still && 'animate-[var(--animate-wordmark)]',
       )}
     >

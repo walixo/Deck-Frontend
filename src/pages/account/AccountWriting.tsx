@@ -36,7 +36,7 @@ export function AccountWriting() {
     <div>
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="display-tight text-3xl uppercase">Writing</h1>
+          <h1 className="display-tight text-3xl">Writing</h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted text-pretty">
             Anything you publish appears on{' '}
             <Link to="/blog" className="font-bold text-body underline underline-offset-2">
@@ -88,10 +88,10 @@ function PostRow({ post, onEdit }: { post: PostSummary; onEdit: () => void }) {
   const live = post.status === 'published';
 
   return (
-    <li className="flex flex-wrap items-center gap-3 rounded-slab border border-edge bg-surface p-3 shadow-hard-sm">
+    <li className="flex flex-wrap items-center gap-3 rounded-slab border border-line bg-surface p-3 shadow-hard-sm">
       <span
         className={cn(
-          'shrink-0 border border-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em]',
+          'rounded-full shrink-0 border border-line px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.08em]',
           live ? 'bg-success text-ink' : 'bg-surface-2 text-muted',
         )}
       >
@@ -102,14 +102,12 @@ function PostRow({ post, onEdit }: { post: PostSummary; onEdit: () => void }) {
       {live ? (
         <Link
           to={`/blog/${post.slug}`}
-          className="min-w-0 flex-1 truncate font-display text-[13px] uppercase underline-offset-2 hover:underline"
+          className="min-w-0 flex-1 truncate font-display text-[13px] underline-offset-2 hover:underline"
         >
           {post.title}
         </Link>
       ) : (
-        <span className="min-w-0 flex-1 truncate font-display text-[13px] uppercase">
-          {post.title}
-        </span>
+        <span className="min-w-0 flex-1 truncate font-display text-[13px]">{post.title}</span>
       )}
 
       <span className="shrink-0 font-mono text-[10px] uppercase text-muted">
@@ -183,7 +181,7 @@ function Composer({ post, onDone }: { post: PostSummary | null; onDone: () => vo
 
   return (
     <Card className="mb-8 space-y-5 p-5 sm:p-6">
-      <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+      <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
         {post ? `Editing “${post.title}”` : 'New article'}
       </h2>
 
@@ -244,7 +242,7 @@ function Composer({ post, onDone }: { post: PostSummary | null; onDone: () => vo
         placeholder="launching, pricing"
       />
 
-      <div className="flex flex-wrap gap-3 border-t border-edge pt-4">
+      <div className="flex flex-wrap gap-3 border-t border-line pt-4">
         <Button loading={mutation.isPending} onClick={() => submit('published')}>
           {post?.status === 'published' ? 'Save and keep live' : 'Publish'}
         </Button>

@@ -96,7 +96,7 @@ export function Route({ t }: { t: number }) {
           <div key={stop.what} className="absolute" style={{ left: stop.x - 46, top: LINE_Y - 46 }}>
             <span
               className={cn(
-                'flex size-[92px] items-center justify-center rounded-full border-[3px] border-edge',
+                'flex size-[92px] items-center justify-center rounded-full border-[3px] border-line',
                 lit ? 'bg-pop text-on-pop shadow-hard' : 'bg-canvas text-muted',
               )}
               style={{
@@ -117,7 +117,7 @@ export function Route({ t }: { t: number }) {
       <RankCard t={t} />
       <KitCard t={t} />
 
-      <div className="absolute left-[150px] top-[776px] font-display text-[130px] uppercase leading-none text-body display-tight">
+      <div className="absolute left-[150px] top-[776px] font-display text-[130px] leading-none text-body display-tight">
         <Rise progress={snapIn(t, 13.0, 0.26)}>
           Ranked
           <Stop />
@@ -151,7 +151,7 @@ function Card({
 
   return (
     <div
-      className="absolute top-[172px] h-[236px] rounded-slab border-[3px] border-edge bg-surface p-6 shadow-hard-lg"
+      className="absolute top-[172px] h-[236px] rounded-slab border-[3px] border-line bg-surface p-6 shadow-hard-lg"
       style={{ left, width, transform: `translateY(${lerp(28, 0, shown)}px)` }}
     >
       {children}
@@ -192,14 +192,14 @@ function RankCard({ t }: { t: number }) {
           <div key={rank} className="flex items-center gap-4">
             <span
               className={cn(
-                'flex size-9 items-center justify-center border-2 border-edge font-display text-[17px]',
+                'flex size-9 items-center justify-center border border-line font-display text-[17px]',
                 MEDAL_STYLES[rank],
               )}
             >
               {rank}
             </span>
             <span className="h-4 bg-edge/15" style={{ width: 360 - rank * 50 }} />
-            <span className="ml-auto font-mono text-[18px] font-bold tabular-nums text-muted">
+            <span className="ml-auto font-mono text-[18px] font-medium tabular-nums text-muted">
               ▲ {[48, 31, 22][rank - 1]}
             </span>
           </div>
@@ -245,7 +245,7 @@ function Chip({
   return (
     <span
       className={cn(
-        'inline-block whitespace-nowrap border-2 border-edge px-3 py-1 font-mono text-[14px] font-bold uppercase tracking-[0.1em]',
+        'rounded-full inline-block whitespace-nowrap border border-line px-3 py-1 font-mono text-[14px] font-medium uppercase tracking-[0.1em]',
         className,
       )}
       style={style}
@@ -258,7 +258,7 @@ function Chip({
 function Legend({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <Mono className="flex items-center gap-2 text-[14px]">
-      <span className={cn('size-3 border-2 border-edge', className)} />
+      <span className={cn('size-3 border border-line', className)} />
       {children}
     </Mono>
   );

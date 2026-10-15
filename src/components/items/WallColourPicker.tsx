@@ -54,7 +54,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
 
   return (
     <fieldset>
-      <legend className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+      <legend className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
         Launch wall colour
       </legend>
       <p className="mt-1.5 text-xs leading-relaxed text-muted text-pretty">
@@ -68,8 +68,10 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
           onClick={() => onChange('')}
           aria-pressed={auto}
           className={cn(
-            'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
-            auto ? 'bg-pop text-on-pop' : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
+            'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
+            auto
+              ? 'bg-edge text-canvas'
+              : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
           )}
         >
           Auto
@@ -89,7 +91,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
                  thing being chosen. A ring outside the border says "this one"
                  without touching the colour. */
               className={cn(
-                'size-8 border border-edge transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
+                'size-8 border border-line transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5',
                 active && 'outline outline-2 outline-offset-2 outline-edge',
               )}
               style={{ background: preset }}
@@ -102,7 +104,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
         <div>
           <label
             htmlFor={inputId}
-            className="block font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted"
+            className="block font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted"
           >
             Or a hex
           </label>
@@ -119,7 +121,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
             spellCheck={false}
             maxLength={7}
             aria-invalid={Boolean(error) || undefined}
-            className="mt-1 h-10 w-32 border border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+            className="mt-1 h-10 w-32 border border-line bg-surface px-3 font-mono text-[12px] font-medium uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
           />
         </div>
 
@@ -127,7 +129,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
             its companion tone, and a label in the ink that pairs with it. */}
         <div
           aria-hidden="true"
-          className="flex h-10 min-w-36 items-center gap-2 border border-edge px-3"
+          className="flex h-10 min-w-36 items-center gap-2 border border-line px-3"
           style={
             swatch
               ? {
@@ -140,14 +142,18 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
           {swatch ? (
             <>
               {logoUrl && (
-                <img src={logoUrl} alt="" className="size-6 border border-current bg-bone object-contain p-0.5" />
+                <img
+                  src={logoUrl}
+                  alt=""
+                  className="size-6 border border-current bg-bone object-contain p-0.5"
+                />
               )}
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.08em]">
+              <span className="font-mono text-[10px] font-medium uppercase tracking-[0.08em]">
                 Preview
               </span>
             </>
           ) : (
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
               {auto ? 'Sampled from your logo' : 'Not a hex yet'}
             </span>
           )}
@@ -155,7 +161,7 @@ export function WallColourPicker({ value, onChange, logoUrl, error }: WallColour
       </div>
 
       {error && (
-        <p role="alert" className="mt-2 font-mono text-[11px] font-bold uppercase text-red">
+        <p role="alert" className="mt-2 font-mono text-[11px] font-medium uppercase text-red">
           {error}
         </p>
       )}

@@ -20,7 +20,7 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
 
   return (
     <section aria-labelledby="gallery-heading" className="mt-10">
-      <h2 id="gallery-heading" className="mb-4 text-xl uppercase">
+      <h2 id="gallery-heading" className="mb-4 text-xl">
         Screenshots
       </h2>
 
@@ -33,7 +33,7 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
        * the image's own palette instead. Images sized through the upload
        * preview already match the frame, so this only shows on older ones.
        */}
-      <figure className="relative aspect-video w-full overflow-hidden border border-edge bg-surface-2 shadow-hard">
+      <figure className="relative aspect-video w-full overflow-hidden border border-line bg-surface-2 shadow-hard">
         <img
           src={current}
           alt=""
@@ -57,8 +57,8 @@ export function ItemGallery({ images, name }: ItemGalleryProps) {
                 aria-current={index === active}
                 aria-label={`Show screenshot ${index + 1}`}
                 className={cn(
-                  'block border transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
-                  index === active ? 'border-accent' : 'border-edge opacity-60 hover:opacity-100',
+                  'block border transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5',
+                  index === active ? 'border-accent' : 'border-line opacity-60 hover:opacity-100',
                 )}
               >
                 {/* Contain here too: a thumbnail that crops is a thumbnail of

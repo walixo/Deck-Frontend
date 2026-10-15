@@ -31,7 +31,7 @@ export function AccountLaunches() {
     <div>
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="display-tight text-3xl uppercase">Launches</h1>
+          <h1 className="display-tight text-3xl">Launches</h1>
           <p className="mt-2 text-sm leading-relaxed text-muted text-pretty">
             Everything you have posted to the board.
             {/* Only once there is something to report. "0 views across 0

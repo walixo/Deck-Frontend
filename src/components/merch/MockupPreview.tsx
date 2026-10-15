@@ -77,7 +77,7 @@ export function MockupPreview({
   return (
     <div
       className={cn(
-        'relative aspect-square w-full overflow-hidden border border-edge bg-surface-2',
+        'relative aspect-square w-full overflow-hidden border border-line bg-surface-2',
         className,
       )}
     >

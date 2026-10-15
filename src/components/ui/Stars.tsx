@@ -48,7 +48,7 @@ export function StarPicker({ value, onChange, className }: StarPickerProps) {
           aria-label={`${star} star${star > 1 ? 's' : ''}`}
           onClick={() => onChange(value === star ? 0 : star)}
           className={cn(
-            'text-2xl leading-none transition-transform duration-[120ms] ease-[var(--ease-kick)] hover:scale-125',
+            'text-2xl leading-none transition-transform duration-300 ease-[var(--ease-kick)] hover:scale-125',
             star <= value ? 'text-accent' : 'text-muted/40 hover:text-accent/60',
           )}
         >
@@ -59,7 +59,7 @@ export function StarPicker({ value, onChange, className }: StarPickerProps) {
         <button
           type="button"
           onClick={() => onChange(0)}
-          className="ml-2 font-mono text-[11px] font-bold uppercase text-muted underline-offset-2 hover:text-body hover:underline"
+          className="ml-2 font-mono text-[11px] font-medium uppercase text-muted underline-offset-2 hover:text-body hover:underline"
         >
           Clear
         </button>

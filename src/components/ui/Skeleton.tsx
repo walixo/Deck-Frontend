@@ -1,18 +1,15 @@
 import { cn } from '@/lib/utils';
 
-/* Loading blocks are flat fills with a hard edge — same vocabulary as real content. */
+/* Loading blocks are soft, rounded fills that breathe. */
 export function Skeleton({ className }: { className?: string }) {
   return (
-    <div
-      aria-hidden="true"
-      className={cn('animate-pulse border border-edge bg-grey/40', className)}
-    />
+    <div aria-hidden="true" className={cn('animate-pulse rounded-xl bg-surface-2', className)} />
   );
 }
 
 export function ItemCardSkeleton() {
   return (
-    <div className="rounded-slab border border-edge bg-surface p-4 shadow-hard">
+    <div className="rounded-3xl border border-line bg-surface p-4">
       <div className="flex gap-4">
         <Skeleton className="size-12 shrink-0" />
         <div className="min-w-0 flex-1 space-y-2.5">
@@ -53,7 +50,7 @@ export function SectionSkeleton() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         {Array.from({ length: 4 }, (_, index) => (
-          <Skeleton key={index} className="h-32 rounded-slab shadow-hard" />
+          <Skeleton key={index} className="h-32 rounded-3xl" />
         ))}
       </div>
     </div>

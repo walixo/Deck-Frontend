@@ -45,9 +45,9 @@ export function VoteButton({ item, layout = 'stacked', className }: VoteButtonPr
       aria-pressed={item.hasVoted}
       aria-label={`${item.hasVoted ? 'Remove your upvote from' : 'Upvote'} ${item.name}`}
       className={cn(
-        'group/vote flex shrink-0 items-center justify-center gap-1 rounded-slab border border-edge font-mono font-bold',
-        'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
-        'hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+        'group/vote flex shrink-0 items-center justify-center gap-1 rounded-slab border border-line font-mono font-medium',
+        'transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)]',
+        'hover:-translate-y-0.5 active:shadow-none',
         /*
          * 36x36, down from 56x48 and then 44x40.
          *

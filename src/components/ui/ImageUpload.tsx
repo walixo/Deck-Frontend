@@ -117,12 +117,12 @@ export function ImageUpload({
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
         <label
           htmlFor={inputId}
-          className="font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-body"
+          className="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-body"
         >
           {label}
         </label>
         {max > 1 && (
-          <span className="font-mono text-[11px] font-bold tabular-nums text-muted">
+          <span className="font-mono text-[11px] font-medium tabular-nums text-muted">
             {value.length}/{max}
           </span>
         )}
@@ -144,7 +144,7 @@ export function ImageUpload({
                   /* Contain, not cover: this thumbnail is the maker's check on
                      how the image will look, and a crop here would hide the
                      exact problem the preview exists to catch. */
-                  'w-full border border-edge bg-surface-2 object-contain',
+                  'w-full border border-line bg-surface-2 object-contain',
                   aspect === 'square' ? 'aspect-square' : 'aspect-video',
                 )}
               />
@@ -152,7 +152,7 @@ export function ImageUpload({
                 type="button"
                 onClick={() => remove(url)}
                 aria-label="Remove image"
-                className="absolute -right-2 -top-2 flex size-6 items-center justify-center border border-edge bg-edge text-[11px] font-bold text-canvas transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5"
+                className="absolute -right-2 -top-2 flex size-6 items-center justify-center border border-line bg-edge text-[11px] font-bold text-canvas transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5"
               >
                 <span aria-hidden="true">✕</span>
               </button>
@@ -174,8 +174,8 @@ export function ImageUpload({
             void accept(event.dataTransfer.files);
           }}
           className={cn(
-            'rounded-slab border border-dashed px-4 py-6 text-center transition-colors duration-[120ms]',
-            dragging ? 'border-accent bg-pop/20' : 'border-edge',
+            'rounded-slab border border-dashed px-4 py-6 text-center transition-colors duration-300',
+            dragging ? 'border-accent bg-pop/20' : 'border-line',
           )}
         >
           <input
@@ -192,11 +192,11 @@ export function ImageUpload({
           <label
             htmlFor={inputId}
             className={cn(
-              'inline-flex cursor-pointer items-center gap-2 border border-edge bg-surface px-3.5 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em] shadow-hard-sm',
-              'transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
+              'rounded-2xl inline-flex cursor-pointer items-center gap-2 border border-line bg-surface px-3.5 py-2 font-mono text-[11px] font-medium uppercase tracking-[0.06em] shadow-hard-sm',
+              'transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)]',
               uploading
                 ? 'pointer-events-none opacity-60'
-                : 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard',
+                : 'hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard',
             )}
           >
             {uploading && (
@@ -217,7 +217,7 @@ export function ImageUpload({
       {shown ? (
         <p
           role="alert"
-          className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="rounded-full mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase text-canvas"
         >
           {shown}
         </p>

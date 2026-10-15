@@ -5,36 +5,63 @@
   :root {
     --canvas: #ffffff;
     --surface: #ffffff;
-    --surface-2: #f2f0ea;
-    --edge: #111111;
-    --body-ink: #111111;
-    --muted-ink: #55534e;
+    --surface-2: #f6f5f2;
+    --edge: #0e0e0e;
+    --line: #e7e5df;
+    --body-ink: #0e0e0e;
+    --muted-ink: #6b6a66;
     /* The accent as a *mark* — link text, focus rings, progress fills. Themed,
        because no fixed colour clears 4.5:1 against both canvases. */
-    --accent: #5b46c9;
-    --pop: #b8a9fa;
-    --pop-hover: #a692f7;
-    --on-pop: #180f43;
-    --deep: #180f43;
-    --deep-hover: #332680;
-    --on-deep: #b8a9fa;
+    --accent: #c93a0c;
+    --pop: #c93a0c;
+    --pop-hover: #b3330a;
+    --on-pop: #ffffff;
+    --deep: #141413;
+    --deep-hover: #2a2a28;
+    --on-deep: #ffffff;
   }
 
   .dark {
-    --canvas: #151515;
-    --surface: #1e1e1e;
-    --surface-2: #262626;
-    --edge: #f7f6f2;
-    --body-ink: #f7f6f2;
-    --muted-ink: #a3a29c;
-    --accent: #b8a9fa;
+    --canvas: #0a0a0a;
+    --surface: #121211;
+    --surface-2: #1a1a19;
+    --edge: #f4f2ee;
+    --line: #2a2927;
+    --body-ink: #f4f2ee;
+    --muted-ink: #9a9893;
+    --accent: #ff7a4d;
     --color-canvas: var(--canvas);
     --color-surface: var(--surface);
     --color-surface-2: var(--surface-2);
     --color-edge: var(--edge);
+    --color-line: var(--line);
     --color-accent: var(--accent);
     --color-body: var(--body-ink);
     --color-muted: var(--muted-ink);
+  }
+
+  /* Ember / Ink */
+  [data-palette='ember-ink'] {
+    --accent: #c93a0c;
+    --pop: #c93a0c;
+    --pop-hover: #b3330a;
+    --on-pop: #ffffff;
+    --deep: #141413;
+    --deep-hover: #2a2a28;
+    --on-deep: #ffffff;
+    --color-accent: var(--accent);
+    --color-pop: var(--pop);
+    --color-pop-hover: var(--pop-hover);
+    --color-on-pop: var(--on-pop);
+    --color-deep: var(--deep);
+    --color-deep-hover: var(--deep-hover);
+    --color-on-deep: var(--on-deep);
+  }
+
+  .dark [data-palette='ember-ink'],
+  [data-palette='ember-ink'].dark {
+    --accent: #ff7a4d;
+    --color-accent: var(--accent);
   }
 
   /* Lime / Slate */
@@ -188,6 +215,9 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-edge: var(--edge);
+  /* Hairline borders — the quiet divider. `edge` stays ink, for the rare
+     border or block that has to be seen. */
+  --color-line: var(--line);
   --color-body: var(--body-ink);
   --color-muted: var(--muted-ink);
   --color-accent: var(--accent);
@@ -214,6 +244,7 @@
   --color-success: #2f9e44;
   --color-danger: #c92a2a;
   --color-warning: #fcc419;
+  --color-danger-soft: #ff8a80;
 
   /* Badge tones — and only badge tones. Exempt from the palette by design; see
      design/CONTRACT.md. The `badge-` prefix is the guard rail. */
@@ -244,6 +275,19 @@
  * holding a hex that nothing would notice going stale.
  */
 @layer components {
+  /* Ember / Ink */
+  .select-chevron {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23c93a0c'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1rem;
+  }
+
+  .dark .select-chevron,
+  .dark .select-chevron {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff7a4d'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
+  }
+
   /* Lime / Slate */
   [data-palette='lime-slate'] .select-chevron {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%232f4750'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
@@ -284,15 +328,15 @@
   }
 
   /* Lavender / Midnight */
-  .select-chevron {
+  [data-palette='lavender-midnight'] .select-chevron {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%235b46c9'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.7rem center;
     background-size: 1rem;
   }
 
-  .dark .select-chevron,
-  .dark .select-chevron {
+  .dark [data-palette='lavender-midnight'] .select-chevron,
+  [data-palette='lavender-midnight'] .dark .select-chevron {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23b8a9fa'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
   }
 

@@ -23,8 +23,8 @@ export function ListForAcquisition({ item, feePercent = 8 }: { item: Item; feePe
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-3 border-t border-edge pt-4">
-      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+    <div className="space-y-3 border-t border-line pt-4">
+      <p className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
         Sell this product
       </p>
       <p className="text-xs leading-relaxed text-muted text-pretty">
@@ -104,7 +104,7 @@ function ListingDialog({
       onClose={onClose}
       aria-labelledby="list-heading"
       className={cn(
-        'w-[min(38rem,92vw)] rounded-slab border border-edge bg-surface p-0 text-body shadow-hard-lg',
+        'w-[min(38rem,92vw)] rounded-slab border border-line bg-surface p-0 text-body shadow-hard-lg',
         /* `m-auto` restores centring. A modal <dialog> is centred by the UA
            sheet's `inset: 0; margin: auto`, and Tailwind's preflight zeroes
            every margin — which silently pins it to the top of the viewport. */
@@ -113,7 +113,7 @@ function ListingDialog({
       )}
     >
       <form onSubmit={submit} className="p-5 sm:p-6" noValidate>
-        <h2 id="list-heading" className="border-b border-edge pb-3 font-display text-lg uppercase">
+        <h2 id="list-heading" className="border-b border-line pb-3 font-display text-lg">
           List <span className="normal-case">{item.name}</span> for acquisition
         </h2>
 
@@ -141,7 +141,7 @@ function ListingDialog({
           {/* The split, computed as they type. A seller should never have to
               work out 8% of their own number to know what they walk away with. */}
           {askingMinor > 0 && (
-            <dl className="space-y-1 border border-edge bg-surface-2 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
+            <dl className="rounded-2xl space-y-1 border border-line bg-surface-2 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
               <div className="flex justify-between gap-2">
                 <dt>Deck&apos;s {feePercent}%</dt>
                 <dd className="tabular-nums">{formatMoney(feeMinor)}</dd>
@@ -158,10 +158,10 @@ function ListingDialog({
               type="checkbox"
               checked={form.negotiable}
               onChange={(event) => setForm({ ...form, negotiable: event.target.checked })}
-              className="mt-0.5 size-4 shrink-0 border border-edge accent-pop"
+              className="mt-0.5 size-4 shrink-0 border border-line accent-pop"
             />
             <span>
-              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+              <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
                 Open to offers
               </span>
               <span className="mt-0.5 block text-muted text-pretty">
@@ -172,7 +172,7 @@ function ListingDialog({
           </label>
 
           <fieldset>
-            <legend className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+            <legend className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               What is included
             </legend>
             <p className="mt-1 text-xs text-muted">
@@ -186,9 +186,9 @@ function ListingDialog({
                   onClick={() => toggleAsset(asset)}
                   aria-pressed={assets.includes(asset)}
                   className={cn(
-                    'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
+                    'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
                     assets.includes(asset)
-                      ? 'bg-pop text-on-pop'
+                      ? 'bg-edge text-canvas'
                       : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                   )}
                 >
@@ -197,7 +197,7 @@ function ListingDialog({
               ))}
             </div>
             {error?.fieldError('assets') && (
-              <p role="alert" className="mt-2 font-mono text-[11px] font-bold uppercase text-red">
+              <p role="alert" className="mt-2 font-mono text-[11px] font-medium uppercase text-red">
                 {error.fieldError('assets')}
               </p>
             )}
@@ -259,7 +259,7 @@ function ListingDialog({
           />
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-edge pt-4">
+        <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-line pt-4">
           <Button type="submit" loading={list.isPending}>
             Submit for review
           </Button>

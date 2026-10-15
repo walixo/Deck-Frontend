@@ -39,7 +39,7 @@ export function AdminCategories() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="display-tight text-3xl uppercase">Categories</h1>
+        <h1 className="display-tight text-3xl">Categories</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted text-pretty">
           What kinds of thing can launch on Deck. Adding one makes it available in the submit form
           immediately — no deploy. Retiring one closes it to new launches without touching the
@@ -50,7 +50,7 @@ export function AdminCategories() {
       <CategoryForm />
 
       <section>
-        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           {categories ? `${categories.length} categories` : 'Categories'}
         </h2>
 
@@ -105,7 +105,7 @@ function CategoryForm() {
 
   return (
     <Card className="p-5 sm:p-6">
-      <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+      <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
         Add a category
       </h2>
 
@@ -172,7 +172,7 @@ function IconPicker({
 }) {
   return (
     <fieldset>
-      <legend className="mb-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
+      <legend className="mb-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
         Icon
       </legend>
       <div
@@ -192,9 +192,9 @@ function IconPicker({
               title={key.replace(/-/g, ' ')}
               onClick={() => onChange(key)}
               className={cn(
-                'flex aspect-square items-center justify-center border border-edge transition-transform duration-[120ms] ease-[var(--ease-snap)]',
+                'flex aspect-square items-center justify-center border border-line transition-transform duration-300 ease-[var(--ease-snap)]',
                 selected
-                  ? 'bg-pop text-on-pop shadow-hard-sm'
+                  ? 'bg-edge text-canvas'
                   : 'bg-surface text-muted hover:-translate-y-0.5 hover:text-body',
               )}
             >
@@ -208,7 +208,7 @@ function IconPicker({
       {error && (
         <p
           role="alert"
-          className="mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="rounded-full mt-1.5 inline-block bg-edge px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase text-canvas"
         >
           {error}
         </p>
@@ -249,20 +249,20 @@ function CategoryRow({ category }: { category: CategoryCount }) {
   return (
     <li
       className={cn(
-        'rounded-slab border border-edge bg-surface p-3.5 shadow-hard-sm',
+        'rounded-slab border border-line bg-surface p-3.5 shadow-hard-sm',
         !category.active && 'opacity-80',
       )}
     >
       <div className="flex flex-wrap items-center gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center border border-edge bg-surface-2">
+        <span className="flex size-10 shrink-0 items-center justify-center border border-line bg-surface-2">
           <CategoryIcon category={category.slug} className="size-5 text-body" aria-hidden />
         </span>
 
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-display text-[13px] uppercase">
+          <span className="block truncate font-display text-[13px]">
             {category.label}
             {!category.active && (
-              <span className="ml-2 border border-edge bg-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-canvas">
+              <span className="rounded-full ml-2 border border-line bg-edge px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase text-canvas">
                 Retired
               </span>
             )}
@@ -310,14 +310,14 @@ function CategoryRow({ category }: { category: CategoryCount }) {
       {error && (
         <p
           role="alert"
-          className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-3 border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
         >
           {error.message}
         </p>
       )}
 
       {editing && (
-        <div className="mt-4 space-y-4 border-t border-edge pt-4">
+        <div className="mt-4 space-y-4 border-t border-line pt-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <Input
               label="Name"

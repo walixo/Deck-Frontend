@@ -51,10 +51,10 @@ export function ReleaseVersion() {
       <PageBanner />
 
       <header className="mb-8 max-w-2xl">
-        <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           New version
         </p>
-        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
+        <h1 className="display-tight text-3xl text-balance sm:text-4xl">
           Ship the next <span className="normal-case">{item.name}</span>
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-muted text-pretty">

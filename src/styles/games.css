@@ -9,36 +9,32 @@
  * motion that eases. Games are exempt from Deck's palette contract, which is
  * what makes the ember accent possible.
  *
- * Every colour is a token with a light and a dark value, like the rest of the
- * site. Two are fixed on purpose: `night` (the developer journey is always
- * set at night) and the decorative amber stops, which are light, not surface.
- *
- * Contrast (WCAG): ember fill with on-ember text is 5.1:1 light, 6.8:1 dark;
- * ink on paper is 19:1 / 17.7:1; mute on paper is 5.4:1 / 6.9:1.
+ * Colours resolve through Deck's own tokens (below), so contrast is enforced by
+ * `npm run check:contrast` like everything else. Two are fixed on purpose:
+ * `night` (the developer journey is always set at night) and the decorative
+ * amber stops, which are light, not surface.
  */
 
+/*
+ * Since the site-wide restyle, Deck itself speaks this voice, so the arcade's
+ * tokens are aliases of Deck's own rather than a second set of hexes: one
+ * palette, set in design/tokens.json, for both. The `g-` names stay so the
+ * games code reads the same as it did.
+ */
 @layer base {
   :root {
-    --g-paper: #ffffff;
-    --g-paper-2: #f6f5f2;
-    --g-ink: #0e0e0e;
-    --g-mute: #6b6a66;
-    --g-line: #e7e5df;
-    --g-ember: #c93a0c;
-    --g-on-ember: #ffffff;
-    --g-ember-ink: #c93a0c;
+    --g-paper: var(--canvas);
+    --g-paper-2: var(--surface-2);
+    --g-ink: var(--body-ink);
+    --g-mute: var(--muted-ink);
+    --g-line: var(--line);
+    --g-ember: var(--pop);
+    --g-on-ember: var(--on-pop);
+    --g-ember-ink: var(--accent);
     --g-glass: rgb(255 255 255 / 0.72);
   }
 
   .dark {
-    --g-paper: #0a0a0a;
-    --g-paper-2: #151514;
-    --g-ink: #f4f2ee;
-    --g-mute: #9a9893;
-    --g-line: #262524;
-    --g-ember: #ff6a3d;
-    --g-on-ember: #0e0e0e;
-    --g-ember-ink: #ff7a4d;
     --g-glass: rgb(10 10 10 / 0.72);
   }
 }
@@ -161,19 +157,9 @@
   }
 }
 
-/*
- * Inside Deck Games, headings speak Geist, not Archivo Black.
- *
- * Deck's base layer sets every h1–h4 in the display face so pages get it
- * without asking. The arcade's voice is the opposite, so its shell takes that
- * default back for everything inside it. Scoped to the shell's class, so the
- * launch board is untouched. Focus rings follow the world's accent too.
- */
+/* Focus rings inside Deck Games follow the world's accent. (Headings no longer
+   need an override: since the restyle, Deck's own display face is Geist.) */
 @layer base {
-  .deck-games :is(h1, h2, h3, h4) {
-    font-family: var(--font-sans);
-  }
-
   .deck-games :focus-visible {
     outline-color: var(--g-ember);
   }

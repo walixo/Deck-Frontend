@@ -3,13 +3,13 @@ import { cn } from '@/lib/utils';
 
 type Tone = 'neutral' | 'pop' | 'deep' | 'invert' | 'outline';
 
-/* Chips are hard-edged blocks with mono labels — they read as machine values. */
+/* Chips are soft pills with mono labels — they read as machine values. */
 const TONES: Record<Tone, string> = {
   neutral: 'bg-surface-2 text-body',
   pop: 'bg-pop text-on-pop',
   deep: 'bg-deep text-on-deep',
   invert: 'bg-edge text-canvas',
-  outline: 'bg-transparent text-muted',
+  outline: 'border border-line bg-transparent text-muted',
 };
 
 interface BadgeProps {
@@ -22,7 +22,7 @@ export function Badge({ children, tone = 'neutral', className }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 border border-edge px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.04em]',
+        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.12em]',
         TONES[tone],
         className,
       )}

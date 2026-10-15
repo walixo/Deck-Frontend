@@ -39,7 +39,7 @@ function Row({ item, onNavigate }: { item: AppNotification; onNavigate: () => vo
       to={item.link}
       onClick={onNavigate}
       className={cn(
-        'flex gap-3 border-b border-edge px-3 py-2.5 transition-colors last:border-b-0',
+        'flex gap-3 border-b border-line px-3 py-2.5 transition-colors last:border-b-0',
         'hover:bg-surface-2',
         /* Unread rows are tinted rather than dotted. A per-row dot is another
            thing to align and to explain; a warmer ground reads instantly and
@@ -53,7 +53,7 @@ function Row({ item, onNavigate }: { item: AppNotification; onNavigate: () => vo
         ) : (
           <span
             aria-hidden="true"
-            className="flex size-7 items-center justify-center border border-edge bg-surface-2 font-mono text-[13px] text-muted"
+            className="flex size-7 items-center justify-center rounded-full bg-surface-2 font-mono text-[13px] text-muted"
           >
             {GLYPH[item.kind]}
           </span>
@@ -133,7 +133,7 @@ export function NotificationBell() {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
-        className="relative flex size-9 items-center justify-center rounded-slab border border-edge bg-surface shadow-hard-sm transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard"
+        className="relative flex size-9 items-center justify-center rounded-full border border-line bg-surface transition-[border-color,background-color] duration-300 ease-[var(--ease-snap)] hover:border-edge"
       >
         <span aria-hidden="true" className="text-sm">
           ◔
@@ -141,7 +141,7 @@ export function NotificationBell() {
         {/* Exactly the cart's badge — same offsets, same red, same border. The
             header already taught readers what that mark means. */}
         {unread > 0 && (
-          <span className="absolute -right-2 -top-2 flex min-w-5 items-center justify-center border border-edge bg-red px-1 font-mono text-[10px] font-bold tabular-nums text-white">
+          <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red px-1 font-mono text-[10px] font-medium tabular-nums text-white">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -151,7 +151,7 @@ export function NotificationBell() {
         <div
           role="menu"
           className={cn(
-            'z-50 animate-[var(--animate-slam)] border border-edge bg-surface shadow-hard-lg',
+            'z-50 animate-[var(--animate-slam)] overflow-hidden rounded-2xl border border-line bg-surface shadow-hard-lg',
             /*
              * Anchored to the button on a wide screen, to the viewport on a
              * narrow one.
@@ -167,8 +167,8 @@ export function NotificationBell() {
             'sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-[22rem]',
           )}
         >
-          <div className="flex items-center justify-between border-b border-edge px-3 py-2.5">
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+          <div className="flex items-center justify-between border-b border-line px-3 py-2.5">
+            <p className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               Notifications
             </p>
             <Link
@@ -185,7 +185,7 @@ export function NotificationBell() {
               <p className="px-3 py-6 text-center text-xs text-muted">Loading…</p>
             ) : items.length === 0 ? (
               <div className="px-4 py-8 text-center">
-                <p className="font-display text-sm uppercase">Nothing yet</p>
+                <p className="font-display text-sm">Nothing yet</p>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted text-pretty">
                   Comments on your launches, review decisions and order updates land here.
                 </p>

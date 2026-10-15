@@ -121,7 +121,7 @@ function aliases(names, indent = '  ') {
   return names.map((n) => `${indent}--color-${n}: var(--${n});`).join('\n');
 }
 
-const SURFACE_ALIASES = ['canvas', 'surface', 'surface-2', 'edge', 'accent'];
+const SURFACE_ALIASES = ['canvas', 'surface', 'surface-2', 'edge', 'line', 'accent'];
 const PALETTE_ALIASES = ['pop', 'pop-hover', 'on-pop', 'deep', 'deep-hover', 'on-deep'];
 
 const themedCss = `${BANNER}
@@ -172,6 +172,9 @@ ${aliases(PALETTE_ALIASES, '    ')}
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-edge: var(--edge);
+  /* Hairline borders — the quiet divider. \`edge\` stays ink, for the rare
+     border or block that has to be seen. */
+  --color-line: var(--line);
   --color-body: var(--body-ink);
   --color-muted: var(--muted-ink);
   --color-accent: var(--accent);

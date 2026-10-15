@@ -17,7 +17,7 @@ const COPY = {
   },
   pending: {
     label: 'Waiting on Bachs',
-    tone: 'bg-grey text-ink',
+    tone: 'bg-surface-2 text-body',
     body: 'Bachs is still checking your details, or needs something more from you. Your earnings are safe in the meantime and will go out as soon as transfers are switched on.',
     action: 'Continue setup',
   },
@@ -68,18 +68,18 @@ export function PayoutAccountPanel({ holdDays }: { holdDays: number }) {
   return (
     <section
       aria-labelledby="payout-account-heading"
-      className="mb-12 border border-edge bg-surface p-5 shadow-hard sm:p-6"
+      className="rounded-2xl mb-12 border border-line bg-surface p-5 shadow-hard sm:p-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2
           id="payout-account-heading"
-          className="font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           Payout account
         </h2>
         {account.data && (
           <span
-            className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${copy.tone}`}
+            className={`rounded-full border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] ${copy.tone}`}
           >
             {refresh.isPending ? 'Checking…' : copy.label}
           </span>

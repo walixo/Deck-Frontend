@@ -87,10 +87,10 @@ export function Checkout() {
       <PageBanner />
 
       <header className="mb-8">
-        <h1 className="display-tight text-3xl uppercase sm:text-4xl">Checkout</h1>
+        <h1 className="display-tight text-3xl sm:text-4xl">Checkout</h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
-          Where should this go? Payment happens on Bachs's secure page — Deck never sees your
-          card details.
+          Where should this go? Payment happens on Bachs's secure page — Deck never sees your card
+          details.
         </p>
       </header>
 
@@ -99,7 +99,7 @@ export function Checkout() {
           {error && !error.fields.length && <InlineAlert>{error.message}</InlineAlert>}
 
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
               Contact
             </h2>
             <Input
@@ -115,7 +115,7 @@ export function Checkout() {
           </Card>
 
           <Card className="space-y-5 p-5 sm:p-6">
-            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
               Shipping address
             </h2>
 
@@ -171,7 +171,7 @@ export function Checkout() {
 
         <aside className="lg:sticky lg:top-24">
           <Card className="p-5">
-            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+            <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
               Order
             </h2>
 
@@ -180,7 +180,7 @@ export function Checkout() {
                 <li key={line.sku} className="flex justify-between gap-3 text-sm">
                   <span className="min-w-0">
                     <span className="block truncate font-medium">{line.name}</span>
-                    <span className="font-mono text-[10px] font-bold uppercase text-muted">
+                    <span className="font-mono text-[10px] font-medium uppercase text-muted">
                       {[line.size, line.colour].filter(Boolean).join(' · ') || line.sku} ×{' '}
                       {line.quantity}
                     </span>
@@ -192,7 +192,7 @@ export function Checkout() {
               ))}
             </ul>
 
-            <dl className="mt-4 space-y-2 border-t border-edge pt-3 text-sm">
+            <dl className="mt-4 space-y-2 border-t border-line pt-3 text-sm">
               <div className="flex justify-between gap-3">
                 <dt className="text-muted">Subtotal</dt>
                 <dd className="tabular-nums">{formatMoney(subtotalMinor)}</dd>
@@ -203,8 +203,8 @@ export function Checkout() {
                   {shippingMinor === 0 ? 'Free' : formatMoney(shippingMinor)}
                 </dd>
               </div>
-              <div className="flex justify-between gap-3 border-t border-edge pt-2">
-                <dt className="font-display uppercase">Total</dt>
+              <div className="flex justify-between gap-3 border-t border-line pt-2">
+                <dt className="font-display">Total</dt>
                 <dd className="font-display text-lg tabular-nums">{formatMoney(totalMinor)}</dd>
               </div>
             </dl>
@@ -216,7 +216,7 @@ export function Checkout() {
 
             <Link
               to="/cart"
-              className="mt-4 block font-mono text-[11px] font-bold uppercase underline-offset-4 hover:underline"
+              className="mt-4 block font-mono text-[11px] font-medium uppercase underline-offset-4 hover:underline"
             >
               ← Back to cart
             </Link>

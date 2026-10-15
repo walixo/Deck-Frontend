@@ -8,11 +8,7 @@ import { EmptyState } from '@/components/ui/States';
 import { VerifiedMark } from '@/components/ui/VerifiedMark';
 import { useAcquisitionQueue, useReviewAcquisition } from '@/hooks/useAcquisitions';
 import { formatMoney, formatNumber, relativeTime } from '@/lib/utils';
-import {
-  ASSET_LABELS,
-  type AcquisitionDetail,
-  type AcquisitionSummary,
-} from '@/types';
+import { ASSET_LABELS, type AcquisitionDetail, type AcquisitionSummary } from '@/types';
 
 /**
  * The acquisitions desk.
@@ -32,7 +28,7 @@ export function AdminAcquisitions() {
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="display-tight text-3xl uppercase">Acquisitions</h1>
+        <h1 className="display-tight text-3xl">Acquisitions</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted text-pretty">
           Products listed for sale, and every offer running against them. Approving one puts it on
           the public board immediately — Deck takes {data?.totals.feePercent ?? 8}% of whatever the
@@ -42,7 +38,7 @@ export function AdminAcquisitions() {
 
       {data && (
         <section>
-          <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             The book
           </h2>
           <dl className="grid gap-3 sm:grid-cols-4">
@@ -58,7 +54,7 @@ export function AdminAcquisitions() {
       )}
 
       <section>
-        <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           {data ? `${data.pending.length} waiting on a decision` : 'Waiting on a decision'}
         </h2>
 
@@ -84,7 +80,7 @@ export function AdminAcquisitions() {
 
       {data && data.live.length > 0 && (
         <section>
-          <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             {data.live.length} live on the board
           </h2>
           <ul className="space-y-2">
@@ -97,7 +93,7 @@ export function AdminAcquisitions() {
 
       {data && data.sold.length > 0 && (
         <section>
-          <h2 className="mb-3 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <h2 className="mb-3 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             {data.sold.length} sold
           </h2>
           <ul className="space-y-2">
@@ -113,9 +109,9 @@ export function AdminAcquisitions() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-edge bg-surface px-4 py-3 shadow-hard-sm">
+    <div className="rounded-2xl border border-line bg-surface px-4 py-3 shadow-hard-sm">
       <dd className="font-display text-xl tabular-nums">{value}</dd>
-      <dt className="mt-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+      <dt className="mt-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
         {label}
       </dt>
     </div>
@@ -134,16 +130,16 @@ function LedgerRow({ listing, sold = false }: { listing: AcquisitionSummary; sol
     : listing.feeMinor;
 
   return (
-    <li className="flex flex-wrap items-center gap-3 rounded-slab border border-edge bg-surface p-3 shadow-hard-sm">
+    <li className="flex flex-wrap items-center gap-3 rounded-slab border border-line bg-surface p-3 shadow-hard-sm">
       <Link
         to={`/acquisitions/${listing.slug}`}
-        className="min-w-0 flex-1 truncate font-display text-[13px] uppercase underline-offset-2 hover:underline"
+        className="min-w-0 flex-1 truncate font-display text-[13px] underline-offset-2 hover:underline"
       >
         {listing.item?.name ?? listing.slug}
       </Link>
 
       {sold ? (
-        <span className="shrink-0 border border-edge bg-success px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-ink">
+        <span className="rounded-full shrink-0 border border-line bg-success px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase text-ink">
           Sold
         </span>
       ) : (
@@ -155,11 +151,11 @@ function LedgerRow({ listing, sold = false }: { listing: AcquisitionSummary; sol
         )
       )}
 
-      <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums">
+      <span className="shrink-0 font-mono text-[11px] font-medium tabular-nums">
         {formatMoney(sold ? listing.soldMinor : listing.askingMinor)}
       </span>
 
-      <span className="shrink-0 border border-edge bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums">
+      <span className="rounded-full shrink-0 border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[10px] font-medium tabular-nums">
         Deck {formatMoney(feeMinor)}
       </span>
     </li>
@@ -190,11 +186,11 @@ function ApplicationCard({ listing }: { listing: AcquisitionDetail }) {
   return (
     <li>
       <Card className="p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-edge pb-3">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line pb-3">
           <div className="min-w-0">
             <Link
               to={`/acquisitions/${listing.slug}`}
-              className="font-display text-lg uppercase underline-offset-4 hover:underline"
+              className="font-display text-lg underline-offset-4 hover:underline"
             >
               {listing.item?.name ?? listing.slug}
             </Link>
@@ -208,7 +204,7 @@ function ApplicationCard({ listing }: { listing: AcquisitionDetail }) {
           </div>
 
           <div className="shrink-0 text-right">
-            <p className="border border-edge bg-pop px-2.5 py-1 font-display text-lg tabular-nums text-on-pop">
+            <p className="border border-line bg-pop px-2.5 py-1 font-display text-lg tabular-nums text-on-pop">
               {formatMoney(listing.askingMinor, listing.currency)}
             </p>
             <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.06em] text-muted">
@@ -225,7 +221,7 @@ function ApplicationCard({ listing }: { listing: AcquisitionDetail }) {
         </dl>
 
         <div className="mt-4">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
             Why they are selling
           </p>
           <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-body text-pretty">
@@ -234,14 +230,14 @@ function ApplicationCard({ listing }: { listing: AcquisitionDetail }) {
         </div>
 
         <div className="mt-4">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
             Included
           </p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {listing.assets.map((asset) => (
               <span
                 key={asset}
-                className="border border-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em]"
+                className="rounded-full border border-line px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.06em]"
               >
                 {ASSET_LABELS[asset]}
               </span>
@@ -250,14 +246,14 @@ function ApplicationCard({ listing }: { listing: AcquisitionDetail }) {
         </div>
 
         {listing.notes && (
-          <p className="mt-4 border border-edge bg-surface-2 px-3 py-2 text-xs leading-relaxed text-muted text-pretty">
+          <p className="rounded-2xl mt-4 border border-line bg-surface-2 px-3 py-2 text-xs leading-relaxed text-muted text-pretty">
             {listing.notes}
           </p>
         )}
 
-        <div className="mt-5 space-y-3 border-t border-edge pt-4">
+        <div className="mt-5 space-y-3 border-t border-line pt-4">
           <label className="block">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
               Note to the seller
             </span>
             <input
@@ -265,12 +261,12 @@ function ApplicationCard({ listing }: { listing: AcquisitionDetail }) {
               onChange={(event) => setNote(event.target.value)}
               maxLength={300}
               placeholder="Looks straight — approved"
-              className="mt-1 h-10 w-full border border-edge bg-surface px-3 text-sm placeholder:text-muted/70 focus:border-accent focus:outline-none"
+              className="mt-1 h-10 w-full border border-line bg-surface px-3 text-sm placeholder:text-muted/70 focus:border-accent focus:outline-none"
             />
           </label>
 
           {error && (
-            <p role="alert" className="font-mono text-[11px] font-bold uppercase text-red">
+            <p role="alert" className="font-mono text-[11px] font-medium uppercase text-red">
               {error}
             </p>
           )}
@@ -296,9 +292,9 @@ function ApplicationCard({ listing }: { listing: AcquisitionDetail }) {
 
 function Figure({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-edge bg-surface-2 px-3 py-2">
+    <div className="rounded-2xl border border-line bg-surface-2 px-3 py-2">
       <dd className="font-display text-sm tabular-nums">{value}</dd>
-      <dt className="mt-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-muted">
+      <dt className="mt-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.08em] text-muted">
         {label}
       </dt>
     </div>

@@ -49,7 +49,7 @@ export function ShareShowcase({ items }: { items: Item[] }) {
   if (!items.length) return null;
 
   return (
-    <section className="relative isolate overflow-hidden border-b border-edge py-14 sm:py-20">
+    <section className="relative isolate overflow-hidden border-b border-line py-14 sm:py-20">
       {/* The one big decorative shape, well under the type. Fixed at 12% rather
           than given a lighter token, so it reads the same weight against both
           canvases. */}
@@ -57,10 +57,10 @@ export function ShareShowcase({ items }: { items: Item[] }) {
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <header className="max-w-xl">
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
             Made for posting
           </p>
-          <h2 className="mt-2 display-tight text-3xl uppercase text-balance sm:text-4xl">
+          <h2 className="mt-2 display-tight text-3xl text-balance sm:text-4xl">
             One launch, three cards
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted text-pretty sm:text-base">
@@ -93,7 +93,7 @@ export function ShareShowcase({ items }: { items: Item[] }) {
 
         <div className="mt-12 flex flex-wrap items-center gap-x-4 gap-y-3">
           <ButtonLink to="/submit">Launch your product</ButtonLink>
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
             Cards are on every launch page
           </p>
         </div>
@@ -186,8 +186,8 @@ function Frame({ item, variant, sticker, angle, className }: FrameProps) {
 
       <div
         className={cn(
-          'rounded-slab border border-edge bg-surface p-3 shadow-hard',
-          'transition-[transform,box-shadow] duration-[140ms] ease-[var(--ease-snap)]',
+          'rounded-slab border border-line bg-surface p-3 shadow-hard',
+          'transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)]',
           /*
            * Straightens under the pointer — the one motion in this section, and
            * what makes a wall of prints read as objects rather than as images.
@@ -211,7 +211,7 @@ function Frame({ item, variant, sticker, angle, className }: FrameProps) {
             aria-label={`${cut.label} card for ${item.name}`}
             role="img"
             className={cn(
-              'block h-auto w-full rounded-[3px] border border-edge bg-canvas',
+              'block h-auto w-full rounded-[3px] border border-line bg-canvas',
               /* Nothing to look at until it has been drawn — an unpainted
                  canvas is a transparent hole, and the mount showing through it
                  reads as a bug rather than as loading. */

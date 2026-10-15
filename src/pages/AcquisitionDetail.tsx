@@ -55,7 +55,7 @@ export function AcquisitionDetail() {
         <div className="mt-6 text-center">
           <Link
             to="/acquisitions"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← All listings
           </Link>
@@ -74,7 +74,7 @@ export function AcquisitionDetail() {
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
       <nav
         aria-label="Breadcrumb"
-        className="mb-6 flex items-center gap-2 font-mono text-[11px] font-bold uppercase text-muted"
+        className="mb-6 flex items-center gap-2 font-mono text-[11px] font-medium uppercase text-muted"
       >
         <Link to="/acquisitions" className="hover:text-body">
           Acquisitions
@@ -94,7 +94,7 @@ export function AcquisitionDetail() {
       <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="min-w-0 space-y-8">
           <section aria-labelledby="why-heading">
-            <h2 id="why-heading" className="text-lg uppercase">
+            <h2 id="why-heading" className="text-lg">
               Why it is for sale
             </h2>
             <div className="mt-3 space-y-3 text-sm leading-relaxed text-body text-pretty">
@@ -108,14 +108,14 @@ export function AcquisitionDetail() {
           </section>
 
           <section aria-labelledby="included-heading">
-            <h2 id="included-heading" className="text-lg uppercase">
+            <h2 id="included-heading" className="text-lg">
               What is included
             </h2>
             <ul className="mt-3 flex flex-wrap gap-2">
               {listing.assets.map((asset) => (
                 <li
                   key={asset}
-                  className="border border-edge bg-surface px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] shadow-hard-sm"
+                  className="rounded-full border border-line bg-surface px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] shadow-hard-sm"
                 >
                   {ASSET_LABELS[asset]}
                 </li>
@@ -123,7 +123,7 @@ export function AcquisitionDetail() {
             </ul>
 
             {listing.notes && (
-              <p className="mt-4 border border-edge bg-surface-2 px-3 py-2.5 text-xs leading-relaxed text-muted text-pretty">
+              <p className="rounded-2xl mt-4 border border-line bg-surface-2 px-3 py-2.5 text-xs leading-relaxed text-muted text-pretty">
                 {listing.notes}
               </p>
             )}
@@ -137,13 +137,13 @@ export function AcquisitionDetail() {
 
         <aside className="space-y-6">
           <Card className="p-5">
-            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+            <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               {sold ? 'Sold' : 'Make an offer'}
             </h2>
 
             {sold ? (
               <div className="mt-4 space-y-3">
-                <p className="border border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
+                <p className="border border-line bg-success px-3 py-2 font-mono text-[11px] font-medium uppercase text-ink">
                   Sold for {formatMoney(listing.soldMinor, listing.currency)}
                 </p>
                 <p className="text-xs leading-relaxed text-muted text-pretty">
@@ -158,7 +158,7 @@ export function AcquisitionDetail() {
                 one to accept, and nothing happens until you do.
               </p>
             ) : !isAuthenticated ? (
-              <p className="mt-4 border border-edge bg-surface-2 px-3 py-2.5 text-sm text-muted">
+              <p className="rounded-2xl mt-4 border border-line bg-surface-2 px-3 py-2.5 text-sm text-muted">
                 <Link to="/login" className="font-bold underline underline-offset-2">
                   Sign in
                 </Link>{' '}
@@ -175,10 +175,10 @@ export function AcquisitionDetail() {
              * before they offer that nothing is held, and a seller needs to
              * know that accepting is an agreement rather than a payout.
              */}
-            <dl className="mt-5 space-y-2 border-t border-edge pt-4 text-xs leading-relaxed text-muted">
+            <dl className="mt-5 space-y-2 border-t border-line pt-4 text-xs leading-relaxed text-muted">
               <div className="flex justify-between gap-3">
                 <dt>Deck&apos;s commission</dt>
-                <dd className="font-mono font-bold tabular-nums text-body">
+                <dd className="font-mono font-medium tabular-nums text-body">
                   {listing.feePercent}%
                 </dd>
               </div>
@@ -204,7 +204,7 @@ export function AcquisitionDetail() {
 
           {listing.seller && (
             <Card className="p-5">
-              <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+              <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
                 Seller
               </h2>
               <div className="mt-3 flex items-center gap-3">
@@ -212,7 +212,7 @@ export function AcquisitionDetail() {
                 <div className="min-w-0">
                   <Link
                     to={profilePath(listing.seller.username)}
-                    className="flex items-center gap-1 font-display text-sm uppercase hover:underline"
+                    className="flex items-center gap-1 font-display text-sm hover:underline"
                   >
                     {listing.seller.name}
                     {listing.seller.verified && <VerifiedMark name={listing.seller.name} />}
@@ -255,28 +255,26 @@ function Header({ listing }: { listing: Listing }) {
   const swatch = useWallColour(item?.wallColour, item?.logoUrl);
 
   return (
-    <header className="overflow-hidden rounded-slab border border-edge shadow-hard-lg">
+    <header className="overflow-hidden rounded-slab border border-line shadow-hard-lg">
       <div className="flex flex-wrap items-start gap-4 bg-surface p-5 sm:p-6">
         {item?.logoUrl ? (
           <img
             src={item.logoUrl}
             alt=""
-            className="size-16 shrink-0 border border-edge bg-bone object-contain p-1.5"
+            className="size-16 shrink-0 border border-line bg-bone object-contain p-1.5"
           />
         ) : null}
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="display-tight text-3xl uppercase sm:text-4xl">
-              {item?.name ?? listing.slug}
-            </h1>
+            <h1 className="display-tight text-3xl sm:text-4xl">{item?.name ?? listing.slug}</h1>
             {listing.status === 'pending' && (
-              <span className="border border-edge bg-warning px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-ink">
+              <span className="rounded-full border border-line bg-warning px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-ink">
                 Awaiting review
               </span>
             )}
             {listing.status === 'rejected' && (
-              <span className="border border-edge bg-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-canvas">
+              <span className="rounded-full border border-line bg-edge px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-canvas">
                 Not approved
               </span>
             )}
@@ -288,7 +286,7 @@ function Header({ listing }: { listing: Listing }) {
             </p>
           )}
 
-          <p className="mt-3 flex flex-wrap items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-muted">
+          <p className="mt-3 flex flex-wrap items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-muted">
             {item?.category && <CategoryLabel slug={item.category} />}
             <span aria-hidden="true">/</span>
             <span>{formatNumber(item?.voteCount ?? 0)} votes on Deck</span>
@@ -299,8 +297,8 @@ function Header({ listing }: { listing: Listing }) {
       </div>
 
       {listing.status === 'rejected' && listing.reviewNote && (
-        <p className="border-t border-edge bg-surface-2 px-5 py-3 text-xs leading-relaxed text-muted text-pretty">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-body">
+        <p className="border-t border-line bg-surface-2 px-5 py-3 text-xs leading-relaxed text-muted text-pretty">
+          <span className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-body">
             Deck&apos;s note
           </span>
           <br />
@@ -309,7 +307,7 @@ function Header({ listing }: { listing: Listing }) {
       )}
 
       <div
-        className="flex flex-wrap items-end justify-between gap-4 border-t border-edge px-5 py-4 sm:px-6"
+        className="flex flex-wrap items-end justify-between gap-4 border-t border-line px-5 py-4 sm:px-6"
         style={
           swatch
             ? {
@@ -320,7 +318,7 @@ function Header({ listing }: { listing: Listing }) {
         }
       >
         <div>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] opacity-80">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.12em] opacity-80">
             Asking price {listing.negotiable ? '· open to offers' : '· firm'}
           </p>
           <p className="font-display text-[clamp(2.25rem,7vw,3.75rem)] leading-none tabular-nums">
@@ -331,7 +329,7 @@ function Header({ listing }: { listing: Listing }) {
           </p>
         </div>
 
-        <dl className="flex flex-wrap gap-x-6 gap-y-1 font-mono text-[10px] font-bold uppercase tracking-[0.08em] opacity-90">
+        <dl className="flex flex-wrap gap-x-6 gap-y-1 font-mono text-[10px] font-medium uppercase tracking-[0.08em] opacity-90">
           <div>
             <dt className="opacity-70">Revenue / mo</dt>
             <dd className="font-display text-sm tabular-nums">
@@ -394,7 +392,7 @@ function OfferForm({ listing, slug }: { listing: Listing; slug: string }) {
       noValidate
     >
       {existing && (
-        <p className="border border-edge bg-surface-2 px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.06em]">
+        <p className="rounded-2xl border border-line bg-surface-2 px-3 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.06em]">
           Your offer: {formatMoney(existing.amountMinor, existing.currency)}
         </p>
       )}
@@ -409,16 +407,14 @@ function OfferForm({ listing, slug }: { listing: Listing; slug: string }) {
         min={50_000}
         step={10_000}
         value={amount}
-        onChange={(event) =>
-          setAmount(event.target.value === '' ? '' : Number(event.target.value))
-        }
+        onChange={(event) => setAmount(event.target.value === '' ? '' : Number(event.target.value))}
         error={error?.fieldError('amount')}
         hint={`In whole ${listing.currency}.`}
       />
 
       {/* Live arithmetic, so nobody is surprised by the split later. */}
       {offerMinor > 0 && (
-        <dl className="space-y-1 border border-edge bg-surface-2 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
+        <dl className="rounded-2xl space-y-1 border border-line bg-surface-2 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
           <div className="flex justify-between gap-2">
             <dt>Deck&apos;s {listing.feePercent}%</dt>
             <dd className="tabular-nums">{formatMoney(feeMinor, listing.currency)}</dd>
@@ -433,7 +429,7 @@ function OfferForm({ listing, slug }: { listing: Listing; slug: string }) {
       )}
 
       {below && !listing.negotiable && (
-        <p className="border border-edge bg-warning px-3 py-2 font-mono text-[10px] font-bold uppercase leading-relaxed tracking-[0.06em] text-ink">
+        <p className="border border-line bg-warning px-3 py-2 font-mono text-[10px] font-medium uppercase leading-relaxed tracking-[0.06em] text-ink">
           The seller has set a firm price. This offer will be refused.
         </p>
       )}
@@ -489,10 +485,10 @@ function BidList({
   if (listing.bids.length === 0) {
     return (
       <section aria-labelledby="offers-heading">
-        <h2 id="offers-heading" className="text-lg uppercase">
+        <h2 id="offers-heading" className="text-lg">
           Offers
         </h2>
-        <p className="mt-3 border border-edge bg-surface-2 px-4 py-3 text-sm text-muted">
+        <p className="rounded-2xl mt-3 border border-line bg-surface-2 px-4 py-3 text-sm text-muted">
           No offers yet. They appear here the moment somebody makes one.
         </p>
       </section>
@@ -501,7 +497,7 @@ function BidList({
 
   return (
     <section aria-labelledby="offers-heading">
-      <h2 id="offers-heading" className="text-lg uppercase">
+      <h2 id="offers-heading" className="text-lg">
         Offers <span className="font-mono text-sm text-muted">({listing.bids.length})</span>
       </h2>
 
@@ -541,7 +537,7 @@ function BidRow({
   return (
     <li
       className={cn(
-        'rounded-slab border border-edge p-4',
+        'rounded-slab border border-line p-4',
         bid.status === 'accepted' ? 'bg-success/20' : 'bg-surface',
       )}
     >
@@ -549,7 +545,7 @@ function BidRow({
         <div className="flex items-center gap-2.5">
           {bid.bidder && <Avatar user={bid.bidder} size="sm" />}
           <div>
-            <p className="flex items-center gap-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+            <p className="flex items-center gap-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
               {bid.bidder ? (
                 <Link to={profilePath(bid.bidder.username)} className="hover:underline">
                   {bid.bidder.name}
@@ -581,7 +577,7 @@ function BidRow({
       </p>
 
       {canAccept && (
-        <div className="mt-4 border-t border-edge pt-3">
+        <div className="mt-4 border-t border-line pt-3">
           <Button
             size="sm"
             loading={accepting}

@@ -21,9 +21,9 @@ export function Cart() {
       <PageBanner />
 
       <header className="mb-8">
-        <h1 className="display-tight text-3xl uppercase sm:text-4xl">Your cart</h1>
+        <h1 className="display-tight text-3xl sm:text-4xl">Your cart</h1>
         {count > 0 && (
-          <p className="mt-3 font-mono text-[12px] font-bold uppercase text-muted">
+          <p className="mt-3 font-mono text-[12px] font-medium uppercase text-muted">
             {count} {count === 1 ? 'item' : 'items'}
           </p>
         )}
@@ -43,19 +43,19 @@ export function Cart() {
               return (
                 <li
                   key={line.sku}
-                  className="flex items-start gap-4 rounded-slab border border-edge bg-surface p-4 shadow-hard"
+                  className="flex items-start gap-4 rounded-slab border border-line bg-surface p-4 shadow-hard"
                 >
                   {line.image ? (
                     <img
                       src={line.image}
                       alt=""
-                      className="size-20 shrink-0 border border-edge bg-surface-2 object-cover"
+                      className="size-20 shrink-0 border border-line bg-surface-2 object-cover"
                     />
                   ) : (
                     <span
                       aria-hidden="true"
                       className={cn(
-                        'flex size-20 shrink-0 items-center justify-center border border-edge font-display text-xl uppercase',
+                        'flex size-20 shrink-0 items-center justify-center border border-line font-display text-xl',
                         colour.bg,
                         colour.ink,
                       )}
@@ -65,12 +65,12 @@ export function Cart() {
                   )}
 
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-base uppercase leading-tight">
+                    <h2 className="text-base leading-tight">
                       <Link to={`/shop/${line.slug}`} className="hover:underline">
                         {line.name}
                       </Link>
                     </h2>
-                    <p className="mt-1 font-mono text-[11px] font-bold uppercase text-muted">
+                    <p className="mt-1 font-mono text-[11px] font-medium uppercase text-muted">
                       {[line.size, line.colour].filter(Boolean).join(' · ') || line.sku}
                     </p>
                     <p className="mt-2 font-display text-sm">
@@ -79,16 +79,16 @@ export function Cart() {
                     </p>
 
                     <div className="mt-3 flex items-center gap-3">
-                      <div className="flex items-center border border-edge">
+                      <div className="flex items-center border border-line">
                         <button
                           type="button"
                           onClick={() => setQuantity(line.sku, line.quantity - 1)}
                           aria-label={`Reduce quantity of ${line.name}`}
-                          className="flex size-8 items-center justify-center font-mono text-sm font-bold transition-colors hover:bg-surface-2"
+                          className="flex size-8 items-center justify-center font-mono text-sm font-medium transition-colors hover:bg-surface-2"
                         >
                           −
                         </button>
-                        <span className="w-9 text-center font-mono text-sm font-bold tabular-nums">
+                        <span className="w-9 text-center font-mono text-sm font-medium tabular-nums">
                           {line.quantity}
                         </span>
                         <button
@@ -96,7 +96,7 @@ export function Cart() {
                           onClick={() => setQuantity(line.sku, line.quantity + 1)}
                           disabled={line.quantity >= Math.min(10, line.maxStock)}
                           aria-label={`Increase quantity of ${line.name}`}
-                          className="flex size-8 items-center justify-center font-mono text-sm font-bold transition-colors hover:bg-surface-2 disabled:opacity-40"
+                          className="flex size-8 items-center justify-center font-mono text-sm font-medium transition-colors hover:bg-surface-2 disabled:opacity-40"
                         >
                           +
                         </button>
@@ -105,7 +105,7 @@ export function Cart() {
                       <button
                         type="button"
                         onClick={() => remove(line.sku)}
-                        className="font-mono text-[11px] font-bold uppercase text-muted transition-colors hover:bg-edge hover:px-1 hover:text-canvas"
+                        className="font-mono text-[11px] font-medium uppercase text-muted transition-colors hover:bg-edge hover:px-1 hover:text-canvas"
                       >
                         Remove
                       </button>
@@ -122,7 +122,7 @@ export function Cart() {
 
           <aside className="lg:sticky lg:top-24">
             <Card className="p-5">
-              <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+              <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
                 Summary
               </h2>
 
@@ -137,14 +137,14 @@ export function Cart() {
                     {shippingMinor === 0 ? 'Free' : formatMoney(shippingMinor)}
                   </dd>
                 </div>
-                <div className="flex justify-between gap-3 border-t border-edge pt-2.5">
-                  <dt className="font-display uppercase">Total</dt>
+                <div className="flex justify-between gap-3 border-t border-line pt-2.5">
+                  <dt className="font-display">Total</dt>
                   <dd className="font-display text-lg tabular-nums">{formatMoney(totalMinor)}</dd>
                 </div>
               </dl>
 
               {awayFromFree > 0 && (
-                <p className="mt-4 border border-edge bg-surface-2 px-2.5 py-1.5 font-mono text-[10px] font-bold uppercase leading-relaxed">
+                <p className="rounded-2xl mt-4 border border-line bg-surface-2 px-2.5 py-1.5 font-mono text-[10px] font-medium uppercase leading-relaxed">
                   {formatMoney(awayFromFree)} more for free shipping
                 </p>
               )}
@@ -156,7 +156,7 @@ export function Cart() {
               <div className="mt-3 flex items-center justify-between gap-2">
                 <Link
                   to="/shop"
-                  className="font-mono text-[11px] font-bold uppercase underline-offset-4 hover:underline"
+                  className="font-mono text-[11px] font-medium uppercase underline-offset-4 hover:underline"
                 >
                   Keep shopping
                 </Link>

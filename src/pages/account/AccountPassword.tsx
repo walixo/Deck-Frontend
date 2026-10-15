@@ -12,7 +12,7 @@ export function AccountPassword() {
   return (
     <div>
       <header className="mb-6">
-        <h1 className="display-tight text-3xl uppercase">Password</h1>
+        <h1 className="display-tight text-3xl">Password</h1>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted text-pretty">
           Changing this signs nothing else out — Deck has no other sessions to end.
         </p>
@@ -66,7 +66,7 @@ function PasswordForm() {
   return (
     <Card className="mt-8 p-5 sm:p-6">
       <form onSubmit={submit} className="space-y-5" noValidate>
-        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Password
         </h2>
 
@@ -107,7 +107,7 @@ function PasswordForm() {
         />
 
         {saved && !error && (
-          <p className="border border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
+          <p className="border border-line bg-success px-3 py-2 font-mono text-[11px] font-medium uppercase text-ink">
             Password changed
           </p>
         )}

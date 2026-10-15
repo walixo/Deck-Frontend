@@ -13,7 +13,7 @@ export function AccountPrints() {
     <div>
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="display-tight text-3xl uppercase">Custom prints</h1>
+          <h1 className="display-tight text-3xl">Custom prints</h1>
           <p className="mt-2 text-sm leading-relaxed text-muted text-pretty">
             Deck checks every design before it goes to print. Nothing is charged until it is
             approved.
@@ -54,25 +54,23 @@ function Row({ design }: { design: CustomDesign }) {
         : 'bg-surface-2 text-muted';
 
   return (
-    <li className="rounded-slab border border-edge bg-surface p-3 shadow-hard-sm">
+    <li className="rounded-slab border border-line bg-surface p-3 shadow-hard-sm">
       <div className="flex flex-wrap items-center gap-3">
         <img
           src={design.artworkUrl}
           alt=""
-          className="size-10 shrink-0 border border-edge bg-bone object-contain p-0.5"
+          className="size-10 shrink-0 border border-line bg-bone object-contain p-0.5"
         />
-        <span className="min-w-0 flex-1 truncate font-display text-[13px] uppercase">
-          {design.name}
-        </span>
+        <span className="min-w-0 flex-1 truncate font-display text-[13px]">{design.name}</span>
         <span className="shrink-0 font-mono text-[10px] uppercase text-muted">
           {design.reference} · {design.product} · {relativeTime(design.createdAt)}
         </span>
-        <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums">
+        <span className="shrink-0 font-mono text-[11px] font-medium tabular-nums">
           {formatMoney(design.priceMinor, design.currency)}
         </span>
         <span
           className={cn(
-            'shrink-0 border border-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em]',
+            'rounded-full shrink-0 border border-line px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.06em]',
             tone,
           )}
         >
@@ -83,7 +81,7 @@ function Row({ design }: { design: CustomDesign }) {
       {/* Deck's note on a rejection is the only thing that tells somebody what
           to change, so it is shown rather than left in the API. */}
       {design.status === 'rejected' && design.reviewNote && (
-        <p className="mt-2 border-l border-edge pl-2 text-xs leading-relaxed text-muted text-pretty">
+        <p className="mt-2 border-l border-line pl-2 text-xs leading-relaxed text-muted text-pretty">
           {design.reviewNote}
         </p>
       )}

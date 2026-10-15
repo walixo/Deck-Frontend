@@ -511,7 +511,7 @@ export function LaunchVortex({ items, total }: VortexProps) {
      * every child corrects itself. A tunnel of pale text needs a dark room, and
      * this one cannot borrow the page's.
      */
-    <section className="dark relative isolate overflow-hidden border-b border-edge bg-canvas text-body">
+    <section className="dark relative isolate overflow-hidden border-b border-line bg-canvas text-body">
       <div className="relative h-[36rem] w-full sm:h-[42rem]">
         <canvas ref={canvasRef} aria-hidden="true" className="absolute inset-0 size-full" />
 
@@ -530,11 +530,11 @@ export function LaunchVortex({ items, total }: VortexProps) {
          * sentence on top of a thousand moving glyphs and still have it read.
          */}
         <div className="absolute inset-0 grid place-items-center px-4">
-          <div className="max-w-md rounded-slab border border-edge bg-canvas/95 p-6 text-center shadow-hard sm:p-8">
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
+          <div className="max-w-md rounded-slab border border-line bg-canvas/95 p-6 text-center shadow-hard sm:p-8">
+            <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
               Everything that has shipped here
             </p>
-            <h2 className="mt-2 display-tight text-3xl uppercase text-balance sm:text-4xl">
+            <h2 className="mt-2 display-tight text-3xl text-balance sm:text-4xl">
               {/* The hero's threshold, shared rather than restated. Below it
                   the hero shows no numbers, and this saying "3 launches"
                   further down would undercut that — so both switch to numbers

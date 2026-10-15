@@ -23,8 +23,18 @@ interface Archive {
 }
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 /**
@@ -67,8 +77,8 @@ export function LaunchArchive({
 
   return (
     <nav aria-label="Launch archive" className={cn('text-sm', className)}>
-      <div className="flex items-baseline justify-between gap-2 border-b border-edge pb-2">
-        <h2 className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">Archive</h2>
+      <div className="flex items-baseline justify-between gap-2 border-b border-line pb-2">
+        <h2 className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">Archive</h2>
         <span className="font-mono text-[10px] tabular-nums text-muted">
           {formatNumber(data.total)}
         </span>
@@ -79,8 +89,8 @@ export function LaunchArchive({
         onClick={() => onPick('')}
         aria-current={value === '' || undefined}
         className={cn(
-          'mt-2 w-full px-1.5 py-1 text-left font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
-          value === '' ? 'bg-pop text-on-pop' : 'text-muted hover:bg-surface-2 hover:text-body',
+          'mt-2 w-full px-1.5 py-1 text-left font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
+          value === '' ? 'bg-edge text-canvas' : 'text-muted hover:bg-surface-2 hover:text-body',
         )}
       >
         All time
@@ -184,12 +194,12 @@ function Row({
         onClick={onSelect}
         aria-current={selected || undefined}
         className={cn(
-          'flex min-w-0 flex-1 items-baseline gap-2 py-1 pr-1.5 text-left transition-colors duration-[120ms]',
+          'flex min-w-0 flex-1 items-baseline gap-2 py-1 pr-1.5 text-left transition-colors duration-300',
           indent,
           depth === 0
-            ? 'font-mono text-[11px] font-bold uppercase tracking-[0.06em]'
+            ? 'font-mono text-[11px] font-medium uppercase tracking-[0.06em]'
             : 'font-mono text-[11px]',
-          selected ? 'bg-pop text-on-pop' : 'text-muted hover:bg-surface-2 hover:text-body',
+          selected ? 'bg-edge text-canvas' : 'text-muted hover:bg-surface-2 hover:text-body',
         )}
       >
         <span className="truncate">{label}</span>
@@ -202,12 +212,12 @@ function Row({
           onClick={onToggle}
           aria-expanded={expanded}
           aria-label={`${expanded ? 'Collapse' : 'Expand'} ${label}`}
-          className="flex w-6 shrink-0 items-center justify-center text-muted transition-colors duration-[120ms] hover:bg-surface-2 hover:text-body"
+          className="flex w-6 shrink-0 items-center justify-center text-muted transition-colors duration-300 hover:bg-surface-2 hover:text-body"
         >
           <span
             aria-hidden="true"
             className={cn(
-              'text-[8px] leading-none transition-transform duration-[140ms]',
+              'text-[8px] leading-none transition-transform duration-300',
               expanded && 'rotate-90',
             )}
           >

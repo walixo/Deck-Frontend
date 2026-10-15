@@ -56,18 +56,18 @@ export function Customise() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-      <header className="border-b border-edge pb-8">
-        <h1 className="display-tight text-[clamp(2rem,5vw,3rem)] uppercase">Print your own</h1>
+      <header className="border-b border-line pb-8">
+        <h1 className="display-tight text-[clamp(2rem,5vw,3rem)]">Print your own</h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted text-pretty">
-          Send us a PNG and we will put it on a sticker, a tee or a hoodie. Deck checks every
-          design before it goes to print, so nothing is charged until it is approved.
+          Send us a PNG and we will put it on a sticker, a tee or a hoodie. Deck checks every design
+          before it goes to print, so nothing is charged until it is approved.
         </p>
       </header>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
         <div className="space-y-6">
           <Card className="p-5">
-            <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+            <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               1 · Your artwork
             </h2>
 
@@ -104,8 +104,8 @@ export function Customise() {
         ) : (
           <Card className="flex min-h-80 items-center justify-center p-8 text-center">
             <p className="max-w-xs text-sm leading-relaxed text-muted text-pretty">
-              Upload a PNG on the left and your mockup appears here — the actual file, on the
-              actual garment, at the size it will print.
+              Upload a PNG on the left and your mockup appears here — the actual file, on the actual
+              garment, at the size it will print.
             </p>
           </Card>
         )}
@@ -138,10 +138,10 @@ function AnalysisPanel({
         <Fact label="Ink coverage" value={`${Math.round(analysis.inkCoverage * 100)}%`} />
       </dl>
 
-      <div className="flex items-center gap-2 border border-edge bg-surface-2 px-3 py-2">
+      <div className="rounded-2xl flex items-center gap-2 border border-line bg-surface-2 px-3 py-2">
         <span
           aria-hidden="true"
-          className="size-5 shrink-0 border border-edge"
+          className="size-5 shrink-0 border border-line"
           style={{ background: analysis.dominantHex }}
         />
         <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
@@ -154,14 +154,14 @@ function AnalysisPanel({
           {analysis.warnings.map((warning) => (
             <li
               key={warning}
-              className="border border-edge bg-warning px-3 py-2 text-xs leading-relaxed text-ink text-pretty"
+              className="border border-line bg-warning px-3 py-2 text-xs leading-relaxed text-ink text-pretty"
             >
               {warning}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="border border-edge bg-success px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.06em] text-ink">
+        <p className="border border-line bg-success px-3 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-ink">
           Print-ready
         </p>
       )}
@@ -171,7 +171,7 @@ function AnalysisPanel({
 
 function Fact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-edge bg-surface-2 px-2.5 py-1.5">
+    <div className="rounded-2xl border border-line bg-surface-2 px-2.5 py-1.5">
       <dd className="font-display text-xs tabular-nums">{value}</dd>
       <dt className="mt-0.5 text-[9px] font-bold text-muted">{label}</dt>
     </div>
@@ -202,8 +202,7 @@ function Configurator({
   const [saved, setSaved] = useState<CustomDesign | null>(null);
 
   const apparel = inspection.pricing[product].apparel;
-  const garmentHex =
-    inspection.garments.find((entry) => entry.id === garment)?.hex ?? '#17181a';
+  const garmentHex = inspection.garments.find((entry) => entry.id === garment)?.hex ?? '#17181a';
   const price = inspection.pricing[product].priceMinor;
 
   const error = create.error instanceof RequestError ? create.error : null;
@@ -228,7 +227,7 @@ function Configurator({
     <div className="grid gap-6 md:grid-cols-2">
       <div className="space-y-5 md:order-2">
         <div>
-          <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.08em]">
+          <p className="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.08em]">
             Print proof
           </p>
           <MockupPreview
@@ -250,7 +249,7 @@ function Configurator({
 
       <form onSubmit={submit} className="space-y-5 md:order-1" noValidate>
         <Card className="space-y-5 p-5">
-          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+          <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
             2 · What to print it on
           </h2>
 
@@ -267,13 +266,13 @@ function Configurator({
                 }}
                 aria-pressed={product === option}
                 className={cn(
-                  'border border-edge px-3 py-2 text-left transition-colors duration-[120ms]',
+                  'border border-line px-3 py-2 text-left transition-colors duration-300',
                   product === option
-                    ? 'bg-pop text-on-pop'
+                    ? 'bg-edge text-canvas'
                     : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                 )}
               >
-                <span className="block font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+                <span className="block font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
                   {inspection.pricing[option].label}
                 </span>
                 <span className="mt-0.5 block font-display text-sm tabular-nums">
@@ -284,7 +283,7 @@ function Configurator({
           </div>
 
           <fieldset>
-            <legend className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+            <legend className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               Colour
             </legend>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -299,7 +298,7 @@ function Configurator({
                     aria-label={`${entry.label}${suggested ? ' — recommended' : ''}`}
                     title={`${entry.label}${suggested ? ' — your design reads well on this' : ''}`}
                     className={cn(
-                      'size-9 border border-edge transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5',
+                      'size-9 border border-line transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5',
                       garment === entry.id && 'outline outline-2 outline-offset-2 outline-edge',
                       /* Colours Deck does not recommend stay selectable but are
                          dimmed — it is the buyer's shirt, not Deck's. */
@@ -318,7 +317,7 @@ function Configurator({
           {apparel && (
             <>
               <fieldset>
-                <legend className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+                <legend className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
                   Placement
                 </legend>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -329,7 +328,7 @@ function Configurator({
                       onClick={() => setPlacement(option)}
                       aria-pressed={placement === option}
                       className={cn(
-                        'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
+                        'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
                         placement === option
                           ? 'bg-deep text-on-deep'
                           : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
@@ -342,7 +341,7 @@ function Configurator({
               </fieldset>
 
               <fieldset>
-                <legend className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+                <legend className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
                   Size
                 </legend>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -353,7 +352,7 @@ function Configurator({
                       onClick={() => setSize(option)}
                       aria-pressed={size === option}
                       className={cn(
-                        'min-w-11 border border-edge px-2 py-1 font-mono text-[11px] font-bold uppercase transition-colors duration-[120ms]',
+                        'rounded-full min-w-11 border border-line px-2 py-1 font-mono text-[11px] font-medium uppercase transition-colors duration-300',
                         size === option
                           ? 'bg-deep text-on-deep'
                           : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
@@ -368,7 +367,7 @@ function Configurator({
           )}
 
           <label className="block">
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               Print size
             </span>
             <input
@@ -387,7 +386,7 @@ function Configurator({
         </Card>
 
         <Card className="space-y-4 p-5">
-          <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+          <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
             3 · Send it for approval
           </h2>
 
@@ -404,8 +403,8 @@ function Configurator({
             hint="Just so you can find it again."
           />
 
-          <div className="flex items-baseline justify-between gap-3 border border-edge bg-surface-2 px-3 py-2">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+          <div className="rounded-2xl flex items-baseline justify-between gap-3 border border-line bg-surface-2 px-3 py-2">
+            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
               Price
             </span>
             <span className="font-display text-lg">
@@ -415,7 +414,7 @@ function Configurator({
 
           {saved ? (
             <div className="space-y-2">
-              <p className="border border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
+              <p className="border border-line bg-success px-3 py-2 font-mono text-[11px] font-medium uppercase text-ink">
                 Sent — reference {saved.reference}
               </p>
               <p className="text-xs leading-relaxed text-muted text-pretty">
@@ -445,19 +444,19 @@ function MyDesigns() {
 
   return (
     <Card className="p-5">
-      <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em]">
+      <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
         Your designs
       </h2>
       <ul className="mt-3 space-y-2">
         {designs.map((design) => (
-          <li key={design.id} className="flex items-center gap-3 border border-edge p-2">
+          <li key={design.id} className="flex items-center gap-3 border border-line p-2">
             <img
               src={design.artworkUrl}
               alt=""
-              className="size-10 shrink-0 border border-edge bg-bone object-contain p-0.5"
+              className="size-10 shrink-0 border border-line bg-bone object-contain p-0.5"
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+              <p className="truncate font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
                 {design.name}
               </p>
               <p className="font-mono text-[9px] uppercase text-muted">
@@ -483,7 +482,7 @@ function StatusChip({ status }: { status: CustomDesign['status'] }) {
   return (
     <span
       className={cn(
-        'shrink-0 border border-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em]',
+        'rounded-full shrink-0 border border-line px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.06em]',
         tone,
       )}
     >
@@ -511,7 +510,7 @@ function LifestylePanel({ design, available }: { design: CustomDesign; available
 
   return (
     <div>
-      <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.08em]">
+      <p className="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.08em]">
         Lifestyle shot
       </p>
 
@@ -520,15 +519,15 @@ function LifestylePanel({ design, available }: { design: CustomDesign; available
           <img
             src={design.lifestyleUrl}
             alt={`A generated scene showing ${design.name}`}
-            className="aspect-square w-full border border-edge object-cover"
+            className="aspect-square w-full border border-line object-cover"
           />
-          <p className="mt-2 border border-edge bg-warning px-2.5 py-1.5 font-mono text-[9px] uppercase leading-relaxed tracking-[0.06em] text-ink text-pretty">
+          <p className="mt-2 border border-line bg-warning px-2.5 py-1.5 font-mono text-[9px] uppercase leading-relaxed tracking-[0.06em] text-ink text-pretty">
             Generated by AI for sharing. The garment and setting are invented — the print proof
             above is the accurate one.
           </p>
         </>
       ) : (
-        <div className="border border-edge bg-surface-2 p-4">
+        <div className="rounded-2xl border border-line bg-surface-2 p-4">
           <p className="text-xs leading-relaxed text-muted text-pretty">
             Make a photo-style shot of this on a person, for your shop page or a post. Generated by
             AI, so the scene is invented — it is for sharing, not for approving the print.
@@ -536,9 +535,7 @@ function LifestylePanel({ design, available }: { design: CustomDesign; available
 
           {render.error && (
             <p role="alert" className="mt-2 font-mono text-[10px] uppercase text-red">
-              {render.error instanceof RequestError
-                ? render.error.message
-                : 'That did not work'}
+              {render.error instanceof RequestError ? render.error.message : 'That did not work'}
             </p>
           )}
 

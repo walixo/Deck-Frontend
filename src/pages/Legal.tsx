@@ -38,7 +38,7 @@ function Text({ children }: { children: string }) {
         return (
           <mark
             key={index}
-            className="mx-0.5 inline-block border border-danger bg-danger/15 px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-danger"
+            className="rounded-full mx-0.5 inline-block border border-danger bg-danger/15 px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-danger"
           >
             {match[1]}
           </mark>
@@ -97,7 +97,7 @@ function Block({ block }: { block: LegalBlock }) {
               <th
                 key={heading}
                 scope="col"
-                className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-muted"
+                className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-muted"
               >
                 {heading}
               </th>
@@ -109,11 +109,11 @@ function Block({ block }: { block: LegalBlock }) {
             <tr key={term} className="align-top">
               <th
                 scope="row"
-                className="w-1/3 border-b border-edge py-3 pr-6 text-sm font-bold text-pretty"
+                className="w-1/3 border-b border-line py-3 pr-6 text-sm font-bold text-pretty"
               >
                 <Text>{term}</Text>
               </th>
-              <td className="border-b border-edge py-3 text-sm leading-relaxed text-muted text-pretty">
+              <td className="border-b border-line py-3 text-sm leading-relaxed text-muted text-pretty">
                 <Text>{detail}</Text>
               </td>
             </tr>
@@ -168,14 +168,12 @@ function LegalPage({ document }: { document: LegalDocument }) {
       <PageBanner />
 
       <header className="max-w-3xl">
-        <p className="mb-3 inline-block border border-edge bg-deep px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-deep">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           {document.eyebrow}
         </p>
-        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
-          {document.title}
-        </h1>
+        <h1 className="display-tight text-3xl text-balance sm:text-4xl">{document.title}</h1>
         <p className="mt-3 text-base leading-relaxed text-muted text-pretty">{document.summary}</p>
-        <p className="mt-4 font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
+        <p className="mt-4 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-muted">
           In effect from {document.effective}
         </p>
       </header>
@@ -185,7 +183,7 @@ function LegalPage({ document }: { document: LegalDocument }) {
           role="status"
           className="mt-8 max-w-3xl border-2 border-danger bg-danger/10 p-4 sm:p-5"
         >
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.1em] text-danger">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-danger">
             Draft — {pending.length} {pending.length === 1 ? 'detail' : 'details'} still to fill in
           </p>
           <p className="mt-2 text-sm leading-relaxed text-pretty">
@@ -198,7 +196,7 @@ function LegalPage({ document }: { document: LegalDocument }) {
             {pending.map((item) => (
               <li
                 key={item}
-                className="border border-danger px-1.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-danger"
+                className="rounded-full border border-danger px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-danger"
               >
                 {item}
               </li>
@@ -215,14 +213,12 @@ function LegalPage({ document }: { document: LegalDocument }) {
             <section
               key={section.title}
               id={slug(section.title)}
-              className="scroll-mt-24 border-t border-edge pt-8 first:border-t-0 first:pt-0"
+              className="scroll-mt-24 border-t border-line pt-8 first:border-t-0 first:pt-0"
             >
-              <p className="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-accent">
+              <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-accent">
                 {String(index + 1).padStart(2, '0')}
               </p>
-              <h2 className="display-tight mt-1.5 text-xl uppercase text-balance">
-                {section.title}
-              </h2>
+              <h2 className="display-tight mt-1.5 text-xl text-balance">{section.title}</h2>
 
               <div className="mt-4 pb-8">
                 {section.blocks.map((block, blockIndex) => (
@@ -234,7 +230,7 @@ function LegalPage({ document }: { document: LegalDocument }) {
         </div>
 
         <nav aria-label="Contents" className="hidden w-60 shrink-0 lg:sticky lg:top-24 lg:block">
-          <p className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+          <p className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
             Contents
           </p>
           <ul className="mt-3 space-y-1.5">

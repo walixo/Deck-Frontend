@@ -36,13 +36,13 @@ export function AdminOverview() {
       <section aria-labelledby="queues-heading">
         <h2
           id="queues-heading"
-          className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           Needs you
         </h2>
 
         {allClear ? (
-          <p className="border border-edge bg-deep px-4 py-5 font-display text-lg uppercase text-on-deep shadow-hard">
+          <p className="border border-line bg-deep px-4 py-5 font-display text-lg text-on-deep shadow-hard">
             Nothing waiting. Everything is reviewed, posted and paid.
           </p>
         ) : (
@@ -82,7 +82,7 @@ export function AdminOverview() {
       <section aria-labelledby="money-heading">
         <h2
           id="money-heading"
-          className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           Money through Deck
         </h2>
@@ -113,7 +113,7 @@ export function AdminOverview() {
       <section aria-labelledby="platform-heading">
         <h2
           id="platform-heading"
-          className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           The platform
         </h2>
@@ -146,11 +146,11 @@ function Queue({
   return (
     <Link
       to={to}
-      className={`block border border-edge px-4 py-5 shadow-hard transition-transform duration-[120ms] ease-[var(--ease-snap)] hover:-translate-y-0.5 ${
-        count > 0 ? 'bg-pop text-on-pop' : 'bg-surface'
+      className={`rounded-2xl block border border-line px-4 py-5 shadow-hard transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 ${
+        count > 0 ? 'bg-edge text-canvas' : 'bg-surface'
       }`}
     >
-      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] opacity-80">
+      <p className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] opacity-80">
         {label}
       </p>
       <p className="mt-1.5 font-display text-2xl tabular-nums">{value}</p>
@@ -161,8 +161,8 @@ function Queue({
 
 function Figure({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div className="border border-edge bg-surface px-4 py-5 shadow-hard">
-      <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+    <div className="rounded-2xl border border-line bg-surface px-4 py-5 shadow-hard">
+      <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
         {label}
       </dt>
       <dd className="mt-1.5 font-display text-xl tabular-nums">{value}</dd>
@@ -173,8 +173,8 @@ function Figure({ label, value, note }: { label: string; value: string; note: st
 
 function Small({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-edge bg-surface-2 px-3 py-3">
-      <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+    <div className="rounded-2xl border border-line bg-surface-2 px-3 py-3">
+      <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
         {label}
       </dt>
       <dd className="mt-1 font-display text-lg tabular-nums">{value}</dd>

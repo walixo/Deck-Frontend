@@ -26,8 +26,8 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
               and the top of it is sized for something small and clickable — on
               a card this large a 12px offset stops reading as depth and starts
               reading as a second card behind the first. */}
-          <div className="rounded-slab border border-edge bg-surface p-6 shadow-hard sm:p-8">
-            <h1 className="display-tight text-2xl uppercase text-balance">{title}</h1>
+          <div className="rounded-slab border border-line bg-surface p-6 shadow-hard sm:p-8">
+            <h1 className="display-tight text-2xl text-balance">{title}</h1>
             <p className="mt-2.5 text-sm leading-relaxed text-muted text-pretty">{subtitle}</p>
 
             <div className="mt-7">{children}</div>
@@ -42,7 +42,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
           style={{ animationDelay: '120ms' }}
         >
           <LaunchBoardIllustration className="w-full max-w-md" />
-          <h2 className="display-tight mt-8 max-w-sm text-3xl uppercase text-balance">
+          <h2 className="display-tight mt-8 max-w-sm text-3xl text-balance">
             Ship it, then watch the board.
           </h2>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted text-pretty">

@@ -43,7 +43,7 @@ export function MerchDetail() {
         <div className="mt-6 text-center">
           <Link
             to="/shop"
-            className="font-mono text-[12px] font-bold uppercase underline-offset-4 hover:underline"
+            className="font-mono text-[12px] font-medium uppercase underline-offset-4 hover:underline"
           >
             ← Back to the shop
           </Link>
@@ -88,7 +88,7 @@ export function MerchDetail() {
       <div className="relative mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <nav
           aria-label="Breadcrumb"
-          className="mb-6 flex items-center gap-2 font-mono text-[11px] font-bold uppercase text-muted"
+          className="mb-6 flex items-center gap-2 font-mono text-[11px] font-medium uppercase text-muted"
         >
           <Link to="/shop" className="hover:text-body">
             Shop
@@ -102,7 +102,7 @@ export function MerchDetail() {
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           {/* Imagery */}
           <div>
-            <div className="border border-edge shadow-hard">
+            <div className="border border-line shadow-hard">
               {image ? (
                 <img
                   src={image}
@@ -118,7 +118,7 @@ export function MerchDetail() {
                     colour.ink,
                   )}
                 >
-                  <span className="font-display text-7xl uppercase tracking-tight">
+                  <span className="font-display text-7xl tracking-tight">
                     {product.name.slice(0, 2)}
                   </span>
                 </div>
@@ -135,10 +135,10 @@ export function MerchDetail() {
                       aria-current={index === activeImage}
                       aria-label={`Show image ${index + 1}`}
                       className={cn(
-                        'block border transition-transform duration-[120ms] hover:-translate-y-0.5',
+                        'block border transition-transform duration-300 hover:-translate-y-0.5',
                         index === activeImage
                           ? 'border-accent'
-                          : 'border-edge opacity-60 hover:opacity-100',
+                          : 'border-line opacity-60 hover:opacity-100',
                       )}
                     >
                       <img src={entry} alt="" className="size-16 bg-surface-2 object-cover" />
@@ -156,7 +156,7 @@ export function MerchDetail() {
               {product.soldOut && <Badge tone="invert">Sold out</Badge>}
             </div>
 
-            <h1 className="display-tight mt-3 text-4xl uppercase text-balance">{product.name}</h1>
+            <h1 className="display-tight mt-3 text-4xl text-balance">{product.name}</h1>
             <p className="mt-3 text-base leading-relaxed text-muted text-pretty">
               {product.tagline}
             </p>
@@ -168,7 +168,7 @@ export function MerchDetail() {
             {/* Variants */}
             {!singleVariant && (
               <fieldset className="mt-6">
-                <legend className="mb-2 font-mono text-[11px] font-bold uppercase tracking-[0.08em]">
+                <legend className="mb-2 font-mono text-[11px] font-medium uppercase tracking-[0.08em]">
                   {product.variants.some((variant) => variant.size) ? 'Size' : 'Option'}
                 </legend>
                 <div className="flex flex-wrap gap-2">
@@ -183,12 +183,12 @@ export function MerchDetail() {
                         onClick={() => setSelectedSku(variant.sku)}
                         aria-pressed={isSelected}
                         className={cn(
-                          'min-w-12 border border-edge px-3 py-2 font-mono text-[12px] font-bold uppercase transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)]',
+                          'min-w-12 border border-line px-3 py-2 font-mono text-[12px] font-medium uppercase transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)]',
                           !variant.inStock
                             ? // Sold-out options stay visible but struck through.
                               'cursor-not-allowed bg-surface-2 text-muted line-through opacity-60'
                             : isSelected
-                              ? 'bg-pop text-on-pop shadow-hard-sm'
+                              ? 'bg-edge text-canvas'
                               : 'bg-surface hover:-translate-y-0.5 hover:bg-deep hover:text-on-deep hover:shadow-hard-sm',
                         )}
                       >
@@ -201,7 +201,7 @@ export function MerchDetail() {
             )}
 
             {selected && selected.inStock && selected.stock <= 5 && (
-              <p className="mt-3 inline-block border border-edge bg-deep px-2 py-0.5 font-mono text-[11px] font-bold uppercase text-on-deep">
+              <p className="rounded-full mt-3 inline-block border border-line bg-deep px-2 py-0.5 font-mono text-[11px] font-medium uppercase text-on-deep">
                 Only {selected.stock} left
               </p>
             )}
@@ -237,7 +237,7 @@ export function MerchDetail() {
               </div>
             )}
 
-            <div className="mt-8 space-y-4 border-t border-edge pt-6 text-sm leading-relaxed text-body text-pretty">
+            <div className="mt-8 space-y-4 border-t border-line pt-6 text-sm leading-relaxed text-body text-pretty">
               {product.description
                 .split('\n')
                 .filter(Boolean)
@@ -250,7 +250,7 @@ export function MerchDetail() {
 
         {product.related.length > 0 && (
           <section aria-labelledby="related-merch" className="mt-16">
-            <h2 id="related-merch" className="mb-5 text-xl uppercase">
+            <h2 id="related-merch" className="mb-5 text-xl">
               More {MERCH_CATEGORY_LABELS[product.category] ?? product.category}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

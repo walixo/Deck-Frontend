@@ -15,7 +15,7 @@ import { formatMoney } from '@/lib/utils';
 import type { AdCampaign, AdPhase } from '@/types';
 
 const PHASE: Record<AdPhase, { label: string; tone: string }> = {
-  pending_review: { label: 'In review', tone: 'bg-grey text-ink' },
+  pending_review: { label: 'In review', tone: 'bg-surface-2 text-body' },
   rejected: { label: 'Not accepted', tone: 'bg-edge text-canvas' },
   awaiting_payment: { label: 'Ready to pay', tone: 'bg-pop text-on-pop' },
   scheduled: { label: 'Scheduled', tone: 'bg-surface-2 text-muted' },
@@ -83,10 +83,10 @@ export function Advertise() {
       <PageBanner />
 
       <header className="mb-10">
-        <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           Advertise
         </p>
-        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
+        <h1 className="display-tight text-3xl text-balance sm:text-4xl">
           Put your launch in front of Deck
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
@@ -105,7 +105,7 @@ export function Advertise() {
         <section aria-labelledby="rates-heading" className="mb-12">
           <h2
             id="rates-heading"
-            className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+            className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
           >
             Rates
           </h2>
@@ -113,15 +113,15 @@ export function Advertise() {
             {rates.placements.map((entry) => (
               <div
                 key={entry.placement}
-                className="border border-edge bg-surface px-4 py-4 shadow-hard"
+                className="rounded-2xl border border-line bg-surface px-4 py-4 shadow-hard"
               >
-                <dt className="font-display text-sm uppercase">{entry.placement}</dt>
+                <dt className="font-display text-sm">{entry.placement}</dt>
                 <dd className="mt-1 font-mono text-[11px] leading-relaxed text-muted">
                   {entry.label}
                 </dd>
                 <p className="mt-2 font-display text-xl tabular-nums">
                   {formatMoney(entry.dayRateMinor, rates.currency)}
-                  <span className="ml-1 font-mono text-[11px] font-bold text-muted">/ day</span>
+                  <span className="ml-1 font-mono text-[11px] font-medium text-muted">/ day</span>
                 </p>
               </div>
             ))}
@@ -141,7 +141,7 @@ export function Advertise() {
       <section aria-labelledby="book-heading" className="mb-12">
         <h2
           id="book-heading"
-          className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           Book a slot
         </h2>
@@ -216,8 +216,8 @@ export function Advertise() {
 
             {/* The price is quoted from the server's own rate card, so what is
                 shown here is what will be charged. */}
-            <div className="border border-edge bg-pop px-4 py-3 text-on-pop">
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.1em]">
+            <div className="border border-line bg-pop px-4 py-3 text-on-pop">
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.1em]">
                 {days} days on {placement}
               </p>
               <p className="mt-1 font-display text-2xl tabular-nums">
@@ -231,7 +231,7 @@ export function Advertise() {
             {error && (
               <p
                 role="alert"
-                className="border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+                className="border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
               >
                 {error}
               </p>
@@ -247,7 +247,7 @@ export function Advertise() {
       <section aria-labelledby="mine-heading">
         <h2
           id="mine-heading"
-          className="mb-5 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+          className="mb-5 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
         >
           Your campaigns
         </h2>
@@ -294,14 +294,14 @@ function CampaignRow({ campaign }: { campaign: AdCampaign }) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-display text-base uppercase">{campaign.headline}</h3>
+            <h3 className="font-display text-base">{campaign.headline}</h3>
             <span
-              className={`border border-edge px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] ${phase.tone}`}
+              className={`rounded-full border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] ${phase.tone}`}
             >
               {phase.label}
             </span>
           </div>
-          <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          <p className="mt-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
             {campaign.placement} &middot; {campaign.days} days &middot; {dateOf(campaign.startAt)}–
             {dateOf(campaign.endAt)}
             {campaign.item ? ' · ' : ''}
@@ -325,7 +325,7 @@ function CampaignRow({ campaign }: { campaign: AdCampaign }) {
           {/* Numbers only once there are some — a row of zeroes on a campaign
               that has not started reads as failure rather than as "not yet". */}
           {campaign.impressions > 0 && (
-            <p className="mt-2 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+            <p className="mt-2 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
               <span className="tabular-nums text-body">{campaign.impressions}</span> shown &middot;{' '}
               <span className="tabular-nums text-body">{campaign.clicks}</span> clicks &middot;{' '}
               <span className="tabular-nums text-body">
@@ -355,7 +355,7 @@ function CampaignRow({ campaign }: { campaign: AdCampaign }) {
       {error && (
         <p
           role="alert"
-          className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-3 border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
         >
           {error}
         </p>

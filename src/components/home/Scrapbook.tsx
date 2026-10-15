@@ -26,7 +26,7 @@ export function Tape({ angle = -18, className }: { angle?: number; className?: s
     <span
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute block h-8 w-5 border border-edge bg-surface',
+        'pointer-events-none absolute block h-8 w-5 border border-line bg-surface',
         className,
       )}
       style={{ transform: `rotate(${angle}deg)` }}
@@ -55,8 +55,8 @@ export function Pill({
     <span
       className={cn(
         'pointer-events-none inline-flex items-center whitespace-nowrap rounded-full',
-        'border border-edge bg-pop px-3.5 py-1.5 text-on-pop',
-        'font-mono text-[10px] font-bold uppercase tracking-[0.08em]',
+        'border border-line bg-pop px-3.5 py-1.5 text-on-pop',
+        'font-mono text-[10px] font-medium uppercase tracking-[0.08em]',
         className,
       )}
       style={{ transform: `rotate(${angle}deg)` }}

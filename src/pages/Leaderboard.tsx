@@ -55,10 +55,10 @@ export function Leaderboard() {
       <PageBanner />
 
       <header className="mb-8">
-        <p className="mb-3 inline-block border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop">
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
           Leaderboard
         </p>
-        <h1 className="display-tight text-3xl uppercase text-balance sm:text-4xl">
+        <h1 className="display-tight text-3xl text-balance sm:text-4xl">
           {meta ? formatDay(meta.date) : 'Today'} on Deck
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted text-pretty">
@@ -96,7 +96,7 @@ export function Leaderboard() {
         </div>
 
         {meta && (
-          <span className="ml-auto font-mono text-[11px] font-bold uppercase text-muted">
+          <span className="ml-auto font-mono text-[11px] font-medium uppercase text-muted">
             {meta.totalLaunches} {meta.totalLaunches === 1 ? 'launch' : 'launches'}{' '}
             {dayPhrase(meta.date)}
           </span>
@@ -115,16 +115,16 @@ export function Leaderboard() {
                 onClick={() => goToDate(day.date)}
                 aria-pressed={active}
                 className={cn(
-                  'shrink-0 border border-edge px-3 py-2 text-left transition-[transform,box-shadow,background-color] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-sm',
+                  'shrink-0 border border-line px-3 py-2 text-left transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-sm',
                   active ? 'bg-deep text-on-deep shadow-hard-sm' : 'bg-surface text-body',
                 )}
               >
-                <span className="block whitespace-nowrap font-display text-[12px] uppercase">
+                <span className="block whitespace-nowrap font-display text-[12px]">
                   {formatDay(day.date)}
                 </span>
                 <span
                   className={cn(
-                    'block whitespace-nowrap font-mono text-[10px] font-bold tabular-nums',
+                    'block whitespace-nowrap font-mono text-[10px] font-medium tabular-nums',
                     active ? 'opacity-70' : 'text-muted',
                   )}
                 >
@@ -199,9 +199,7 @@ export function Leaderboard() {
 
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
           <Card className="p-5">
-            <h2 className="border-b border-edge pb-2 font-display text-sm uppercase">
-              All-round favourites
-            </h2>
+            <h2 className="border-b border-line pb-2 font-display text-sm">All-round favourites</h2>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {PERIODS.map((option) => (
                 <button
@@ -210,9 +208,9 @@ export function Leaderboard() {
                   onClick={() => setPeriod(option.value)}
                   aria-pressed={period === option.value}
                   className={cn(
-                    'border border-edge px-2 py-1 font-mono text-[10px] font-bold uppercase transition-colors duration-[120ms]',
+                    'rounded-full border border-line px-2 py-1 font-mono text-[10px] font-medium uppercase transition-colors duration-300',
                     period === option.value
-                      ? 'bg-pop text-on-pop'
+                      ? 'bg-edge text-canvas'
                       : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
                   )}
                 >
@@ -234,15 +232,15 @@ export function Leaderboard() {
                     <li key={item.id}>
                       <Link
                         to={`/item/${item.slug}`}
-                        className="group flex items-center gap-2.5 border border-transparent px-2 py-1.5 transition-colors duration-[120ms] hover:border-edge hover:bg-surface-2"
+                        className="group flex items-center gap-2.5 border border-transparent px-2 py-1.5 transition-colors duration-300 hover:border-edge hover:bg-surface-2"
                       >
-                        <span className="w-4 shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">
+                        <span className="w-4 shrink-0 font-mono text-[11px] font-medium tabular-nums text-muted">
                           {item.rank}
                         </span>
                         <span className="min-w-0 flex-1 truncate font-display text-[13px] group-hover:text-accent">
                           {item.name}
                         </span>
-                        <span className="shrink-0 font-mono text-[11px] font-bold tabular-nums text-muted">
+                        <span className="shrink-0 font-mono text-[11px] font-medium tabular-nums text-muted">
                           ▲ {item.voteCount}
                         </span>
                       </Link>
@@ -255,7 +253,7 @@ export function Leaderboard() {
 
           <Card className="p-5">
             <TrendMark className="mb-2 size-9" />
-            <h2 className="font-display text-sm uppercase">How ranking works</h2>
+            <h2 className="font-display text-sm">How ranking works</h2>
             <ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted">
               <li>· One upvote per person, per launch.</li>
               <li>· Boards are grouped by launch day in UTC.</li>
@@ -277,14 +275,14 @@ function PodiumCard({
     <Link
       to={`/item/${item.slug}`}
       className={cn(
-        'flex h-full flex-col border border-edge p-4 shadow-hard transition-[transform,box-shadow] duration-[120ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg',
+        'flex h-full flex-col border border-line p-4 shadow-hard transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-lg',
         PODIUM[item.rank] ?? 'bg-surface',
       )}
     >
       <span className="font-display text-3xl leading-none tabular-nums">#{item.rank}</span>
       <span className="mt-3 line-clamp-1 font-display text-sm">{item.name}</span>
       <span className="mt-1 line-clamp-2 text-xs leading-relaxed opacity-80">{item.tagline}</span>
-      <span className="mt-3 font-mono text-[11px] font-bold uppercase tabular-nums">
+      <span className="mt-3 font-mono text-[11px] font-medium uppercase tabular-nums">
         ▲ {item.voteCount} votes
       </span>
     </Link>

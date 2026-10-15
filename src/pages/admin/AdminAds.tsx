@@ -39,7 +39,7 @@ function SectionHeading({ id, children }: { id: string; children: React.ReactNod
   return (
     <h2
       id={id}
-      className="mb-4 border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]"
+      className="mb-4 border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]"
     >
       {children}
     </h2>
@@ -99,10 +99,10 @@ function ReviewCard({ campaign }: { campaign: AdCampaign }) {
   };
 
   return (
-    <article className="rounded-slab border border-edge bg-surface shadow-hard">
+    <article className="rounded-slab border border-line bg-surface shadow-hard">
       {/* Shown the way a reader will see it, so review is of the actual ad. */}
-      <div className="border-b border-dashed border-edge p-4">
-        <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+      <div className="border-b border-dashed border-line p-4">
+        <p className="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-muted">
           Sponsored{campaign.item ? ` · ${campaign.item.name}` : ''}
         </p>
         <div className="flex flex-wrap items-center gap-4">
@@ -110,39 +110,39 @@ function ReviewCard({ campaign }: { campaign: AdCampaign }) {
             <img
               src={campaign.imageUrl ?? campaign.item?.logoUrl}
               alt=""
-              className="size-14 shrink-0 border border-edge object-cover"
+              className="size-14 shrink-0 border border-line object-cover"
             />
           )}
           <div className="min-w-0 flex-1">
-            <h3 className="font-display text-base uppercase leading-tight">{campaign.headline}</h3>
+            <h3 className="font-display text-base leading-tight">{campaign.headline}</h3>
             <p className="mt-1 text-sm leading-relaxed text-muted text-pretty">{campaign.body}</p>
           </div>
-          <span className="shrink-0 border border-edge bg-pop px-3.5 py-2 font-mono text-[12px] font-bold uppercase tracking-[0.06em] text-on-pop">
+          <span className="shrink-0 border border-line bg-pop px-3.5 py-2 font-mono text-[12px] font-medium uppercase tracking-[0.06em] text-on-pop">
             {campaign.ctaLabel}
           </span>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 border-b border-edge px-4 py-3">
+      <div className="flex flex-wrap items-center gap-4 border-b border-line px-4 py-3">
         {campaign.advertiser && (
           <Link
             to={profilePath(campaign.advertiser.username)}
             className="flex items-center gap-2 hover:underline underline-offset-2"
           >
             <Avatar user={campaign.advertiser} size="sm" />
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.06em]">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
               {campaign.advertiser.name}
             </span>
           </Link>
         )}
-        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+        <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
           {campaign.placement} &middot; {campaign.days} days &middot;{' '}
           <span className="text-body">{formatMoney(campaign.priceMinor, campaign.currency)}</span>
         </p>
         {campaign.item && (
           <Link
             to={`/item/${campaign.item.slug}`}
-            className="font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted underline underline-offset-2 hover:text-body"
+            className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted underline underline-offset-2 hover:text-body"
           >
             Links to {campaign.item.slug}
           </Link>
@@ -188,7 +188,7 @@ function ReviewCard({ campaign }: { campaign: AdCampaign }) {
         {error && (
           <p
             role="alert"
-            className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+            className="mt-3 border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
           >
             {error}
           </p>
@@ -249,21 +249,21 @@ function RunningCard({ campaign }: { campaign: AdCampaign }) {
   };
 
   return (
-    <article className="rounded-slab border border-edge bg-surface p-4 shadow-hard">
+    <article className="rounded-slab border border-line bg-surface p-4 shadow-hard">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-display text-base uppercase leading-tight">{campaign.headline}</h3>
-            <span className="border border-edge bg-deep px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-on-deep">
+            <h3 className="font-display text-base leading-tight">{campaign.headline}</h3>
+            <span className="rounded-full border border-line bg-deep px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-on-deep">
               {campaign.phase === 'scheduled' ? 'Booked' : 'Running'}
             </span>
           </div>
-          <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          <p className="mt-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
             {campaign.placement} &middot; {dayOf(campaign.startAt)}–{dayOf(campaign.endAt)} &middot;{' '}
             <span className="text-body">{formatMoney(campaign.priceMinor, campaign.currency)}</span>
             {campaign.advertiser && <> &middot; {campaign.advertiser.name}</>}
           </p>
-          <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] text-muted">
+          <p className="mt-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted">
             <span className="tabular-nums text-body">{campaign.impressions}</span> shown &middot;{' '}
             <span className="tabular-nums text-body">{campaign.clicks}</span> clicks
           </p>
@@ -277,7 +277,7 @@ function RunningCard({ campaign }: { campaign: AdCampaign }) {
       </div>
 
       {pulling && (
-        <div className="mt-4 space-y-3 border-t border-edge pt-4">
+        <div className="mt-4 space-y-3 border-t border-line pt-4">
           <Textarea
             label="Why is it coming down?"
             rows={2}
@@ -305,7 +305,7 @@ function RunningCard({ campaign }: { campaign: AdCampaign }) {
       {error && (
         <p
           role="alert"
-          className="mt-3 border border-edge bg-edge px-3 py-2 font-mono text-[11px] font-bold uppercase text-canvas"
+          className="mt-3 border border-line bg-edge px-3 py-2 font-mono text-[11px] font-medium uppercase text-canvas"
         >
           {error}
         </p>

@@ -25,7 +25,7 @@ export function AccountProfile() {
   return (
     <div>
       <header className="mb-6">
-        <h1 className="display-tight text-3xl uppercase">Profile</h1>
+        <h1 className="display-tight text-3xl">Profile</h1>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted text-pretty">
           Your name, photo and the line under them. This is what shows on your public page and
           beside everything you post.
@@ -85,7 +85,7 @@ function ProfileForm({ user }: { user: AuthUser }) {
   return (
     <Card className="mt-8 p-5 sm:p-6">
       <form onSubmit={submit} className="space-y-5" noValidate>
-        <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+        <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
           Details
         </h2>
 
@@ -164,15 +164,15 @@ function ProfileForm({ user }: { user: AuthUser }) {
             presentation: a username is in every link anybody has shared to your
             profile, and changing an email is an account-recovery flow with a
             confirmation step, not a text field. */}
-        <dl className="grid gap-3 border-t border-edge pt-4 sm:grid-cols-2">
+        <dl className="grid gap-3 border-t border-line pt-4 sm:grid-cols-2">
           <div>
-            <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+            <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
               Username
             </dt>
             <dd className="mt-0.5 font-mono text-sm">@{user.username}</dd>
           </div>
           <div>
-            <dt className="font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-muted">
+            <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
               Email
             </dt>
             <dd className="mt-0.5 truncate font-mono text-sm">{user.email}</dd>
@@ -184,7 +184,7 @@ function ProfileForm({ user }: { user: AuthUser }) {
         </dl>
 
         {saved && !error && (
-          <p className="border border-edge bg-success px-3 py-2 font-mono text-[11px] font-bold uppercase text-ink">
+          <p className="border border-line bg-success px-3 py-2 font-mono text-[11px] font-medium uppercase text-ink">
             Saved
           </p>
         )}

@@ -3,7 +3,7 @@
  *
  * Rendered on the client, in a canvas, for one reason that decides everything
  * else: the browser already has Deck's fonts loaded. A server-side renderer
- * would need Archivo Black and Geist installed alongside it, and would quietly
+ * would need Geist installed alongside it, and would quietly
  * fall back to something generic the day a deploy forgot them — producing a
  * brand card that is off-brand, with nothing to alert anyone.
  *
@@ -152,10 +152,10 @@ function fitText(
   floor: number,
 ): number {
   let size = from;
-  ctx.font = `900 ${size}px "Archivo Black", Impact, sans-serif`;
+  ctx.font = `600 ${size}px "Geist Variable", system-ui, sans-serif`;
   while (ctx.measureText(text).width > room && size > floor) {
     size -= 4;
-    ctx.font = `900 ${size}px "Archivo Black", Impact, sans-serif`;
+    ctx.font = `600 ${size}px "Geist Variable", system-ui, sans-serif`;
   }
   return size;
 }
@@ -191,7 +191,7 @@ async function stamp(
     ctx.fillStyle = PALETTE.pop;
     ctx.fillRect(x + 3, y + 3, size - 6, size - 6);
     ctx.fillStyle = PALETTE.onPop;
-    ctx.font = `900 ${Math.round(size * 0.5)}px "Archivo Black", Impact, sans-serif`;
+    ctx.font = `600 ${Math.round(size * 0.5)}px "Geist Variable", system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(fallback.slice(0, 1).toUpperCase(), x + size / 2, y + size / 2 + size * 0.04);
@@ -228,7 +228,7 @@ function wordmark(
   ink: string,
   size = 30,
 ): number {
-  ctx.font = `900 ${size}px "Archivo Black", Impact, sans-serif`;
+  ctx.font = `600 ${size}px "Geist Variable", system-ui, sans-serif`;
   const w = ctx.measureText('DECK').width + 28;
   const h = size + 16;
 
@@ -392,11 +392,11 @@ async function paintLaunch(ctx: CanvasRenderingContext2D, input: ShareCardInput)
 
   // The product name, shrinking to fit rather than wrapping to three lines.
   const nameRoom = cardW - 104 - 340;
-  fitText(ctx, input.name.toUpperCase(), nameRoom, 108, 48);
+  fitText(ctx, input.name, nameRoom, 108, 48);
   ctx.fillStyle = PALETTE.ink;
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
-  ctx.fillText(input.name.toUpperCase(), left, cardY + 232);
+  ctx.fillText(input.name, left, cardY + 232);
 
   // Tagline.
   ctx.font = '400 30px "Geist Variable", system-ui, sans-serif';
@@ -458,7 +458,7 @@ async function paintLaunch(ctx: CanvasRenderingContext2D, input: ShareCardInput)
   wordmark(ctx, markX, stickY + 22, PALETTE.canvas, PALETTE.ink);
 
   // The shout.
-  ctx.font = '900 84px "Archivo Black", Impact, sans-serif';
+  ctx.font = '600 84px "Geist Variable", system-ui, sans-serif';
   ctx.fillStyle = PALETTE.canvas;
   ctx.textBaseline = 'alphabetic';
   ctx.fillText("WE'RE LIVE!", stickX + 40, stickY + 152);
@@ -519,7 +519,14 @@ async function paintBoard(ctx: CanvasRenderingContext2D, input: ShareCardInput) 
   const left = cardX + 56;
   const right = cardX + cardW - 56;
 
-  chip(ctx, left, cardX + 44, input.rank ? 'ON THE BOARD' : 'LAUNCHED ON DECK', PALETTE.pop, PALETTE.onPop);
+  chip(
+    ctx,
+    left,
+    cardX + 44,
+    input.rank ? 'ON THE BOARD' : 'LAUNCHED ON DECK',
+    PALETTE.pop,
+    PALETTE.onPop,
+  );
 
   /* The tile and the medal are the same 232px square, side by side, because a
      product mark and a placing are the two facts this card is making — sizing
@@ -556,10 +563,10 @@ async function paintBoard(ctx: CanvasRenderingContext2D, input: ShareCardInput) 
   }
 
   // The name, shrinking to fit one line rather than wrapping.
-  fitText(ctx, input.name.toUpperCase(), cardW - 112, 96, 46);
+  fitText(ctx, input.name, cardW - 112, 96, 46);
   ctx.fillStyle = PALETTE.ink;
   ctx.textBaseline = 'alphabetic';
-  ctx.fillText(input.name.toUpperCase(), left, 560);
+  ctx.fillText(input.name, left, 560);
 
   ctx.font = '400 30px "Geist Variable", system-ui, sans-serif';
   ctx.fillStyle = '#55534e';
@@ -577,7 +584,7 @@ async function paintBoard(ctx: CanvasRenderingContext2D, input: ShareCardInput) 
 
   ctx.fillStyle = PALETTE.onDeep;
   ctx.textBaseline = 'alphabetic';
-  ctx.font = '900 132px "Archivo Black", Impact, sans-serif';
+  ctx.font = '600 132px "Geist Variable", system-ui, sans-serif';
   ctx.fillText(String(input.voteCount), left + 44, barY + 138);
 
   const countW = ctx.measureText(String(input.voteCount)).width;
@@ -617,10 +624,10 @@ async function paintPoster(ctx: CanvasRenderingContext2D, input: ShareCardInput)
   await stamp(ctx, input.logoUrl, mid - tile / 2, cardX + 168, tile, input.name);
 
   ctx.textAlign = 'center';
-  fitText(ctx, input.name.toUpperCase(), cardW - 120, 104, 44);
+  fitText(ctx, input.name, cardW - 120, 104, 44);
   ctx.fillStyle = PALETTE.ink;
   ctx.textBaseline = 'alphabetic';
-  ctx.fillText(input.name.toUpperCase(), mid, 830);
+  ctx.fillText(input.name, mid, 830);
 
   ctx.font = '400 32px "Geist Variable", system-ui, sans-serif';
   ctx.fillStyle = '#55534e';
@@ -711,7 +718,7 @@ export const SHARE_CARD_VARIANTS: ShareCardVariant[] = ['launch', 'board', 'post
 async function ensureFonts(): Promise<void> {
   if (!document.fonts?.ready) return;
   try {
-    await document.fonts.load('900 96px "Archivo Black"');
+    await document.fonts.load('600 96px "Geist Variable"');
     await document.fonts.load('400 30px "Geist Variable"');
     await document.fonts.load('700 24px "Geist Mono Variable"');
     await document.fonts.ready;

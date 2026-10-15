@@ -53,12 +53,12 @@ export function Acquisitions() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-      <header className="border-b border-edge pb-8">
-        <p className="inline-flex items-center gap-2 border border-edge bg-pop px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-on-pop shadow-hard-sm">
+      <header className="border-b border-line pb-8">
+        <p className="rounded-full inline-flex items-center gap-2 border border-line bg-pop px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-on-pop shadow-hard-sm">
           <Star name="sparkle" className="size-3" spin={-8} /> New on Deck
         </p>
 
-        <h1 className="display-tight mt-5 text-[clamp(2.25rem,6vw,3.5rem)] uppercase text-balance">
+        <h1 className="display-tight mt-5 text-[clamp(2.25rem,6vw,3.5rem)] text-balance">
           Acquisitions
         </h1>
 
@@ -86,9 +86,9 @@ export function Acquisitions() {
             onClick={() => setParam('sort', option.value)}
             aria-pressed={sort === option.value}
             className={cn(
-              'border border-edge px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.06em] transition-colors duration-[120ms]',
+              'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
               sort === option.value
-                ? 'bg-pop text-on-pop'
+                ? 'bg-edge text-canvas'
                 : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
             )}
           >
@@ -111,7 +111,7 @@ export function Acquisitions() {
             defaultValue={search}
             placeholder="SEARCH"
             aria-label="Search listings"
-            className="h-9 w-40 border border-edge bg-surface px-3 font-mono text-[12px] font-bold uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
+            className="rounded-2xl h-9 w-40 border border-line bg-surface px-3 font-mono text-[12px] font-medium uppercase tracking-[0.06em] placeholder:text-muted/70 focus:border-accent focus:outline-none"
           />
         </form>
       </div>
@@ -145,22 +145,22 @@ export function Acquisitions() {
 
           {sold.length > 0 && (
             <section className="mt-14">
-              <h2 className="border-b border-edge pb-2 font-mono text-[11px] font-bold uppercase tracking-[0.12em]">
+              <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
                 Sold through Deck
               </h2>
               <ul className="mt-4 space-y-2">
                 {sold.map((listing) => (
                   <li
                     key={listing.id}
-                    className="flex flex-wrap items-center gap-3 rounded-slab border border-edge bg-surface-2 p-3"
+                    className="flex flex-wrap items-center gap-3 rounded-slab border border-line bg-surface-2 p-3"
                   >
                     <Link
                       to={`/acquisitions/${listing.slug}`}
-                      className="min-w-0 flex-1 truncate font-display text-sm uppercase underline-offset-2 hover:underline"
+                      className="min-w-0 flex-1 truncate font-display text-sm underline-offset-2 hover:underline"
                     >
                       {listing.item?.name ?? listing.slug}
                     </Link>
-                    <span className="shrink-0 border border-edge bg-success px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-ink">
+                    <span className="rounded-full shrink-0 border border-line bg-success px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.08em] text-ink">
                       Sold
                     </span>
                     <span className="shrink-0 font-display text-base tabular-nums">
@@ -195,7 +195,7 @@ function ListingCard({ listing }: { listing: AcquisitionSummary }) {
   return (
     <Link
       to={`/acquisitions/${listing.slug}`}
-      className="group flex flex-col overflow-hidden rounded-slab border border-edge bg-surface shadow-hard transition-transform duration-[140ms] ease-[var(--ease-snap)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg"
+      className="group flex flex-col overflow-hidden rounded-slab border border-line bg-surface shadow-hard transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-lg"
     >
       <div className="flex items-start gap-3 p-4">
         {item?.logoUrl ? (
@@ -203,19 +203,19 @@ function ListingCard({ listing }: { listing: AcquisitionSummary }) {
             src={item.logoUrl}
             alt=""
             loading="lazy"
-            className="size-12 shrink-0 border border-edge bg-bone object-contain p-1"
+            className="size-12 shrink-0 border border-line bg-bone object-contain p-1"
           />
         ) : (
           <span
             aria-hidden="true"
-            className="flex size-12 shrink-0 items-center justify-center border border-edge bg-surface-2 font-display uppercase"
+            className="flex size-12 shrink-0 items-center justify-center border border-line bg-surface-2 font-display"
           >
             {(item?.name ?? '?').slice(0, 2)}
           </span>
         )}
 
         <div className="min-w-0 flex-1">
-          <h2 className="truncate font-display text-lg uppercase leading-tight underline-offset-4 group-hover:underline">
+          <h2 className="truncate font-display text-lg leading-tight underline-offset-4 group-hover:underline">
             {item?.name ?? listing.slug}
           </h2>
           <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted text-pretty">
@@ -224,7 +224,7 @@ function ListingCard({ listing }: { listing: AcquisitionSummary }) {
         </div>
 
         {listing.bidCount > 0 && (
-          <span className="shrink-0 border border-edge bg-surface-2 px-2 py-1 text-center font-mono text-[9px] font-bold uppercase tracking-[0.06em]">
+          <span className="rounded-full shrink-0 border border-line bg-surface-2 px-2 py-1 text-center font-mono text-[9px] font-medium uppercase tracking-[0.06em]">
             <span className="block font-display text-sm tabular-nums leading-none">
               {listing.bidCount}
             </span>
@@ -241,14 +241,17 @@ function ListingCard({ listing }: { listing: AcquisitionSummary }) {
        * for somebody else's product — the same reasoning as the launch wall.
        */}
       <div
-        className="border-y border-edge px-4 py-3"
+        className="border-y border-line px-4 py-3"
         style={
           swatch
-            ? { background: `linear-gradient(135deg, ${swatch.hex}, ${swatch.gradientTo})`, color: swatch.ink }
+            ? {
+                background: `linear-gradient(135deg, ${swatch.hex}, ${swatch.gradientTo})`,
+                color: swatch.ink,
+              }
             : undefined
         }
       >
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] opacity-80">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.12em] opacity-80">
           Asking
           {!listing.negotiable && ' · firm'}
         </p>
@@ -272,7 +275,7 @@ function ListingCard({ listing }: { listing: AcquisitionSummary }) {
             {listing.assets.slice(0, 4).map((asset) => (
               <span
                 key={asset}
-                className="border border-edge px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.06em] text-muted"
+                className="rounded-full border border-line px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.06em] text-muted"
               >
                 {ASSET_LABELS[asset]}
               </span>
@@ -303,7 +306,7 @@ function ListingCard({ listing }: { listing: AcquisitionSummary }) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border border-edge bg-surface-2 px-2 py-1.5">
+    <div className="rounded-2xl border border-line bg-surface-2 px-2 py-1.5">
       <dd className="font-display text-xs tabular-nums">{value}</dd>
       <dt className="mt-0.5 text-[9px] font-bold text-muted">{label}</dt>
     </div>

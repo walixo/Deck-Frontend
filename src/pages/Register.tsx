@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthShell } from '@/components/auth/AuthShell';
 import { ProviderButtons } from '@/components/auth/ProviderButtons';
 import { Button } from '@/components/ui/Button';
@@ -7,11 +7,16 @@ import { Input } from '@/components/ui/Field';
 import { InlineAlert } from '@/components/ui/States';
 import { useAuth } from '@/hooks/useAuth';
 import { RequestError } from '@/lib/api';
+import { isSafePath } from '@/lib/returnTo';
 import { profilePath } from '@/lib/utils';
 
 export function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  /* Sent here mid-way through something — a GameID sign-in, say — they go
+     back to it once the account exists, rather than to their new profile. */
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
 
   const [form, setForm] = useState({ name: '', username: '', email: '', password: '' });
   const [error, setError] = useState<RequestError | null>(null);
@@ -31,7 +36,7 @@ export function Register() {
         email: form.email.trim(),
         password: form.password,
       });
-      navigate(profilePath(user.username), { replace: true });
+      navigate(isSafePath(from) ? from : profilePath(user.username), { replace: true });
     } catch (caught) {
       setError(caught instanceof RequestError ? caught : new RequestError('Sign up failed', 0));
     } finally {
@@ -46,7 +51,11 @@ export function Register() {
       footer={
         <>
           Already have an account?{' '}
-          <Link to="/login" className="font-bold text-accent underline-offset-4 hover:underline">
+          <Link
+            to="/login"
+            state={location.state}
+            className="font-bold text-accent underline-offset-4 hover:underline"
+          >
             Sign in
           </Link>
         </>

@@ -61,6 +61,7 @@ export function GamesShell() {
             <TopLink to="/games#library">Games</TopLink>
             <TopLink to="/games/developers">Developers</TopLink>
             <TopLink to="/games/developers/docs">Docs</TopLink>
+            <TopLink to="/gameid">GameID</TopLink>
             <Link
               to="/"
               className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] opacity-70 transition-opacity hover:opacity-100"
@@ -113,6 +114,7 @@ export function GamesShell() {
             ['/games#library', 'Games'],
             ['/games/developers', 'Developers'],
             ['/games/developers/docs', 'Docs'],
+            ['/gameid', 'GameID'],
             ['/', 'Back to Deck'],
           ].map(([to, label]) => (
             <Link

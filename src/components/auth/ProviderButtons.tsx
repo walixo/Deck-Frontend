@@ -1,4 +1,6 @@
+import { useLocation } from 'react-router-dom';
 import { api } from '@/lib/api';
+import { rememberReturnTo } from '@/lib/returnTo';
 import { useAuthProviders } from '@/hooks/useAuthProviders';
 import { cn } from '@/lib/utils';
 import type { OAuthProvider } from '@/types';
@@ -81,7 +83,11 @@ interface ProviderButtonsProps {
  */
 export function ProviderButtons({ action, className }: ProviderButtonsProps) {
   const { data } = useAuthProviders();
+  const location = useLocation();
   const providers = data?.providers ?? [];
+  /* Where the sign-in page was asked to send them — a GameID consent screen,
+     a checkout — carried across the provider's redirects. */
+  const from = (location.state as { from?: string } | null)?.from;
 
   if (providers.length === 0) return null;
 
@@ -95,12 +101,12 @@ export function ProviderButtons({ action, className }: ProviderButtonsProps) {
                when that is unset it stays relative and the dev proxy carries
                it, and when it is set the redirect starts at the real API. */
             href={`${api.defaults.baseURL ?? '/api'}/auth/oauth/${provider}/start`}
+            onClick={() => rememberReturnTo(from)}
             className={cn(
-              'flex h-11 items-center justify-center gap-2.5 rounded-slab border border-line',
-              'bg-surface text-sm font-bold text-body shadow-hard-sm',
-              'transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)]',
-              'hover:-translate-y-0.5 hover:bg-surface-2 hover:shadow-hard',
-              'active:shadow-none',
+              'flex h-11 items-center justify-center gap-2.5 rounded-xl border border-line',
+              'bg-surface text-sm font-medium text-body',
+              'transition-[border-color,background-color] duration-300 ease-[var(--ease-snap)]',
+              'hover:border-edge',
             )}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4 shrink-0">

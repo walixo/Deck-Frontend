@@ -5,6 +5,10 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/.well-known/openid-configuration",
+      "destination": "https://deck-backend-9js1.onrender.com/api/gameid/oauth/.well-known/openid-configuration"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://deck-backend-9js1.onrender.com/api/:path*"
     },

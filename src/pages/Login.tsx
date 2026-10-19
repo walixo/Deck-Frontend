@@ -55,7 +55,11 @@ export function Login() {
       footer={
         <>
           New to Deck?{' '}
-          <Link to="/register" className="font-bold text-accent underline-offset-4 hover:underline">
+          <Link
+            to="/register"
+            state={location.state}
+            className="font-bold text-accent underline-offset-4 hover:underline"
+          >
             Create an account
           </Link>
         </>

@@ -1279,3 +1279,53 @@ export interface Leaderboard {
   /** The signed-in reader's own standing, if they have one. */
   you: { rank: number; score: number } | null;
 }
+
+/* ------------------------------------------------------------- GameID -- */
+
+/** A player's portable gaming identity. */
+export interface GameIdentity {
+  handle: string | null;
+  code: string | null;
+  displayName: string;
+  avatarUrl: string | null;
+  handleChangedAt: string | null;
+  createdAt: string | null;
+}
+
+export interface GameIdPublicApp {
+  clientId: string;
+  name: string;
+  description: string;
+  logoUrl: string;
+  homepageUrl: string;
+  privacyUrl: string;
+  redirectHost: string;
+}
+
+export type GameIdAuthorizeInfo =
+  | {
+      ok: true;
+      app: GameIdPublicApp;
+      scopes: { scope: 'openid' | 'profile'; description: string }[];
+      granted: boolean;
+      gameId: GameIdentity | null;
+    }
+  | { ok: false; error: string; description: string; redirectTo: string | null };
+
+export interface GameIdConnection {
+  app: GameIdPublicApp;
+  scopes: string[];
+  connectedAt: string;
+  lastUsedAt: string;
+}
+
+export interface GameIdApp extends GameIdPublicApp {
+  type: 'confidential' | 'public';
+  redirectUris: string[];
+  status: 'active' | 'disabled';
+  secretHint: string | null;
+  createdAt: string;
+  stats?: { players: number; activeSessions: number };
+  /** Present only in the response that created it or rotated it. */
+  clientSecret?: string | null;
+}

@@ -243,6 +243,10 @@ export const PRIVACY_POLICY: LegalDocument = {
         },
         {
           kind: 'p',
+          text: 'When you sign in to another app with GameID, that app receives an ID made only for it, which no other app can match to you. If you also agree to share your GameID, it receives your handle, your permanent GameID code, your display name and your avatar. It never receives your email address or password. You choose this on a consent screen each time an app first asks, and you can disconnect any app from your GameID page, which signs it out at once. What the app does with what it receives is covered by its own privacy policy.',
+        },
+        {
+          kind: 'p',
           text: 'We will also disclose data where the law requires it, and to protect Deck or its users from fraud, abuse or a security threat. We will tell you if that happens to your data unless we are legally prevented from doing so.',
         },
       ],

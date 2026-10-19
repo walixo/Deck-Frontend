@@ -342,6 +342,13 @@ Replies never carry a rating — a rating applies to the product, not to another
 | POST | `/api/games/:slug/keys` | ✓ owner | Mint a `dk_test_`/`dk_live_` key, shown once |
 | POST | `/api/games/:slug/products` | ✓ owner | Add an in-game product |
 | — | `/api/games/v1/*` | API key | Server API for developers: verify sessions, read and deliver purchases |
+| GET/PATCH | `/api/gameid/me` | ✓ | Your GameID: handle (changeable monthly) and permanent code |
+| GET/POST | `/api/gameid/authorize` | — / ✓ | The consent step: describe the request, then allow or deny |
+| GET/DELETE | `/api/gameid/connections` | ✓ | Apps you have signed in to; disconnecting revokes their tokens |
+| CRUD | `/api/gameid/apps` | ✓ owner | Register OAuth apps; confidential secrets shown once |
+| POST | `/api/gameid/oauth/token` | client | OAuth 2.0 token endpoint (authorization_code + PKCE, refresh_token) |
+| GET | `/api/gameid/oauth/userinfo` | Bearer | OIDC userinfo |
+| GET | `/.well-known/openid-configuration` | — | OIDC discovery (rewritten to the API) |
 | GET | `/api/health` | Liveness check |
 
 ## Design system

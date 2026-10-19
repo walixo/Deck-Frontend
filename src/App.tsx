@@ -58,6 +58,18 @@ const DevHome = lazyNamed(() => import('@/pages/games/DevHome'), 'DevHome');
 const DevDocs = lazyNamed(() => import('@/pages/games/DevDocs'), 'DevDocs');
 const DevNewGame = lazyNamed(() => import('@/pages/games/DevNewGame'), 'DevNewGame');
 const DevGame = lazyNamed(() => import('@/pages/games/DevGame'), 'DevGame');
+/* GameID — Deck as an identity provider for other games. */
+const GameIdHome = lazyNamed(() => import('@/pages/gameid/GameIdHome'), 'GameIdHome');
+const GameIdAuthorize = lazyNamed(
+  () => import('@/pages/gameid/GameIdAuthorize'),
+  'GameIdAuthorize',
+);
+const GameIdDevelopers = lazyNamed(
+  () => import('@/pages/gameid/GameIdDevelopers'),
+  'GameIdDevelopers',
+);
+const GameIdApp = lazyNamed(() => import('@/pages/gameid/GameIdApp'), 'GameIdApp');
+const GameIdDocs = lazyNamed(() => import('@/pages/gameid/GameIdDocs'), 'GameIdDocs');
 const PurchaseComplete = lazyNamed(
   () => import('@/pages/games/PurchaseComplete'),
   'PurchaseComplete',
@@ -147,6 +159,32 @@ export function App() {
           <Route path="purchase/complete" element={<PurchaseComplete />} />
         </Route>
         <Route path=":slug" element={<GamePage />} />
+      </Route>
+
+      {/* GameID's consent screen stands alone — no navigation, nothing to
+          wander off to mid-sign-in. Declared before the shell's routes. */}
+      <Route
+        path="/gameid/authorize"
+        element={
+          <Suspense fallback={null}>
+            <GameIdAuthorize />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/gameid"
+        element={
+          <Suspense fallback={null}>
+            <GamesShell />
+          </Suspense>
+        }
+      >
+        <Route index element={<GameIdHome />} />
+        <Route path="developers" element={<GameIdDevelopers />} />
+        <Route path="docs" element={<GameIdDocs />} />
+        <Route element={<RequireAuth />}>
+          <Route path="developers/:clientId" element={<GameIdApp />} />
+        </Route>
       </Route>
 
       <Route element={<Layout />}>

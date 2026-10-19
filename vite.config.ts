@@ -23,6 +23,13 @@ export default defineConfig({
         target: 'http://localhost:4200',
         changeOrigin: true,
       },
+      // GameID's discovery document lives at the issuer's root, as OIDC requires;
+      // production rewrites it the same way (vercel.json).
+      '/.well-known/openid-configuration': {
+        target: 'http://localhost:4200',
+        changeOrigin: true,
+        rewrite: () => '/api/gameid/oauth/.well-known/openid-configuration',
+      },
       // Uploaded images are served by the API, but referenced as same-origin paths.
       '/uploads': {
         target: 'http://localhost:4200',

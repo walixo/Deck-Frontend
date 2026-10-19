@@ -4,6 +4,7 @@ import { AuthShell } from '@/components/auth/AuthShell';
 import { ButtonLink } from '@/components/ui/Button';
 import { InlineAlert } from '@/components/ui/States';
 import { useAuth } from '@/hooks/useAuth';
+import { takeReturnTo } from '@/lib/returnTo';
 
 /**
  * Where a provider sign-in lands.
@@ -45,7 +46,7 @@ export function AuthCallback() {
     let cancelled = false;
     adoptToken(token)
       .then(() => {
-        if (!cancelled) navigate('/', { replace: true });
+        if (!cancelled) navigate(takeReturnTo() ?? '/', { replace: true });
       })
       .catch(() => {
         if (!cancelled) setFailed(true);

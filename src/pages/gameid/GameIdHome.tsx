@@ -24,7 +24,7 @@ export function GameIdHome() {
     <div className="pb-24 pt-24 sm:pt-28">
       <title>GameID — one identity for every game</title>
 
-      <section className="mx-auto grid max-w-[1100px] items-center gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_auto]">
+      <section className="mx-auto grid max-w-[1200px] items-center gap-16 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]">
         <div className="max-w-xl">
           <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-g-ember-ink">
             <GameIdMark className="size-4" /> GameID
@@ -56,7 +56,9 @@ export function GameIdHome() {
           )}
         </div>
 
-        <div className="w-full max-w-sm justify-self-center">
+        {/* A real column width, not `auto`: the card's contents are absolutely
+            positioned, so an auto track sized to them collapsed it to nothing. */}
+        <div className="w-full max-w-[34rem] justify-self-center px-4 py-10 sm:px-8">
           {user && me.data ? (
             <GameIdCard identity={me.data} />
           ) : (
@@ -69,7 +71,6 @@ export function GameIdHome() {
                 handleChangedAt: null,
                 createdAt: null,
               }}
-              className="rotate-[-3deg]"
             />
           )}
         </div>

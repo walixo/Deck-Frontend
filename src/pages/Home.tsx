@@ -4,9 +4,8 @@ import { CategoryStrip } from '@/components/home/CategoryStrip';
 import { FutureGenStory } from '@/components/home/FutureGenStory';
 import { Hero } from '@/components/home/Hero';
 import { HowItWorks } from '@/components/home/HowItWorks';
+import { LaunchLine } from '@/components/home/LaunchLine';
 import { LaunchTicker } from '@/components/home/LaunchTicker';
-import { LaunchVortex } from '@/components/home/LaunchVortex';
-import { ShareShowcase } from '@/components/home/ShareShowcase';
 import { Suspense } from 'react';
 import { BrickDivider } from '@/components/ui/Bricks';
 import { ButtonLink } from '@/components/ui/Button';
@@ -42,10 +41,9 @@ const SHOW_HOW_IT_WORKS: boolean = false;
  *
  * The sections that earn it, top to bottom: the thirty-second reel (the whole
  * product, end to end, without reading a word of it), the categories, the
- * vortex (the catalogue itself, turning), the share showcase (the artwork a
- * launch leaves with, drawn by the real generator), Future Gen (the one thing
- * a general launch board does not have), and an arcade coda behind a play
- * button.
+ * launch line (real launches hung up as cards you can turn over), Future Gen
+ * (the one thing a general launch board does not have), and an arcade coda
+ * behind a play button.
  *
  * Half of them need no launches at all, which matters: a new board has none,
  * and the sections that depend on data hide themselves until there is some.
@@ -83,11 +81,11 @@ export function Home() {
       </Suspense>
 
       {/*
-       * The categories, under the film and over the vortex.
+       * The categories, under the film and over the launch line.
        *
        * The film ends on "launch your AI tool, your mobile app", so the strip
        * picks that thread straight up: here is every kind of thing you can
-       * launch, one tap from its page. The vortex below then shows what has
+       * launch, one tap from its page. The line below then shows what has
        * actually been launched across all of them.
        *
        * A striped band, themed rather than fixed. The first version pinned
@@ -109,10 +107,9 @@ export function Home() {
         </div>
       </div>
 
-      {/* The catalogue itself, turning. It used to sit flush against the hero
-          as one long dark run; with the film and the shelf now between them it
-          stands as its own band. */}
-      <LaunchVortex items={launches.data?.data ?? []} total={stats?.launches} />
+      {/* The launches themselves, hung on a line. Hidden until the feed has
+          something to hang. */}
+      <LaunchLine items={launches.data?.data ?? []} total={stats?.launches} />
 
       {/*
        * The home ad slot, under the launch showcase — the place the rate card
@@ -134,12 +131,8 @@ export function Home() {
           rows of full-bleed panels saying it again underneath. */}
       <LaunchTicker items={launches.data?.data ?? []} />
 
-      {/* Framed with real launches off the feed above, so this section can
-          never advertise a card the generator does not actually produce. */}
-      <ShareShowcase items={launches.data?.data ?? []} />
-
-      {/* After the share cards: those make the case that Deck is a good place
-          to launch, this makes the case that it is worth caring about. */}
+      {/* After the ticker: that says Deck is busy, this makes the case that it
+          is worth caring about. */}
       <FutureGenStory />
 
       {/* A course of bricks between the story and the exit — the page's

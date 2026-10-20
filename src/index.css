@@ -172,6 +172,7 @@
   --animate-stamp: stamp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   --animate-kick: kick 6s ease-in-out infinite;
   --animate-jitter: jitter 8s ease-in-out infinite;
+  --animate-swing: swing 5.5s ease-in-out infinite;
   --animate-blink: blink 1.1s steps(1) infinite;
   --animate-marquee: marquee 70s linear infinite;
   --animate-marquee-reverse: marquee-reverse 70s linear infinite;
@@ -322,6 +323,18 @@
   }
   50% {
     transform: translate(3px, -4px);
+  }
+}
+
+/* A card on a thread, swaying from its pin. The tilt it rests at is
+   `--swing-rest`, so each card sways about its own angle. */
+@keyframes swing {
+  0%,
+  100% {
+    transform: rotate(calc(var(--swing-rest, 0deg) - 1.6deg));
+  }
+  50% {
+    transform: rotate(calc(var(--swing-rest, 0deg) + 1.6deg));
   }
 }
 

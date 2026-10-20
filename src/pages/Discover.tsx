@@ -355,9 +355,9 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'rounded-full inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-line px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.04em]',
-        'transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-sm',
-        active ? 'bg-edge text-canvas' : 'bg-surface text-body',
+        'rounded-full inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.04em]',
+        'transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5',
+        active ? 'glass-ink' : 'glass-secondary',
       )}
     >
       {children}

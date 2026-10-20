@@ -171,7 +171,7 @@ export function Navbar() {
           <Link
             to="/cart"
             aria-label={cartCount > 0 ? `Cart, ${cartCount} items` : 'Cart, empty'}
-            className="relative flex size-9 items-center justify-center rounded-full border border-line bg-surface transition-[border-color,background-color] duration-300 ease-[var(--ease-snap)] hover:border-edge"
+            className="relative flex size-9 items-center justify-center rounded-full glass-secondary transition-[background-color,box-shadow] duration-300 ease-[var(--ease-snap)]"
           >
             <span aria-hidden="true" className="text-sm">
               ▣

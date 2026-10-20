@@ -60,7 +60,7 @@ export function PurchaseComplete() {
         {!told && game && (
           <Link
             to={`/games/${game}`}
-            className="mt-8 inline-block rounded-[3px] bg-g-ember px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-on-ember"
+            className="glass-primary mt-8 inline-block rounded-xl px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
           >
             Back to the game
           </Link>

@@ -123,7 +123,7 @@ export function BlogPost() {
               <Link
                 key={tag}
                 to={`/blog?tag=${encodeURIComponent(tag)}`}
-                className="rounded-full border border-line px-2 py-0.5 font-mono text-[11px] font-medium uppercase text-muted transition-colors duration-300 hover:bg-deep hover:text-on-deep"
+                className="glass-secondary rounded-full px-2 py-0.5 font-mono text-[11px] font-medium uppercase text-muted transition-colors duration-300 hover:bg-deep hover:text-on-deep"
               >
                 {tag}
               </Link>

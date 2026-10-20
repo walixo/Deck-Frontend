@@ -40,7 +40,7 @@ export function GameIdDevelopers() {
           <Link
             to="/login"
             state={{ from: pathname }}
-            className="rounded-[3px] bg-g-ember px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-on-ember"
+            className="glass-primary rounded-xl px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
           >
             Sign in to register an app
           </Link>

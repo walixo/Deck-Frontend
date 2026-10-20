@@ -63,7 +63,7 @@ function Pitch() {
         <Link
           to="/login"
           state={{ from: pathname }}
-          className="rounded-[3px] bg-g-ember px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-on-ember shadow-[0_0_40px_4px] shadow-g-glow/30"
+          className="glass-primary rounded-xl px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] shadow-[0_0_40px_4px] shadow-g-glow/30"
         >
           Sign in to start
         </Link>
@@ -110,7 +110,7 @@ function Desk() {
           </Link>
           <Link
             to="/games/developers/new"
-            className="rounded-[3px] bg-g-ember px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-on-ember"
+            className="glass-primary rounded-xl px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
           >
             New game
           </Link>
@@ -134,7 +134,7 @@ function Desk() {
               </p>
               <Link
                 to="/games/developers/new"
-                className="mt-5 inline-block rounded-[3px] bg-g-ink px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-paper"
+                className="glass-ink mt-5 inline-block rounded-xl px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
               >
                 Register a game
               </Link>

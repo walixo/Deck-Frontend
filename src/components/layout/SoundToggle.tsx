@@ -43,8 +43,8 @@ export function SoundToggle({ className }: { className?: string }) {
       aria-label={muted ? 'Turn sound on' : 'Turn sound off'}
       title={muted ? 'Sound off — turn it on' : 'Sound on — turn it off'}
       className={cn(
-        'relative flex size-9 items-center justify-center overflow-hidden rounded-full border border-line bg-surface text-body',
-        'transition-[border-color] duration-300 ease-[var(--ease-snap)] hover:border-edge',
+        'relative flex size-9 items-center justify-center overflow-hidden rounded-full glass-secondary',
+        'transition-[background-color,box-shadow] duration-300 ease-[var(--ease-snap)]',
         className,
       )}
     >

@@ -61,7 +61,7 @@ export function Blog() {
           <button
             type="button"
             onClick={() => setParams({})}
-            className="rounded-full border border-line bg-pop px-2 py-0.5 font-mono text-[11px] font-medium uppercase text-on-pop"
+            className="glass-primary rounded-full px-2 py-0.5 font-mono text-[11px] font-medium uppercase"
           >
             {tag} ✕
           </button>

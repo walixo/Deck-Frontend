@@ -41,7 +41,7 @@ export function GameIdHome() {
               <Link
                 to="/register"
                 state={{ from: pathname }}
-                className="rounded-[3px] bg-g-ember px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-on-ember"
+                className="glass-primary rounded-xl px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
               >
                 Get your GameID
               </Link>
@@ -124,7 +124,7 @@ export function GameIdHome() {
           <div className="flex flex-wrap items-center gap-4">
             <Link
               to="/gameid/developers"
-              className="rounded-[3px] bg-g-ember px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-on-ember"
+              className="glass-primary rounded-xl px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
             >
               Register an app
             </Link>

@@ -86,10 +86,8 @@ export function Acquisitions() {
             onClick={() => setParam('sort', option.value)}
             aria-pressed={sort === option.value}
             className={cn(
-              'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
-              sort === option.value
-                ? 'bg-edge text-canvas'
-                : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
+              'rounded-full px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
+              sort === option.value ? 'glass-ink' : 'glass-secondary text-muted hover:text-body',
             )}
           >
             {option.label}

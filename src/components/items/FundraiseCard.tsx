@@ -122,10 +122,8 @@ export function FundraiseCard({ item }: FundraiseCardProps) {
                   type="button"
                   onClick={() => setAmount(preset)}
                   aria-pressed={amount === preset}
-                  className={`rounded-2xl border border-line px-3 py-1.5 font-mono text-[12px] font-medium tabular-nums transition-colors duration-300 ${
-                    amount === preset
-                      ? 'bg-edge text-canvas'
-                      : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
+                  className={`rounded-2xl px-3 py-1.5 font-mono text-[12px] font-medium tabular-nums transition-colors duration-300 ${
+                    amount === preset ? 'glass-ink' : 'glass-secondary text-muted hover:text-body'
                   }`}
                 >
                   {formatMoney(preset * 100)}

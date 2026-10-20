@@ -210,7 +210,7 @@ export function Player({
                 <button
                   type="button"
                   onClick={reopenCheckout}
-                  className="rounded-[3px] bg-g-ember px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-on-ember"
+                  className="glass-primary rounded-xl px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
                 >
                   {checkout.phase === 'waiting' ? 'Show payment window' : 'Open payment'}
                 </button>

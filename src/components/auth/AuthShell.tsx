@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { LaunchBoardIllustration } from '@/components/illustrations/Illustrations';
+import { GlassLaunchBoard } from '@/components/illustrations/GlassLaunchBoard';
 import { Logo } from '@/components/layout/Logo';
 import { Backdrop } from '@/components/ui/Ambient';
 
@@ -41,7 +41,7 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
           className="hidden animate-[var(--animate-slide-up)] lg:order-1 lg:block"
           style={{ animationDelay: '120ms' }}
         >
-          <LaunchBoardIllustration className="w-full max-w-md" />
+          <GlassLaunchBoard className="max-w-lg" />
           <h2 className="display-tight mt-8 max-w-sm text-3xl text-balance">
             Ship it, then watch the board.
           </h2>

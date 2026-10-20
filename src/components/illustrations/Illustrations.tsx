@@ -153,56 +153,6 @@ export function LostCardIllustration({ className = 'w-64' }: IllustrationProps) 
   );
 }
 
-/**
- * Decorative panel for the auth pages: a launch board with a vote bar climbing
- * out of it, echoing what the product actually does.
- */
-export function LaunchBoardIllustration({ className = 'w-full' }: IllustrationProps) {
-  /* `mark` travels with the row because the middle one is a fixed block and
-     the other two are themed surfaces — the same edge colour cannot serve
-     both. On surface it is the themed ink; on slate it is lime. */
-  const rows = [
-    { y: 18, fill: SURFACE, mark: EDGE },
-    { y: 64, fill: 'var(--color-deep)', mark: ON_DEEP },
-    { y: 110, fill: SURFACE, mark: EDGE },
-  ];
-  const bars = [
-    { x: 246, h: 30, fill: 'var(--color-pop)' },
-    { x: 268, h: 52, fill: GREY },
-    { x: 290, h: 78, fill: 'var(--color-deep)' },
-  ];
-
-  return (
-    <svg viewBox="0 0 330 190" aria-hidden="true" className={className}>
-      {rows.map((row) => (
-        <g key={row.y}>
-          <rect x="14" y={row.y} width="206" height="38" fill={row.fill} {...OUTLINE} />
-          <rect x="26" y={row.y + 9} width="20" height="20" fill={row.mark} />
-          <rect x="56" y={row.y + 12} width="86" height="5" fill={row.mark} />
-          <rect x="56" y={row.y + 23} width="52" height="5" fill={row.mark} opacity="0.5" />
-          <rect x="188" y={row.y + 9} width="20" height="20" fill={SURFACE} {...OUTLINE} />
-        </g>
-      ))}
-
-      {bars.map((bar, index) => (
-        <rect
-          key={bar.x}
-          className="animate-[var(--animate-kick)]"
-          style={{ animationDelay: `${index * -0.5}s` }}
-          x={bar.x}
-          y={162 - bar.h}
-          width="16"
-          height={bar.h}
-          fill={bar.fill}
-          {...OUTLINE}
-        />
-      ))}
-
-      <path d="M14 168h300" stroke={EDGE} strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 /** Small upward-trend mark used beside "how ranking works" copy. */
 export function TrendMark({ className = 'size-10' }: IllustrationProps) {
   return (

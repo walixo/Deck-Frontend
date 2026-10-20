@@ -57,10 +57,8 @@ export function AdminUsers() {
             type="button"
             onClick={() => setRole(option.value)}
             aria-pressed={role === option.value}
-            className={`rounded-2xl border border-line px-3 py-1.5 font-mono text-[12px] font-medium uppercase tracking-[0.06em] transition-colors duration-300 ${
-              role === option.value
-                ? 'bg-edge text-canvas'
-                : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
+            className={`rounded-2xl px-3 py-1.5 font-mono text-[12px] font-medium uppercase tracking-[0.06em] transition-colors duration-300 ${
+              role === option.value ? 'glass-ink' : 'glass-secondary text-muted hover:text-body'
             }`}
           >
             {option.label}

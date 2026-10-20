@@ -42,7 +42,7 @@ export function Manifesto() {
         </div>
         <Link
           to="/games/developers"
-          className="relative mt-10 inline-block rounded-[3px] bg-g-ember px-6 py-3.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-g-on-ember shadow-[0_0_40px_6px] shadow-g-glow/35 transition-[box-shadow,transform] duration-500 ease-glide hover:shadow-[0_0_60px_12px] hover:shadow-g-glow/45 active:scale-[0.98]"
+          className="glass-primary relative mt-10 inline-block rounded-xl px-6 py-3.5 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] transition-[box-shadow,transform] duration-500 ease-glide active:scale-[0.98]"
         >
           Start building
         </Link>

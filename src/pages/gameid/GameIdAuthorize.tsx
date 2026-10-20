@@ -193,14 +193,14 @@ function Consent({
             <Link
               to="/login"
               state={loginState}
-              className="flex h-11 items-center justify-center rounded-[4px] bg-pop font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-on-pop hover:bg-pop-hover"
+              className="glass-primary flex h-11 items-center justify-center rounded-xl font-mono text-[11px] font-medium uppercase tracking-[0.16em]"
             >
               Sign in
             </Link>
             <Link
               to="/register"
               state={loginState}
-              className="flex h-11 items-center justify-center rounded-[4px] border border-line font-mono text-[11px] font-medium uppercase tracking-[0.16em] hover:border-edge"
+              className="glass-secondary flex h-11 items-center justify-center rounded-xl font-mono text-[11px] font-medium uppercase tracking-[0.16em]"
             >
               Create an account
             </Link>
@@ -251,7 +251,7 @@ function Consent({
               type="button"
               onClick={onDeny}
               disabled={busy}
-              className="h-11 rounded-[4px] border border-line font-mono text-[11px] font-medium uppercase tracking-[0.16em] hover:border-edge disabled:opacity-50"
+              className="glass-secondary h-11 rounded-xl font-mono text-[11px] font-medium uppercase tracking-[0.16em] disabled:opacity-50"
             >
               Cancel
             </button>
@@ -259,7 +259,7 @@ function Consent({
               type="button"
               onClick={onAllow}
               disabled={busy}
-              className="h-11 rounded-[4px] bg-pop font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-on-pop hover:bg-pop-hover disabled:opacity-50"
+              className="glass-primary h-11 rounded-xl font-mono text-[11px] font-medium uppercase tracking-[0.16em] disabled:opacity-50"
             >
               {busy ? 'One moment…' : 'Continue'}
             </button>

@@ -75,7 +75,7 @@ export function GamesShell() {
             <AccountLink />
             <Link
               to="/games#library"
-              className="hidden rounded-[3px] bg-g-ember px-3.5 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-g-on-ember transition-[filter,transform] duration-300 ease-glide hover:brightness-110 active:scale-[0.98] sm:inline-flex"
+              className="glass-primary hidden rounded-xl px-3.5 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] transition-[filter,transform] duration-300 ease-glide active:scale-[0.98] sm:inline-flex"
             >
               Play now
             </Link>

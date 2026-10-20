@@ -266,7 +266,7 @@ export function SellerDashboard() {
                           <button
                             type="button"
                             onClick={() => retire.mutate(product.id)}
-                            className="border border-line px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted transition-colors duration-300 hover:bg-edge hover:text-canvas"
+                            className="glass-secondary rounded-xl px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-muted transition-colors duration-300 hover:bg-edge hover:text-canvas"
                           >
                             Retire
                           </button>

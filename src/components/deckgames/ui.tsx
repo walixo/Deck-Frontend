@@ -33,13 +33,13 @@ export const GButton = forwardRef<
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-[3px] font-mono font-semibold uppercase transition-[filter,background-color,color,transform] duration-300 ease-glide active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
+        'inline-flex items-center justify-center gap-2 rounded-xl font-mono font-semibold uppercase transition-[filter,background-color,color,transform] duration-300 ease-glide active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
         small
           ? 'px-3 py-1.5 text-[9px] tracking-[0.14em]'
           : 'px-4 py-2.5 text-[10px] tracking-[0.16em]',
-        tone === 'ember' && 'bg-g-ember text-g-on-ember hover:brightness-110',
-        tone === 'ink' && 'bg-g-ink text-g-paper hover:opacity-90',
-        tone === 'ghost' && 'border border-g-line text-g-ink hover:border-g-ink',
+        tone === 'ember' && 'glass-primary',
+        tone === 'ink' && 'glass-ink',
+        tone === 'ghost' && 'glass-secondary',
         tone === 'danger' && 'border border-danger/40 text-danger hover:bg-danger hover:text-white',
         className,
       )}

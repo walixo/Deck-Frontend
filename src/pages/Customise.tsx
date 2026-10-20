@@ -266,10 +266,8 @@ function Configurator({
                 }}
                 aria-pressed={product === option}
                 className={cn(
-                  'border border-line px-3 py-2 text-left transition-colors duration-300',
-                  product === option
-                    ? 'bg-edge text-canvas'
-                    : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
+                  'rounded-xl px-3 py-2 text-left transition-colors duration-300',
+                  product === option ? 'glass-ink' : 'glass-secondary text-muted hover:text-body',
                 )}
               >
                 <span className="block font-mono text-[11px] font-medium uppercase tracking-[0.06em]">
@@ -328,10 +326,10 @@ function Configurator({
                       onClick={() => setPlacement(option)}
                       aria-pressed={placement === option}
                       className={cn(
-                        'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
+                        'rounded-full px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
                         placement === option
-                          ? 'bg-deep text-on-deep'
-                          : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
+                          ? 'glass-ink'
+                          : 'glass-secondary text-muted hover:text-body',
                       )}
                     >
                       {PLACEMENT_LABELS[option]}
@@ -352,10 +350,10 @@ function Configurator({
                       onClick={() => setSize(option)}
                       aria-pressed={size === option}
                       className={cn(
-                        'rounded-full min-w-11 border border-line px-2 py-1 font-mono text-[11px] font-medium uppercase transition-colors duration-300',
+                        'rounded-full min-w-11 px-2 py-1 font-mono text-[11px] font-medium uppercase transition-colors duration-300',
                         size === option
-                          ? 'bg-deep text-on-deep'
-                          : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
+                          ? 'glass-ink'
+                          : 'glass-secondary text-muted hover:text-body',
                       )}
                     >
                       {option}

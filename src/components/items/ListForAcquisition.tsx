@@ -186,10 +186,10 @@ function ListingDialog({
                   onClick={() => toggleAsset(asset)}
                   aria-pressed={assets.includes(asset)}
                   className={cn(
-                    'rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
+                    'rounded-full px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300',
                     assets.includes(asset)
-                      ? 'bg-edge text-canvas'
-                      : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
+                      ? 'glass-ink'
+                      : 'glass-secondary text-muted hover:text-body',
                   )}
                 >
                   {ASSET_LABELS[asset]}

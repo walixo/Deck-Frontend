@@ -98,7 +98,7 @@ export function DevGame() {
         </div>
         <Link
           to={`/games/${game.slug}${game.status === 'approved' ? '?mode=test' : ''}`}
-          className="rounded-[3px] bg-g-ink px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-g-paper"
+          className="glass-ink rounded-xl px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
         >
           Play in test mode
         </Link>

@@ -226,10 +226,8 @@ function FilterChip({
       type="button"
       onClick={() => onPick(value)}
       aria-pressed={current === value}
-      className={`rounded-full border border-line px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300 ${
-        current === value
-          ? 'bg-edge text-canvas'
-          : 'bg-surface text-muted hover:bg-surface-2 hover:text-body'
+      className={`rounded-full px-2.5 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-300 ${
+        current === value ? 'glass-ink' : 'glass-secondary text-muted hover:text-body'
       }`}
     >
       {label}
@@ -265,7 +263,7 @@ function Entry({ event }: { event: AuditEvent }) {
             type="button"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
-            className="rounded-full shrink-0 border border-line px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-muted transition-colors duration-300 hover:bg-surface-2 hover:text-body"
+            className="glass-secondary rounded-full shrink-0 px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-muted transition-colors duration-300 hover:bg-surface-2 hover:text-body"
           >
             {open ? 'Hide' : 'Detail'}
           </button>

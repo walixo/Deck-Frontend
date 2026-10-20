@@ -11,25 +11,26 @@ type Size = 'sm' | 'md' | 'lg';
  * active state slams it all the way down, so a press feels physical.
  */
 const BASE =
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[4px] font-mono font-medium uppercase ' +
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-mono font-medium uppercase ' +
   'transition-[background-color,color,border-color,box-shadow,transform,filter] duration-300 ease-[var(--ease-snap)] ' +
   'active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40';
 
 /*
- * The arcade's buttons, everywhere: small square-cornered blocks with mono
- * capitals, in the one accent colour for the primary action and ink or a
- * hairline for everything else. No hard shadows and no press-down offset —
- * a press is a slight scale, a hover is a change of fill.
+ * Glass buttons: panes with a lit top edge and a soft glow, defined once as
+ * utilities in index.css (`glass-primary`, `glass-secondary`, `glass-ink`) so
+ * every button on the site — this component or hand-written — is the same
+ * glass. Ember for the one action on a screen that should be pressed, clear
+ * frosted glass for the rest, smoked glass for the strong neutral.
  */
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-pop text-on-pop hover:bg-pop-hover',
-  secondary: 'border border-line bg-surface text-body hover:border-edge',
-  accent:
-    'bg-deep text-on-deep hover:bg-deep-hover dark:bg-body dark:text-canvas dark:hover:opacity-90',
-  /* Red, and it still carries its word. See CONTRACT rule 6. */
-  danger: 'bg-danger text-bone hover:brightness-110',
-  // No block — for tertiary actions inside dense UI.
-  ghost: 'text-muted hover:bg-surface-2 hover:text-body',
+  primary: 'glass-primary',
+  secondary: 'glass-secondary',
+  accent: 'glass-ink',
+  /* Red glass, and it still carries its word. See CONTRACT rule 6. */
+  danger:
+    'border border-white/25 bg-[linear-gradient(180deg,rgb(255_255_255/0.2),transparent_55%),linear-gradient(180deg,var(--color-danger),var(--color-danger))] text-bone shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_10px_24px_-12px_rgb(201_42_42/0.6)] backdrop-blur-md hover:brightness-110',
+  // No pane at rest — for tertiary actions inside dense UI. Frosts on hover.
+  ghost: 'border border-transparent text-muted hover:glass-secondary hover:text-body',
 };
 
 const SIZES: Record<Size, string> = {

@@ -133,7 +133,7 @@ export function NotificationBell() {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
-        className="relative flex size-9 items-center justify-center rounded-full border border-line bg-surface transition-[border-color,background-color] duration-300 ease-[var(--ease-snap)] hover:border-edge"
+        className="relative flex size-9 items-center justify-center rounded-full glass-secondary transition-[background-color,box-shadow] duration-300 ease-[var(--ease-snap)]"
       >
         <span aria-hidden="true" className="text-sm">
           ◔

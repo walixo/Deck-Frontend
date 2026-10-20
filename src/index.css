@@ -498,3 +498,91 @@
     mask-repeat: no-repeat;
   }
 }
+
+/*
+ * Glass buttons, site-wide.
+ *
+ * Three surfaces, each a pane with a lit top edge, a faint outline and a soft
+ * glow underneath, blurring whatever sits behind it:
+ *   glass-primary   — ember glass, for the one action on a screen to press
+ *   glass-secondary — frosted clear glass, for everything else
+ *   glass-ink       — smoked glass; turns to milk glass on the dark canvas
+ *
+ * The primary keeps an opaque ember body so white type holds 4.5:1 whatever
+ * is behind it; the glass is in the edges, the sheen and the blur. The
+ * secondary's values flip with the theme through the variables below — clear
+ * glass on a white page needs a faint dark edge to be seen at all, and on the
+ * dark canvas a faint light one.
+ */
+@layer base {
+  :root {
+    --glass-fill: rgb(255 255 255 / 0.62);
+    --glass-fill-hover: rgb(255 255 255 / 0.85);
+    --glass-edge: rgb(14 14 14 / 0.1);
+    --glass-shine: rgb(255 255 255 / 0.9);
+    --glass-glow: 0 8px 22px -12px rgb(14 14 14 / 0.28);
+    --glass-ink-top: #33322f;
+    --glass-ink-bottom: #121211;
+    --glass-ink-text: #ffffff;
+    --glass-ink-edge: rgb(255 255 255 / 0.14);
+    --glass-ink-shine: rgb(255 255 255 / 0.22);
+  }
+
+  .dark {
+    --glass-fill: rgb(255 255 255 / 0.07);
+    --glass-fill-hover: rgb(255 255 255 / 0.13);
+    --glass-edge: rgb(255 255 255 / 0.14);
+    --glass-shine: rgb(255 255 255 / 0.18);
+    --glass-glow: 0 10px 26px -14px rgb(0 0 0 / 0.8);
+    --glass-ink-top: rgb(255 255 255 / 0.95);
+    --glass-ink-bottom: rgb(226 224 219 / 0.88);
+    --glass-ink-text: #0e0e0e;
+    --glass-ink-edge: rgb(255 255 255 / 0.5);
+    --glass-ink-shine: rgb(255 255 255 / 0.9);
+  }
+}
+
+@utility glass-primary {
+  color: var(--on-pop);
+  background-image:
+    linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0) 55%),
+    linear-gradient(180deg, var(--pop), var(--pop-hover));
+  border: 1px solid rgb(255 255 255 / 0.28);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.45),
+    inset 0 -1px 0 rgb(0 0 0 / 0.14),
+    0 10px 26px -12px color-mix(in srgb, var(--pop) 75%, transparent);
+  backdrop-filter: blur(14px) saturate(1.5);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  &:hover {
+    filter: brightness(1.08);
+  }
+}
+
+@utility glass-secondary {
+  color: var(--body-ink);
+  background-color: var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    var(--glass-glow);
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  &:hover {
+    background-color: var(--glass-fill-hover);
+  }
+}
+
+@utility glass-ink {
+  color: var(--glass-ink-text);
+  background-image: linear-gradient(180deg, var(--glass-ink-top), var(--glass-ink-bottom));
+  border: 1px solid var(--glass-ink-edge);
+  box-shadow:
+    inset 0 1px 0 var(--glass-ink-shine),
+    var(--glass-glow);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  &:hover {
+    filter: brightness(1.1);
+  }
+}

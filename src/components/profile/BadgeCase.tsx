@@ -1,5 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import { artFor } from '@/components/profile/badgeArt';
+import { GlassIcon } from '@/components/ui/GlassIcon';
 import { cn } from '@/lib/utils';
 import type { ProfileBadge } from '@/types';
 
@@ -51,15 +52,9 @@ export function BadgeCase({ badges }: { badges: ProfileBadge[] }) {
           {earned.slice(0, 5).map((badge) => {
             const art = artFor(badge.id);
             return (
-              <span
-                key={badge.id}
-                className={cn(
-                  'flex size-6 items-center justify-center border border-line',
-                  art.tone,
-                )}
-              >
-                <art.solid className="size-3.5 text-ink" />
-              </span>
+              <GlassIcon key={badge.id} tone={art.tone} size="sm" className="ring-2 ring-surface">
+                <art.solid className="size-3.5" />
+              </GlassIcon>
             );
           })}
         </span>
@@ -93,8 +88,8 @@ function Tile({ badge }: { badge: ProfileBadge }) {
   return (
     <div
       className={cn(
-        'flex h-full items-start gap-3 border border-line p-3',
-        badge.earned ? 'bg-surface shadow-hard-sm' : 'bg-surface-2',
+        'flex h-full items-start gap-3 rounded-2xl border border-line p-3',
+        badge.earned ? 'bg-surface' : 'bg-surface-2',
       )}
       /* One label for the whole tile, so an unearned badge is never announced
          as an achievement and the progress is read as part of the same thought. */
@@ -104,20 +99,13 @@ function Tile({ badge }: { badge: ProfileBadge }) {
           : `${badge.name}, not yet earned. ${badge.description}. ${badge.progress} of ${badge.threshold}`
       }
     >
-      <span
-        aria-hidden="true"
-        className={cn(
-          'flex size-10 shrink-0 items-center justify-center border border-line',
-          badge.earned ? cn(art.tone, 'shadow-hard-sm') : 'bg-surface',
-        )}
-      >
-        {/* No extra opacity on the unearned icon: muted-on-surface is already
-            2.9:1 in light mode, and dimming it further pushes a graphic under
-            the 3:1 floor. Three signals already separate the two states — the
-            coloured tile, the solid-versus-outline icon, and the hard shadow —
-            so the fourth was costing legibility for nothing. */}
-        <Icon className={cn('size-5', badge.earned ? 'text-ink' : 'text-muted')} />
-      </span>
+      {/* Tinted glass once earned, clear glass while it is still ahead of you —
+          with the solid-versus-outline icon as the second signal. No extra
+          dimming on the unearned icon: muted-on-glass already sits near the
+          3:1 floor for graphics. */}
+      <GlassIcon tone={badge.earned ? art.tone : undefined}>
+        <Icon className={cn('size-5', !badge.earned && 'text-muted')} />
+      </GlassIcon>
 
       <div className="min-w-0">
         <p className={cn('font-display text-[13px] leading-tight', !badge.earned && 'text-muted')}>

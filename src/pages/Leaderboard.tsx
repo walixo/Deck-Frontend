@@ -115,8 +115,8 @@ export function Leaderboard() {
                 onClick={() => goToDate(day.date)}
                 aria-pressed={active}
                 className={cn(
-                  'shrink-0 border border-line px-3 py-2 text-left transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:shadow-hard-sm',
-                  active ? 'bg-deep text-on-deep shadow-hard-sm' : 'bg-surface text-body',
+                  'shrink-0 rounded-xl px-3 py-2 text-left transition-[transform,box-shadow,background-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5',
+                  active ? 'glass-ink' : 'glass-secondary',
                 )}
               >
                 <span className="block whitespace-nowrap font-display text-[12px]">
@@ -208,10 +208,10 @@ export function Leaderboard() {
                   onClick={() => setPeriod(option.value)}
                   aria-pressed={period === option.value}
                   className={cn(
-                    'rounded-full border border-line px-2 py-1 font-mono text-[10px] font-medium uppercase transition-colors duration-300',
+                    'rounded-full px-2 py-1 font-mono text-[10px] font-medium uppercase transition-colors duration-300',
                     period === option.value
-                      ? 'bg-edge text-canvas'
-                      : 'bg-surface text-muted hover:bg-surface-2 hover:text-body',
+                      ? 'glass-ink'
+                      : 'glass-secondary text-muted hover:text-body',
                   )}
                 >
                   {option.label}

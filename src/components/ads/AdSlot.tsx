@@ -94,7 +94,7 @@ function DeckAd({ ad, className }: { ad: ServedAd; className?: string }) {
         <a
           href={ad.item ? `/item/${ad.item.slug}` : '/'}
           onClick={(event) => void go(event)}
-          className="shrink-0 border border-line bg-pop px-3.5 py-2 font-mono text-[12px] font-medium uppercase tracking-[0.06em] text-on-pop transition-transform duration-300 ease-[var(--ease-snap)] hover:-translate-y-0.5"
+          className="glass-primary rounded-xl shrink-0 px-3.5 py-2 font-mono text-[12px] font-medium uppercase tracking-[0.06em] transition-transform duration-300 ease-[var(--ease-snap)]"
         >
           {ad.ctaLabel}
         </a>

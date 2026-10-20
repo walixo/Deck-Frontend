@@ -199,7 +199,7 @@ export function LaunchReel() {
             aria-label={
               playing ? 'Pause the film' : replay ? 'Play the film again' : 'Play the film'
             }
-            className="flex size-10 shrink-0 items-center justify-center border border-line bg-pop text-on-pop shadow-hard-sm transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] hover:-translate-y-px hover:shadow-hard.5.5 active:shadow-none"
+            className="glass-primary rounded-xl flex size-10 shrink-0 items-center justify-center transition-[transform,box-shadow] duration-300 ease-[var(--ease-snap)] .5.5"
           >
             {playing ? (
               <PauseIcon className="size-5" />

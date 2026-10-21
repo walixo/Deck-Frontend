@@ -70,6 +70,8 @@ const GameIdDevelopers = lazyNamed(
 );
 const GameIdApp = lazyNamed(() => import('@/pages/gameid/GameIdApp'), 'GameIdApp');
 const GameIdDocs = lazyNamed(() => import('@/pages/gameid/GameIdDocs'), 'GameIdDocs');
+const AgentClaim = lazyNamed(() => import('@/pages/gameid/AgentClaim'), 'AgentClaim');
+const AgentProfile = lazyNamed(() => import('@/pages/gameid/AgentProfile'), 'AgentProfile');
 const PurchaseComplete = lazyNamed(
   () => import('@/pages/games/PurchaseComplete'),
   'PurchaseComplete',
@@ -182,6 +184,9 @@ export function App() {
         <Route index element={<GameIdHome />} />
         <Route path="developers" element={<GameIdDevelopers />} />
         <Route path="docs" element={<GameIdDocs />} />
+        {/* AgentID lives under GameID: agents are operated by a GameID. */}
+        <Route path="agents/claim/:token" element={<AgentClaim />} />
+        <Route path="agents/:agentId" element={<AgentProfile />} />
         <Route element={<RequireAuth />}>
           <Route path="developers/:clientId" element={<GameIdApp />} />
         </Route>

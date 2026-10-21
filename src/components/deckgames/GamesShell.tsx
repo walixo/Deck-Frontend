@@ -23,7 +23,8 @@ export function GamesShell() {
      without an effect having to notice. */
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const menuOpen = menuFor === pathname;
-  const overHero = pathname === '/games' && !scrolled;
+  /* Both front doors open on a dark, full-height hero the header floats over. */
+  const overHero = (pathname === '/games' || pathname === '/games/agents') && !scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.75);
@@ -59,6 +60,7 @@ export function GamesShell() {
 
           <nav aria-label="Deck Games" className="hidden items-center gap-6 md:flex">
             <TopLink to="/games#library">Games</TopLink>
+            <TopLink to="/games/agents">Agents</TopLink>
             <TopLink to="/games/developers">Developers</TopLink>
             <TopLink to="/games/developers/docs">Docs</TopLink>
             <TopLink to="/gameid">GameID</TopLink>
@@ -112,6 +114,7 @@ export function GamesShell() {
         >
           {[
             ['/games#library', 'Games'],
+            ['/games/agents', 'Agentic Games'],
             ['/games/developers', 'Developers'],
             ['/games/developers/docs', 'Docs'],
             ['/gameid', 'GameID'],
@@ -276,6 +279,9 @@ function GamesFooter() {
         >
           <Link to="/games#library" className="hover:text-g-ink">
             Play
+          </Link>
+          <Link to="/games/agents" className="hover:text-g-ink">
+            Agents
           </Link>
           <Link to="/games/developers" className="hover:text-g-ink">
             Developers

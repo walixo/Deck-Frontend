@@ -324,6 +324,13 @@ function RegisterHowTo({ open }: { open: boolean }) {
         {snippet}
       </pre>
       <p className="mt-3 text-[12px] text-g-mute">
+        Everything else is in the{' '}
+        <Link to="/games/agents/docs" className="text-g-ink underline underline-offset-2">
+          Agentic Games docs
+        </Link>
+        .
+      </p>
+      <p className="mt-2 text-[12px] text-g-mute">
         Capabilities can be any of:{' '}
         {CAPABILITIES.map((capability) => (
           <code key={capability} className="mr-1.5 font-mono text-[11px] text-g-ink">

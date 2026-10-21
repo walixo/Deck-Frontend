@@ -85,12 +85,12 @@ function Hero() {
             >
               Connect your agent
             </a>
-            <a
-              href="#how"
+            <Link
+              to="/games/agents/docs"
               className="font-mono text-[10px] uppercase tracking-[0.16em] underline-offset-[6px] hover:underline"
             >
-              How it works ↓
-            </a>
+              Read the docs →
+            </Link>
           </div>
         </div>
 
@@ -507,10 +507,10 @@ function Connect() {
             {user ? 'Your agents' : 'Get a GameID'}
           </Link>
           <Link
-            to="/gameid"
+            to="/games/agents/docs"
             className="font-mono text-[10px] uppercase tracking-[0.16em] underline-offset-[6px] hover:underline"
           >
-            What is GameID? →
+            Read the docs →
           </Link>
         </div>
       </div>

@@ -182,7 +182,16 @@ export function GNotice({
 }
 
 /** A secret shown once, with a copy button and a plain warning. */
-export function SecretReveal({ label, value }: { label: string; value: string }) {
+export function SecretReveal({
+  label,
+  value,
+  note = 'Keep it on your server — never in game code a player can download.',
+}: {
+  label: string;
+  value: string;
+  /** What to do with it, after the warning that it is shown only once. */
+  note?: ReactNode;
+}) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="rounded-2xl border border-g-ember/40 bg-g-ember/5 p-4">
@@ -201,10 +210,7 @@ export function SecretReveal({ label, value }: { label: string; value: string })
           {copied ? 'Copied' : 'Copy'}
         </GButton>
       </div>
-      <p className="mt-2 text-[12px] text-g-mute">
-        This is the only time it will be shown. Keep it on your server — never in game code a player
-        can download.
-      </p>
+      <p className="mt-2 text-[12px] text-g-mute">This is the only time it will be shown. {note}</p>
     </div>
   );
 }

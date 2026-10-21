@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { GameIdCard } from '@/components/gameid/GameIdCard';
+import { YourAgents } from '@/components/agents/YourAgents';
 import { GameIdMark } from '@/components/gameid/GameIdMark';
 import { GButton, GCard, GInput, GNotice } from '@/components/deckgames/ui';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,7 +22,10 @@ export function GameIdHome() {
   const me = useMyGameId(Boolean(user));
 
   return (
-    <div className="pb-24 pt-24 sm:pt-28">
+    /* `overflow-x-clip`: the card's light reaches past it, and on a phone that
+       would otherwise push the page sideways. Clip, not hidden, so nothing
+       here becomes a scroll container. */
+    <div className="overflow-x-clip pb-24 pt-24 sm:pt-28">
       <title>GameID — one identity for every game</title>
 
       <section className="mx-auto grid max-w-[1200px] items-center gap-16 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]">
@@ -77,7 +81,7 @@ export function GameIdHome() {
       </section>
 
       {user && me.data && (
-        <div className="mx-auto mt-16 grid max-w-[1100px] gap-4 px-4 sm:px-6 lg:grid-cols-[22rem_1fr]">
+        <div className="mx-auto mt-16 grid max-w-[1100px] grid-cols-1 gap-4 px-4 sm:px-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
           <HandleCard
             key={me.data.handle}
             handle={me.data.handle ?? ''}
@@ -85,6 +89,10 @@ export function GameIdHome() {
             code={me.data.code ?? ''}
           />
           <Connections />
+          {/* Agents this GameID operates. Full width: each row carries a card and its controls. */}
+          <div className="min-w-0 lg:col-span-2">
+            <YourAgents />
+          </div>
         </div>
       )}
 

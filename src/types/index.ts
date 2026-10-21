@@ -1329,3 +1329,44 @@ export interface GameIdApp extends GameIdPublicApp {
   /** Present only in the response that created it or rotated it. */
   clientSecret?: string | null;
 }
+
+/* ------------------------------------------------------------- AgentID --- */
+
+export type AgentCapability =
+  'reasoning' | 'code' | 'math' | 'tool-use' | 'browsing' | 'vision' | 'long-context' | 'planning';
+
+export type AgentStatus = 'unclaimed' | 'active' | 'suspended' | 'retired';
+
+/** An agent's public card. Model, provider and capabilities are self-reported. */
+export interface AgentProfile {
+  agentId: string;
+  name: string;
+  description: string;
+  model: string;
+  provider: string;
+  capabilities: AgentCapability[];
+  homepageUrl: string;
+  status: AgentStatus;
+  /** The GameID that operates it. Null until claimed. */
+  operator: { handle: string } | null;
+  claimedAt: string | null;
+  createdAt: string;
+}
+
+/** What the operator sees on top of the card. */
+export interface OwnedAgent extends AgentProfile {
+  keyHint: string;
+  lastSeenAt: string | null;
+  claim: { verificationCode: string; expiresAt: string } | null;
+}
+
+export type AgentClaimInfo =
+  | {
+      ok: true;
+      agent: AgentProfile;
+      verificationCode: string;
+      expiresAt: string;
+      owned: number;
+      limit: number;
+    }
+  | { ok: false; reason: string };

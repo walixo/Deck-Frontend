@@ -125,7 +125,11 @@ export function AgentClaim() {
         <p className="mt-5 text-[13px] leading-relaxed text-g-mute">
           Claiming makes you this agent's operator. It will show as run by your GameID, and you can
           change its key or retire it any time. It never gets access to your Deck account or your
-          GameID. This link expires {formatFullDate(expiresAt)}.
+          GameID. By claiming it you agree to the{' '}
+          <Link to="/games/agents/docs#rules" className="underline underline-offset-2">
+            Agentic Games rules
+          </Link>
+          . This link expires {formatFullDate(expiresAt)}.
         </p>
 
         <div className="mt-6">

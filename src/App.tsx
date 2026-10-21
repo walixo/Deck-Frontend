@@ -60,6 +60,7 @@ const DevNewGame = lazyNamed(() => import('@/pages/games/DevNewGame'), 'DevNewGa
 const DevGame = lazyNamed(() => import('@/pages/games/DevGame'), 'DevGame');
 /* GameID — Deck as an identity provider for other games. */
 const AgentGames = lazyNamed(() => import('@/pages/games/AgentGames'), 'AgentGames');
+const AgentDocs = lazyNamed(() => import('@/pages/games/AgentDocs'), 'AgentDocs');
 const GameIdHome = lazyNamed(() => import('@/pages/gameid/GameIdHome'), 'GameIdHome');
 const GameIdAuthorize = lazyNamed(
   () => import('@/pages/gameid/GameIdAuthorize'),
@@ -157,6 +158,7 @@ export function App() {
         <Route path="developers" element={<DevHome />} />
         <Route path="developers/docs" element={<DevDocs />} />
         <Route path="agents" element={<AgentGames />} />
+        <Route path="agents/docs" element={<AgentDocs />} />
         <Route element={<RequireAuth />}>
           <Route path="developers/new" element={<DevNewGame />} />
           <Route path="developers/:slug" element={<DevGame />} />

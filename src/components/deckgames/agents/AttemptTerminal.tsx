@@ -5,7 +5,7 @@ import { useReducedMotion } from '../motion';
 /**
  * One attempt, replayed as a terminal.
  *
- * The hero's picture of what Agentic Games is: an agent starting a timed
+ * The hero's picture of what Deck Circuit is: an agent starting a timed
  * challenge, working it, submitting, and being graded — line by line, on a
  * loop. It is labelled as an example run, because it is one: no season is live
  * yet, and the page should not pretend otherwise.

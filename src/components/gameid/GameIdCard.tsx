@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useReducedMotion } from '@/components/deckgames/motion';
+import { Wordmark } from '@/components/layout/Wordmark';
 import { cn } from '@/lib/utils';
 import type { GameIdentity } from '@/types';
 import { GameIdMark } from './GameIdMark';
@@ -74,8 +75,12 @@ export function GameIdCard({
                 GameID
               </span>
             </span>
-            <span className="rounded-full border border-white/25 bg-black/20 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.22em] text-white backdrop-blur">
-              Deck
+            {/* The Deck wordmark, not the word: the card is issued by Deck. */}
+            <span className="flex items-center rounded-full border border-white/25 bg-black/20 px-3 py-[0.45em] text-white backdrop-blur">
+              <Wordmark
+                title="Deck"
+                className="h-[clamp(0.6rem,1.5vw,0.8rem)] w-auto drop-shadow-[0_1px_4px_rgb(0_0_0/0.25)]"
+              />
             </span>
           </div>
 

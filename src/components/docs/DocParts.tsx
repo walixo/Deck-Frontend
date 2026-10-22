@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 /**
- * The building blocks of Deck's docs pages — Deck Games, GameID and Agentic
- * Games all read the same way: a sticky contents column on wide screens, one
+ * The building blocks of Deck's docs pages — Deck Games, GameID and Deck
+ * Circuit all read the same way: a sticky contents column on wide screens, one
  * long read on a phone, prose and code in the arcade's type.
  *
  * These lived as copies inside each page and had already begun to drift; one

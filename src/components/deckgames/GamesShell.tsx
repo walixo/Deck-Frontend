@@ -60,7 +60,7 @@ export function GamesShell() {
 
           <nav aria-label="Deck Games" className="hidden items-center gap-6 md:flex">
             <TopLink to="/games#library">Games</TopLink>
-            <TopLink to="/games/agents">Agents</TopLink>
+            <TopLink to="/games/agents">Circuit</TopLink>
             <TopLink to="/games/developers">Developers</TopLink>
             <TopLink to="/games/developers/docs">Docs</TopLink>
             <TopLink to="/gameid">GameID</TopLink>
@@ -114,7 +114,7 @@ export function GamesShell() {
         >
           {[
             ['/games#library', 'Games'],
-            ['/games/agents', 'Agentic Games'],
+            ['/games/agents', 'Deck Circuit'],
             ['/games/developers', 'Developers'],
             ['/games/developers/docs', 'Docs'],
             ['/gameid', 'GameID'],
@@ -281,7 +281,7 @@ function GamesFooter() {
             Play
           </Link>
           <Link to="/games/agents" className="hover:text-g-ink">
-            Agents
+            Circuit
           </Link>
           <Link to="/games/developers" className="hover:text-g-ink">
             Developers

@@ -759,6 +759,8 @@ function Settings({ view }: { view: GameDeveloperView }) {
         </form>
       </GCard>
 
+      <MultiplayerSettings view={view} />
+
       <GCard>
         <h2 className="text-lg font-medium tracking-[-0.03em]">Listing</h2>
         <div className="mt-5">
@@ -777,5 +779,101 @@ function Settings({ view }: { view: GameDeveloperView }) {
         </div>
       </GCard>
     </div>
+  );
+}
+
+/**
+ * Multiplayer: on or off, and how many players a room takes. Testing it needs
+ * several players, so the card leads straight to the sandbox, where one
+ * developer can sit in up to four seats at once.
+ */
+function MultiplayerSettings({ view }: { view: GameDeveloperView }) {
+  const slug = view.game.slug;
+  const save = useUpdateDeveloperSettings(slug);
+  const current = view.settings.multiplayer;
+  const [enabled, setEnabled] = useState(current.enabled);
+  const [minPlayers, setMinPlayers] = useState(current.minPlayers);
+  const [maxPlayers, setMaxPlayers] = useState(current.maxPlayers);
+  const failure = save.error instanceof RequestError ? save.error : null;
+  const counts = Array.from({ length: 15 }, (_, i) => i + 2);
+
+  return (
+    <GCard>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-medium tracking-[-0.03em]">Multiplayer</h2>
+          <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-g-mute">
+            Rooms, join codes, quick match and live messages between players, run by Deck. Your game
+            uses them through <code className="font-mono text-[12px]">DeckGames.multiplayer</code>.
+          </p>
+        </div>
+        {current.enabled && (
+          <Link
+            to={`/games/developers/${slug}/sandbox`}
+            className="glass-primary rounded-xl px-4 py-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
+          >
+            Open the sandbox
+          </Link>
+        )}
+      </div>
+      <form
+        className="mt-5 space-y-5"
+        noValidate
+        onSubmit={(event) => {
+          event.preventDefault();
+          save.mutate({ multiplayer: { enabled, minPlayers, maxPlayers } });
+        }}
+      >
+        {!view.settings.sdk && (
+          <GNotice tone="info">
+            Multiplayer works through the SDK — switch that on above first.
+          </GNotice>
+        )}
+        {failure && <GNotice tone="error">{failure.fields[0]?.message ?? failure.message}</GNotice>}
+        <label className="flex items-center gap-3 text-[13px]">
+          <input
+            type="checkbox"
+            checked={enabled}
+            onChange={(event) => setEnabled(event.target.checked)}
+            className="size-4 accent-[var(--g-ember)]"
+          />
+          This game is multiplayer
+        </label>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <GSelect
+            label="Fewest players to start"
+            value={minPlayers}
+            disabled={!enabled}
+            onChange={(event) => setMinPlayers(Number(event.target.value))}
+            hint="The host can start once this many are in."
+          >
+            {counts.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </GSelect>
+          <GSelect
+            label="Most players in a room"
+            value={maxPlayers}
+            disabled={!enabled}
+            onChange={(event) => setMaxPlayers(Number(event.target.value))}
+            hint="Joining stops when a room is full."
+          >
+            {counts.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </GSelect>
+        </div>
+        <GButton type="submit" tone="ink" loading={save.isPending}>
+          Save multiplayer settings
+        </GButton>
+        {save.isSuccess && !save.isPending && (
+          <span className="ml-3 text-[12px] text-success">Saved.</span>
+        )}
+      </form>
+    </GCard>
   );
 }

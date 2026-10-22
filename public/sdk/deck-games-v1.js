@@ -20,7 +20,7 @@
 
   if (global.DeckGames) return;
 
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var DEFAULT_ORIGINS = ['https://onedeck.africa', 'https://www.onedeck.africa'];
   var HANDSHAKE_MS = 1500;
   var REQUEST_MS = 15 * 60 * 1000; /* a checkout can take a while */
@@ -142,8 +142,11 @@
 
     /**
      * Connects to the Deck player. Resolves with
-     * `{ standalone, mode, orientation, viewport, player }` — `player` is
-     * `{ playerId, displayName }` when someone is signed in, otherwise null.
+     * `{ standalone, mode, orientation, viewport, player, multiplayer, invite }`
+     * — `player` is `{ playerId, displayName }` when someone is signed in,
+     * otherwise null. `multiplayer` is `{ minPlayers, maxPlayers }` when it is
+     * switched on for your game. `invite` is a room code if the player arrived
+     * through an invite link — pass it to `multiplayer.join()`.
      */
     init: function () {
       if (initPromise) return initPromise;
@@ -212,8 +215,75 @@
     },
 
     /**
+     * Asks the player to go full screen — `fullscreen(false)` to come back,
+     * no argument to toggle. Resolves with `{ active }`. Call it from a tap or
+     * a click: browsers only allow full screen in answer to the player.
+     */
+    fullscreen: function (on) {
+      return request('fullscreen', typeof on === 'boolean' ? { on: on } : {});
+    },
+
+    /**
+     * Multiplayer, through Deck: rooms, matchmaking and live messages. Switch it
+     * on in your game's developer settings first.
+     *
+     *   const room = await DeckGames.multiplayer.quickMatch();
+     *   DeckGames.on('message', ({ from, data }) => …);
+     *   DeckGames.multiplayer.send({ move: 'e4' });
+     *
+     * Every call resolves with the room (or a small result) and rejects with a
+     * code, like everything else. Events: `room` (the room changed — players,
+     * ready, host, status), `started`, `state` (`{ state, from }`), `message`
+     * (`{ from, data, at }`, `from` is a player id or `server`), `ended`.
+     */
+    multiplayer: {
+      /** A new room with you as host. `{ visibility: 'public' }` to let quick match fill it. */
+      create: function (options) {
+        return request('mp.create', { visibility: options && options.visibility });
+      },
+      /** Joins a room by its six-character code. */
+      join: function (code) {
+        return request('mp.join', { code: code });
+      },
+      /** The oldest open public room with a free seat — or a new one. */
+      quickMatch: function () {
+        return request('mp.quickMatch', {});
+      },
+      /** The room you are in, as last heard, or null. */
+      room: function () {
+        return request('mp.room', {});
+      },
+      setReady: function (ready) {
+        return request('mp.ready', { ready: ready !== false });
+      },
+      /** Host only, once the room has its minimum players. */
+      start: function () {
+        return request('mp.start', {});
+      },
+      /**
+       * Sends any JSON (up to 4 KB) to the room. `to`: `'others'` (default),
+       * `'all'`, `'host'`, or a player id.
+       */
+      send: function (data, options) {
+        return request('mp.send', { data: data, to: (options && options.to) || 'others' });
+      },
+      /** Host only: shared state (up to 16 KB) everyone receives as a `state` event. */
+      setState: function (state) {
+        return request('mp.setState', { state: state });
+      },
+      leave: function () {
+        return request('mp.leave', {});
+      },
+      /** Host only. Ends the room without results — those come from your server. */
+      end: function () {
+        return request('mp.end', {});
+      },
+    },
+
+    /**
      * Events from the player: `pause` and `resume` (the tab or the player was
-     * hidden), `orientation` (`{ orientation, viewport }` on rotate/resize).
+     * hidden), `orientation` (`{ orientation, viewport }` on rotate/resize),
+     * `fullscreen` (`{ active }`), and the multiplayer events above.
      */
     on: function (name, fn) {
       (listeners[name] = listeners[name] || []).push(fn);

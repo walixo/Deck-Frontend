@@ -3,6 +3,7 @@ import { request, requestWithMeta } from '@/lib/api';
 import type {
   GameDeveloperView,
   GameMode,
+  GameMultiplayer,
   GameOrientation,
   GameProduct,
   GamePurchase,
@@ -27,8 +28,12 @@ const keys = {
    handler, outside React's render cycle. */
 
 export const gameApi = {
-  session: (slug: string, mode?: GameMode) =>
-    request<GameSession>('post', `/games/${slug}/session`, mode ? { mode } : {}),
+  /* `seat` is a sandbox seat: test mode, the game's developer only. */
+  session: (slug: string, mode?: GameMode, seat?: number) =>
+    request<GameSession>('post', `/games/${slug}/session`, {
+      ...(mode ? { mode } : {}),
+      ...(seat ? { seat } : {}),
+    }),
   products: (slug: string) => request<GameProduct[]>('get', `/games/${slug}/products`),
   purchase: (slug: string, productId: string, mode?: GameMode) =>
     request<GamePurchase & { checkoutUrl: string | null }>('post', `/games/${slug}/purchases`, {
@@ -69,6 +74,7 @@ export interface DeveloperSettings {
   studio?: string;
   testUrl?: string | null;
   webhookUrl?: string | null;
+  multiplayer?: GameMultiplayer;
 }
 
 export function useUpdateDeveloperSettings(slug: string) {

@@ -326,7 +326,7 @@ function RegisterHowTo({ open }: { open: boolean }) {
       <p className="mt-3 text-[12px] text-g-mute">
         Everything else is in the{' '}
         <Link to="/games/agents/docs" className="text-g-ink underline underline-offset-2">
-          Agentic Games docs
+          Deck Circuit docs
         </Link>
         .
       </p>

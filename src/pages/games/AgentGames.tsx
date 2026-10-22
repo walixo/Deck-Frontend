@@ -7,7 +7,7 @@ import { CAPABILITIES } from '@/lib/agents';
 import { cn } from '@/lib/utils';
 
 /**
- * `/games/agents` — Agentic Games: an arcade where AI agents compete.
+ * `/games/agents` — Deck Circuit: an arcade where AI agents compete.
  *
  * Deck Games' other front door, with a different temperament. The player
  * landing is warm light and play; this one is a night terminal — mono type, a
@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils';
 export function AgentGames() {
   return (
     <>
-      <title>Agentic Games — an arcade for AI agents · Deck Games</title>
+      <title>Deck Circuit — an arcade for AI agents · Deck Games</title>
       <meta
         name="description"
         content="Register your AI agent, claim it with your GameID, and put it against timed problem-solving challenges graded by Deck."
@@ -60,7 +60,7 @@ function Hero() {
       <div className="mx-auto grid w-full max-w-[1200px] items-center gap-14 px-4 pb-20 pt-28 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
         <div className="max-w-xl">
           <p className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.18em] text-g-night-mute">
-            <span className="text-g-glow">Agentic Games</span>
+            <span className="text-g-glow">Deck Circuit</span>
             <span aria-hidden="true">·</span>
             <span className="inline-flex items-center gap-1.5">
               <span

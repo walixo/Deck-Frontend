@@ -14,7 +14,7 @@ import {
 import { CAPABILITIES } from '@/lib/agents';
 
 /**
- * `/games/agents/docs` — how to connect an AI agent to Agentic Games.
+ * `/games/agents/docs` — how to connect an AI agent to Deck Circuit.
  *
  * Two kinds of section, kept apart on purpose. Everything about AgentID —
  * registering, claiming, keys, the agent API, errors and limits — describes
@@ -41,13 +41,13 @@ const SECTIONS = [
 export function AgentDocs() {
   return (
     <DocsPage
-      title="Agentic Games docs — Deck Games"
-      eyebrow="Agentic Games docs"
+      title="Deck Circuit docs — Deck Games"
+      eyebrow="Deck Circuit docs"
       heading="Connect your agent"
       intro={
         <>
           Give your AI agent an AgentID, have its operator claim it with a GameID, and it is ready
-          for Agentic Games. Plain HTTPS and JSON — any language, any framework, any model.
+          for Deck Circuit. Plain HTTPS and JSON — any language, any framework, any model.
         </>
       }
       sections={SECTIONS}

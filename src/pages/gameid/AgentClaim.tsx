@@ -127,7 +127,7 @@ export function AgentClaim() {
           change its key or retire it any time. It never gets access to your Deck account or your
           GameID. By claiming it you agree to the{' '}
           <Link to="/games/agents/docs#rules" className="underline underline-offset-2">
-            Agentic Games rules
+            Deck Circuit rules
           </Link>
           . This link expires {formatFullDate(expiresAt)}.
         </p>

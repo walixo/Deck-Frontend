@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { request } from '@/lib/api';
 import { gameApi } from '@/hooks/useGamePlatform';
-import type { AuthUser, GameMode, GameOrientation, Leaderboard } from '@/types';
+import type {
+  AuthUser,
+  GameMode,
+  GameMultiplayer,
+  GameOrientation,
+  GameRoom,
+  Leaderboard,
+} from '@/types';
+import { RoomConnection } from './roomConnection';
 
 /**
  * The player's half of the SDK conversation.
@@ -50,6 +58,11 @@ export function useGameBridge({
   user,
   onReady,
   onSignInWanted,
+  multiplayer,
+  seat = 0,
+  invite = null,
+  onRoom,
+  onFullscreen,
 }: {
   frameRef: RefObject<HTMLIFrameElement | null>;
   src: string | null;
@@ -59,6 +72,15 @@ export function useGameBridge({
   user: AuthUser | null;
   onReady: () => void;
   onSignInWanted: () => void;
+  multiplayer?: GameMultiplayer;
+  /** A sandbox seat: test mode, the game's developer only. 0 is the player. */
+  seat?: number;
+  /** A room code from an invite link, handed to the game on `init`. */
+  invite?: string | null;
+  /** Told whenever this player's room changes — the sandbox shows it. */
+  onRoom?: (room: GameRoom | null) => void;
+  /** The game asked to go full screen (or back). Resolves to the new state. */
+  onFullscreen?: (want?: boolean) => Promise<boolean>;
 }) {
   const [checkout, setCheckout] = useState<CheckoutState>({ phase: 'idle' });
   const popupRef = useRef<Window | null>(null);
@@ -70,10 +92,33 @@ export function useGameBridge({
 
   /* Kept in refs so the message listener is attached once per game, not on
      every render — re-attaching mid-checkout would drop the conversation. */
-  const latest = useRef({ user, mode, orientation, onReady, onSignInWanted });
-  useEffect(() => {
-    latest.current = { user, mode, orientation, onReady, onSignInWanted };
+  const latest = useRef({
+    user,
+    mode,
+    orientation,
+    onReady,
+    onSignInWanted,
+    multiplayer,
+    seat,
+    invite,
+    onRoom,
+    onFullscreen,
   });
+  useEffect(() => {
+    latest.current = {
+      user,
+      mode,
+      orientation,
+      onReady,
+      onSignInWanted,
+      multiplayer,
+      seat,
+      invite,
+      onRoom,
+      onFullscreen,
+    };
+  });
+  const roomRef = useRef<RoomConnection | null>(null);
 
   const origin = (() => {
     try {
@@ -190,6 +235,71 @@ export function useGameBridge({
       }
     };
 
+    /** Multiplayer, relayed to Deck's room API on the player's behalf. */
+    const connection = () => {
+      if (!latest.current.multiplayer?.enabled) {
+        throw new BridgeError('multiplayer_off', 'Multiplayer is not switched on for this game');
+      }
+      requireUser();
+      if (!roomRef.current) {
+        roomRef.current = new RoomConnection(
+          slug,
+          latest.current.mode,
+          latest.current.seat ?? 0,
+          (event, data) => {
+            post({ type: 'event', event, data });
+            if (event === 'room' || event === 'started' || event === 'ended') {
+              latest.current.onRoom?.(data as GameRoom);
+            }
+          },
+        );
+      }
+      return roomRef.current;
+    };
+
+    const multiplayerCall = async (
+      type: string,
+      payload: Record<string, unknown>,
+    ): Promise<unknown> => {
+      const room = connection();
+      const remember = (value: GameRoom) => {
+        latest.current.onRoom?.(value);
+        return value;
+      };
+      switch (type) {
+        case 'mp.create':
+          return remember(
+            await room.create(payload.visibility === 'public' ? 'public' : 'private'),
+          );
+        case 'mp.join':
+          return remember(await room.join(String(payload.code ?? '')));
+        case 'mp.quickMatch':
+          return remember(await room.quickMatch());
+        case 'mp.room':
+          return room.room;
+        case 'mp.ready':
+          return room.setReady(Boolean(payload.ready));
+        case 'mp.start':
+          return room.start();
+        case 'mp.send':
+          return room.send(
+            payload.data ?? null,
+            typeof payload.to === 'string' ? payload.to : 'others',
+          );
+        case 'mp.setState':
+          return room.setState(payload.state ?? null);
+        case 'mp.leave': {
+          const left = await room.leave();
+          latest.current.onRoom?.(null);
+          return left;
+        }
+        case 'mp.end':
+          return room.end();
+        default:
+          throw new BridgeError('unknown', `Deck does not know "${type}"`);
+      }
+    };
+
     const handle = async (message: BridgeMessage): Promise<unknown> => {
       const { mode: currentMode, orientation: currentOrientation } = latest.current;
       const payload = message.payload ?? {};
@@ -199,7 +309,7 @@ export function useGameBridge({
           let player: { playerId: string; displayName: string } | null = null;
           if (latest.current.user) {
             try {
-              const session = await gameApi.session(slug, currentMode);
+              const session = await gameApi.session(slug, currentMode, latest.current.seat);
               player = { playerId: session.playerId, displayName: session.displayName };
             } catch {
               player = null;
@@ -211,6 +321,13 @@ export function useGameBridge({
             orientation: currentOrientation,
             viewport: { width: window.innerWidth, height: window.innerHeight },
             player,
+            multiplayer: latest.current.multiplayer?.enabled
+              ? {
+                  minPlayers: latest.current.multiplayer.minPlayers,
+                  maxPlayers: latest.current.multiplayer.maxPlayers,
+                }
+              : null,
+            invite: latest.current.invite ?? null,
           };
         }
         case 'ready':
@@ -218,7 +335,7 @@ export function useGameBridge({
           return null;
         case 'session':
           requireUser();
-          return gameApi.session(slug, currentMode);
+          return gameApi.session(slug, currentMode, latest.current.seat);
         case 'products':
           return gameApi.products(slug);
         case 'getPurchases':
@@ -264,7 +381,13 @@ export function useGameBridge({
         }
         case 'leaderboard':
           return request<Leaderboard>('get', `/games/${slug}/scores`);
+        case 'fullscreen': {
+          const want = typeof payload.on === 'boolean' ? payload.on : undefined;
+          const active = (await latest.current.onFullscreen?.(want)) ?? false;
+          return { active };
+        }
         default:
+          if (message.type.startsWith('mp.')) return multiplayerCall(message.type, payload);
           throw new BridgeError('unknown', `Deck does not know "${message.type}"`);
       }
     };
@@ -310,8 +433,17 @@ export function useGameBridge({
       window.removeEventListener('message', onMessage);
       document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('resize', onResize);
+      /* Stop listening, but stay in the room: a reload can pick it back up. */
+      roomRef.current?.disconnect();
+      roomRef.current = null;
     };
   }, [frameRef, origin, post, runCheckout, slug, src]);
 
-  return { checkout, reopenCheckout, cancelCheckout, origin };
+  /** Lets the player host tell the game about things it did not ask for. */
+  const notify = useCallback(
+    (event: string, data: unknown) => post({ type: 'event', event, data }),
+    [post],
+  );
+
+  return { checkout, reopenCheckout, cancelCheckout, origin, notify };
 }

@@ -1160,8 +1160,41 @@ export interface GameSummary {
   sdk: boolean;
   /** Shown as the maker. Empty means the author's own name. */
   studio: string;
+  multiplayer: GameMultiplayer;
   createdAt: string;
   author: PublicUser | null;
+}
+
+/** Whether a game plays with others through Deck, and how many. */
+export interface GameMultiplayer {
+  enabled: boolean;
+  minPlayers: number;
+  maxPlayers: number;
+}
+
+export type RoomStatus = 'open' | 'playing' | 'ended';
+
+/** A multiplayer room as a player sees it. Never a Deck account id. */
+export interface GameRoom {
+  roomId: string;
+  code: string;
+  mode: GameMode;
+  visibility: 'private' | 'public';
+  status: RoomStatus;
+  hostPlayerId: string;
+  minPlayers: number;
+  maxPlayers: number;
+  players: {
+    playerId: string;
+    displayName: string;
+    ready: boolean;
+    online: boolean;
+    host: boolean;
+  }[];
+  state: unknown;
+  results: { playerId: string; rank: number; score: number | null }[];
+  startedAt: string | null;
+  endedAt: string | null;
 }
 
 export type GameOrientation = 'landscape' | 'portrait' | 'both';
@@ -1236,6 +1269,7 @@ export interface GameDeveloperView {
     webhookUrl: string | null;
     hasWebhookSecret: boolean;
     keys: Record<GameMode, { hint: string; createdAt: string } | null>;
+    multiplayer: GameMultiplayer;
   };
   products: GameProduct[];
   sales: { live: GameSalesTotals; test: GameSalesTotals; currency: string };

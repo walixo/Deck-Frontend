@@ -36,6 +36,11 @@ function apiBaseUrl(): string {
   return `${configured.replace(/\/+$/, '').replace(/\/api$/, '')}/api`;
 }
 
+/** A full URL for an API path — for the few calls axios cannot make, like streams. */
+export function apiUrl(path: string): string {
+  return `${apiBaseUrl()}${path}`;
+}
+
 export const api = axios.create({
   baseURL: apiBaseUrl(),
   headers: { 'Content-Type': 'application/json' },

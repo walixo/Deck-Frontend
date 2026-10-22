@@ -78,6 +78,9 @@ export function GamePage() {
   const live = game.status === 'approved';
   const wantsTest = params.get('mode') === 'test';
   const mode: GameMode = isDeveloper && (!live || wantsTest) ? 'test' : 'live';
+  /* An invite link: `?room=CODE` hands the code to the game on init. */
+  const invite =
+    /^[23456789A-HJ-NP-Z]{6}$/.exec((params.get('room') ?? '').toUpperCase())?.[0] ?? null;
   const Original =
     game.kind === 'builtin' && game.component ? ORIGINALS[game.component] : undefined;
   const maker = game.studio || game.author?.name || 'Deck';
@@ -105,6 +108,11 @@ export function GamePage() {
           <div className="flex flex-wrap items-center gap-2">
             <Chip>{GAME_GENRE_LABELS[game.genre]}</Chip>
             <Chip>{GAME_ORIENTATION_LABELS[game.orientation]}</Chip>
+            {game.multiplayer?.enabled && (
+              <Chip>
+                Multiplayer · {game.multiplayer.minPlayers}–{game.multiplayer.maxPlayers} players
+              </Chip>
+            )}
             {game.plays > 0 && <Chip>{formatNumber(game.plays)} plays</Chip>}
             {game.kind === 'builtin' && <Chip strong>Deck original</Chip>}
             {!live && (
@@ -132,6 +140,14 @@ export function GamePage() {
                   Switch to {mode === 'test' ? 'live' : 'test'}
                 </button>
               )}
+              {game.multiplayer?.enabled && (
+                <Link
+                  to={`/games/developers/${game.slug}/sandbox`}
+                  className="text-g-ink hover:text-g-ember-ink"
+                >
+                  Multiplayer sandbox →
+                </Link>
+              )}
               <Link
                 to={`/games/developers/${game.slug}`}
                 className="text-g-ink hover:text-g-ember-ink"
@@ -155,6 +171,7 @@ export function GamePage() {
             game={game}
             mode={mode}
             testUrl={developer.data?.settings.testUrl ?? null}
+            invite={invite}
             onPlay={() => live && play.mutate(game.slug)}
           />
         )}
@@ -202,11 +219,13 @@ function Stage({
   game,
   mode,
   testUrl,
+  invite,
   onPlay,
 }: {
   game: GameDetail;
   mode: GameMode;
   testUrl: string | null;
+  invite: string | null;
   onPlay: () => void;
 }) {
   const src = (mode === 'test' && testUrl) || game.playUrl;
@@ -214,7 +233,7 @@ function Stage({
   /* In test mode the developer's own build is framed whether or not staff
      have cleared embedding — it is their code, on their screen. */
   if (src && (game.embeddable || mode === 'test')) {
-    return <Player game={game} src={src} mode={mode} onPlay={onPlay} />;
+    return <Player game={game} src={src} mode={mode} onPlay={onPlay} invite={invite} />;
   }
 
   return (

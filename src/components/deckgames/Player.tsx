@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
-import type { GameDetail, GameMode } from '@/types';
+import type { GameDetail, GameMode, GameRoom } from '@/types';
 import { CoverArt } from './CoverArt';
 import { useGameBridge } from './useGameBridge';
 
@@ -16,10 +16,14 @@ import { useGameBridge } from './useGameBridge';
  * shrinking the game to a postage stamp — with "play anyway" for people who
  * cannot or would rather not.
  *
- * **Full screen.** One button takes the stage full screen and, where the
- * browser allows it (Android Chrome, mostly), locks the screen to the game's
- * orientation. iOS has no orientation lock for the web; there the rotate
- * prompt does the job instead.
+ * **Full screen.** A button on the stage itself — and `DeckGames.fullscreen()`
+ * from the game — takes it full screen, portrait or landscape alike. When the
+ * screen is the game's shape the game fills it edge to edge and is told its
+ * new size; when it is not (a portrait game on a desktop monitor) it stays in
+ * proportion rather than stretch. Where the browser allows (Android Chrome,
+ * mostly) the screen is also locked to the game's orientation. Browsers that
+ * refuse element full screen — iPhone Safari above all — get an immersive mode
+ * instead: the stage covers the whole viewport, edge to edge, until dismissed.
  *
  * **Trust.** Nothing is requested from the developer's server until somebody
  * presses play. The frame is sandboxed: scripts and its own storage (so saves
@@ -33,11 +37,22 @@ export function Player({
   src,
   mode,
   onPlay,
+  seat = 0,
+  invite = null,
+  onRoom,
+  compact = false,
 }: {
   game: GameDetail;
   src: string;
   mode: GameMode;
   onPlay?: () => void;
+  /** A sandbox seat (test mode, developer only). */
+  seat?: number;
+  /** A room code from an invite link (`?room=CODE`). */
+  invite?: string | null;
+  onRoom?: (room: GameRoom | null) => void;
+  /** Smaller, for the multiplayer sandbox's side-by-side seats. */
+  compact?: boolean;
 }) {
   const { user } = useAuth();
   const { pathname } = useLocation();
@@ -46,6 +61,10 @@ export function Player({
   const [started, setStarted] = useState(false);
   const [ready, setReady] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  /* The fallback where element full screen is refused: cover the viewport. */
+  const [immersive, setImmersive] = useState(false);
+  const expanded = fullscreen || immersive;
+  const screenLandscape = useScreenLandscape();
   const [askSignIn, setAskSignIn] = useState(false);
   const [ignoreTurn, setIgnoreTurn] = useState(false);
   const mismatch = useOrientationMismatch(game.orientation);
@@ -53,7 +72,10 @@ export function Player({
   const markReady = useCallback(() => setReady(true), []);
   const wantSignIn = useCallback(() => setAskSignIn(true), []);
 
-  const { checkout, reopenCheckout, cancelCheckout, origin } = useGameBridge({
+  const toggleRef = useRef<(want?: boolean) => Promise<boolean>>(async () => false);
+  const requestFullscreen = useCallback((want?: boolean) => toggleRef.current(want), []);
+
+  const { checkout, reopenCheckout, cancelCheckout, origin, notify } = useGameBridge({
     frameRef,
     src: started && game.sdk ? src : null,
     slug: game.slug,
@@ -62,6 +84,11 @@ export function Player({
     user,
     onReady: markReady,
     onSignInWanted: wantSignIn,
+    multiplayer: game.multiplayer,
+    seat,
+    invite,
+    onRoom,
+    onFullscreen: requestFullscreen,
   });
 
   /* A game without the SDK never says it is ready; give it a moment after
@@ -72,27 +99,74 @@ export function Player({
   };
 
   useEffect(() => {
-    const onChange = () => setFullscreen(document.fullscreenElement === stageRef.current);
+    const onChange = () => {
+      const active = document.fullscreenElement === stageRef.current;
+      setFullscreen(active);
+      /* A late native grant replaces the immersive fallback. */
+      if (active) setImmersive(false);
+    };
     document.addEventListener('fullscreenchange', onChange);
     return () => document.removeEventListener('fullscreenchange', onChange);
   }, []);
 
-  const toggleFullscreen = async () => {
-    const stage = stageRef.current;
-    if (!stage) return;
-    if (document.fullscreenElement) {
-      await document.exitFullscreen().catch(() => undefined);
-      return;
-    }
-    await stage.requestFullscreen?.().catch(() => undefined);
-    /* Best effort: most desktop browsers and iOS refuse, and that is fine. */
-    const orientation = screen.orientation as ScreenOrientation & {
-      lock?: (orientation: string) => Promise<void>;
+  /* Immersive mode holds the page still beneath it, and Escape lets go. */
+  useEffect(() => {
+    if (!immersive) return;
+    const root = document.documentElement;
+    const previous = root.style.overflow;
+    root.style.overflow = 'hidden';
+    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setImmersive(false);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      root.style.overflow = previous;
+      window.removeEventListener('keydown', onKey);
     };
-    if (game.orientation !== 'both') {
-      await orientation.lock?.(game.orientation).catch(() => undefined);
-    }
-  };
+  }, [immersive]);
+
+  /* The game hears about every change, whoever made it. */
+  useEffect(() => {
+    if (started) notify('fullscreen', { active: expanded });
+  }, [expanded, notify, started]);
+
+  const toggleFullscreen = useCallback(
+    async (want?: boolean): Promise<boolean> => {
+      const stage = stageRef.current;
+      if (!stage) return false;
+      const isOn = Boolean(document.fullscreenElement) || immersive;
+      const target = want ?? !isOn;
+      if (!target) {
+        if (document.fullscreenElement) await document.exitFullscreen().catch(() => undefined);
+        setImmersive(false);
+        return false;
+      }
+      if (isOn) return true;
+
+      /* Some in-app webviews never settle the request; give up after a beat. */
+      const native = await Promise.race([
+        (stage.requestFullscreen?.() ?? Promise.reject(new Error('unsupported')))
+          .then(() => true)
+          .catch(() => false),
+        new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 1500)),
+      ]);
+      if (!native) {
+        /* iPhone Safari and friends: cover the viewport instead. */
+        setImmersive(true);
+        return true;
+      }
+      /* Best effort: most desktop browsers and iOS refuse, and that is fine. */
+      const orientation = screen.orientation as ScreenOrientation & {
+        lock?: (orientation: string) => Promise<void>;
+      };
+      if (game.orientation !== 'both') {
+        await orientation.lock?.(game.orientation).catch(() => undefined);
+      }
+      return true;
+    },
+    [game.orientation, immersive],
+  );
+  useEffect(() => {
+    toggleRef.current = toggleFullscreen;
+  }, [toggleFullscreen]);
 
   const host = origin ? new URL(origin).host : safeHost(src);
 
@@ -101,20 +175,28 @@ export function Player({
       <div
         ref={stageRef}
         className={cn(
-          'relative isolate flex items-center justify-center overflow-hidden bg-g-night',
-          fullscreen ? 'h-full w-full' : 'rounded-[28px] px-0 py-0 sm:px-6 sm:py-6',
-          !fullscreen && game.orientation === 'portrait' && 'min-h-[min(86svh,860px)]',
+          'isolate flex items-center justify-center overflow-hidden bg-g-night',
+          /* Never both: Tailwind emits `relative` after `fixed`, so it would win. */
+          !immersive && 'relative',
+          fullscreen && 'h-full w-full',
+          immersive &&
+            'fixed inset-0 z-[100] h-[100dvh] w-screen pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)]',
+          !expanded && (compact ? 'rounded-[22px]' : 'rounded-[28px] px-0 py-0 sm:px-6 sm:py-6'),
+          !expanded && !compact && game.orientation === 'portrait' && 'min-h-[min(86svh,860px)]',
         )}
       >
         {/* The game's own colours, blurred into the room around it. */}
-        <div aria-hidden="true" className="absolute inset-0 -z-10 scale-110 opacity-40 blur-3xl">
-          <CoverArt game={game} showTitle={false} />
+        {/* Clipped on its own so the scaled blur leaves the stage nothing to scroll. */}
+        <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute inset-0 scale-110 opacity-40 blur-3xl">
+            <CoverArt game={game} showTitle={false} />
+          </div>
         </div>
 
         <div
           className={cn(
             'relative overflow-hidden bg-black shadow-[0_30px_80px_-20px_rgb(0_0_0/0.6)]',
-            frameShape(game.orientation, fullscreen),
+            frameShape(game.orientation, expanded, screenLandscape, compact),
           )}
         >
           {started ? (
@@ -226,14 +308,36 @@ export function Player({
           )}
         </div>
 
-        {fullscreen && (
+        {expanded ? (
           <button
             type="button"
-            onClick={() => void toggleFullscreen()}
-            className="absolute right-4 top-4 rounded-full bg-black/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white backdrop-blur"
+            onClick={() => void toggleFullscreen(false)}
+            className="absolute right-[max(1rem,env(safe-area-inset-right))] top-[max(1rem,env(safe-area-inset-top))] z-20 rounded-full bg-black/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white backdrop-blur"
           >
             Exit full screen
           </button>
+        ) : (
+          started && (
+            <button
+              type="button"
+              onClick={() => void toggleFullscreen(true)}
+              aria-label="Full screen"
+              title="Full screen"
+              className="absolute right-3 top-3 z-20 grid size-9 place-items-center rounded-full bg-black/45 text-white backdrop-blur transition-colors hover:bg-black/70"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="size-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+              </svg>
+            </button>
+          )
         )}
       </div>
 
@@ -249,7 +353,7 @@ export function Player({
         <span className="flex items-center gap-4">
           <button
             type="button"
-            onClick={() => void toggleFullscreen()}
+            onClick={() => void toggleFullscreen(true)}
             className="hover:text-g-ink"
           >
             ⤢ Full screen
@@ -265,19 +369,58 @@ export function Player({
   );
 }
 
-/** The frame's size for each orientation, in and out of full screen. */
-function frameShape(orientation: GameDetail['orientation'], fullscreen: boolean): string {
-  if (orientation === 'portrait') {
-    return fullscreen
+/**
+ * The frame's size for each orientation, in and out of full screen.
+ *
+ * Full screen fills the screen whenever the screen is the game's shape —
+ * a portrait game on a phone held upright, a landscape game on a laptop or a
+ * phone turned sideways — and the game reflows to the exact size it is told.
+ * Against the grain it keeps its proportions instead of stretching.
+ */
+function frameShape(
+  orientation: GameDetail['orientation'],
+  expanded: boolean,
+  screenLandscape: boolean,
+  compact: boolean,
+): string {
+  if (expanded) {
+    if (orientation === 'both') return 'size-full';
+    const fits = (orientation === 'landscape') === screenLandscape;
+    if (fits) return 'size-full';
+    return orientation === 'portrait'
       ? 'aspect-[9/16] h-full max-w-full'
+      : 'aspect-video w-full max-h-full';
+  }
+  if (orientation === 'portrait') {
+    return compact
+      ? 'aspect-[9/16] h-[min(72svh,640px)] max-w-full rounded-xl'
       : 'aspect-[9/16] h-[min(86svh,820px)] max-w-full sm:rounded-2xl';
   }
   if (orientation === 'landscape') {
-    return fullscreen
-      ? 'aspect-video w-full max-h-full'
+    return compact
+      ? 'aspect-video w-full rounded-xl'
       : 'aspect-video w-full max-w-[1200px] max-h-[80svh] sm:rounded-2xl';
   }
-  return fullscreen ? 'size-full' : 'h-[min(80svh,760px)] w-full sm:rounded-2xl';
+  return compact
+    ? 'h-[min(60svh,520px)] w-full rounded-xl'
+    : 'h-[min(80svh,760px)] w-full sm:rounded-2xl';
+}
+
+/** Whether the screen is wider than it is tall, kept current. */
+function useScreenLandscape(): boolean {
+  const [landscape, setLandscape] = useState(() =>
+    typeof window === 'undefined' ? true : window.innerWidth >= window.innerHeight,
+  );
+  useEffect(() => {
+    const check = () => setLandscape(window.innerWidth >= window.innerHeight);
+    window.addEventListener('resize', check);
+    window.addEventListener('orientationchange', check);
+    return () => {
+      window.removeEventListener('resize', check);
+      window.removeEventListener('orientationchange', check);
+    };
+  }, []);
+  return landscape;
 }
 
 /**

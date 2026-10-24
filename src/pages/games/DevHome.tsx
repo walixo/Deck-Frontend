@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { CoverArt } from '@/components/deckgames/CoverArt';
 import { MorphShape } from '@/components/deckgames/MorphShape';
+import { FrontHero } from '@/components/ui/FrontHero';
 import { GButton, GCard, GNotice, StatusDot } from '@/components/deckgames/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyGames } from '@/hooks/useGames';
@@ -11,7 +12,7 @@ import {
   useSellerEarnings,
   useStartPayoutOnboarding,
 } from '@/hooks/useSeller';
-import { cn, formatMoney, formatNumber } from '@/lib/utils';
+import { formatMoney, formatNumber } from '@/lib/utils';
 import { GAME_ORIENTATION_LABELS } from '@/types';
 
 /**
@@ -33,88 +34,23 @@ export function DevHome() {
   );
 }
 
-/**
- * Set at night in both themes, like the arcade's own front door: the header
- * floats over it in light ink (see `GamesShell`). Colours are the fixed night
- * tokens, never the themed ones, so light mode cannot turn it to day.
- */
 function DevHero({ signedIn }: { signedIn: boolean }) {
   const { pathname } = useLocation();
   return (
-    <section
-      className={cn(
-        'relative isolate flex items-center overflow-hidden bg-g-night text-g-night-ink',
-        signedIn ? 'min-h-[min(82svh,820px)]' : 'min-h-[100svh]',
-      )}
-    >
-      {/* Light falling across the night from the top right, and a haze along
-          the floor — the room the shape turns in. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -right-[10%] -top-[30%] h-[140%] w-[55%] rotate-[24deg] animate-[var(--animate-g-beam)] bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.07)_45%,rgb(255_255_255/0.02)_70%,transparent)] blur-2xl" />
-        <div
-          className="absolute -right-[25%] -top-[20%] h-[120%] w-[30%] rotate-[24deg] animate-[var(--animate-g-beam)] bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.05),transparent)] blur-3xl"
-          style={{ animationDelay: '-6s' }}
-        />
-        <div className="absolute right-[12%] top-1/2 size-[36rem] -translate-y-1/2 rounded-full bg-g-violet/[0.08] blur-[120px]" />
-        <div className="absolute -bottom-24 -left-[10%] h-48 w-[120%] -rotate-[4deg] bg-[linear-gradient(90deg,rgb(255_255_255/0.07),rgb(255_255_255/0.02)_60%,transparent)] blur-3xl" />
-      </div>
-
-      <div className="mx-auto grid w-full max-w-[1400px] items-center gap-12 px-4 pb-16 pt-28 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-6 lg:px-12 lg:pb-20">
-        <div className="max-w-2xl">
-          <Link
-            to="/games/developers/docs#multiplayer"
-            className="inline-flex animate-[var(--animate-g-rise)] items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white/85 backdrop-blur transition-colors hover:text-white"
-          >
-            <span
-              aria-hidden="true"
-              className="size-1.5 rounded-full bg-g-glow shadow-[0_0_10px_1px] shadow-g-glow/70"
-            />
-            New · Multiplayer rooms
-            <span aria-hidden="true" className="text-white/50">
-              →
-            </span>
-          </Link>
-
-          <h1
-            className="mt-7 animate-[var(--animate-g-rise)] text-[clamp(3rem,6.4vw,5.75rem)] font-semibold leading-[0.95] tracking-[-0.055em]"
-            style={{ animationDelay: '90ms' }}
-          >
-            Ship the game.
-            <span className="block bg-[linear-gradient(100deg,#f4f2ee_25%,#7d7b77_95%)] bg-clip-text pb-[0.08em] text-transparent">
-              We do the rest.
-            </span>
-          </h1>
-
-          <p
-            className="mt-6 max-w-[34rem] animate-[var(--animate-g-rise)] text-[17px] leading-relaxed text-white/60 text-pretty"
-            style={{ animationDelay: '180ms' }}
-          >
-            Host your web game anywhere and add one script. Deck brings the players, sign-in, store,
-            multiplayer and payouts — and you keep 80% of every sale.
-          </p>
-
-          <div
-            className="mt-9 flex animate-[var(--animate-g-rise)] flex-wrap items-center gap-2"
-            style={{ animationDelay: '270ms' }}
-          >
-            {signedIn ? (
-              <Link to="/games/developers/new" className={HERO_BUTTON}>
-                New game
-              </Link>
-            ) : (
-              <Link to="/login" state={{ from: pathname }} className={HERO_BUTTON}>
-                Get started
-              </Link>
-            )}
-            <Link to="/games/developers/docs" className={HERO_LINK}>
-              Documentation →
-            </Link>
-          </div>
-        </div>
-
-        <MorphShape className="mx-auto aspect-square w-full max-w-[34rem] animate-[var(--animate-g-fade)]" />
-      </div>
-    </section>
+    <FrontHero
+      tall={!signedIn}
+      pill={{ label: 'New · Multiplayer rooms →', to: '/docs/developers/multiplayer' }}
+      title="Ship the game."
+      fade="We do the rest."
+      body="Host your web game anywhere and add one script. Deck brings the players, sign-in, store, multiplayer and payouts — and you keep 80% of every sale."
+      primary={
+        signedIn
+          ? { label: 'New game', to: '/games/developers/new' }
+          : { label: 'Get started', to: '/login', state: { from: pathname } }
+      }
+      secondary={{ label: 'Documentation →', to: '/docs/developers' }}
+      visual={<MorphShape className="mx-auto aspect-square w-full max-w-[34rem]" />}
+    />
   );
 }
 
@@ -199,7 +135,7 @@ function Pitch() {
           <Link to="/login" state={{ from: pathname }} className={HERO_BUTTON}>
             Get started
           </Link>
-          <Link to="/games/developers/docs" className={HERO_LINK}>
+          <Link to="/docs/developers" className={HERO_LINK}>
             Documentation →
           </Link>
         </div>
@@ -224,7 +160,7 @@ function Desk() {
         </div>
         <div className="flex items-center gap-3">
           <Link
-            to="/games/developers/docs"
+            to="/docs/developers"
             className="font-mono text-[10px] uppercase tracking-[0.16em] text-g-mute hover:text-g-ink"
           >
             Docs

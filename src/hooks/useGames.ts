@@ -1,6 +1,14 @@
+import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { request } from '@/lib/api';
-import type { GameDetail, GameDraft, GameGenre, GameSummary, Leaderboard } from '@/types';
+import type {
+  ActivePlayers,
+  GameDetail,
+  GameDraft,
+  GameGenre,
+  GameSummary,
+  Leaderboard,
+} from '@/types';
 
 const keys = {
   all: ['games'] as const,
@@ -31,11 +39,9 @@ export function useSubmitScore(slug: string) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (score: number) =>
-      request<{ best: number; improved: boolean; rank: number }>(
-        'post',
-        `/games/${slug}/scores`,
-        { score },
-      ),
+      request<{ best: number; improved: boolean; rank: number }>('post', `/games/${slug}/scores`, {
+        score,
+      }),
     onSuccess: () => client.invalidateQueries({ queryKey: keys.scores(slug) }),
   });
 }
@@ -43,8 +49,7 @@ export function useSubmitScore(slug: string) {
 export function useGames(genre?: GameGenre) {
   return useQuery({
     queryKey: keys.list(genre),
-    queryFn: () =>
-      request<GameSummary[]>('get', `/games${genre ? `?genre=${genre}` : ''}`),
+    queryFn: () => request<GameSummary[]>('get', `/games${genre ? `?genre=${genre}` : ''}`),
     staleTime: 60 * 1000,
   });
 }
@@ -100,6 +105,30 @@ export function useDeleteGame() {
 export function useRecordPlay() {
   return useMutation({
     mutationFn: (slug: string) => request<{ plays: number }>('post', `/games/${slug}/play`),
+  });
+}
+
+/**
+ * While a signed-in player has a live game running, tells Deck once a minute,
+ * so the arcade's "playing now" is true rather than a guess. Quiet on
+ * failure, like the play counter: a missed heartbeat must never interrupt a
+ * game.
+ */
+export function usePresenceHeartbeat(slug: string, active: boolean) {
+  useEffect(() => {
+    if (!active) return;
+    const beat = () => void request('post', `/games/${slug}/presence`).catch(() => undefined);
+    const timer = window.setInterval(beat, 60_000);
+    return () => window.clearInterval(timer);
+  }, [slug, active]);
+}
+
+/** Who is playing now and this week. Refreshed every half minute while on screen. */
+export function useActivePlayers() {
+  return useQuery({
+    queryKey: ['games', 'players'],
+    queryFn: () => request<ActivePlayers>('get', '/games/players'),
+    refetchInterval: 30_000,
   });
 }
 

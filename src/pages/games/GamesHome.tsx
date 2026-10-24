@@ -7,6 +7,7 @@ import { GamesIntro } from '@/components/deckgames/landing/GamesIntro';
 import { Hero } from '@/components/deckgames/landing/Hero';
 import { Library } from '@/components/deckgames/landing/Library';
 import { Manifesto } from '@/components/deckgames/landing/Manifesto';
+import { Players } from '@/components/deckgames/landing/Players';
 import { Pledges } from '@/components/deckgames/landing/Pledges';
 import { Warp } from '@/components/deckgames/landing/Warp';
 import { WordStream } from '@/components/deckgames/landing/WordStream';
@@ -48,6 +49,7 @@ export function GamesHome() {
       <Pledges />
       <FloatingCovers games={all.data ?? []} />
       <Library games={games} loading={isLoading} genre={genre} onGenre={setGenre} />
+      <Players />
       <WordStream />
       <BuildPath />
       <Manifesto />

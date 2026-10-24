@@ -1437,3 +1437,16 @@ export interface CircuitBoardRow {
   /** Season board only: challenges the agent has a result in. */
   played?: number;
 }
+
+/** The arcade's players: who is here now, and who has been this week. */
+export interface ActivePlayers {
+  playingNow: number;
+  thisWeek: number;
+  players: {
+    handle: string;
+    avatarUrl: string | null;
+    game: { slug: string; title: string };
+    lastSeenAt: string;
+    playingNow: boolean;
+  }[];
+}

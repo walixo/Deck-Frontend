@@ -55,13 +55,11 @@ const GamesShell = lazyNamed(() => import('@/components/deckgames/GamesShell'), 
 const GamesHome = lazyNamed(() => import('@/pages/games/GamesHome'), 'GamesHome');
 const GamePage = lazyNamed(() => import('@/pages/games/GamePage'), 'GamePage');
 const DevHome = lazyNamed(() => import('@/pages/games/DevHome'), 'DevHome');
-const DevDocs = lazyNamed(() => import('@/pages/games/DevDocs'), 'DevDocs');
 const DevNewGame = lazyNamed(() => import('@/pages/games/DevNewGame'), 'DevNewGame');
 const DevGame = lazyNamed(() => import('@/pages/games/DevGame'), 'DevGame');
 const DevSandbox = lazyNamed(() => import('@/pages/games/DevSandbox'), 'DevSandbox');
 /* GameID — Deck as an identity provider for other games. */
 const AgentGames = lazyNamed(() => import('@/pages/games/AgentGames'), 'AgentGames');
-const AgentDocs = lazyNamed(() => import('@/pages/games/AgentDocs'), 'AgentDocs');
 const GameIdHome = lazyNamed(() => import('@/pages/gameid/GameIdHome'), 'GameIdHome');
 const GameIdAuthorize = lazyNamed(
   () => import('@/pages/gameid/GameIdAuthorize'),
@@ -72,7 +70,7 @@ const GameIdDevelopers = lazyNamed(
   'GameIdDevelopers',
 );
 const GameIdApp = lazyNamed(() => import('@/pages/gameid/GameIdApp'), 'GameIdApp');
-const GameIdDocs = lazyNamed(() => import('@/pages/gameid/GameIdDocs'), 'GameIdDocs');
+const Docs = lazyNamed(() => import('@/pages/docs/Docs'), 'Docs');
 const AgentClaim = lazyNamed(() => import('@/pages/gameid/AgentClaim'), 'AgentClaim');
 const AgentProfile = lazyNamed(() => import('@/pages/gameid/AgentProfile'), 'AgentProfile');
 const PurchaseComplete = lazyNamed(
@@ -157,9 +155,9 @@ export function App() {
       >
         <Route index element={<GamesHome />} />
         <Route path="developers" element={<DevHome />} />
-        <Route path="developers/docs" element={<DevDocs />} />
+        <Route path="developers/docs" element={<Navigate to="/docs/developers" replace />} />
         <Route path="agents" element={<AgentGames />} />
-        <Route path="agents/docs" element={<AgentDocs />} />
+        <Route path="agents/docs" element={<Navigate to="/docs/circuit" replace />} />
         <Route element={<RequireAuth />}>
           <Route path="developers/new" element={<DevNewGame />} />
           <Route path="developers/:slug" element={<DevGame />} />
@@ -168,6 +166,32 @@ export function App() {
         </Route>
         <Route path=":slug" element={<GamePage />} />
       </Route>
+
+      {/* The docs: one site for Developers, Circuit and GameID, with its own frame. */}
+      <Route
+        path="/docs"
+        element={
+          <Suspense fallback={null}>
+            <Docs />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/docs/:product"
+        element={
+          <Suspense fallback={null}>
+            <Docs />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/docs/:product/:page"
+        element={
+          <Suspense fallback={null}>
+            <Docs />
+          </Suspense>
+        }
+      />
 
       {/* GameID's consent screen stands alone — no navigation, nothing to
           wander off to mid-sign-in. Declared before the shell's routes. */}
@@ -189,7 +213,7 @@ export function App() {
       >
         <Route index element={<GameIdHome />} />
         <Route path="developers" element={<GameIdDevelopers />} />
-        <Route path="docs" element={<GameIdDocs />} />
+        <Route path="docs" element={<Navigate to="/docs/gameid" replace />} />
         {/* AgentID lives under GameID: agents are operated by a GameID. */}
         <Route path="agents/claim/:token" element={<AgentClaim />} />
         <Route path="agents/:agentId" element={<AgentProfile />} />

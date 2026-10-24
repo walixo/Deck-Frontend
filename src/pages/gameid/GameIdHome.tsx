@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { GameIdCard } from '@/components/gameid/GameIdCard';
+import { FrontHero, NightLight } from '@/components/ui/FrontHero';
 import { YourAgents } from '@/components/agents/YourAgents';
-import { GameIdMark } from '@/components/gameid/GameIdMark';
 import { GButton, GCard, GInput, GNotice } from '@/components/deckgames/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { useConnections, useDisconnect, useMyGameId, useUpdateHandle } from '@/hooks/useGameId';
@@ -25,60 +25,50 @@ export function GameIdHome() {
     /* `overflow-x-clip`: the card's light reaches past it, and on a phone that
        would otherwise push the page sideways. Clip, not hidden, so nothing
        here becomes a scroll container. */
-    <div className="overflow-x-clip pb-24 pt-24 sm:pt-28">
+    /* `overflow-x-clip`: the card's light reaches past it, and on a phone that
+       would otherwise push the page sideways. Clip, not hidden, so nothing
+       here becomes a scroll container. */
+    <div className="overflow-x-clip pb-24">
       <title>GameID — one identity for every game</title>
 
-      <section className="mx-auto grid max-w-[1200px] items-center gap-16 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]">
-        <div className="max-w-xl">
-          <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-g-ember-ink">
-            <GameIdMark className="size-4" /> GameID
-          </p>
-          <h1 className="mt-4 text-[clamp(2.5rem,6vw,4.75rem)] font-medium leading-[0.95] tracking-[-0.055em] text-balance">
-            One identity for every game
-          </h1>
-          <p className="mt-5 max-w-md text-[16px] leading-relaxed text-g-mute text-pretty">
-            Sign in to games across the web with your GameID. They get your handle and avatar if you
-            say so — never your email, never your password, never anything else.
-          </p>
-          {!user && (
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link
-                to="/register"
-                state={{ from: pathname }}
-                className="glass-primary rounded-xl px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
-              >
-                Get your GameID
-              </Link>
-              <Link
-                to="/login"
-                state={{ from: pathname }}
-                className="font-mono text-[10px] uppercase tracking-[0.16em] text-g-ink underline-offset-[6px] hover:underline"
-              >
-                Sign in →
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* A real column width, not `auto`: the card's contents are absolutely
-            positioned, so an auto track sized to them collapsed it to nothing. */}
-        <div className="w-full max-w-[34rem] justify-self-center px-4 py-10 sm:px-8">
-          {user && me.data ? (
-            <GameIdCard identity={me.data} />
-          ) : (
+      <FrontHero
+        tall={!user}
+        pill={{ label: 'GameID · sign in with one identity', to: '/docs/gameid' }}
+        title="One identity"
+        fade="for every game."
+        body="Sign in to games across the web with your GameID. They get your handle and avatar if you say so — never your email, never your password, never anything else."
+        primary={
+          user
+            ? undefined
+            : { label: 'Get your GameID', to: '/register', state: { from: pathname } }
+        }
+        secondary={
+          user
+            ? { label: 'Build with GameID →', to: '/docs/gameid' }
+            : { label: 'Sign in →', to: '/login', state: { from: pathname } }
+        }
+        backdrop={<NightLight glow="rgb(232 80 31 / 0.1)" />}
+        visual={
+          /* A real column width, not `auto`: the card's contents are absolutely
+             positioned, so an auto track sized to them collapsed it to nothing. */
+          <div className="mx-auto w-full max-w-[34rem] px-4 py-10 sm:px-8">
             <GameIdCard
-              identity={{
-                handle: 'yourname',
-                code: 'GID-••••-••••',
-                displayName: 'Your name',
-                avatarUrl: null,
-                handleChangedAt: null,
-                createdAt: null,
-              }}
+              identity={
+                user && me.data
+                  ? me.data
+                  : {
+                      handle: 'yourname',
+                      code: 'GID-••••-••••',
+                      displayName: 'Your name',
+                      avatarUrl: null,
+                      handleChangedAt: null,
+                      createdAt: null,
+                    }
+              }
             />
-          )}
-        </div>
-      </section>
+          </div>
+        }
+      />
 
       {user && me.data && (
         <div className="mx-auto mt-16 grid max-w-[1100px] grid-cols-1 gap-4 px-4 sm:px-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
@@ -137,7 +127,7 @@ export function GameIdHome() {
               Register an app
             </Link>
             <Link
-              to="/gameid/docs"
+              to="/docs/gameid"
               className="font-mono text-[10px] uppercase tracking-[0.16em] underline-offset-[6px] hover:underline"
             >
               Read the docs →

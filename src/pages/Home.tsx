@@ -55,7 +55,7 @@ export function Home() {
 
   return (
     <>
-      <Hero stats={stats} />
+      <Hero stats={stats} launches={launches.data?.data ?? []} />
 
       {/*
        * The thirty-second film, straight off the hero.

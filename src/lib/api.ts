@@ -126,6 +126,18 @@ export async function request<T>(
   }
 }
 
+/** Sends a file's raw bytes as the body — for uploads the API reads whole, like a WebAssembly module. */
+export async function requestRaw<T>(url: string, body: Blob, contentType: string): Promise<T> {
+  try {
+    const response = await api.post<Envelope<T>>(url, body, {
+      headers: { 'Content-Type': contentType },
+    });
+    return response.data.data;
+  } catch (error) {
+    throw toRequestError(error);
+  }
+}
+
 /**
  * Uploads images and returns their stored paths, in the order given.
  *

@@ -1,6 +1,8 @@
+import '@fontsource/instrument-serif/latin-400.css';
 import { useEffect, useRef } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { CoverArt } from '@/components/deckgames/CoverArt';
+import { DevCube } from '@/components/deckgames/DevCube';
 import { GButton, GCard, GNotice, StatusDot } from '@/components/deckgames/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyGames } from '@/hooks/useGames';
@@ -10,25 +12,116 @@ import {
   useSellerEarnings,
   useStartPayoutOnboarding,
 } from '@/hooks/useSeller';
-import { formatMoney, formatNumber } from '@/lib/utils';
+import { cn, formatMoney, formatNumber } from '@/lib/utils';
 import { GAME_ORIENTATION_LABELS } from '@/types';
 
 /**
  * `/games/developers` — the developer's home.
  *
- * Signed out, it is the pitch: what you get, what it costs, how to start.
- * Signed in, it is the desk: your games and their status, what you have
- * earned, and whether Deck can pay you yet.
+ * It opens on a night hero for everyone — a serif headline and a slowly
+ * turning cube. Signed out, the pitch follows: what you get, what it costs,
+ * how to start. Signed in, the desk follows: your games and their status, what
+ * you have earned, and whether Deck can pay you yet.
  */
 export function DevHome() {
   const { user } = useAuth();
   return (
-    <div className="pb-24 pt-24 sm:pt-28">
+    <div className="pb-24">
       <title>Developers — Deck Games</title>
+      <DevHero signedIn={Boolean(user)} />
       {user ? <Desk /> : <Pitch />}
     </div>
   );
 }
+
+/**
+ * Set at night in both themes, like the arcade's own front door: the header
+ * floats over it in light ink (see `GamesShell`). Colours are the fixed night
+ * tokens, never the themed ones, so light mode cannot turn it to day.
+ */
+function DevHero({ signedIn }: { signedIn: boolean }) {
+  const { pathname } = useLocation();
+  return (
+    <section
+      className={cn(
+        'relative isolate flex items-center overflow-hidden bg-g-night text-g-night-ink',
+        signedIn ? 'min-h-[min(82svh,820px)]' : 'min-h-[100svh]',
+      )}
+    >
+      {/* Light falling across the night from the top right, and a haze along
+          the floor — the room the cube turns in. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -right-[10%] -top-[30%] h-[140%] w-[55%] rotate-[24deg] animate-[var(--animate-g-beam)] bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.07)_45%,rgb(255_255_255/0.02)_70%,transparent)] blur-2xl" />
+        <div
+          className="absolute -right-[25%] -top-[20%] h-[120%] w-[30%] rotate-[24deg] animate-[var(--animate-g-beam)] bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.05),transparent)] blur-3xl"
+          style={{ animationDelay: '-6s' }}
+        />
+        <div className="absolute right-[12%] top-1/2 size-[36rem] -translate-y-1/2 rounded-full bg-g-glow/[0.06] blur-[120px]" />
+        <div className="absolute -bottom-24 -left-[10%] h-48 w-[120%] -rotate-[4deg] bg-[linear-gradient(90deg,rgb(255_255_255/0.07),rgb(255_255_255/0.02)_60%,transparent)] blur-3xl" />
+      </div>
+
+      <div className="mx-auto grid w-full max-w-[1400px] items-center gap-12 px-4 pb-16 pt-28 sm:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-6 lg:px-12 lg:pb-20">
+        <div className="max-w-2xl">
+          <Link
+            to="/games/developers/docs#multiplayer"
+            className="inline-flex animate-[var(--animate-g-rise)] rounded-full bg-[linear-gradient(90deg,rgb(255_106_61/0.55),rgb(155_123_255/0.45),rgb(63_209_193/0.45))] p-px"
+          >
+            <span className="flex items-center gap-2 rounded-full bg-[#0b0b0b] px-3.5 py-1.5 text-[13px] text-white/85 transition-colors hover:text-white">
+              New: multiplayer rooms, built in
+              <span aria-hidden="true" className="text-white/50">
+                ›
+              </span>
+            </span>
+          </Link>
+
+          <h1
+            className="mt-7 animate-[var(--animate-g-rise)] font-serif text-[clamp(3.25rem,7.2vw,6.6rem)] font-normal leading-[0.98] tracking-[-0.02em]"
+            style={{ animationDelay: '90ms' }}
+          >
+            Ship the game.
+            <span className="block bg-[linear-gradient(100deg,#f4f2ee_25%,#7d7b77_95%)] bg-clip-text pb-[0.08em] text-transparent">
+              We do the rest.
+            </span>
+          </h1>
+
+          <p
+            className="mt-6 max-w-[34rem] animate-[var(--animate-g-rise)] text-[17px] leading-relaxed text-white/60 text-pretty"
+            style={{ animationDelay: '180ms' }}
+          >
+            Host your web game anywhere and add one script. Deck brings the players, sign-in, store,
+            multiplayer and payouts — and you keep 80% of every sale.
+          </p>
+
+          <div
+            className="mt-9 flex animate-[var(--animate-g-rise)] flex-wrap items-center gap-2"
+            style={{ animationDelay: '270ms' }}
+          >
+            {signedIn ? (
+              <Link to="/games/developers/new" className={HERO_BUTTON}>
+                New game
+              </Link>
+            ) : (
+              <Link to="/login" state={{ from: pathname }} className={HERO_BUTTON}>
+                Get started
+              </Link>
+            )}
+            <Link
+              to="/games/developers/docs"
+              className="rounded-2xl px-5 py-3 text-[15px] font-medium text-white/60 transition-colors hover:text-white"
+            >
+              Documentation
+            </Link>
+          </div>
+        </div>
+
+        <DevCube className="mx-auto h-[min(80vw,30rem)] w-full animate-[var(--animate-g-fade)] lg:h-[34rem]" />
+      </div>
+    </section>
+  );
+}
+
+const HERO_BUTTON =
+  'rounded-2xl border border-white/15 bg-white/[0.08] px-5 py-3 text-[15px] font-medium text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur transition-colors hover:bg-white/[0.14]';
 
 function Pitch() {
   const { pathname } = useLocation();
@@ -47,42 +140,72 @@ function Pitch() {
     ],
   ];
 
-  return (
-    <div className="mx-auto max-w-[1100px] px-4 sm:px-6">
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-g-ember-ink">
-        For developers
-      </p>
-      <h1 className="mt-4 max-w-3xl text-[clamp(2.5rem,6vw,5rem)] font-medium leading-[0.95] tracking-[-0.055em] text-balance">
-        Ship the game. We’ll handle the rest.
-      </h1>
-      <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-g-mute text-pretty">
-        Deck Games runs your web game in a player built for phones and laptops alike — portrait,
-        landscape or both — with Deck’s players, store and payouts behind it.
-      </p>
-      <div className="mt-8 flex flex-wrap items-center gap-4">
-        <Link
-          to="/login"
-          state={{ from: pathname }}
-          className="glass-primary rounded-xl px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] shadow-[0_0_40px_4px] shadow-g-glow/30"
-        >
-          Sign in to start
-        </Link>
-        <Link
-          to="/games/developers/docs"
-          className="font-mono text-[10px] uppercase tracking-[0.16em] text-g-ink underline-offset-[6px] hover:underline"
-        >
-          Read the docs →
-        </Link>
-      </div>
+  const features = [
+    [
+      'Players and sign-in',
+      'Every Deck player can play, signed in with GameID. Your game gets a stable player ID — never a password or an email.',
+    ],
+    [
+      'Store and payouts',
+      'Sell items and unlocks through Deck checkout. Prices, receipts and signed webhooks are handled; payouts arrive on their own.',
+    ],
+    [
+      'Multiplayer rooms',
+      'Codes, invite links and quick match, with live messages and shared state — no game server of your own required.',
+    ],
+    [
+      'Portrait, landscape, full screen',
+      'A player built for phones and laptops alike, in either orientation, expanding to full screen on any device.',
+    ],
+  ];
 
-      <dl className="mt-20 grid gap-4 sm:grid-cols-3">
+  return (
+    <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-12">
+      <dl className="mt-20 grid gap-px overflow-hidden rounded-3xl border border-g-line bg-g-line sm:grid-cols-3">
         {facts.map(([figure, text]) => (
-          <div key={figure} className="rounded-3xl bg-g-paper-2 p-6">
-            <dt className="text-4xl font-medium tracking-[-0.05em]">{figure}</dt>
-            <dd className="mt-3 text-[13px] leading-relaxed text-g-mute">{text}</dd>
+          <div key={figure} className="bg-g-paper p-7 sm:p-8">
+            <dt className="font-serif text-[clamp(3rem,5vw,4.25rem)] font-normal leading-none tracking-[-0.02em]">
+              {figure}
+            </dt>
+            <dd className="mt-4 max-w-xs text-[14px] leading-relaxed text-g-mute">{text}</dd>
           </div>
         ))}
       </dl>
+
+      <section aria-labelledby="dev-features" className="mt-28">
+        <h2
+          id="dev-features"
+          className="max-w-2xl font-serif text-[clamp(2.4rem,4.6vw,4rem)] font-normal leading-[1] tracking-[-0.02em] text-balance"
+        >
+          Everything a game needs, <span className="text-g-mute">already built.</span>
+        </h2>
+        <div className="mt-12 grid gap-4 sm:grid-cols-2">
+          {features.map(([title, text], index) => (
+            <div key={title} className="rounded-3xl border border-g-line p-7 sm:p-8">
+              <p className="font-mono text-[11px] text-g-mute">0{index + 1}</p>
+              <h3 className="mt-6 text-[22px] font-medium tracking-[-0.03em]">{title}</h3>
+              <p className="mt-2 max-w-md text-[14px] leading-relaxed text-g-mute">{text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-28 flex flex-col items-start justify-between gap-8 rounded-3xl bg-g-night p-8 text-g-night-ink sm:p-12 lg:flex-row lg:items-end">
+        <h2 className="max-w-2xl font-serif text-[clamp(2.4rem,4.6vw,4rem)] font-normal leading-[1] tracking-[-0.02em] text-balance">
+          Your players are already here.
+        </h2>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link to="/login" state={{ from: pathname }} className={HERO_BUTTON}>
+            Get started
+          </Link>
+          <Link
+            to="/games/developers/docs"
+            className="rounded-2xl px-5 py-3 text-[15px] font-medium text-white/60 transition-colors hover:text-white"
+          >
+            Documentation
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }
@@ -93,7 +216,7 @@ function Desk() {
   const { data: earnings } = useSellerEarnings();
 
   return (
-    <div className="mx-auto max-w-[1100px] px-4 sm:px-6">
+    <div className="mx-auto mt-16 max-w-[1100px] px-4 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-g-mute">Developer</p>

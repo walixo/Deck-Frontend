@@ -45,7 +45,7 @@ const HEADLINE = ['Where', 'new', 'tech', 'gets', 'its'];
  * The periods are deliberately co-prime-ish. Equal ones would stay locked
  * together forever and the whole line would rise and fall as a slab.
  *
- * Travel is in `em`, not pixels. The headline runs from 40px to 76px across the
+ * Travel is in `em`, not pixels. The headline runs from 44px to 84px across the
  * clamp, and a fixed 8px that reads as a drift on a desktop is a fifth of the
  * cap height on a phone — which reads as a line that has come apart rather than
  * one that is floating.
@@ -184,7 +184,7 @@ export function Hero({ stats }: HeroProps) {
               contract rather than the canvas guessing where the words are. */}
           <h1
             data-sky-keepout
-            className="display-tight text-[clamp(2.5rem,8vw,4.75rem)] text-balance"
+            className="display-tight text-[clamp(2.75rem,8.6vw,5.25rem)] font-bold text-balance"
           >
             <span className="sr-only">Where new tech gets its first fans</span>
 

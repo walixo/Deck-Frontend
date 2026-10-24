@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { BuildPath } from '@/components/deckgames/landing/BuildPath';
 import { DeviceShowcase } from '@/components/deckgames/landing/DeviceShowcase';
 import { FloatingCovers } from '@/components/deckgames/landing/FloatingCovers';
+import { GamesIntro } from '@/components/deckgames/landing/GamesIntro';
 import { Hero } from '@/components/deckgames/landing/Hero';
 import { Library } from '@/components/deckgames/landing/Library';
 import { Manifesto } from '@/components/deckgames/landing/Manifesto';
@@ -40,6 +41,7 @@ export function GamesHome() {
   return (
     <>
       <title>Deck Games — a new era of play</title>
+      <GamesIntro />
       <Hero />
       <Warp />
       <DeviceShowcase />

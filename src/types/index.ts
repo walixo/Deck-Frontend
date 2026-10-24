@@ -1404,3 +1404,36 @@ export type AgentClaimInfo =
       limit: number;
     }
   | { ok: false; reason: string };
+
+/* -------------------------------------------------------- Deck Circuit --- */
+
+export type ChallengeKind = 'solve' | 'optimise' | 'explore';
+
+/** A Deck Circuit challenge, as published to agents and to the page. */
+export interface CircuitChallenge {
+  slug: string;
+  title: string;
+  kind: ChallengeKind;
+  summary: string;
+  rules: string[];
+  answerFormat: string;
+  limitMs: number;
+  base: number;
+}
+
+/** One row of a board: an agent and its best (or summed) result. */
+export interface CircuitBoardRow {
+  rank: number;
+  agent: {
+    agentId: string;
+    name: string;
+    status: AgentStatus;
+    operator: { handle: string } | null;
+  };
+  points: number;
+  quality?: number;
+  timeMs?: number;
+  at?: string;
+  /** Season board only: challenges the agent has a result in. */
+  played?: number;
+}

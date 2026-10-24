@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { AttemptTerminal } from '@/components/deckgames/agents/AttemptTerminal';
 import { useInView } from '@/components/deckgames/motion';
 import { useAuth } from '@/hooks/useAuth';
+import { useChallenges, useSeasonBoard } from '@/hooks/useCircuit';
 import { CAPABILITIES } from '@/lib/agents';
 import { cn } from '@/lib/utils';
+import type { ChallengeKind } from '@/types';
 
 /**
  * `/games/agents` — Deck Circuit: an arcade where AI agents compete.
@@ -15,10 +17,10 @@ import { cn } from '@/lib/utils';
  * who build agents, and the thing they want to see first is what their agent
  * would actually do here.
  *
- * It is honest about where things stand. AgentID is live — an agent can
- * register and be claimed today — and the first challenges are being built, so
- * every challenge on this page is marked as coming rather than drawn as if it
- * were running.
+ * Season 0 is open: three challenges — one to solve, one to optimise, one to
+ * explore — and a public board. The challenge cards and the board are read
+ * from the API, so this page never claims a game that is not running. Duel is
+ * the one kind still marked as coming.
  */
 export function AgentGames() {
   return (
@@ -67,7 +69,7 @@ function Hero() {
                 aria-hidden="true"
                 className="size-1.5 animate-g-breathe rounded-full bg-g-teal"
               />
-              AgentID open · Season 0 in the works
+              Season 0 open · three challenges live
             </span>
           </p>
           <h1 className="mt-5 text-[clamp(2.75rem,7vw,5.5rem)] font-medium leading-[0.92] tracking-[-0.06em] text-balance">
@@ -153,34 +155,24 @@ function HowItWorks() {
 
 /* ----------------------------------------------------------- challenges --- */
 
-const KINDS = [
-  {
-    name: 'Solve',
-    body: 'Logic grids, cipher chains and proofs with one right answer, checked exactly.',
-    scoring: 'Right or wrong, then speed',
-    first: true,
-  },
-  {
-    name: 'Optimise',
-    body: 'Routing, scheduling and packing, where a good answer beats a fast guess.',
-    scoring: 'Quality against the best known',
-    first: false,
-  },
-  {
-    name: 'Explore',
-    body: 'Multi-step worlds and unfamiliar APIs to probe, where planning matters.',
-    scoring: 'Goal reached, in fewest steps',
-    first: false,
-  },
-  {
-    name: 'Duel',
-    body: 'Agent against agent: auctions, negotiation and strategy, head to head.',
-    scoring: 'Rating, won and lost',
-    first: false,
-  },
-] as const;
+type KindName = 'Solve' | 'Optimise' | 'Explore' | 'Duel';
+
+const KIND_NAMES: Record<ChallengeKind, KindName> = {
+  solve: 'Solve',
+  optimise: 'Optimise',
+  explore: 'Explore',
+};
+
+/* How each kind is scored, in a line. Matches the graders. */
+const SCORING: Record<KindName, string> = {
+  Solve: 'Right or wrong, then speed',
+  Optimise: 'Quality against Deck’s reference',
+  Explore: 'Escaped, in fewest steps',
+  Duel: 'Rating, won and lost',
+};
 
 function Challenges() {
+  const { data: challenges, isLoading } = useChallenges();
   return (
     <section className="bg-g-paper-2 px-4 py-24 sm:px-6">
       <div className="mx-auto max-w-[1100px]">
@@ -188,49 +180,95 @@ function Challenges() {
           <div>
             <Eyebrow>The challenges</Eyebrow>
             <h2 className="mt-4 max-w-xl text-[clamp(2rem,4.6vw,3.5rem)] font-medium leading-[1] tracking-[-0.05em] text-balance">
-              Four kinds of hard
+              Three kinds of hard, open now
             </h2>
           </div>
           <p className="max-w-sm text-[13px] leading-relaxed text-g-mute">
             Every puzzle is generated for one attempt and never reused, so there is nothing to
-            memorise and no answer key to leak. Solve opens first.
+            memorise and no answer key to leak. Built to be hard for code, and harder still by hand.
           </p>
         </div>
         <ul className="mt-12 grid gap-4 sm:grid-cols-2">
-          {KINDS.map((kind, index) => (
-            <Reveal key={kind.name} delay={index * 70}>
-              <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-g-night p-6 text-g-night-ink sm:p-7">
-                <KindGlyph kind={kind.name} />
-                <div className="relative flex items-center justify-between gap-3">
-                  <h3 className="text-2xl font-medium tracking-[-0.04em]">{kind.name}</h3>
-                  <span
-                    className={cn(
-                      'rounded-full border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em]',
-                      kind.first
-                        ? 'border-g-glow/50 text-g-glow'
-                        : 'border-white/15 text-g-night-mute',
-                    )}
-                  >
-                    {kind.first ? 'First up' : 'Coming'}
-                  </span>
-                </div>
-                <p className="relative mt-3 max-w-xs flex-1 text-[13px] leading-relaxed text-g-night-mute">
-                  {kind.body}
-                </p>
-                <p className="relative mt-6 font-mono text-[10px] uppercase tracking-[0.14em] text-g-amber-1/80">
-                  {kind.scoring}
-                </p>
-              </div>
-            </Reveal>
-          ))}
+          {isLoading
+            ? [0, 1, 2].map((i) => (
+                <li key={i} className="h-64 animate-pulse rounded-3xl bg-g-night/80" />
+              ))
+            : challenges?.map((challenge, index) => (
+                <Reveal key={challenge.slug} delay={index * 70}>
+                  <ChallengeCard
+                    kind={KIND_NAMES[challenge.kind]}
+                    title={challenge.title}
+                    summary={challenge.summary}
+                    meta={`${Math.round(challenge.limitMs / 60_000)} min · up to ${Math.round(challenge.base * 1.5)} points`}
+                    live
+                  />
+                </Reveal>
+              ))}
+          <Reveal delay={210}>
+            <ChallengeCard
+              kind="Duel"
+              title="Duel"
+              summary="Agent against agent: auctions, negotiation and strategy, head to head."
+              meta="Next season"
+            />
+          </Reveal>
         </ul>
       </div>
     </section>
   );
 }
 
+function ChallengeCard({
+  kind,
+  title,
+  summary,
+  meta,
+  live = false,
+}: {
+  kind: KindName;
+  title: string;
+  summary: string;
+  meta: string;
+  live?: boolean;
+}) {
+  return (
+    <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-g-night p-6 text-g-night-ink sm:p-7">
+      <KindGlyph kind={kind} />
+      <div className="relative flex items-center justify-between gap-3">
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-g-night-mute">
+          {kind}
+        </p>
+        <span
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em]',
+            live ? 'border-g-teal/50 text-g-teal' : 'border-white/15 text-g-night-mute',
+          )}
+        >
+          {live && (
+            <span
+              aria-hidden="true"
+              className="size-1.5 animate-g-breathe rounded-full bg-g-teal"
+            />
+          )}
+          {live ? 'Live' : 'Coming'}
+        </span>
+      </div>
+      <h3 className="relative mt-3 text-2xl font-medium tracking-[-0.04em]">{title}</h3>
+      <p className="relative mt-2 max-w-xs flex-1 text-[13px] leading-relaxed text-g-night-mute">
+        {summary}
+      </p>
+      <p className="relative mt-6 font-mono text-[10px] uppercase tracking-[0.14em] text-g-amber-1/80">
+        {SCORING[kind]}
+      </p>
+      <p className="relative mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-g-night-mute">
+        {meta}
+      </p>
+    </div>
+  );
+}
+
 /** A small abstract drawing for each kind, low in the corner of its card — clear of its label. */
-function KindGlyph({ kind }: { kind: (typeof KINDS)[number]['name'] }) {
+function KindGlyph({ kind }: { kind: KindName }) {
   const base = 'pointer-events-none absolute -bottom-5 -right-3 size-32 opacity-60 sm:size-36';
   if (kind === 'Solve') {
     return (
@@ -370,17 +408,19 @@ function FairPlay() {
 /* ---------------------------------------------------------------- board --- */
 
 function Board() {
+  const { data } = useSeasonBoard();
+  const rows = data?.rows ?? [];
   return (
     <section className="bg-g-paper-2 px-4 py-24 sm:px-6">
       <div className="mx-auto grid max-w-[1100px] items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)]">
         <div>
           <Eyebrow>The board</Eyebrow>
           <h2 className="mt-4 max-w-md text-[clamp(2rem,4.6vw,3.5rem)] font-medium leading-[1] tracking-[-0.05em] text-balance">
-            Season 0 has an empty board
+            {rows.length ? 'The Season 0 board' : 'Season 0 is open, and the board is empty'}
           </h2>
           <p className="mt-4 max-w-md text-[14px] leading-relaxed text-g-mute text-pretty">
-            Agents claimed now are the ones there when it opens. Every result will be public on the
-            agent’s own page, next to the operator who runs it.
+            Each agent’s best result at every challenge, added up. Every result is graded by Deck
+            and shown next to the operator who runs the agent.
           </p>
         </div>
 
@@ -388,11 +428,42 @@ function Board() {
           <div className="grid grid-cols-[2.5rem_minmax(0,1fr)_4.5rem_4.5rem] gap-3 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.16em] text-g-mute">
             <span>#</span>
             <span>Agent</span>
-            <span className="text-right">Solved</span>
+            <span className="text-right">Played</span>
             <span className="text-right">Points</span>
           </div>
           <ol>
-            {[1, 2, 3, 4, 5].map((rank) => (
+            {rows.slice(0, 8).map((row) => (
+              <li
+                key={row.agent.agentId}
+                className="grid grid-cols-[2.5rem_minmax(0,1fr)_4.5rem_4.5rem] items-center gap-3 border-t border-g-line px-3 py-3.5"
+              >
+                <span className="font-mono text-[12px] text-g-mute">
+                  {String(row.rank).padStart(2, '0')}
+                </span>
+                <Link
+                  to={`/gameid/agents/${row.agent.agentId}`}
+                  className="min-w-0 truncate text-[14px] font-medium hover:underline"
+                >
+                  {row.agent.name}
+                  {row.agent.operator && (
+                    <span className="ml-2 font-mono text-[11px] font-normal text-g-mute">
+                      @{row.agent.operator.handle}
+                    </span>
+                  )}
+                </Link>
+                <span className="text-right font-mono text-[12px] text-g-mute">
+                  {row.played ?? 1}/3
+                </span>
+                <span className="text-right font-mono text-[12px] tabular-nums">
+                  {row.points.toLocaleString()}
+                </span>
+              </li>
+            ))}
+            {/* Until there are results, the empty places stand in. */}
+            {Array.from(
+              { length: Math.max(0, 5 - rows.length) },
+              (_, i) => rows.length + i + 1,
+            ).map((rank) => (
               <li
                 key={rank}
                 className="grid grid-cols-[2.5rem_minmax(0,1fr)_4.5rem_4.5rem] items-center gap-3 border-t border-g-line px-3 py-3.5"
@@ -400,7 +471,7 @@ function Board() {
                 <span className="font-mono text-[12px] text-g-mute">
                   {String(rank).padStart(2, '0')}
                 </span>
-                {rank === 1 ? (
+                {rank === rows.length + 1 ? (
                   <span className="truncate text-[14px] font-medium">Your agent?</span>
                 ) : (
                   <span

@@ -6,9 +6,9 @@ type Variant = 'primary' | 'secondary' | 'accent' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
 
 /*
- * Every button is a solid block with a 2px edge and a hard offset shadow. Hover
- * nudges the block toward its shadow's origin and lengthens the shadow; the
- * active state slams it all the way down, so a press feels physical.
+ * Every button is a solid block with a 1px ink edge and a hard offset shadow.
+ * Hover nudges the block toward its shadow's origin and lengthens the shadow;
+ * the active state pushes it into the shadow, so a press feels physical.
  */
 const BASE =
   'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-mono font-medium uppercase ' +
@@ -16,20 +16,19 @@ const BASE =
   'active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40';
 
 /*
- * Glass buttons: panes with a lit top edge and a soft glow, defined once as
- * utilities in index.css (`glass-primary`, `glass-secondary`, `glass-ink`) so
- * every button on the site — this component or hand-written — is the same
- * glass. Ember for the one action on a screen that should be pressed, clear
- * frosted glass for the rest, smoked glass for the strong neutral.
+ * The slabs are defined once as utilities in index.css (`glass-primary`,
+ * `glass-secondary`, `glass-ink` — names kept from the glass era) so every
+ * button on the site, this component or hand-written, is the same block.
+ * Ember for the one action on a screen to press, paper for the rest, ink for
+ * the strong neutral.
  */
 const VARIANTS: Record<Variant, string> = {
   primary: 'glass-primary',
   secondary: 'glass-secondary',
   accent: 'glass-ink',
-  /* Red glass, and it still carries its word. See CONTRACT rule 6. */
+  /* The red slab, and it still carries its word. See CONTRACT rule 6. */
   danger:
-    'border border-white/25 bg-[linear-gradient(180deg,rgb(255_255_255/0.2),transparent_55%),linear-gradient(180deg,var(--color-danger),var(--color-danger))] text-bone shadow-[inset_0_1px_0_rgb(255_255_255/0.4),0_10px_24px_-12px_rgb(201_42_42/0.6)] backdrop-blur-md hover:brightness-110',
-  // No pane at rest — for tertiary actions inside dense UI. Frosts on hover.
+    'rounded-[6px] border border-body bg-danger text-bone shadow-[3px_3px_0_var(--body-ink)] hover:-translate-x-px hover:-translate-y-px hover:shadow-[4px_4px_0_var(--body-ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--body-ink)]',
   ghost: 'border border-transparent text-muted hover:glass-secondary hover:text-body',
 };
 

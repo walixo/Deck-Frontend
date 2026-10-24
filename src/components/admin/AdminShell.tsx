@@ -3,6 +3,7 @@ import {
   BuildingStorefrontIcon,
   PaintBrushIcon,
   PuzzlePieceIcon,
+  CpuChipIcon,
   ChartPieIcon,
   ChevronDoubleLeftIcon,
   ClipboardDocumentCheckIcon,
@@ -65,6 +66,7 @@ const GROUPS: { label: string; items: NavItem[] }[] = [
       { to: '/admin/acquisitions', label: 'Acquisitions', icon: BuildingStorefrontIcon },
       { to: '/admin/custom', label: 'Custom prints', icon: PaintBrushIcon },
       { to: '/admin/games', label: 'Games', icon: PuzzlePieceIcon },
+      { to: '/admin/challenges', label: 'Circuit challenges', icon: CpuChipIcon },
     ],
   },
   {

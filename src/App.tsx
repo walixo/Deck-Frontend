@@ -58,6 +58,9 @@ const DevHome = lazyNamed(() => import('@/pages/games/DevHome'), 'DevHome');
 const DevNewGame = lazyNamed(() => import('@/pages/games/DevNewGame'), 'DevNewGame');
 const DevGame = lazyNamed(() => import('@/pages/games/DevGame'), 'DevGame');
 const DevSandbox = lazyNamed(() => import('@/pages/games/DevSandbox'), 'DevSandbox');
+const DevChallenges = lazyNamed(() => import('@/pages/games/DevChallenges'), 'DevChallenges');
+const DevChallengeNew = lazyNamed(() => import('@/pages/games/DevChallenges'), 'DevChallengeNew');
+const DevChallenge = lazyNamed(() => import('@/pages/games/DevChallenges'), 'DevChallenge');
 /* GameID — Deck as an identity provider for other games. */
 const AgentGames = lazyNamed(() => import('@/pages/games/AgentGames'), 'AgentGames');
 const GameIdHome = lazyNamed(() => import('@/pages/gameid/GameIdHome'), 'GameIdHome');
@@ -134,6 +137,7 @@ const AdminAcquisitions = lazyNamed(
 );
 const AdminCustom = lazyNamed(() => import('@/pages/admin/AdminCustom'), 'AdminCustom');
 const AdminGames = lazyNamed(() => import('@/pages/admin/AdminGames'), 'AdminGames');
+const AdminChallenges = lazyNamed(() => import('@/pages/admin/AdminChallenges'), 'AdminChallenges');
 const AdminAds = lazyNamed(() => import('@/pages/admin/AdminAds'), 'AdminAds');
 const AdminAudit = lazyNamed(() => import('@/pages/admin/AdminAudit'), 'AdminAudit');
 
@@ -160,6 +164,9 @@ export function App() {
         <Route path="agents/docs" element={<Navigate to="/docs/circuit" replace />} />
         <Route element={<RequireAuth />}>
           <Route path="developers/new" element={<DevNewGame />} />
+          <Route path="developers/challenges" element={<DevChallenges />} />
+          <Route path="developers/challenges/new" element={<DevChallengeNew />} />
+          <Route path="developers/challenges/:slug" element={<DevChallenge />} />
           <Route path="developers/:slug" element={<DevGame />} />
           <Route path="developers/:slug/sandbox" element={<DevSandbox />} />
           <Route path="purchase/complete" element={<PurchaseComplete />} />
@@ -301,6 +308,7 @@ export function App() {
           <Route path="acquisitions" element={<AdminAcquisitions />} />
           <Route path="custom" element={<AdminCustom />} />
           <Route path="games" element={<AdminGames />} />
+          <Route path="challenges" element={<AdminChallenges />} />
           <Route path="ads" element={<AdminAds />} />
           <Route path="audit" element={<AdminAudit />} />
         </Route>

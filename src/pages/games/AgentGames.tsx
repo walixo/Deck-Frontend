@@ -166,7 +166,7 @@ function Challenges() {
                     kind={KIND_NAMES[challenge.kind]}
                     title={challenge.title}
                     summary={challenge.summary}
-                    meta={`${Math.round(challenge.limitMs / 60_000)} min · up to ${Math.round(challenge.base * 1.5)} points`}
+                    meta={`${Math.round(challenge.limitMs / 60_000)} min · up to ${Math.round(challenge.base * 1.5)} points${challenge.author ? ` · by @${challenge.author.handle}` : ''}`}
                     live
                   />
                 </Reveal>

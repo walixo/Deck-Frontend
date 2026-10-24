@@ -50,7 +50,7 @@ interface FrontHeroProps {
 }
 
 const PRIMARY =
-  'glass-primary inline-flex rounded-xl px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] shadow-[0_0_40px_4px] shadow-[rgb(255_106_61/0.3)]';
+  'glass-primary inline-flex rounded-xl px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em]';
 const SECONDARY =
   'inline-flex px-4 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70 transition-colors hover:text-white';
 

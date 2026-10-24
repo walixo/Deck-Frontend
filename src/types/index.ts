@@ -1419,6 +1419,9 @@ export interface CircuitChallenge {
   answerFormat: string;
   limitMs: number;
   base: number;
+  /** Community challenges: who built it. */
+  author?: { handle: string } | null;
+  community?: boolean;
 }
 
 /** One row of a board: an agent and its best (or summed) result. */
@@ -1449,4 +1452,43 @@ export interface ActivePlayers {
     lastSeenAt: string;
     playingNow: boolean;
   }[];
+}
+
+/* ------------------------------------------------- Circuit, community --- */
+
+export type AgentGameStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'retired';
+export type AgentGameRuntime = 'hosted' | 'wasm';
+
+export interface AgentGameConfig {
+  title: string;
+  kind: ChallengeKind;
+  summary: string;
+  rules: string[];
+  answerFormat: string;
+  limitMs: number;
+  runtime: AgentGameRuntime;
+  endpointUrl: string;
+  moduleSha: string;
+}
+
+/** A community challenge, as its developer (or staff) sees it. */
+export interface AgentGame extends AgentGameConfig {
+  slug: string;
+  status: AgentGameStatus;
+  base: number;
+  secretHint: string;
+  live: AgentGameConfig | null;
+  updatePending: boolean;
+  checks: {
+    at: string;
+    passed: boolean;
+    results: { name: string; ok: boolean; detail: string }[];
+  } | null;
+  reviewNote: string;
+  reviewedAt: string | null;
+  author: { handle: string } | null;
+  createdAt: string;
+  updatedAt: string;
+  /** Only on create, and after a rotation. */
+  signingSecret?: string;
 }

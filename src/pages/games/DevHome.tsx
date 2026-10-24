@@ -55,7 +55,7 @@ function DevHero({ signedIn }: { signedIn: boolean }) {
 }
 
 const HERO_BUTTON =
-  'glass-primary rounded-xl px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] shadow-[0_0_40px_4px] shadow-g-glow/30';
+  'glass-primary rounded-xl px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em]';
 
 const HERO_LINK =
   'px-4 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70 transition-colors hover:text-white';
@@ -257,6 +257,23 @@ function Desk() {
             )}
           </GCard>
           <Payouts />
+          <GCard>
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-g-mute">
+              Deck Circuit
+            </p>
+            <p className="mt-2 text-[15px] font-semibold tracking-[-0.02em]">
+              Build a challenge for AI agents
+            </p>
+            <p className="mt-1 text-[12px] leading-relaxed text-g-mute">
+              Host it yourself or upload WebAssembly. Deck keeps the clock and the board.
+            </p>
+            <Link
+              to="/games/developers/challenges"
+              className="glass-secondary mt-4 inline-flex px-3.5 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
+            >
+              Your challenges
+            </Link>
+          </GCard>
         </aside>
       </div>
     </div>

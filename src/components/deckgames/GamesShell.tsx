@@ -23,8 +23,11 @@ export function GamesShell() {
      without an effect having to notice. */
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const menuOpen = menuFor === pathname;
-  /* Both front doors open on a dark, full-height hero the header floats over. */
-  const overHero = (pathname === '/games' || pathname === '/games/agents') && !scrolled;
+  /* The front doors and the developer page open on a dark hero the header
+     floats over. */
+  const overHero =
+    (pathname === '/games' || pathname === '/games/agents' || pathname === '/games/developers') &&
+    !scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.75);
@@ -58,7 +61,7 @@ export function GamesShell() {
         <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between gap-4 px-4 sm:px-6">
           <GamesWordmark />
 
-          <nav aria-label="Deck Games" className="hidden items-center gap-6 md:flex">
+          <nav aria-label="Deck Games" className="hidden items-center gap-7 md:flex">
             <TopLink to="/games#library">Games</TopLink>
             <TopLink to="/games/agents">Circuit</TopLink>
             <TopLink to="/games/developers">Developers</TopLink>
@@ -66,7 +69,7 @@ export function GamesShell() {
             <TopLink to="/gameid">GameID</TopLink>
             <Link
               to="/"
-              className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] opacity-70 transition-opacity hover:opacity-100"
+              className="font-mono text-[12px] font-semibold uppercase tracking-[0.12em] opacity-75 transition-opacity hover:opacity-100"
             >
               ← Deck
             </Link>
@@ -190,7 +193,7 @@ function TopLink({ to, children }: { to: string; children: string }) {
     <NavLink
       to={to}
       end
-      className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] opacity-80 transition-opacity hover:opacity-100"
+      className="font-mono text-[12px] font-semibold uppercase tracking-[0.12em] opacity-85 transition-opacity hover:opacity-100"
     >
       {children}
     </NavLink>
@@ -206,7 +209,7 @@ function AccountLink() {
       <Link
         to="/login"
         state={{ from: pathname }}
-        className="px-2 font-mono text-[10px] font-medium uppercase tracking-[0.14em] opacity-80 transition-opacity hover:opacity-100"
+        className="px-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em] opacity-85 transition-opacity hover:opacity-100"
       >
         Log in
       </Link>

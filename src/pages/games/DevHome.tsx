@@ -1,8 +1,7 @@
-import '@fontsource/instrument-serif/latin-400.css';
 import { useEffect, useRef } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { CoverArt } from '@/components/deckgames/CoverArt';
-import { DevCube } from '@/components/deckgames/DevCube';
+import { MorphShape } from '@/components/deckgames/MorphShape';
 import { GButton, GCard, GNotice, StatusDot } from '@/components/deckgames/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { useMyGames } from '@/hooks/useGames';
@@ -18,8 +17,8 @@ import { GAME_ORIENTATION_LABELS } from '@/types';
 /**
  * `/games/developers` — the developer's home.
  *
- * It opens on a night hero for everyone — a serif headline and a slowly
- * turning cube. Signed out, the pitch follows: what you get, what it costs,
+ * It opens on a night hero for everyone — the headline beside one glowing
+ * shape, turning and becoming the next. Signed out, the pitch follows: what you get, what it costs,
  * how to start. Signed in, the desk follows: your games and their status, what
  * you have earned, and whether Deck can pay you yet.
  */
@@ -49,14 +48,14 @@ function DevHero({ signedIn }: { signedIn: boolean }) {
       )}
     >
       {/* Light falling across the night from the top right, and a haze along
-          the floor — the room the cube turns in. */}
+          the floor — the room the shape turns in. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -right-[10%] -top-[30%] h-[140%] w-[55%] rotate-[24deg] animate-[var(--animate-g-beam)] bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.07)_45%,rgb(255_255_255/0.02)_70%,transparent)] blur-2xl" />
         <div
           className="absolute -right-[25%] -top-[20%] h-[120%] w-[30%] rotate-[24deg] animate-[var(--animate-g-beam)] bg-[linear-gradient(90deg,transparent,rgb(255_255_255/0.05),transparent)] blur-3xl"
           style={{ animationDelay: '-6s' }}
         />
-        <div className="absolute right-[12%] top-1/2 size-[36rem] -translate-y-1/2 rounded-full bg-g-glow/[0.06] blur-[120px]" />
+        <div className="absolute right-[12%] top-1/2 size-[36rem] -translate-y-1/2 rounded-full bg-g-violet/[0.08] blur-[120px]" />
         <div className="absolute -bottom-24 -left-[10%] h-48 w-[120%] -rotate-[4deg] bg-[linear-gradient(90deg,rgb(255_255_255/0.07),rgb(255_255_255/0.02)_60%,transparent)] blur-3xl" />
       </div>
 
@@ -64,18 +63,20 @@ function DevHero({ signedIn }: { signedIn: boolean }) {
         <div className="max-w-2xl">
           <Link
             to="/games/developers/docs#multiplayer"
-            className="inline-flex animate-[var(--animate-g-rise)] rounded-full bg-[linear-gradient(90deg,rgb(255_106_61/0.55),rgb(155_123_255/0.45),rgb(63_209_193/0.45))] p-px"
+            className="inline-flex animate-[var(--animate-g-rise)] items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white/85 backdrop-blur transition-colors hover:text-white"
           >
-            <span className="flex items-center gap-2 rounded-full bg-[#0b0b0b] px-3.5 py-1.5 text-[13px] text-white/85 transition-colors hover:text-white">
-              New: multiplayer rooms, built in
-              <span aria-hidden="true" className="text-white/50">
-                ›
-              </span>
+            <span
+              aria-hidden="true"
+              className="size-1.5 rounded-full bg-g-glow shadow-[0_0_10px_1px] shadow-g-glow/70"
+            />
+            New · Multiplayer rooms
+            <span aria-hidden="true" className="text-white/50">
+              →
             </span>
           </Link>
 
           <h1
-            className="mt-7 animate-[var(--animate-g-rise)] font-serif text-[clamp(3.25rem,7.2vw,6.6rem)] font-normal leading-[0.98] tracking-[-0.02em]"
+            className="mt-7 animate-[var(--animate-g-rise)] text-[clamp(3rem,6.4vw,5.75rem)] font-semibold leading-[0.95] tracking-[-0.055em]"
             style={{ animationDelay: '90ms' }}
           >
             Ship the game.
@@ -105,23 +106,23 @@ function DevHero({ signedIn }: { signedIn: boolean }) {
                 Get started
               </Link>
             )}
-            <Link
-              to="/games/developers/docs"
-              className="rounded-2xl px-5 py-3 text-[15px] font-medium text-white/60 transition-colors hover:text-white"
-            >
-              Documentation
+            <Link to="/games/developers/docs" className={HERO_LINK}>
+              Documentation →
             </Link>
           </div>
         </div>
 
-        <DevCube className="mx-auto h-[min(80vw,30rem)] w-full animate-[var(--animate-g-fade)] lg:h-[34rem]" />
+        <MorphShape className="mx-auto aspect-square w-full max-w-[34rem] animate-[var(--animate-g-fade)]" />
       </div>
     </section>
   );
 }
 
 const HERO_BUTTON =
-  'rounded-2xl border border-white/15 bg-white/[0.08] px-5 py-3 text-[15px] font-medium text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] backdrop-blur transition-colors hover:bg-white/[0.14]';
+  'glass-primary rounded-xl px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] shadow-[0_0_40px_4px] shadow-g-glow/30';
+
+const HERO_LINK =
+  'px-4 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70 transition-colors hover:text-white';
 
 function Pitch() {
   const { pathname } = useLocation();
@@ -164,7 +165,7 @@ function Pitch() {
       <dl className="mt-20 grid gap-px overflow-hidden rounded-3xl border border-g-line bg-g-line sm:grid-cols-3">
         {facts.map(([figure, text]) => (
           <div key={figure} className="bg-g-paper p-7 sm:p-8">
-            <dt className="font-serif text-[clamp(3rem,5vw,4.25rem)] font-normal leading-none tracking-[-0.02em]">
+            <dt className="text-[clamp(2.75rem,4.6vw,4rem)] font-semibold leading-none tracking-[-0.055em]">
               {figure}
             </dt>
             <dd className="mt-4 max-w-xs text-[14px] leading-relaxed text-g-mute">{text}</dd>
@@ -175,7 +176,7 @@ function Pitch() {
       <section aria-labelledby="dev-features" className="mt-28">
         <h2
           id="dev-features"
-          className="max-w-2xl font-serif text-[clamp(2.4rem,4.6vw,4rem)] font-normal leading-[1] tracking-[-0.02em] text-balance"
+          className="max-w-2xl text-[clamp(2.2rem,4.2vw,3.5rem)] font-semibold leading-[1] tracking-[-0.05em] text-balance"
         >
           Everything a game needs, <span className="text-g-mute">already built.</span>
         </h2>
@@ -191,18 +192,15 @@ function Pitch() {
       </section>
 
       <section className="mt-28 flex flex-col items-start justify-between gap-8 rounded-3xl bg-g-night p-8 text-g-night-ink sm:p-12 lg:flex-row lg:items-end">
-        <h2 className="max-w-2xl font-serif text-[clamp(2.4rem,4.6vw,4rem)] font-normal leading-[1] tracking-[-0.02em] text-balance">
+        <h2 className="max-w-2xl text-[clamp(2.2rem,4.2vw,3.5rem)] font-semibold leading-[1] tracking-[-0.05em] text-balance">
           Your players are already here.
         </h2>
         <div className="flex flex-wrap items-center gap-2">
           <Link to="/login" state={{ from: pathname }} className={HERO_BUTTON}>
             Get started
           </Link>
-          <Link
-            to="/games/developers/docs"
-            className="rounded-2xl px-5 py-3 text-[15px] font-medium text-white/60 transition-colors hover:text-white"
-          >
-            Documentation
+          <Link to="/games/developers/docs" className={HERO_LINK}>
+            Documentation →
           </Link>
         </div>
       </section>

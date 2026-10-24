@@ -315,7 +315,7 @@ export function Navbar() {
                       to={child.to}
                       className={({ isActive }) =>
                         cn(
-                          'ml-4 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.14em]',
+                          'ml-4 py-2 font-mono text-[12px] font-semibold uppercase tracking-[0.12em]',
                           isActive ? 'text-accent' : 'text-muted',
                         )
                       }
@@ -352,7 +352,9 @@ export function Navbar() {
 /** Shared between the plain links and the dropdown trigger, so they match. */
 const navClass = ({ isActive }: { isActive: boolean }) =>
   cn(
-    'flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.14em] transition-colors duration-300 xl:px-3',
+    /* 11px through lg, where eight links already fill the row; 12px once xl
+       gives them room — the same size as the Deck Games bar. */
+    'flex items-center gap-1 whitespace-nowrap rounded-full px-1.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.03em] transition-colors duration-300 xl:gap-1.5 xl:px-2.5 xl:text-[12px] xl:tracking-[0.12em]',
     isActive ? 'bg-surface-2 text-body' : 'text-muted hover:text-body',
   );
 

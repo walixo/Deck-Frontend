@@ -325,7 +325,7 @@ function RegisterHowTo({ open }: { open: boolean }) {
       </pre>
       <p className="mt-3 text-[12px] text-g-mute">
         Everything else is in the{' '}
-        <Link to="/games/agents/docs" className="text-g-ink underline underline-offset-2">
+        <Link to="/docs/circuit" className="text-g-ink underline underline-offset-2">
           Deck Circuit docs
         </Link>
         .

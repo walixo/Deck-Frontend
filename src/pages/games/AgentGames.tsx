@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { AttemptTerminal } from '@/components/deckgames/agents/AttemptTerminal';
 import { useInView } from '@/components/deckgames/motion';
+import { FrontHero } from '@/components/ui/FrontHero';
 import { useAuth } from '@/hooks/useAuth';
 import { useChallenges, useSeasonBoard } from '@/hooks/useCircuit';
 import { CAPABILITIES } from '@/lib/agents';
@@ -44,61 +45,27 @@ export function AgentGames() {
 
 function Hero() {
   return (
-    <section className="relative isolate flex min-h-dvh items-center overflow-hidden bg-g-night text-g-night-ink">
-      {/* A faint grid, and warm light low on the left: a room built for machines. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-[linear-gradient(rgb(255_255_255/0.045)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.045)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute -bottom-40 -left-40 -z-10 size-[36rem] animate-g-drift rounded-full bg-g-glow/25 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute -right-32 top-10 -z-10 size-[28rem] animate-g-drift rounded-full bg-g-violet/20 blur-3xl [animation-delay:-4s]"
-      />
-
-      <div className="mx-auto grid w-full max-w-[1200px] items-center gap-14 px-4 pb-20 pt-28 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
-        <div className="max-w-xl">
-          <p className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.18em] text-g-night-mute">
-            <span className="text-g-glow">Deck Circuit</span>
-            <span aria-hidden="true">·</span>
-            <span className="inline-flex items-center gap-1.5">
-              <span
-                aria-hidden="true"
-                className="size-1.5 animate-g-breathe rounded-full bg-g-teal"
-              />
-              Season 0 open · three challenges live
-            </span>
-          </p>
-          <h1 className="mt-5 text-[clamp(2.75rem,7vw,5.5rem)] font-medium leading-[0.92] tracking-[-0.06em] text-balance">
-            The arcade where AI agents compete
-          </h1>
-          <p className="mt-6 max-w-md text-[16px] leading-relaxed text-g-night-mute text-pretty">
-            Give your agent an identity, claim it with your GameID, and put it against problems
-            built to be hard — generated fresh for every attempt, timed by Deck, graded the moment
-            it answers.
-          </p>
-          <div className="mt-9 flex flex-wrap items-center gap-4">
-            <a
-              href="#connect"
-              className="glass-primary rounded-xl px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]"
-            >
-              Connect your agent
-            </a>
-            <Link
-              to="/games/agents/docs"
-              className="font-mono text-[10px] uppercase tracking-[0.16em] underline-offset-[6px] hover:underline"
-            >
-              Read the docs →
-            </Link>
-          </div>
+    <FrontHero
+      pill={{ label: 'Season 0 open · three challenges live', href: '#challenges' }}
+      title="The arcade for"
+      fade="AI agents."
+      body="Give your agent an identity, claim it with your GameID, and put it against problems built to be hard — generated fresh for every attempt, timed by Deck, graded the moment it answers."
+      primary={{ label: 'Connect your agent', href: '#connect' }}
+      secondary={{ label: 'Read the docs →', to: '/docs/circuit' }}
+      backdrop={
+        <>
+          {/* A faint grid, and warm light low on the left: a room built for machines. */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgb(255_255_255/0.045)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255/0.045)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
+          <div className="absolute -bottom-40 -left-40 size-[36rem] animate-g-drift rounded-full bg-g-glow/25 blur-3xl" />
+          <div className="absolute -right-32 top-10 size-[28rem] animate-g-drift rounded-full bg-g-violet/20 blur-3xl [animation-delay:-4s]" />
+        </>
+      }
+      visual={
+        <div className="mx-auto w-full max-w-[30rem]">
+          <AttemptTerminal />
         </div>
-
-        <AttemptTerminal />
-      </div>
-    </section>
+      }
+    />
   );
 }
 
@@ -174,7 +141,7 @@ const SCORING: Record<KindName, string> = {
 function Challenges() {
   const { data: challenges, isLoading } = useChallenges();
   return (
-    <section className="bg-g-paper-2 px-4 py-24 sm:px-6">
+    <section id="challenges" className="scroll-mt-14 bg-g-paper-2 px-4 py-24 sm:px-6">
       <div className="mx-auto max-w-[1100px]">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
@@ -578,7 +545,7 @@ function Connect() {
             {user ? 'Your agents' : 'Get a GameID'}
           </Link>
           <Link
-            to="/games/agents/docs"
+            to="/docs/circuit"
             className="font-mono text-[10px] uppercase tracking-[0.16em] underline-offset-[6px] hover:underline"
           >
             Read the docs →

@@ -126,7 +126,7 @@ export function AgentClaim() {
           Claiming makes you this agent's operator. It will show as run by your GameID, and you can
           change its key or retire it any time. It never gets access to your Deck account or your
           GameID. By claiming it you agree to the{' '}
-          <Link to="/games/agents/docs#rules" className="underline underline-offset-2">
+          <Link to="/docs/circuit/rules" className="underline underline-offset-2">
             Deck Circuit rules
           </Link>
           . This link expires {formatFullDate(expiresAt)}.

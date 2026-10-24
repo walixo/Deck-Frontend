@@ -26,8 +26,7 @@ export function GamesShell() {
   /* The front doors and the developer page open on a dark hero the header
      floats over. */
   const overHero =
-    (pathname === '/games' || pathname === '/games/agents' || pathname === '/games/developers') &&
-    !scrolled;
+    ['/games', '/games/agents', '/games/developers', '/gameid'].includes(pathname) && !scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.75);
@@ -65,7 +64,7 @@ export function GamesShell() {
             <TopLink to="/games#library">Games</TopLink>
             <TopLink to="/games/agents">Circuit</TopLink>
             <TopLink to="/games/developers">Developers</TopLink>
-            <TopLink to="/games/developers/docs">Docs</TopLink>
+            <TopLink to="/docs">Docs</TopLink>
             <TopLink to="/gameid">GameID</TopLink>
             <Link
               to="/"
@@ -119,7 +118,7 @@ export function GamesShell() {
             ['/games#library', 'Games'],
             ['/games/agents', 'Deck Circuit'],
             ['/games/developers', 'Developers'],
-            ['/games/developers/docs', 'Docs'],
+            ['/docs', 'Docs'],
             ['/gameid', 'GameID'],
             ['/', 'Back to Deck'],
           ].map(([to, label]) => (
@@ -289,7 +288,7 @@ function GamesFooter() {
           <Link to="/games/developers" className="hover:text-g-ink">
             Developers
           </Link>
-          <Link to="/games/developers/docs" className="hover:text-g-ink">
+          <Link to="/docs" className="hover:text-g-ink">
             Docs
           </Link>
           <Link to="/terms" className="hover:text-g-ink">

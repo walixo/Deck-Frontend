@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { usePresenceHeartbeat } from '@/hooks/useGames';
 import { cn } from '@/lib/utils';
 import type { GameDetail, GameMode, GameRoom } from '@/types';
 import { CoverArt } from './CoverArt';
@@ -59,6 +60,8 @@ export function Player({
   const stageRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [started, setStarted] = useState(false);
+  /* Live play by a signed-in player keeps them on the arcade's "playing now". */
+  usePresenceHeartbeat(game.slug, started && mode === 'live' && Boolean(user));
   const [ready, setReady] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   /* The fallback where element full screen is refused: cover the viewport. */

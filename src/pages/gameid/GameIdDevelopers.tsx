@@ -27,7 +27,7 @@ export function GameIdDevelopers() {
       <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-g-mute">
         OAuth 2.0 with PKCE and OpenID Connect. You get a stable ID for each player and, if they
         agree, their GameID handle and avatar — nothing you would have to protect.{' '}
-        <Link to="/gameid/docs" className="text-g-ink underline underline-offset-4">
+        <Link to="/docs/gameid" className="text-g-ink underline underline-offset-4">
           Read the docs
         </Link>
         .

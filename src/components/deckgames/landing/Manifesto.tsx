@@ -35,7 +35,7 @@ export function Manifesto() {
           </p>
           <p className="text-g-ink">
             It’s time to ship the game.{' '}
-            <Link to="/games/developers/docs" className="underline underline-offset-4">
+            <Link to="/docs/developers" className="underline underline-offset-4">
               Read the docs.
             </Link>
           </p>

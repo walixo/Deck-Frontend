@@ -1,297 +1,168 @@
-import { HeroAvatar } from '@/components/home/HeroAvatar';
+import { Link } from 'react-router-dom';
 import { PixelSky } from '@/components/home/PixelSky';
-import { Backdrop } from '@/components/ui/Ambient';
-import { ButtonLink } from '@/components/ui/Button';
+import { CategoryIcon } from '@/components/illustrations/CategoryIcon';
+import { FrontHero } from '@/components/ui/FrontHero';
 import { BrickStack } from '@/components/ui/Bricks';
 import { STATS_SHOWN_FROM } from '@/lib/thresholds';
 import { formatNumber } from '@/lib/utils';
-import type { PlatformStats } from '@/types';
+import type { Item, PlatformStats } from '@/types';
 
 interface HeroProps {
   stats?: PlatformStats;
+  /** The newest launches; the three with the most votes are dealt on the right. */
+  launches?: Item[];
 }
 
 /*
- * The stat tiles used to be switched off by hand with a `SHOW_STATS` flag —
- * the right instinct aimed the wrong way. The problem was never the tiles, it
- * was a hero announcing "0 launches, 0 makers" to the first people through the
- * door. A flag has to be remembered and flipped; a threshold flips itself the
- * day the board is busy enough to boast about. See `lib/thresholds`.
+ * The stat tiles still switch themselves on by threshold rather than by a
+ * flag: a hero announcing "0 launches, 0 makers" to the first people through
+ * the door argues against itself. See `lib/thresholds`.
  */
 
-/* The mascots, parked the same way. `HeroAvatar` keeps its whole implementation
-   — the rAF loop, the drag handling, the sphere-projected eyes — so bringing
-   them back is this one flag, not a rebuild. */
-const SHOW_MASCOTS: boolean = false;
-
-/* The founding-board card ("Still being built"), parked the same way. Below
-   the stats threshold the slot is now simply empty; the stat tiles still take
-   it over on the day the board clears `STATS_SHOWN_FROM`. */
+/* The founding-board card ("Still being built"), parked. Below the stats
+   threshold the slot is simply empty; the stat tiles take it over on the day
+   the board clears `STATS_SHOWN_FROM`. */
 const SHOW_FOUNDING_BOARD: boolean = false;
 
-/** The headline, minus the highlighted phrase, which animates separately. */
-const HEADLINE = ['Where', 'new', 'tech', 'gets', 'its'];
-
-/*
- * The drift, once the line has finished landing.
- *
- * Per word rather than on the `h1`, for two reasons. A single element bobbing
- * moves like a signboard on a hinge; six moving on their own periods move like
- * things suspended, which is what the sky behind them is already doing. And a
- * transform on a child leaves the `h1`'s own box where it is, so `PixelSky` —
- * which measures that box once per resize to decide where it may not draw —
- * keeps a stable keep-out band instead of one that breathes.
- *
- * The periods are deliberately co-prime-ish. Equal ones would stay locked
- * together forever and the whole line would rise and fall as a slab.
- *
- * Travel is in `em`, not pixels. The headline runs from 44px to 84px across the
- * clamp, and a fixed 8px that reads as a drift on a desktop is a fifth of the
- * cap height on a phone — which reads as a line that has come apart rather than
- * one that is floating.
- */
-const DRIFT = [
-  { span: '6.4s', lift: '-0.09em' },
-  { span: '7.6s', lift: '-0.065em' },
-  { span: '5.8s', lift: '-0.105em' },
-  { span: '8.2s', lift: '-0.08em' },
-  { span: '6.9s', lift: '-0.065em' },
-];
-
-/* The block travels furthest — it is the heaviest mark on the page, and giving
-   it the same distance as a small word would read as the line failing to
-   agree. */
-const DRIFT_HIGHLIGHT = { span: '7.2s', lift: '-0.13em' };
-
-/*
- * When the drift takes over: after the last word has risen (80 + 4x70 + 500 =
- * 780ms) and the block has stamped (430 + 320 = 750ms). Overlapping the two
- * would fight the entry's easing mid-flight and soften the stamp, which is the
- * one beat in the hero that is meant to be hard.
- */
-const DRIFT_START = '900ms';
-
 /**
- * Period, phase and travel for one word.
+ * The landing page's hero, on the front-door standard every Deck hero shares.
  *
- * `animation-duration` is set here rather than folded into `--animate-float`,
- * because a `var()` inside that shorthand resolves against `:root` — where no
- * word has set anything — and all six would quietly run at the fallback. An
- * inline longhand beats the shorthand the utility class writes. `--float-lift`
- * has no such problem: keyframes are resolved against the animating element.
+ * The starfield stays — it is the launch board's sky — and the headline stands
+ * still on top of it. On the right, a deck of today's busiest launches, fanned
+ * like cards in a hand: the product named after the thing it shows.
  */
-function drift({ span, lift }: { span: string; lift: string }) {
-  return {
-    animationDelay: DRIFT_START,
-    animationDuration: span,
-    '--float-lift': lift,
-  } as React.CSSProperties;
+export function Hero({ stats, launches = [] }: HeroProps) {
+  const today = stats?.todayLaunches;
+  return (
+    <FrontHero
+      pill={{
+        label: today
+          ? `${today} ${today === 1 ? 'launch' : 'launches'} today`
+          : 'New launches every day',
+        to: '/discover',
+      }}
+      title="Where new tech"
+      fade="finds its fans."
+      body="Launch and discover AI models, tools, Claude skills, mobile apps and websites. Vote on what ships today, and see who tops the daily board."
+      primary={{ label: 'Launch your product', to: '/submit' }}
+      secondary={{ label: 'Explore launches →', to: '/discover' }}
+      backdrop={<PixelSky className="absolute inset-0 h-full w-full" />}
+      visual={<LaunchDeck launches={launches} />}
+    >
+      {stats &&
+        (stats.launches >= STATS_SHOWN_FROM.launches && stats.makers >= STATS_SHOWN_FROM.makers ? (
+          <dl className="mt-12 grid max-w-md grid-cols-3 gap-3">
+            <Stat label="Launches" value={formatNumber(stats.launches)} />
+            <Stat label="Makers" value={formatNumber(stats.makers)} />
+            <Stat label="Votes cast" value={formatNumber(stats.votes)} />
+          </dl>
+        ) : (
+          SHOW_FOUNDING_BOARD && <FoundingBoard launches={stats.launches} />
+        ))}
+    </FrontHero>
+  );
 }
 
-export function Hero({ stats }: HeroProps) {
+/* Where each card in the hand sits: fanned left to right, the middle one on top. */
+const FAN = [
+  { tilt: '-9deg', x: '-34%', y: '6%', z: 1, delay: '-2s' },
+  { tilt: '0deg', x: '0%', y: '-4%', z: 3, delay: '0s' },
+  { tilt: '9deg', x: '34%', y: '6%', z: 2, delay: '-4s' },
+];
+
+/** Three launches, fanned. Placeholders stand in until there are three to show. */
+function LaunchDeck({ launches }: { launches: Item[] }) {
+  const top = [...launches].sort((a, b) => b.voteCount - a.voteCount).slice(0, 3);
+  /* The busiest card goes in the middle, on top. */
+  const hand = top.length === 3 ? [top[1], top[0], top[2]] : top;
   return (
-    /*
-     * The hero is night, in both themes.
-     *
-     * `dark` here is the same class ThemeProvider puts on `<html>`, and it is a
-     * plain class selector — so putting it on this section redeclares `--canvas`,
-     * `--surface`, `--edge`, `--body-ink`, `--muted-ink` and `--accent` for
-     * everything inside it. The section becomes a dark island: the badge, the
-     * paragraph, both buttons and the backdrop grid are all written against
-     * those tokens and correct themselves, and in dark mode the class is simply
-     * redundant rather than doubled.
-     *
-     * That is the whole reason it is a class and not a hand-picked set of
-     * on-dark colours. A starfield on white is not outer space, but neither is
-     * a hero where the shadows are `--edge` — near-black in light mode — and
-     * therefore invisible the moment the ground goes dark. The token layer
-     * already knows every answer for a dark ground; this borrows all of them at
-     * once instead of re-deciding six of them by hand.
-     *
-     * `bg-canvas` and `text-body` are both required, and for different reasons.
-     * The section previously painted nothing and let the page show through,
-     * which would now be the page's light canvas. And `color` inherits as a
-     * resolved colour, not as the variable it came from — `body` had already
-     * turned `var(--color-body)` into near-black before this subtree existed,
-     * so redeclaring the token here changes nothing until something asks for it
-     * again. Without `text-body` the headline is black on black.
-     */
-    <section className="dark relative isolate overflow-hidden border-b border-line bg-canvas text-body">
-      <Backdrop pattern="grid" />
-
-      {/* Over the grid, under the words. `inset-0` rather than a fixed height
-          so the lower band always finds the actual floor of the hero. */}
-      <PixelSky className="pointer-events-none absolute inset-0 h-full w-full" />
-
-      {/*
-       * Deliberately shallow. This block was proportioned around two mascots
-       * standing in the gutters and three stat tiles below the buttons. The
-       * mascots are still parked, and so is the founding-board invitation; the
-       * stat tiles come back in this slot once the board clears the threshold,
-       * so the padding did not need to grow to take them back.
-       */}
-      <div className="relative mx-auto max-w-6xl px-4 pb-11 pt-12 sm:px-6 sm:pb-14 sm:pt-16 lg:px-8">
-        {/*
-         * A pair, one in each gutter — which only exist once the centred column
-         * stops filling the container, hence lg and up. They are also the one
-         * thing here that wants a cursor to point at it, and below lg there
-         * usually isn't one. Positioned with `top` rather than a translate
-         * utility: the component drives `transform` itself, frame by frame.
-         *
-         * They face each other by default and both turn to watch the cursor
-         * when it comes near, so the hero is never quite still.
-         */}
-        {SHOW_MASCOTS && (
-          <>
-            <HeroAvatar
-              facing="right"
-              className="absolute left-2 top-[calc(30%-3rem)] z-10 hidden lg:block xl:left-6 xl:top-[calc(30%-3.8rem)]"
-            />
-            <HeroAvatar
-              facing="left"
-              ears
-              tone="fill-deep"
-              eye="fill-pop"
-              className="absolute right-2 top-[calc(30%-3rem)] z-10 hidden lg:block xl:right-6 xl:top-[calc(30%-3.8rem)]"
-            />
-          </>
-        )}
-
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="rounded-full mb-6 inline-flex animate-[var(--animate-slam)] items-center gap-2 border border-line bg-surface px-3 py-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.1em] shadow-hard-sm">
-            {/* An 8px dot on a white surface: the themed mark, not lime. */}
-            <span className="size-2 bg-accent" aria-hidden="true" />
-            {stats?.todayLaunches
-              ? `${stats.todayLaunches} ${stats.todayLaunches === 1 ? 'launch' : 'launches'} today`
-              : 'New launches every day'}
-          </p>
-
-          {/*
-           * The headline arrives a word at a time.
-           *
-           * One block sliding in reads as a page loading. Words landing in
-           * sequence reads as something being said — and it suits the style,
-           * where nothing eases and everything arrives with a stamp.
-           *
-           * The whole line is one accessible string: the per-word spans are
-           * `aria-hidden` and a visually hidden copy carries the real text, so a
-           * screen reader gets a sentence rather than six separate words. All of
-           * it stops under `prefers-reduced-motion` via the global rule, which
-           * collapses the durations to nothing and leaves the words in place.
-           */}
-          {/* `data-sky-keepout` is read by PixelSky, which measures this box and
-              refuses to draw anything inside its vertical band. An explicit
-              contract rather than the canvas guessing where the words are. */}
-          <h1
-            data-sky-keepout
-            className="display-tight text-[clamp(2.75rem,8.6vw,5.25rem)] font-bold text-balance"
-          >
-            <span className="sr-only">Where new tech gets its first fans</span>
-
-            <span aria-hidden="true">
-              {HEADLINE.map((word, index) => (
-                <span
-                  key={word}
-                  /* The clip box drifts, taking the word with it, so nothing is
-                     ever clipped by its own float — only by the entry. */
-                  className="inline-block animate-[var(--animate-float)] overflow-hidden align-bottom"
-                  style={drift(DRIFT[index])}
-                >
-                  <span
-                    className="inline-block animate-[var(--animate-rise)]"
-                    style={{ animationDelay: `${80 + index * 70}ms` }}
-                  >
-                    {word}
-                  </span>
-                  {'\u00A0'}
-                </span>
-              ))}
-
-              {/* The highlight is a solid block behind the words, not a
-                  gradient. It stamps in last, after the line has finished
-                  arriving, so it reads as the emphasis rather than as part of
-                  the sentence appearing. */}
-              {/* Two elements, because one cannot both stamp and drift: the
-                  outer carries the endless float, the inner the entry. */}
-              <span
-                className="inline-block animate-[var(--animate-float)]"
-                style={drift(DRIFT_HIGHLIGHT)}
-              >
-                <span
-                  className="relative inline-block animate-[var(--animate-slam)]"
-                  style={{ animationDelay: `${80 + HEADLINE.length * 70}ms` }}
-                >
-                  <span
-                    aria-hidden="true"
-                    className="absolute -inset-x-2 inset-y-1 -rotate-1 border border-line bg-deep"
-                  />
-                  <span className="relative text-on-deep">first fans</span>
-                </span>
-              </span>
-            </span>
-          </h1>
-
-          <p
-            className="mx-auto mt-6 max-w-xl animate-[var(--animate-slide-up)] text-base leading-relaxed text-muted text-pretty sm:text-lg"
-            style={{ animationDelay: '140ms' }}
-          >
-            Launch and discover AI models, tools, Claude skills, mobile apps and websites. Vote on
-            what ships today, and see who tops the daily board.
-          </p>
-
+    <div className="relative mx-auto aspect-[5/4] w-full max-w-[36rem]">
+      {FAN.map((place, index) => {
+        const item = hand[index];
+        return (
+          /* Placed by the outer box, floated by the inner one: the drift
+             animates `translate`, which would undo the placement. */
           <div
-            className="mt-8 flex animate-[var(--animate-slide-up)] flex-wrap items-center justify-center gap-3"
-            style={{ animationDelay: '220ms' }}
+            key={index}
+            className="absolute left-1/2 top-1/2 w-[46%]"
+            style={{
+              zIndex: place.z,
+              transform: `translate(calc(-50% + ${place.x}), calc(-50% + ${place.y}))`,
+            }}
           >
-            <ButtonLink to="/submit" size="lg">
-              Launch your product
-            </ButtonLink>
-            <ButtonLink to="/discover" variant="secondary" size="lg">
-              Explore launches
-            </ButtonLink>
+            <div
+              className="animate-g-drift"
+              style={{ '--g-tilt': place.tilt, animationDelay: place.delay } as React.CSSProperties}
+            >
+              {item ? <LaunchCard item={item} /> : <BlankCard />}
+            </div>
           </div>
+        );
+      })}
+    </div>
+  );
+}
 
-          {stats &&
-            (stats.launches >= STATS_SHOWN_FROM.launches &&
-            stats.makers >= STATS_SHOWN_FROM.makers ? (
-              <dl
-                className="mx-auto mt-14 grid max-w-xl animate-[var(--animate-slide-up)] grid-cols-3 gap-3"
-                style={{ animationDelay: '300ms' }}
-              >
-                <Stat label="Launches" value={formatNumber(stats.launches)} tone="bg-surface" />
-                <Stat label="Makers" value={formatNumber(stats.makers)} tone="bg-pop text-on-pop" />
-                <Stat
-                  label="Votes cast"
-                  value={formatNumber(stats.votes)}
-                  tone="bg-surface-2 text-body"
-                />
-              </dl>
-            ) : (
-              SHOW_FOUNDING_BOARD && <FoundingBoard launches={stats.launches} />
-            ))}
-        </div>
+function LaunchCard({ item }: { item: Item }) {
+  return (
+    <Link
+      to={`/item/${item.slug}`}
+      className="block overflow-hidden rounded-[22px] border border-white/15 bg-[#151515] text-[#f4f2ee] shadow-[0_30px_70px_-25px_rgb(0_0_0/0.8)] transition-transform duration-500 ease-glide hover:-translate-y-2"
+    >
+      <div
+        className="relative aspect-[4/3] overflow-hidden"
+        style={{ background: item.wallColour ?? '#232323' }}
+      >
+        {item.coverUrl ? (
+          <img src={item.coverUrl} alt="" className="size-full object-cover" loading="lazy" />
+        ) : item.logoUrl ? (
+          <img
+            src={item.logoUrl}
+            alt=""
+            className="absolute left-1/2 top-1/2 size-1/3 -translate-x-1/2 -translate-y-1/2 rounded-2xl object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <CategoryIcon
+            category={item.category}
+            className="absolute left-1/2 top-1/2 size-1/4 -translate-x-1/2 -translate-y-1/2 text-white/80"
+            aria-hidden="true"
+          />
+        )}
       </div>
-    </section>
+      <div className="p-4">
+        <p className="truncate text-[15px] font-semibold tracking-[-0.02em]">{item.name}</p>
+        <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-white/55">{item.tagline}</p>
+        <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-white/45">
+          ▲ {formatNumber(item.voteCount)} votes
+        </p>
+      </div>
+    </Link>
+  );
+}
+
+/** An empty place in the hand, waiting for a launch. */
+function BlankCard() {
+  return (
+    <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[#121212] shadow-[0_30px_70px_-25px_rgb(0_0_0/0.8)]">
+      <div className="aspect-[4/3] bg-[linear-gradient(135deg,#1d1d1d,#151515)]" />
+      <div className="space-y-2 p-4">
+        <div className="h-3 w-2/3 rounded-full bg-white/10" />
+        <div className="h-2.5 w-full rounded-full bg-white/[0.06]" />
+        <div className="h-2.5 w-1/2 rounded-full bg-white/[0.06]" />
+      </div>
+    </div>
   );
 }
 
 /**
- * What the stat band says before there is anything to count.
- *
- * An invitation instead of a scoreboard. A small number in a big tile reads as
- * "nobody is here"; the same fact drawn as a short stack of bricks with room
- * on top reads as "you would be early" — which is true, and is the only thing
- * worth saying to somebody arriving at a board this new.
- *
- * No figure is printed. The stack *is* the count, capped at a dozen, and the
- * exact number would only invite the comparison this block exists to avoid.
+ * What the stat band says before there is anything to count: an invitation
+ * instead of a scoreboard. A short stack of bricks with room on top reads as
+ * "you would be early" — true, and the only thing worth saying this early.
  */
 function FoundingBoard({ launches }: { launches: number }) {
   return (
-    <div
-      className="rounded-2xl mx-auto mt-14 flex max-w-xl animate-[var(--animate-slide-up)] items-center gap-5 border border-line bg-surface p-4 text-left shadow-hard sm:p-5"
-      style={{ animationDelay: '300ms' }}
-    >
+    <div className="mt-12 flex max-w-md items-center gap-5 rounded-2xl border border-line bg-surface p-4 text-left sm:p-5">
       <BrickStack
         count={launches}
         className="h-20 w-14 shrink-0 text-accent"
@@ -308,21 +179,18 @@ function FoundingBoard({ launches }: { launches: number }) {
         <p className="mt-1 font-display text-lg leading-tight text-balance">
           {launches === 0 ? 'Nobody has launched yet' : 'Still being built'}
         </p>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted text-pretty">
-          {launches === 0
-            ? 'The first launch on Deck takes the top of the first board. It could be yours.'
-            : 'Early launches get seen by everyone who arrives after them. There is room at the top.'}
-        </p>
       </div>
     </div>
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
+function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className={`border border-line px-3 py-4 shadow-hard ${tone}`}>
-      <dd className="font-display text-2xl tabular-nums sm:text-3xl">{value}</dd>
-      <dt className="mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.1em] opacity-80">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-4">
+      <dd className="text-2xl font-semibold tracking-[-0.04em] tabular-nums sm:text-3xl">
+        {value}
+      </dd>
+      <dt className="mt-1 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-white/55">
         {label}
       </dt>
     </div>

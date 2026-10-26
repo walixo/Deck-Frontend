@@ -25,6 +25,9 @@ import {
 
 const KEY = 'dk_test_YOUR_KEY';
 
+/* Served by the API host, never by onedeck.africa — a game must not share Deck's origin. */
+const SAMPLE_URL = 'https://deck-backend-9js1.onrender.com/samples/four-in-a-row';
+
 const ROOM = {
   roomId: 'rm_7f3k9c2a41b0',
   code: 'K7QX2M',
@@ -663,6 +666,81 @@ DeckGames.multiplayer.send({ move: 'e4' });`}</Pre>
                 set its state, message it and end it with results — when it matters. Only results
                 your server sends reach the leaderboard.
               </Callout>
+            </>
+          ),
+        },
+        {
+          slug: 'sample',
+          title: 'Sample: Four in a Row',
+          lead: 'A complete two-player game on Deck rooms — one HTML file, nothing in it special to Deck.',
+          body: () => (
+            <>
+              <P>
+                Four in a Row is the sample to read before you build your own multiplayer game. It
+                uses quick match, private rooms, codes, ready-up and shared state, and it falls back
+                to two players on one screen when opened outside Deck. Play it from{' '}
+                <A to="/games/rooms">Rooms</A>, or read the source:{' '}
+                <a href={SAMPLE_URL} className="underline" target="_blank" rel="noreferrer">
+                  four-in-a-row
+                </a>{' '}
+                (view source in your browser).
+              </P>
+              <H2>How it fits together</H2>
+              <Steps
+                items={[
+                  <>
+                    <Code>init()</Code> on load. If the player came through an invite link,{' '}
+                    <Code>invite</Code> holds the code and the game joins it straight away — that is
+                    how Deck’s Rooms page opens a game into a room.
+                  </>,
+                  <>
+                    Otherwise the menu offers <Code>quickMatch()</Code>,{' '}
+                    <Code>{"create({ visibility: 'private' })"}</Code> and <Code>join(code)</Code>.
+                  </>,
+                  <>
+                    In the lobby each player calls <Code>setReady(true)</Code>. When everyone is
+                    ready, the host calls <Code>start()</Code>.
+                  </>,
+                  <>
+                    The host’s copy is the referee. A guest sends its move to the host; the host
+                    checks it and publishes the board with <Code>setState()</Code>.
+                  </>,
+                  <>
+                    Everyone — host included — draws from the <Code>state</Code> event. After a
+                    refresh, <Code>multiplayer.room()</Code> returns the room with its state, so the
+                    board comes back as it was.
+                  </>,
+                ]}
+              />
+              <Pre label="The referee">{`DeckGames.on('message', ({ from, data }) => {
+  if (room.hostPlayerId !== me) return;          // only the host decides
+  const next = play(game, game.order.indexOf(from), data.col);
+  if (next) DeckGames.multiplayer.setState(next); // illegal moves are ignored
+});
+
+DeckGames.on('state', ({ state }) => {
+  game = state;
+  render();                                       // one drawing path for everyone
+});
+
+function move(col) {
+  if (room.hostPlayerId === me) referee(me, { col });
+  else DeckGames.multiplayer.send({ col }, { to: 'host' });
+}`}</Pre>
+              <Callout>
+                A host referee is right for a casual game: the other player cannot cheat the host,
+                though a host could cheat a guest. For anything ranked, make your server the referee
+                with the <A to="/docs/developers/api">server API</A> — only results your server sends
+                reach the leaderboard.
+              </Callout>
+              <H2>Make it yours</H2>
+              <List
+                items={[
+                  'Register it with your own URL, switch multiplayer on with 2 to 2 players, and play it in test mode.',
+                  'Open the multiplayer sandbox to sit in both seats at once.',
+                  'Swap the rules in play() for your own game; the room code around it stays the same.',
+                ]}
+              />
             </>
           ),
         },

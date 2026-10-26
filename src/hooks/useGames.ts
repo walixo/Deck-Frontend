@@ -6,8 +6,11 @@ import type {
   GameDetail,
   GameDraft,
   GameGenre,
+  GameRoom,
   GameSummary,
   Leaderboard,
+  RoomCard,
+  RoomDirectory,
 } from '@/types';
 
 const keys = {
@@ -129,6 +132,42 @@ export function useActivePlayers() {
     queryKey: ['games', 'players'],
     queryFn: () => request<ActivePlayers>('get', '/games/players'),
     refetchInterval: 30_000,
+  });
+}
+
+/* -------------------------------------------------------------- rooms */
+
+/** The Rooms page: games to play together and public rooms waiting. Every 5s while open. */
+export function useRoomDirectory() {
+  return useQuery({
+    queryKey: ['games', 'rooms'],
+    queryFn: () => request<RoomDirectory>('get', '/games/rooms'),
+    refetchInterval: 5_000,
+  });
+}
+
+/** The live rooms the signed-in player has a seat in. */
+export function useMyRooms(enabled: boolean) {
+  return useQuery({
+    queryKey: ['games', 'rooms', 'mine'],
+    queryFn: () => request<RoomCard[]>('get', '/games/rooms/mine'),
+    enabled,
+    refetchInterval: 10_000,
+  });
+}
+
+/** Which game a typed code belongs to. */
+export function useFindRoom() {
+  return useMutation({
+    mutationFn: (code: string) => request<RoomCard>('get', `/games/rooms/code/${encodeURIComponent(code)}`),
+  });
+}
+
+/** Opens a room in a game, with the caller as host; the game joins it on load. */
+export function useStartRoom() {
+  return useMutation({
+    mutationFn: ({ slug, visibility }: { slug: string; visibility: 'public' | 'private' }) =>
+      request<GameRoom>('post', `/games/${slug}/rooms`, { mode: 'live', visibility }),
   });
 }
 

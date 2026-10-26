@@ -1454,6 +1454,33 @@ export interface ActivePlayers {
   }[];
 }
 
+/** A room as the Rooms page sees it: seats and the game, never who is in it. */
+export interface RoomCard {
+  code: string;
+  status: RoomStatus;
+  visibility: 'private' | 'public';
+  seats: number;
+  /** Seats whose player has the game open right now. */
+  online: number;
+  minPlayers: number;
+  maxPlayers: number;
+  host: string | null;
+  createdAt: string;
+  game: Pick<GameSummary, 'slug' | 'title' | 'genre' | 'coverUrl' | 'orientation'>;
+}
+
+/** Everything that can be played together, how busy it is, and who is waiting. */
+export interface RoomDirectory {
+  games: (Pick<GameSummary, 'slug' | 'title' | 'tagline' | 'genre' | 'coverUrl' | 'orientation'> & {
+    minPlayers: number;
+    maxPlayers: number;
+    open: number;
+    playing: number;
+    playersNow: number;
+  })[];
+  rooms: RoomCard[];
+}
+
 /* ------------------------------------------------- Circuit, community --- */
 
 export type AgentGameStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'retired';

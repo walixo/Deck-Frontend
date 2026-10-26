@@ -137,9 +137,18 @@ export function useUpdateProduct(slug: string) {
   return useMutation({
     mutationFn: ({
       productId,
+      newProductId,
       ...input
-    }: Partial<Omit<ProductInput, 'productId'>> & { productId: string; active?: boolean }) =>
-      request<GameProduct>('patch', `/games/${slug}/products/${productId}`, input),
+    }: Partial<Omit<ProductInput, 'productId'>> & {
+      productId: string;
+      /** Renames it. Refused once the product has a live sale. */
+      newProductId?: string;
+      active?: boolean;
+    }) =>
+      request<GameProduct>('patch', `/games/${slug}/products/${productId}`, {
+        ...input,
+        ...(newProductId ? { productId: newProductId } : {}),
+      }),
     onSuccess: async () => {
       await client.invalidateQueries({ queryKey: keys.developer(slug) });
       await client.invalidateQueries({ queryKey: keys.products(slug) });

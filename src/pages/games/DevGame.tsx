@@ -446,6 +446,7 @@ function Store({ view }: { view: GameDeveloperView }) {
   const slug = view.game.slug;
   const create = useCreateProduct(slug);
   const update = useUpdateProduct(slug);
+  const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState({
     productId: '',
     name: '',
@@ -465,34 +466,48 @@ function Store({ view }: { view: GameDeveloperView }) {
           </p>
         ) : (
           <ul className="mt-4 divide-y divide-g-line">
-            {view.products.map((product) => (
-              <li
-                key={product.productId}
-                className={cn(
-                  'flex flex-wrap items-center gap-3 py-3',
-                  !product.active && 'opacity-50',
-                )}
-              >
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[14px] font-medium">{product.name}</span>
-                  <span className="block font-mono text-[11px] text-g-mute">
-                    {product.productId} · {product.type === 'one_off' ? 'one-off' : 'consumable'}
-                  </span>
-                </span>
-                <span className="font-mono text-[12px] tabular-nums">
-                  {formatMoney(product.priceMinor, product.currency)}
-                </span>
-                <GButton
-                  small
-                  tone="ghost"
-                  onClick={() =>
-                    update.mutate({ productId: product.productId, active: !product.active })
-                  }
+            {view.products.map((product) =>
+              editing === product.productId ? (
+                <li key={product.productId} className="py-4">
+                  <ProductEditor
+                    slug={slug}
+                    product={product}
+                    feePercent={view.feePercent}
+                    onDone={() => setEditing(null)}
+                  />
+                </li>
+              ) : (
+                <li
+                  key={product.productId}
+                  className={cn(
+                    'flex flex-wrap items-center gap-3 py-3',
+                    !product.active && 'opacity-50',
+                  )}
                 >
-                  {product.active ? 'Retire' : 'Restore'}
-                </GButton>
-              </li>
-            ))}
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[14px] font-medium">{product.name}</span>
+                    <span className="block font-mono text-[11px] text-g-mute">
+                      {product.productId} · {product.type === 'one_off' ? 'one-off' : 'consumable'}
+                    </span>
+                  </span>
+                  <span className="font-mono text-[12px] tabular-nums">
+                    {formatMoney(product.priceMinor, product.currency)}
+                  </span>
+                  <GButton
+                    small
+                    tone="ghost"
+                    onClick={() =>
+                      update.mutate({ productId: product.productId, active: !product.active })
+                    }
+                  >
+                    {product.active ? 'Retire' : 'Restore'}
+                  </GButton>
+                  <GButton small tone="ghost" onClick={() => setEditing(product.productId)}>
+                    Edit
+                  </GButton>
+                </li>
+              ),
+            )}
           </ul>
         )}
       </GCard>
@@ -591,6 +606,122 @@ function Store({ view }: { view: GameDeveloperView }) {
         </form>
       </GCard>
     </div>
+  );
+}
+
+/**
+ * Edits a product in place. Everything can change until a player buys it in
+ * live mode; after that its ID is fixed, because purchases, ownership checks
+ * and the developer's own server all key on it.
+ */
+function ProductEditor({
+  slug,
+  product,
+  feePercent,
+  onDone,
+}: {
+  slug: string;
+  product: GameProduct;
+  feePercent: number;
+  onDone: () => void;
+}) {
+  const update = useUpdateProduct(slug);
+  const [form, setForm] = useState({
+    productId: product.productId,
+    name: product.name,
+    description: product.description,
+    price: String(product.priceMinor / 100),
+    type: product.type,
+  });
+  const failure = update.error instanceof RequestError ? update.error : null;
+  const price = Number(form.price);
+  const renamed = form.productId.trim().toLowerCase() !== product.productId;
+
+  return (
+    <form
+      className="space-y-4"
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        update.mutate(
+          {
+            productId: product.productId,
+            newProductId: renamed ? form.productId.trim() : undefined,
+            name: form.name.trim(),
+            description: form.description.trim(),
+            price,
+            type: form.type,
+          },
+          { onSuccess: onDone },
+        );
+      }}
+    >
+      <h3 className="text-[15px] font-medium tracking-[-0.02em]">Edit {product.name}</h3>
+      {failure && !failure.fields.length && <GNotice tone="error">{failure.message}</GNotice>}
+      <GInput
+        label="Product ID"
+        value={form.productId}
+        disabled={product.idLocked}
+        onChange={(event) => setForm((current) => ({ ...current, productId: event.target.value }))}
+        error={failure?.fieldError('productId')}
+        hint={
+          product.idLocked
+            ? 'Fixed after the first live sale: players own it under this ID. Retire it and add a new product to use another.'
+            : renamed
+              ? 'Update the ID in your game and on your server too — purchase() and webhooks use it.'
+              : 'What your code passes to DeckGames.purchase().'
+        }
+      />
+      <GInput
+        label="Name"
+        value={form.name}
+        onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+        error={failure?.fieldError('name')}
+      />
+      <GInput
+        label="Description (optional)"
+        value={form.description}
+        onChange={(event) =>
+          setForm((current) => ({ ...current, description: event.target.value }))
+        }
+        error={failure?.fieldError('description')}
+      />
+      <div className="grid grid-cols-2 gap-3">
+        <GInput
+          label="Price (₦)"
+          type="number"
+          inputMode="decimal"
+          min={100}
+          value={form.price}
+          onChange={(event) => setForm((current) => ({ ...current, price: event.target.value }))}
+          error={failure?.fieldError('price')}
+        />
+        <GSelect
+          label="Type"
+          value={form.type}
+          onChange={(event) =>
+            setForm((current) => ({ ...current, type: event.target.value as GameProduct['type'] }))
+          }
+        >
+          <option value="one_off">One-off</option>
+          <option value="consumable">Consumable</option>
+        </GSelect>
+      </div>
+      {price >= 100 && (
+        <p className="text-[12px] text-g-mute">
+          You receive {formatMoney(Math.round(price * 100 * (1 - feePercent / 100)), 'NGN')} per
+          sale. A new price applies to sales from now on.
+        </p>
+      )}
+      <div className="flex gap-2">
+        <GButton type="submit" loading={update.isPending}>
+          Save changes
+        </GButton>
+        <GButton type="button" tone="ghost" onClick={onDone}>
+          Cancel
+        </GButton>
+      </div>
+    </form>
   );
 }
 

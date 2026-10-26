@@ -1215,6 +1215,8 @@ export interface GameProduct {
   currency: string;
   type: 'one_off' | 'consumable';
   active: boolean;
+  /** Set once a player has bought it live: from then on its ID cannot change. */
+  idLocked?: boolean;
 }
 
 export interface GameSession {

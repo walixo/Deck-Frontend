@@ -1,299 +1,229 @@
 /*!
- * Deck Games SDK v1
- * https://onedeck.africa/games/developers/docs
- *
- * Talks to the Deck player your game is running inside, by postMessage. It
- * never holds a Deck password or cookie: the player does the signed-in work
- * and hands your game only what it asked for.
+ * Deck Games SDK v1 — https://onedeck.africa/docs/developers
  *
  *   <script src="https://onedeck.africa/sdk/deck-games-v1.js"></script>
  *   const deck = await DeckGames.init();
  *
- * Outside Deck (opening your game's URL directly) `init()` resolves with
- * `standalone: true` after a short wait, so the same build runs anywhere.
- *
- * Testing against a local copy of Deck? Allow its origin on the script tag:
+ * Outside Deck, init() resolves with `standalone: true`, so the same build
+ * runs anywhere. Testing against a local copy of Deck? Allow its origin:
  *   <script src="…/deck-games-v1.js" data-deck-origins="http://localhost:3000"></script>
+ *
+ * Also on npm as @onedeck/games-sdk, with TypeScript types. Built from
+ * packages/games-sdk in the Deck frontend; edit the source there, not here.
  */
-(function (global) {
-  'use strict';
-
-  if (global.DeckGames) return;
-
-  var VERSION = '1.1.0';
-  var DEFAULT_ORIGINS = ['https://onedeck.africa', 'https://www.onedeck.africa'];
+"use strict";
+(() => {
+  // src/client.ts
+  var VERSION = "1.1.0";
+  var DEFAULT_ORIGINS = ["https://onedeck.africa", "https://www.onedeck.africa"];
   var HANDSHAKE_MS = 1500;
-  var REQUEST_MS = 15 * 60 * 1000; /* a checkout can take a while */
-
-  var script = document.currentScript;
-  var extra = (script && script.getAttribute('data-deck-origins')) || '';
-  var allowed = DEFAULT_ORIGINS.concat(
-    extra
-      .split(/[\s,]+/)
-      .map(function (value) {
-        return value.trim().replace(/\/+$/, '');
-      })
-      .filter(Boolean),
-  );
-
-  var parentOrigin = null; /* learnt from the first verified message */
-  var pending = {};
-  var listeners = {};
-  var nextId = 1;
-  var initPromise = null;
-  var lastScoreAt = 0;
-
-  function framed() {
-    try {
-      return global.parent && global.parent !== global;
-    } catch (_) {
-      return true;
+  var REQUEST_MS = 15 * 60 * 1e3;
+  var DeckGamesError = class extends Error {
+    constructor(code, message) {
+      super(message);
+      this.name = "DeckGamesError";
+      this.code = code;
     }
-  }
-
-  function send(type, payload, id) {
-    var message = { __deck: 1, v: 1, id: id, type: type, payload: payload || {} };
-    if (parentOrigin) {
-      global.parent.postMessage(message, parentOrigin);
-      return;
-    }
-    /* Not yet known: address every allowed origin. postMessage drops a message
-       whose target origin does not match, so only the real parent receives it. */
-    for (var i = 0; i < allowed.length; i += 1) {
-      try {
-        global.parent.postMessage(message, allowed[i]);
-      } catch (_) {
-        /* An origin string the browser refuses — skip it. */
+  };
+  var cleanOrigin = (value) => value.trim().replace(/\/+$/, "");
+  function createDeckGames(options = {}) {
+    const win = typeof window === "undefined" ? void 0 : window;
+    const allowed = [...DEFAULT_ORIGINS];
+    let parentOrigin = null;
+    const pending = /* @__PURE__ */ new Map();
+    const listeners = {};
+    let nextId = 1;
+    let initPromise = null;
+    let lastScoreAt = 0;
+    const trust = (origins = []) => {
+      for (const origin of origins.map(cleanOrigin).filter(Boolean)) {
+        if (!allowed.includes(origin)) allowed.push(origin);
       }
-    }
-  }
-
-  function request(type, payload, timeout) {
-    return new Promise(function (resolve, reject) {
-      if (!framed()) {
-        reject(error('standalone', 'Not running inside Deck'));
+    };
+    trust(options.origins);
+    const framed = () => {
+      if (!win) return false;
+      try {
+        return Boolean(win.parent) && win.parent !== win;
+      } catch (e) {
+        return true;
+      }
+    };
+    function send(type, payload, id) {
+      if (!win) return;
+      const message = { __deck: 1, v: 1, id, type, payload };
+      if (parentOrigin) {
+        win.parent.postMessage(message, parentOrigin);
         return;
       }
-      var id = 'd' + nextId++;
-      var timer = setTimeout(function () {
-        delete pending[id];
-        reject(error('timeout', 'Deck did not answer'));
-      }, timeout || REQUEST_MS);
-      pending[id] = {
-        resolve: function (value) {
-          clearTimeout(timer);
-          resolve(value);
-        },
-        reject: function (reason) {
-          clearTimeout(timer);
-          reject(reason);
-        },
-      };
-      send(type, payload, id);
-    });
-  }
-
-  function error(code, message) {
-    var err = new Error(message);
-    err.code = code;
-    return err;
-  }
-
-  function emit(name, data) {
-    (listeners[name] || []).slice().forEach(function (fn) {
-      try {
-        fn(data);
-      } catch (e) {
-        setTimeout(function () {
-          throw e;
-        });
-      }
-    });
-  }
-
-  global.addEventListener('message', function (event) {
-    /* Only the window we are framed by, and only from an origin we trust. */
-    if (event.source !== global.parent) return;
-    if (allowed.indexOf(event.origin) === -1) return;
-    var data = event.data;
-    if (!data || data.__deck !== 1) return;
-
-    parentOrigin = event.origin;
-
-    if (data.type === 'response' && data.id && pending[data.id]) {
-      var entry = pending[data.id];
-      delete pending[data.id];
-      if (data.ok) entry.resolve(data.data);
-      else
-        entry.reject(
-          error(
-            (data.error && data.error.code) || 'error',
-            (data.error && data.error.message) || 'Something went wrong',
-          ),
-        );
-      return;
-    }
-
-    if (data.type === 'event' && data.event) emit(data.event, data.data);
-  });
-
-  var DeckGames = {
-    version: VERSION,
-
-    /**
-     * Connects to the Deck player. Resolves with
-     * `{ standalone, mode, orientation, viewport, player, multiplayer, invite }`
-     * — `player` is `{ playerId, displayName }` when someone is signed in,
-     * otherwise null. `multiplayer` is `{ minPlayers, maxPlayers }` when it is
-     * switched on for your game. `invite` is a room code if the player arrived
-     * through an invite link — pass it to `multiplayer.join()`.
-     */
-    init: function () {
-      if (initPromise) return initPromise;
-      initPromise = request('init', { sdk: VERSION }, HANDSHAKE_MS).catch(function (reason) {
-        if (reason && (reason.code === 'timeout' || reason.code === 'standalone')) {
-          return { standalone: true, mode: null, orientation: null, viewport: null, player: null };
+      for (const origin of allowed) {
+        try {
+          win.parent.postMessage(message, origin);
+        } catch (e) {
         }
-        throw reason;
+      }
+    }
+    function request(type, payload = {}, timeout = REQUEST_MS) {
+      return new Promise((resolve, reject) => {
+        if (!framed()) {
+          reject(new DeckGamesError("standalone", "Not running inside Deck"));
+          return;
+        }
+        const id = `d${nextId++}`;
+        const timer = setTimeout(() => {
+          pending.delete(id);
+          reject(new DeckGamesError("timeout", "Deck did not answer"));
+        }, timeout);
+        pending.set(id, {
+          resolve: (value) => {
+            clearTimeout(timer);
+            resolve(value);
+          },
+          reject: (reason) => {
+            clearTimeout(timer);
+            reject(reason);
+          }
+        });
+        send(type, payload, id);
       });
-      return initPromise;
-    },
-
-    /** Tell Deck your game has loaded, so the player drops its loading screen. */
-    ready: function () {
-      if (framed()) send('ready', {});
-    },
-
-    /**
-     * A fresh session token for your server to verify with
-     * `POST /api/games/v1/session/verify`. Asks the player to sign in first if
-     * they have not (rejects with code `signed_out` if they decline).
-     */
-    session: function () {
-      return request('session', {});
-    },
-
-    /** What your game sells, as configured in the developer dashboard. */
-    products: function () {
-      return request('products', {});
-    },
-
-    /**
-     * Buys a product by its id. Resolves with `{ reference, status, productId }`
-     * — `status` is `paid` or `cancelled`. Grant the item from your server on
-     * the `purchase.paid` webhook, not on this promise.
-     */
-    purchase: function (productId) {
-      if (typeof productId !== 'string' || !productId) {
-        return Promise.reject(error('bad_request', 'purchase() needs a product id'));
+    }
+    function emit(name, data) {
+      var _a;
+      for (const fn of ((_a = listeners[name]) != null ? _a : []).slice()) {
+        try {
+          fn(data);
+        } catch (error) {
+          setTimeout(() => {
+            throw error;
+          });
+        }
       }
-      return request('purchase', { productId: productId });
-    },
-
-    /** Everything this player has bought in your game. */
-    getPurchases: function () {
-      return request('getPurchases', {});
-    },
-
-    /** Posts a score to your game's Deck leaderboard. At most once every 10s. */
-    submitScore: function (score) {
-      var value = Math.floor(Number(score));
-      if (!isFinite(value) || value < 0) {
-        return Promise.reject(error('bad_request', 'Scores are whole numbers from 0'));
+    }
+    win == null ? void 0 : win.addEventListener("message", (event) => {
+      var _a, _b;
+      if (event.source !== win.parent) return;
+      if (!allowed.includes(event.origin)) return;
+      const data = event.data;
+      if (!data || data.__deck !== 1) return;
+      parentOrigin = event.origin;
+      if (data.type === "response" && data.id && pending.has(data.id)) {
+        const entry = pending.get(data.id);
+        pending.delete(data.id);
+        if (data.ok) entry.resolve(data.data);
+        else
+          entry.reject(
+            new DeckGamesError(((_a = data.error) == null ? void 0 : _a.code) || "error", ((_b = data.error) == null ? void 0 : _b.message) || "Something went wrong")
+          );
+        return;
       }
-      var now = Date.now();
-      if (now - lastScoreAt < 10000) {
-        return Promise.reject(error('rate_limited', 'One score every 10 seconds'));
-      }
-      lastScoreAt = now;
-      return request('submitScore', { score: value });
-    },
-
-    /** The top ten, and this player's own place. */
-    leaderboard: function () {
-      return request('leaderboard', {});
-    },
-
-    /**
-     * Asks the player to go full screen — `fullscreen(false)` to come back,
-     * no argument to toggle. Resolves with `{ active }`. Call it from a tap or
-     * a click: browsers only allow full screen in answer to the player.
-     */
-    fullscreen: function (on) {
-      return request('fullscreen', typeof on === 'boolean' ? { on: on } : {});
-    },
-
-    /**
-     * Multiplayer, through Deck: rooms, matchmaking and live messages. Switch it
-     * on in your game's developer settings first.
-     *
-     *   const room = await DeckGames.multiplayer.quickMatch();
-     *   DeckGames.on('message', ({ from, data }) => …);
-     *   DeckGames.multiplayer.send({ move: 'e4' });
-     *
-     * Every call resolves with the room (or a small result) and rejects with a
-     * code, like everything else. Events: `room` (the room changed — players,
-     * ready, host, status), `started`, `state` (`{ state, from }`), `message`
-     * (`{ from, data, at }`, `from` is a player id or `server`), `ended`.
-     */
-    multiplayer: {
-      /** A new room with you as host. `{ visibility: 'public' }` to let quick match fill it. */
-      create: function (options) {
-        return request('mp.create', { visibility: options && options.visibility });
-      },
-      /** Joins a room by its six-character code. */
-      join: function (code) {
-        return request('mp.join', { code: code });
-      },
-      /** The oldest open public room with a free seat — or a new one. */
-      quickMatch: function () {
-        return request('mp.quickMatch', {});
-      },
-      /** The room you are in, as last heard, or null. */
-      room: function () {
-        return request('mp.room', {});
-      },
-      setReady: function (ready) {
-        return request('mp.ready', { ready: ready !== false });
-      },
-      /** Host only, once the room has its minimum players. */
-      start: function () {
-        return request('mp.start', {});
+      if (data.type === "event" && data.event) emit(data.event, data.data);
+    });
+    return {
+      version: VERSION,
+      /** Trust more Deck origins, e.g. a local copy of Deck. Call before `init()`. */
+      configure(next) {
+        trust(next.origins);
       },
       /**
-       * Sends any JSON (up to 4 KB) to the room. `to`: `'others'` (default),
-       * `'all'`, `'host'`, or a player id.
+       * Connects to the Deck player. `player` is set when someone is signed in;
+       * `invite` is a room code if the player arrived through an invite link.
        */
-      send: function (data, options) {
-        return request('mp.send', { data: data, to: (options && options.to) || 'others' });
-      },
-      /** Host only: shared state (up to 16 KB) everyone receives as a `state` event. */
-      setState: function (state) {
-        return request('mp.setState', { state: state });
-      },
-      leave: function () {
-        return request('mp.leave', {});
-      },
-      /** Host only. Ends the room without results — those come from your server. */
-      end: function () {
-        return request('mp.end', {});
-      },
-    },
-
-    /**
-     * Events from the player: `pause` and `resume` (the tab or the player was
-     * hidden), `orientation` (`{ orientation, viewport }` on rotate/resize),
-     * `fullscreen` (`{ active }`), and the multiplayer events above.
-     */
-    on: function (name, fn) {
-      (listeners[name] = listeners[name] || []).push(fn);
-      return function off() {
-        listeners[name] = (listeners[name] || []).filter(function (f) {
-          return f !== fn;
+      init(next) {
+        if (next) trust(next.origins);
+        if (initPromise) return initPromise;
+        initPromise = request("init", { sdk: VERSION }, HANDSHAKE_MS).catch((reason) => {
+          if (reason instanceof DeckGamesError && (reason.code === "timeout" || reason.code === "standalone")) {
+            return { standalone: true, mode: null, orientation: null, viewport: null, player: null };
+          }
+          throw reason;
         });
-      };
-    },
-  };
+        return initPromise;
+      },
+      /** Tell Deck your game has loaded, so the player drops its loading screen. */
+      ready() {
+        if (framed()) send("ready", {});
+      },
+      /**
+       * A fresh session token for your server to verify. Asks the player to sign
+       * in first if they have not (rejects with `signed_out` if they decline).
+       */
+      session: () => request("session"),
+      /** What your game sells, as configured in the developer dashboard. */
+      products: () => request("products"),
+      /**
+       * Buys a product by its id. Grant the item from your server on the
+       * `purchase.paid` webhook, not on this promise.
+       */
+      purchase(productId) {
+        if (typeof productId !== "string" || !productId) {
+          return Promise.reject(new DeckGamesError("bad_request", "purchase() needs a product id"));
+        }
+        return request("purchase", { productId });
+      },
+      /** Everything this player has bought in your game. */
+      getPurchases: () => request("getPurchases"),
+      /** Posts a score to your game's Deck leaderboard. At most once every 10s, live mode only. */
+      submitScore(score) {
+        const value = Math.floor(Number(score));
+        if (!Number.isFinite(value) || value < 0) {
+          return Promise.reject(new DeckGamesError("bad_request", "Scores are whole numbers from 0"));
+        }
+        const now = Date.now();
+        if (now - lastScoreAt < 1e4) {
+          return Promise.reject(new DeckGamesError("rate_limited", "One score every 10 seconds"));
+        }
+        lastScoreAt = now;
+        return request("submitScore", { score: value });
+      },
+      /** The top ten, and this player's own place. */
+      leaderboard: () => request("leaderboard"),
+      /**
+       * Asks the player to go full screen — `fullscreen(false)` to come back, no
+       * argument to toggle. Call it from a tap or a click.
+       */
+      fullscreen: (on) => request("fullscreen", typeof on === "boolean" ? { on } : {}),
+      /**
+       * Multiplayer through Deck: rooms, matchmaking and live messages. Switch it
+       * on in your game's developer settings first.
+       */
+      multiplayer: {
+        /** A new room with you as host. `{ visibility: 'public' }` lets quick match fill it. */
+        create: (opts) => request("mp.create", { visibility: opts == null ? void 0 : opts.visibility }),
+        /** Joins a room by its six-character code. */
+        join: (code) => request("mp.join", { code }),
+        /** The oldest open public room with a free seat — or a new one. */
+        quickMatch: () => request("mp.quickMatch"),
+        /** The room you are in, as last heard, or null. */
+        room: () => request("mp.room"),
+        setReady: (ready = true) => request("mp.ready", { ready: ready !== false }),
+        /** Host only, once the room has its minimum players. */
+        start: () => request("mp.start"),
+        /** Any JSON up to 4 KB. `to`: `'others'` (default), `'all'`, `'host'`, or a player id. */
+        send: (data, opts) => request("mp.send", { data, to: (opts == null ? void 0 : opts.to) || "others" }),
+        /** Host only: shared state (up to 16 KB) everyone receives as a `state` event. */
+        setState: (state) => request("mp.setState", { state }),
+        leave: () => request("mp.leave"),
+        /** Host only. Ends the room without results — those come from your server. */
+        end: () => request("mp.end")
+      },
+      /** Listens for an event from the player. Returns a function that stops listening. */
+      on(name, fn) {
+        var _a;
+        const key = name;
+        const handler = fn;
+        listeners[key] = [...(_a = listeners[key]) != null ? _a : [], handler];
+        return () => {
+          var _a2;
+          listeners[key] = ((_a2 = listeners[key]) != null ? _a2 : []).filter((f) => f !== handler);
+        };
+      }
+    };
+  }
 
-  global.DeckGames = DeckGames;
-})(typeof window !== 'undefined' ? window : this);
+  // src/browser.ts
+  if (!window.DeckGames) {
+    const script = document.currentScript;
+    const extra = script && script.getAttribute("data-deck-origins") || "";
+    window.DeckGames = createDeckGames({ origins: extra.split(/[\s,]+/) });
+  }
+})();

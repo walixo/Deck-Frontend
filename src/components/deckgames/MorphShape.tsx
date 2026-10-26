@@ -3,12 +3,14 @@ import { useReducedMotion } from '@/components/deckgames/motion';
 import { cn } from '@/lib/utils';
 
 /**
- * One soft, glowing solid that turns slowly and becomes the next: a ring, a
- * rounded cube, a pyramid, and the ring again, every ten seconds.
+ * One soft, glowing solid that turns slowly and becomes the next: a rounded
+ * cube, a pyramid, a naira sign, a dollar sign, and the cube again, every
+ * twelve seconds.
  *
  * A single fragment shader on a plain WebGL canvas — no library. Each pixel
- * marches a ray into three signed-distance shapes and blends between them, so
- * the morph is continuous rather than a cross-fade. The colour is light rather
+ * marches a ray into four signed-distance shapes and blends between them, so
+ * the morph is continuous rather than a cross-fade. The solids spin; the two
+ * signs only sway, so they stay readable face on. The colour is light rather
  * than paint: a cycle through blue, violet, pink, ember and amber that flows
  * across the surface with the turn and the time, brightening at the rim.
  *
@@ -30,48 +32,77 @@ uniform float uTime;
 mat3 rotY(float a) { float c = cos(a), s = sin(a); return mat3(c, 0., -s, 0., 1., 0., s, 0., c); }
 mat3 rotX(float a) { float c = cos(a), s = sin(a); return mat3(1., 0., 0., 0., c, s, 0., -s, c); }
 
-float sdTorus(vec3 p) {
-  return length(vec2(length(p.xy) - 0.62, p.z)) - 0.3;
-}
-
 float sdBox(vec3 p) {
   vec3 q = abs(p) - vec3(0.5);
   return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - 0.12;
 }
 
-float sdPyramid(vec3 p, float h) {
-  float m2 = h * h + 0.25;
-  p.xz = abs(p.xz);
-  p.xz = (p.z > p.x) ? p.zx : p.xz;
-  p.xz -= 0.5;
-  vec3 q = vec3(p.z, h * p.y - 0.5 * p.x, h * p.x + 0.5 * p.y);
-  float s = max(-q.x, 0.0);
-  float t = clamp((q.y - 0.5 * p.z) / (m2 + 0.25), 0.0, 1.0);
-  float a = m2 * (q.x + s) * (q.x + s) + q.y * q.y;
-  float b = m2 * (q.x + 0.5 * t) * (q.x + 0.5 * t) + (q.y - m2 * t) * (q.y - m2 * t);
-  float d2 = min(q.y, -q.x * m2 - q.y * 0.5) > 0.0 ? 0.0 : min(a, b);
-  return sqrt((d2 + q.z * q.z) / m2) * sign(max(q.z, -p.y));
+/* A square-based pyramid as the meeting of five planes. A bound rather than an
+   exact distance, so a ray can never overshoot through the base. */
+float sdPyramid(vec3 p) {
+  float h = 1.2, k = 1.0 / sqrt(h * h + 0.36);
+  vec2 a = abs(p.xz);
+  float faces = max(h * a.x, h * a.y) + 0.6 * p.y - 0.6 * h;
+  return max(faces * k, -p.y) - 0.05;
 }
 
-/* Ring, cube, pyramid, ring: a hold on each and a second to become the next. */
-float shape(vec3 p) {
-  float c = mod(uTime, 10.0);
-  float torus = sdTorus(p);
-  float box = sdBox(p);
-  float s = 1.2;
-  float pyr = sdPyramid(p / s + vec3(0.0, 0.36, 0.0), 1.0) * s - 0.05;
-  float ab = smoothstep(2.4, 3.4, c);
-  float bc = smoothstep(5.6, 6.6, c);
-  float ca = smoothstep(8.8, 9.8, c);
-  float d = mix(torus, box, ab);
-  d = mix(d, pyr, bc);
-  return mix(d, torus, ca);
+float sdSegment(vec2 p, vec2 a, vec2 b) {
+  vec2 pa = p - a, ba = b - a;
+  return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0));
+}
+
+/* Distance to an arc of radius r about c, reaching span radians either side of
+   the direction mid. */
+float sdArc(vec2 p, vec2 c, float r, float mid, float span) {
+  vec2 q = p - c;
+  q = vec2(cos(mid) * q.x + sin(mid) * q.y, cos(mid) * q.y - sin(mid) * q.x);
+  if (abs(atan(q.y, q.x)) < span) return abs(length(q) - r);
+  vec2 e = r * vec2(cos(span), sin(span));
+  return min(length(q - e), length(q - vec2(e.x, -e.y)));
+}
+
+/* A flat stroke drawing given depth and a soft rounded edge. */
+float extrude(vec3 p, float d) {
+  vec2 w = vec2(d - 0.075, abs(p.z) - 0.13);
+  return min(max(w.x, w.y), 0.0) + length(max(w, 0.0)) - 0.04;
+}
+
+/* N with two bars across it. */
+float sdNaira(vec3 p) {
+  vec2 q = p.xy;
+  float d = sdSegment(q, vec2(-0.4, -0.6), vec2(-0.4, 0.6));
+  d = min(d, sdSegment(q, vec2(0.4, -0.6), vec2(0.4, 0.6)));
+  d = min(d, sdSegment(q, vec2(-0.4, 0.6), vec2(0.4, -0.6)));
+  d = min(d, sdSegment(q, vec2(-0.66, 0.17), vec2(0.66, 0.17)));
+  d = min(d, sdSegment(q, vec2(-0.66, -0.17), vec2(0.66, -0.17)));
+  return extrude(p, d);
+}
+
+/* An S of two open arcs, with one stroke through it. */
+float sdDollar(vec3 p) {
+  vec2 q = p.xy;
+  float d = sdArc(q, vec2(0.0, 0.27), 0.3, 2.618, 2.094);
+  d = min(d, sdArc(q, vec2(0.0, -0.27), 0.3, -0.524, 2.094));
+  d = min(d, sdSegment(q, vec2(0.0, -0.84), vec2(0.0, 0.84)));
+  return extrude(p, d);
+}
+
+/* Cube, pyramid, naira, dollar, cube: a hold on each and a second to become
+   the next. The solids are measured in the spinning frame, the signs in the
+   swaying one. */
+float shape(vec3 spun, vec3 swayed) {
+  float c = mod(uTime, 12.0);
+  float d = mix(sdBox(spun), sdPyramid(spun + vec3(0.0, 0.43, 0.0)), smoothstep(2.0, 3.0, c));
+  d = mix(d, sdNaira(swayed / 0.9) * 0.9, smoothstep(5.0, 6.0, c));
+  d = mix(d, sdDollar(swayed / 0.9) * 0.9, smoothstep(8.0, 9.0, c));
+  return mix(d, sdBox(spun), smoothstep(11.0, 12.0, c));
 }
 
 float map(vec3 p) {
   float t = uTime;
-  p = rotX(0.45 + 0.25 * sin(t * 0.37)) * rotY(t * 0.55) * p;
-  return shape(p);
+  vec3 spun = rotX(0.45 + 0.25 * sin(t * 0.37)) * rotY(t * 0.55) * p;
+  vec3 swayed = rotX(0.12 * sin(t * 0.5)) * rotY(0.55 * sin(t * 0.6)) * p;
+  return shape(spun, swayed);
 }
 
 vec3 normalAt(vec3 p) {
@@ -194,7 +225,7 @@ export function MorphShape({ className }: { className?: string }) {
     let visible = true;
     const draw = (now: number) => {
       gl.uniform2f(uRes, canvas.width, canvas.height);
-      /* The still frame lands on the ring, mid-turn. */
+      /* The still frame lands on the cube, mid-turn. */
       gl.uniform1f(uTime, reduced ? 1.2 : (now - start) / 1000);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);

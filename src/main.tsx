@@ -19,14 +19,20 @@ import { RequestError } from './lib/api';
 import { restoreFontset } from './lib/fontset';
 import { installClickSound } from './lib/sound';
 
-/* Before the first render, not in an effect: restoring the font preview one
-   paint late would make the whole page visibly re-letter on every load. */
-restoreFontset();
+/* match.onedeck.africa is Match — two voices, two minutes — served by this same
+   deployment. It loads its own small app and none of Deck's providers. */
+const isMatch = window.location.hostname.startsWith('match.');
 
-/* One listener for the whole site, outside React, because it belongs to the
-   document rather than to any tree that mounts and unmounts inside it. Nothing
-   is built until the first press — see `installClickSound`. */
-installClickSound();
+if (!isMatch) {
+  /* Before the first render, not in an effect: restoring the font preview one
+     paint late would make the whole page visibly re-letter on every load. */
+  restoreFontset();
+
+  /* One listener for the whole site, outside React, because it belongs to the
+     document rather than to any tree that mounts and unmounts inside it. Nothing
+     is built until the first press — see `installClickSound`. */
+  installClickSound();
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,23 +53,27 @@ const queryClient = new QueryClient({
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Root element #root is missing from index.html');
 
-createRoot(rootElement).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ConsentProvider>
-        <CurrencyProvider>
-          <ThemeProvider>
-            <BrowserRouter>
-              <AuthProvider>
-                <CartProvider>
-                  <App />
-                  <Analytics />
-                </CartProvider>
-              </AuthProvider>
-            </BrowserRouter>
-          </ThemeProvider>
-        </CurrencyProvider>
-      </ConsentProvider>
-    </QueryClientProvider>
-  </StrictMode>,
-);
+if (isMatch) {
+  document.title = 'Match — two voices, two minutes';
+  void import('./match/mount').then(({ mountMatch }) => mountMatch(rootElement));
+} else
+  createRoot(rootElement).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ConsentProvider>
+          <CurrencyProvider>
+            <ThemeProvider>
+              <BrowserRouter>
+                <AuthProvider>
+                  <CartProvider>
+                    <App />
+                    <Analytics />
+                  </CartProvider>
+                </AuthProvider>
+              </BrowserRouter>
+            </ThemeProvider>
+          </CurrencyProvider>
+        </ConsentProvider>
+      </QueryClientProvider>
+    </StrictMode>,
+  );

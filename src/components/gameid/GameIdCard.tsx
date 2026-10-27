@@ -70,7 +70,7 @@ export function GameIdCard({
         <div className="relative flex h-full flex-col justify-between p-[7%]">
           <div className="flex items-start justify-between">
             <span className="flex items-center gap-2.5">
-              <GameIdMark className="size-[clamp(1.5rem,4vw,2rem)] drop-shadow-[0_1px_6px_rgb(0_0_0/0.25)]" />
+              <GameIdMark className="size-[clamp(1.75rem,4.5vw,2.5rem)] drop-shadow-[0_2px_8px_rgb(0_0_0/0.25)]" />
               <span className="text-[clamp(1rem,2.6vw,1.35rem)] font-semibold tracking-[-0.045em] [text-shadow:0_1px_10px_rgb(0_0_0/0.18)]">
                 GameID
               </span>

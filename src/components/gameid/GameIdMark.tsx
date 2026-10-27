@@ -1,30 +1,26 @@
+import { GAMEID_MARK_LAYERS, GAMEID_MARK_VIEWBOX } from '@/lib/gameIdMark';
 import { cn } from '@/lib/utils';
 
 /**
- * The GameID mark: a controller's face — a d-pad and two buttons — inside a
- * rounded badge. Drawn in `currentColor`, so it takes whatever ink it sits
- * in: white on the sign-in button, ink on paper, ember as an accent.
+ * The GameID mark: an ember controller — a d-pad and four buttons — standing
+ * on a white slab, the same raised, hard-edged step as Deck's buttons.
+ *
+ * Full colour everywhere, so it reads the same on night, on paper and on the
+ * sign-in button other sites embed. A faint outer edge keeps the white slab
+ * visible on light backgrounds. The drawing lives in `lib/gameIdMark.ts`.
  */
 export function GameIdMark({ className, title }: { className?: string; title?: string }) {
   return (
     <svg
-      viewBox="0 0 24 24"
-      fill="none"
+      viewBox={GAMEID_MARK_VIEWBOX}
       role={title ? 'img' : undefined}
       aria-hidden={title ? undefined : true}
       aria-label={title}
       className={cn('block', className)}
     >
       {title && <title>{title}</title>}
-      <rect x="2" y="4.5" width="20" height="15" rx="5" stroke="currentColor" strokeWidth="1.8" />
-      <path
-        d="M8 9.2v5.6M5.2 12h5.6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <circle cx="15.6" cy="10.6" r="1.25" fill="currentColor" />
-      <circle cx="18" cy="13.4" r="1.25" fill="currentColor" />
+      {/* Fixed markup from lib/gameIdMark.ts, never user input. */}
+      <g dangerouslySetInnerHTML={{ __html: GAMEID_MARK_LAYERS }} />
     </svg>
   );
 }

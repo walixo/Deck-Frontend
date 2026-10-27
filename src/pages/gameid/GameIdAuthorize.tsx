@@ -97,7 +97,7 @@ export function GameIdAuthorize() {
       <PageBanner />
       <div className="w-full max-w-md">
         <div className="mb-6 flex items-center justify-center gap-2">
-          <GameIdMark className="size-6 text-accent" />
+          <GameIdMark className="size-8" />
           <span className="text-[17px] font-semibold tracking-[-0.04em]">GameID</span>
         </div>
 

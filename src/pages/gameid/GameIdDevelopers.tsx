@@ -19,7 +19,7 @@ export function GameIdDevelopers() {
     <div className="mx-auto max-w-[1100px] px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
       <title>GameID for developers</title>
       <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-g-ember-ink">
-        <GameIdMark className="size-4" /> GameID for developers
+        <GameIdMark className="size-5" /> GameID for developers
       </p>
       <h1 className="mt-4 max-w-3xl text-[clamp(2.25rem,5vw,4rem)] font-medium leading-[0.95] tracking-[-0.055em] text-balance">
         Let players sign in with GameID

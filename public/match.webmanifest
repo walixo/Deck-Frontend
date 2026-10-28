@@ -1,0 +1,15 @@
+{
+  "name": "Match — two voices, two minutes",
+  "short_name": "Match",
+  "description": "Talk to someone online right now. Voice only, two minutes.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0a09",
+  "theme_color": "#0b0a09",
+  "icons": [
+    { "src": "/match-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/match-icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/match-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

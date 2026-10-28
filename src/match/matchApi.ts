@@ -17,16 +17,44 @@ export interface MatchProfile {
   gender: Gender;
   lagosLife: string;
   bannedUntil: string | null;
+  /** Asked staff to switch section; waiting on them. */
+  sectionRequested: boolean;
+  /** This account gets "someone's free" pings on some device. */
+  pings: boolean;
 }
 
+export interface MatchHours {
+  open: boolean;
+  /** While open, when tonight opened; while closed, when it next opens (epoch ms). */
+  opensAt: number;
+  closesAt: number;
+}
+
+/**
+ * What Match tells everyone: the hours, whether anyone is on each side, and
+ * the numbers only once there are enough of them (`live`, else null).
+ */
 export interface Online {
-  total: number;
-  male: number;
-  female: number;
+  hours: MatchHours;
+  live: { total: number; male: number; female: number } | null;
+  available: Record<Gender, boolean>;
+  /** The Web Push key, when pings are switched on server-side. */
+  pushKey: string | null;
 }
 
 export type MatchEvent =
-  'hello' | 'online' | 'queue' | 'matched' | 'signal' | 'started' | 'ended' | 'revealed' | 'banned';
+  | 'hello'
+  | 'online'
+  | 'queue'
+  | 'matched'
+  | 'signal'
+  | 'started'
+  | 'extend'
+  | 'extended'
+  | 'ended'
+  | 'revealed'
+  | 'closed'
+  | 'banned';
 
 export const matchApi = {
   online: () => request<Online>('get', '/match/online'),
@@ -44,6 +72,13 @@ export const matchApi = {
   share: (callId: string) => request<{ revealed: boolean }>('post', `/match/calls/${callId}/share`),
   report: (callId: string, reason: string) =>
     request('post', `/match/calls/${callId}/report`, { reason }),
+  extend: (callId: string) => request('post', `/match/calls/${callId}/extend`),
+  requestSection: (note: string) =>
+    request<MatchProfile>('post', '/match/me/section-request', { note }),
+  subscribe: (subscription: PushSubscriptionJSON) =>
+    request<{ pings: boolean }>('post', '/match/push', subscription),
+  unsubscribe: (endpoint?: string) =>
+    request<{ pings: boolean }>('delete', '/match/push', endpoint ? { endpoint } : {}),
 };
 
 /**

@@ -11,6 +11,15 @@ import {
   type MatchProfile,
   type Online,
 } from './matchApi';
+import {
+  isInstalled,
+  isIOS,
+  pushSupported,
+  subscribeToPings,
+  unsubscribeFromPings,
+  useInstallPrompt,
+  useWakeLock,
+} from './device';
 import { VoiceCall } from './voiceCall';
 
 /**
@@ -25,6 +34,10 @@ import { VoiceCall } from './voiceCall';
  * One screen at a time, driven by the live line (see `matchApi.ts`): the
  * server decides matches and keeps the clock; this page asks for the
  * microphone, runs the call (`voiceCall.ts`) and shows where things stand.
+ *
+ * Match is open 8pm to 10pm, Lagos time. Until enough people are on, it says
+ * "busy" or "quiet" rather than showing a small number, and anyone can ask to
+ * be pinged (browser push) when someone on the other side arrives.
  */
 
 type Screen =
@@ -53,17 +66,53 @@ interface Ended {
   shareUntil: number;
 }
 
+interface Queue {
+  position: number;
+  otherWaiting: boolean;
+}
+
+interface Extend {
+  mine: boolean;
+  theirs: boolean;
+  extended: boolean;
+}
+
 const other = (gender: Gender): Gender => (gender === 'male' ? 'female' : 'male');
 const people = (gender: Gender, count: number) =>
   `${count} ${gender === 'male' ? (count === 1 ? 'man' : 'men') : count === 1 ? 'woman' : 'women'}`;
+const plural = (gender: Gender) => (gender === 'male' ? 'Men' : 'Women');
+
+/* Times are Lagos times: Match keeps Lagos evening hours. */
+const clock = new Intl.DateTimeFormat('en-NG', {
+  timeZone: 'Africa/Lagos',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+});
+const timeOf = (ms: number) => clock.format(ms).toLowerCase().replace(':00', '').replace(/\s/g, '');
+
+function countdown(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  if (hours) return `${hours}h ${String(minutes).padStart(2, '0')}m`;
+  return `${minutes}m ${String(seconds).padStart(2, '0')}s`;
+}
+
+/** The header's one word on how Match is right now. */
+function status(online: Online): string {
+  if (!online.hours.open) return `Opens ${timeOf(online.hours.opensAt)}`;
+  if (online.live) return `${online.live.total.toLocaleString()} online`;
+  return online.available.male && online.available.female ? 'Busy' : 'Quiet right now';
+}
 
 export function MatchApp({ signInError = '' }: { signInError?: string }) {
   const [screen, setScreen] = useState<Screen>(() => (getStoredToken() ? 'loading' : 'signedOut'));
   const [profile, setProfile] = useState<MatchProfile | null>(null);
   const [online, setOnline] = useState<Online | null>(null);
-  const [queue, setQueue] = useState<{ position: number; waiting: Record<Gender, number> } | null>(
-    null,
-  );
+  const [queue, setQueue] = useState<Queue | null>(null);
+  const [extend, setExtend] = useState<Extend>({ mine: false, theirs: false, extended: false });
   const [call, setCall] = useState<CallInfo | null>(null);
   const [ended, setEnded] = useState<Ended | null>(null);
   const [shared, setShared] = useState(false);
@@ -72,7 +121,9 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
   const [notice, setNotice] = useState(signInError);
   const [reporting, setReporting] = useState(false);
   const [matches, setMatches] = useState<{ handle: string; at: string }[]>([]);
-  const now = useNow(screen === 'live' || screen === 'ended');
+  const closed = online ? !online.hours.open : false;
+  const now = useNow(screen === 'live' || screen === 'ended' || (screen === 'lobby' && closed));
+  useWakeLock(screen === 'connecting' || screen === 'live');
 
   const line = useRef<MatchLine | null>(null);
   const voice = useRef<VoiceCall | null>(null);
@@ -113,7 +164,12 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         setOnline(raw as Online);
         break;
       case 'queue':
-        setQueue(raw as { position: number; waiting: Record<Gender, number> });
+        setQueue(raw as Queue);
+        break;
+      case 'closed':
+        dropMic();
+        setScreen((current) => (current === 'waiting' ? 'lobby' : current));
+        setNotice('Match has closed for tonight. Back tomorrow at 8pm.');
         break;
       case 'matched': {
         const { callId, caller } = raw as { callId: string; caller: boolean };
@@ -127,6 +183,7 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         });
         void voice.current.start().catch(() => undefined);
         setCall({ callId, caller, endsAt: null, total: 120_000 });
+        setExtend({ mine: false, theirs: false, extended: false });
         setMuted(false);
         setNotice('');
         setScreen('connecting');
@@ -147,6 +204,25 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
             },
         );
         setScreen('live');
+        break;
+      }
+      case 'extend': {
+        const votes = raw as { mine: boolean; theirs: boolean };
+        setExtend((current) => ({ ...current, mine: votes.mine, theirs: votes.theirs }));
+        break;
+      }
+      case 'extended': {
+        const more = raw as { endsAt: number; serverNow: number };
+        const offset = more.serverNow - Date.now();
+        setCall(
+          (current) =>
+            current && {
+              ...current,
+              endsAt: more.endsAt - offset,
+              total: current.total + 60_000,
+            },
+        );
+        setExtend({ mine: true, theirs: true, extended: true });
         break;
       }
       case 'ended': {
@@ -263,7 +339,7 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
     }
     try {
       const { position } = await matchApi.queue();
-      setQueue((current) => ({ position, waiting: current?.waiting ?? { male: 0, female: 0 } }));
+      setQueue((current) => ({ position, otherWaiting: current?.otherWaiting ?? false }));
       setScreen((current) =>
         current === 'connecting' || current === 'live' ? current : 'waiting',
       );
@@ -280,6 +356,45 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
   };
 
   const hangUp = () => call && void matchApi.leave(call.callId).catch(() => undefined);
+
+  const askForMore = () => {
+    if (!call) return;
+    setExtend((current) => ({ ...current, mine: true }));
+    void matchApi.extend(call.callId).catch(() => undefined);
+  };
+
+  /* Pings: this browser's push subscription, on or off. */
+  const togglePings = async () => {
+    if (!profile) return;
+    setNotice('');
+    try {
+      if (profile.pings) {
+        await matchApi.unsubscribe(await unsubscribeFromPings());
+        setProfile({ ...profile, pings: false });
+        return;
+      }
+      if (!online?.pushKey) return;
+      const subscription = await subscribeToPings(online.pushKey);
+      if (!subscription) {
+        setNotice('Allow notifications for Match to get pings.');
+        return;
+      }
+      await matchApi.subscribe(subscription);
+      setProfile({ ...profile, pings: true });
+    } catch {
+      setNotice('Could not change pings just now.');
+    }
+  };
+
+  const requestSection = async (note: string) => {
+    try {
+      setProfile(await matchApi.requestSection(note));
+      return true;
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not send that.');
+      return false;
+    }
+  };
 
   const share = async () => {
     if (!ended) return;
@@ -331,16 +446,27 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
   else if (screen === 'lobby' && profile)
     body = (
       <Lobby
+        now={now}
         profile={profile}
         online={online}
         matches={matches}
         onFind={find}
         onSaveHandle={saveHandle}
+        onTogglePings={togglePings}
+        onRequestSection={requestSection}
         onSignOut={signOut}
       />
     );
   else if (screen === 'waiting' && profile)
-    body = <Waiting profile={profile} online={online} queue={queue} onCancel={cancel} />;
+    body = (
+      <Waiting
+        profile={profile}
+        online={online}
+        queue={queue}
+        onCancel={cancel}
+        onTogglePings={togglePings}
+      />
+    );
   else if (screen === 'connecting') body = <Connecting onLeave={hangUp} />;
   else if (screen === 'live' && call)
     body = (
@@ -349,6 +475,8 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         call={call}
         voice={voice}
         muted={muted}
+        extend={extend}
+        onExtend={askForMore}
         onMute={() => {
           voice.current?.setMuted(!muted);
           setMuted(!muted);
@@ -425,10 +553,15 @@ function Shell({
             by Deck
           </span>
         </button>
-        {online && online.total > 0 && (
+        {online && (
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em]">
-            <span className="size-2 animate-pulse rounded-full bg-[#5dcaa5]" />
-            {online.total.toLocaleString()} online
+            <span
+              className={cn(
+                'size-2 rounded-full',
+                online.hours.open ? 'animate-pulse bg-[#5dcaa5]' : 'bg-white/35',
+              )}
+            />
+            {status(online)}
           </span>
         )}
       </header>
@@ -480,11 +613,13 @@ function SignedOut({ online }: { online: Online | null }) {
         <GoogleG />
         Continue with Google
       </a>
-      {online && online.total > 0 && (
-        <p className="mt-6 font-mono text-[12px] uppercase tracking-[0.14em] text-white/50">
-          {people('male', online.male)} · {people('female', online.female)} online
-        </p>
-      )}
+      <p className="mt-6 font-mono text-[12px] uppercase tracking-[0.14em] text-white/50">
+        {online && !online.hours.open
+          ? `Live every night ${timeOf(online.hours.opensAt)}–${timeOf(online.hours.closesAt)} · Lagos time`
+          : online?.live
+            ? `${people('male', online.live.male)} · ${people('female', online.live.female)} online`
+            : 'Live now · every night 8–10pm'}
+      </p>
     </div>
   );
 }
@@ -548,7 +683,9 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
           </button>
         ))}
       </div>
-      <p className="-mt-3 text-[12px] text-white/45">This can’t be changed later.</p>
+      <p className="-mt-3 text-[12px] text-white/45">
+        You can’t switch this yourself later — if you choose wrong, ask us to change it.
+      </p>
       <label className="block">
         <span className="text-[14px] font-medium">Your LagosLife username</span>
         <span className="ml-2 text-[12px] text-white/45">optional — needed only to share</span>
@@ -620,46 +757,89 @@ function HandleEditor({
 }
 
 function Lobby({
+  now,
   profile,
   online,
   matches,
   onFind,
   onSaveHandle,
+  onTogglePings,
+  onRequestSection,
   onSignOut,
 }: {
+  now: number;
   profile: MatchProfile;
   online: Online | null;
   matches: { handle: string; at: string }[];
   onFind: () => void;
   onSaveHandle: (handle: string) => Promise<boolean>;
+  onTogglePings: () => void;
+  onRequestSection: (note: string) => Promise<boolean>;
   onSignOut: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const them = other(profile.gender);
+  const open = online?.hours.open ?? true;
   return (
     <div className="space-y-10">
-      <div className="text-center">
-        <p className={EYEBROW}>Online now</p>
-        <p className="mt-2 text-[clamp(5rem,24vw,8.5rem)] font-semibold leading-none tracking-[-0.06em] tabular-nums">
-          {online ? online.total.toLocaleString() : '—'}
-        </p>
-        {online && (
-          <p className="mt-3 text-[15px] text-white/60">
-            <b className="font-semibold text-white">{people(them, online[them])}</b> you could meet
-            · {people(profile.gender, online[profile.gender])}
+      {open ? (
+        <div className="text-center">
+          <p className={EYEBROW}>
+            Live now{online ? ` · until ${timeOf(online.hours.closesAt)}` : ''}
           </p>
-        )}
-        <button
-          type="button"
-          onClick={onFind}
-          className={cn(PRIMARY, 'mt-9 w-full max-w-xs py-5 text-[13px]')}
-        >
-          Find someone
-        </button>
-        <p className="mt-4 text-[13px] text-white/45">
-          Two minutes, voice only. Leave whenever you like.
-        </p>
-      </div>
+          <p className="mt-2 text-[clamp(4.5rem,22vw,8rem)] font-semibold leading-none tracking-[-0.06em] tabular-nums">
+            {online?.live
+              ? online.live.total.toLocaleString()
+              : online?.available[them]
+                ? 'Busy'
+                : 'Quiet'}
+          </p>
+          <p className="mx-auto mt-3 max-w-sm text-[15px] leading-relaxed text-white/60">
+            {online?.live ? (
+              <>
+                <b className="font-semibold text-white">{people(them, online.live[them])}</b> you
+                could meet · {people(profile.gender, online.live[profile.gender])}
+              </>
+            ) : online?.available[them] ? (
+              `${plural(them)} are on now. Press Find someone.`
+            ) : (
+              'Quiet right now — nobody on the other side yet. Press Find someone and you’ll be first in line.'
+            )}
+          </p>
+          <button
+            type="button"
+            onClick={onFind}
+            className={cn(PRIMARY, 'mt-9 w-full max-w-xs py-5 text-[13px]')}
+          >
+            Find someone
+          </button>
+          <p className="mt-4 text-[13px] text-white/45">
+            Two minutes, voice only. Leave whenever you like.
+          </p>
+          {isIOS() && (
+            <p className="mx-auto mt-3 max-w-xs text-[12px] text-white/40">
+              On iPhone, keep Match open during a call — locking the screen ends it.
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="text-center">
+          <MorphShape set="love" className="mx-auto -mb-2 aspect-square w-full max-w-[12rem]" />
+          <p className={EYEBROW}>Closed right now</p>
+          <p className="mt-2 text-[clamp(4rem,20vw,7rem)] font-semibold leading-none tracking-[-0.06em]">
+            {online ? timeOf(online.hours.opensAt) : '8pm'}
+          </p>
+          <p className="mt-3 text-[15px] text-white/60">
+            Match is live every night{' '}
+            {online ? `${timeOf(online.hours.opensAt)}–${timeOf(online.hours.closesAt)}` : '8–10pm'}
+            , Lagos time
+            {online ? ` · opens in ${countdown(online.hours.opensAt - now)}` : ''}.
+          </p>
+        </div>
+      )}
+
+      <PingCard online={online} profile={profile} onToggle={onTogglePings} />
+      <InstallCard />
 
       <section className="rounded-[12px] border border-white/12 bg-white/[0.03] p-5">
         <div className="flex items-center justify-between gap-3">
@@ -715,6 +895,8 @@ function Lobby({
         </section>
       )}
 
+      <SectionCard profile={profile} onRequest={onRequestSection} />
+
       <p className="text-center">
         <button
           type="button"
@@ -728,16 +910,174 @@ function Lobby({
   );
 }
 
+/** "Ping me when someone's free" — where this browser can do it. */
+function PingCard({
+  online,
+  profile,
+  onToggle,
+  compact = false,
+}: {
+  online: Online | null;
+  profile: MatchProfile;
+  onToggle: () => void;
+  compact?: boolean;
+}) {
+  if (!online?.pushKey || !pushSupported()) {
+    if (isIOS() && !isInstalled() && online?.pushKey && !compact) {
+      return (
+        <p className="text-center text-[13px] text-white/45">
+          Add Match to your Home Screen to get pings when someone’s free.
+        </p>
+      );
+    }
+    return null;
+  }
+  const them = plural(other(profile.gender)).toLowerCase();
+  return (
+    <section
+      className={cn(
+        'flex items-center justify-between gap-4 rounded-[12px] border border-white/12 bg-white/[0.03]',
+        compact ? 'mx-auto mt-6 max-w-sm p-4 text-left' : 'p-5',
+      )}
+    >
+      <div>
+        <p className="text-[15px] font-medium">Ping me when someone’s free</p>
+        <p className="mt-0.5 text-[13px] text-white/50">
+          A notification when {them} come on — at most once a night.
+        </p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={profile.pings}
+        aria-label="Ping me when someone’s free"
+        onClick={onToggle}
+        className={cn(
+          'relative h-7 w-12 shrink-0 rounded-full border-2 border-[#f4f2ee] transition-colors',
+          profile.pings ? 'bg-[#ff5c8a]' : 'bg-[#161412]',
+        )}
+      >
+        <span
+          className={cn(
+            'absolute top-0.5 size-5 rounded-full bg-[#f4f2ee] transition-[left]',
+            profile.pings ? 'left-[22px]' : 'left-0.5',
+          )}
+        />
+      </button>
+    </section>
+  );
+}
+
+/** Install Match to the home screen: the browser's own offer, or iPhone steps. */
+function InstallCard() {
+  const { canInstall, install } = useInstallPrompt();
+  if (isInstalled()) return null;
+  if (canInstall) {
+    return (
+      <section className="flex items-center justify-between gap-4 rounded-[12px] border border-white/12 bg-white/[0.03] p-5">
+        <div>
+          <p className="text-[15px] font-medium">Get Match on your home screen</p>
+          <p className="mt-0.5 text-[13px] text-white/50">
+            Opens like an app, straight to the lobby.
+          </p>
+        </div>
+        <button type="button" onClick={() => void install()} className={cn(QUIET, 'px-4 py-3')}>
+          Install
+        </button>
+      </section>
+    );
+  }
+  if (isIOS()) {
+    return (
+      <section className="rounded-[12px] border border-white/12 bg-white/[0.03] p-5">
+        <p className="text-[15px] font-medium">Get Match on your home screen</p>
+        <p className="mt-1 text-[13px] leading-relaxed text-white/55">
+          In Safari, tap <b className="text-white">Share</b>, then{' '}
+          <b className="text-white">Add to Home Screen</b>.
+        </p>
+      </section>
+    );
+  }
+  return null;
+}
+
+/** The section a person is in, and how to ask for it to be changed. */
+function SectionCard({
+  profile,
+  onRequest,
+}: {
+  profile: MatchProfile;
+  onRequest: (note: string) => Promise<boolean>;
+}) {
+  const [asking, setAsking] = useState(false);
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
+  return (
+    <section className="text-center text-[13px] text-white/45">
+      <p>
+        You’re in the {profile.gender === 'male' ? 'men’s' : 'women’s'} section.{' '}
+        {profile.sectionRequested ? (
+          <span className="text-white/70">Change requested — we’ll switch it if it’s right.</span>
+        ) : (
+          !asking && (
+            <button
+              type="button"
+              onClick={() => setAsking(true)}
+              className="underline underline-offset-4 hover:text-white/70"
+            >
+              Chose wrong? Ask to change
+            </button>
+          )
+        )}
+      </p>
+      {asking && !profile.sectionRequested && (
+        <form
+          className="mx-auto mt-3 max-w-sm space-y-2 text-left"
+          onSubmit={async (event) => {
+            event.preventDefault();
+            setBusy(true);
+            if (await onRequest(note.trim())) setAsking(false);
+            setBusy(false);
+          }}
+        >
+          <textarea
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            maxLength={300}
+            rows={2}
+            placeholder="Anything we should know? (optional)"
+            className="w-full rounded-[8px] border-2 border-white/20 bg-[#161412] px-3 py-2 text-[14px] text-white outline-none placeholder:text-white/30 focus:border-[#ff5c8a]"
+          />
+          <div className="flex gap-2">
+            <button type="submit" disabled={busy} className={cn(QUIET, 'px-4 py-2.5')}>
+              Send request
+            </button>
+            <button
+              type="button"
+              onClick={() => setAsking(false)}
+              className="px-3 text-[13px] text-white/55 hover:text-white"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+    </section>
+  );
+}
+
 function Waiting({
   profile,
   online,
   queue,
   onCancel,
+  onTogglePings,
 }: {
   profile: MatchProfile;
   online: Online | null;
-  queue: { position: number; waiting: Record<Gender, number> } | null;
+  queue: Queue | null;
   onCancel: () => void;
+  onTogglePings: () => void;
 }) {
   const them = other(profile.gender);
   return (
@@ -750,20 +1090,20 @@ function Waiting({
         {queue ? (
           <>
             You’re <b className="font-semibold text-white">{ordinal(queue.position)}</b> in line
-            {' · '}
-            {queue.waiting[them] > 0
-              ? `${people(them, queue.waiting[them])} waiting`
-              : `${people(them, online?.[them] ?? 0)} online`}
+            {online?.live ? ` · ${people(them, online.live[them])} online` : ''}
           </>
         ) : (
           'Joining the line…'
         )}
       </p>
-      {queue && queue.waiting[them] === 0 && (
+      {queue && !queue.otherWaiting && (
         <p className="mx-auto mt-2 max-w-xs text-[13px] text-white/45">
-          Nobody’s free on the other side right now. Stay here — you’ll be matched the moment
-          someone is.
+          Quiet on the other side right now. Stay here — you’ll be matched the moment someone
+          arrives.
         </p>
+      )}
+      {queue && !queue.otherWaiting && !profile.pings && (
+        <PingCard online={online} profile={profile} onToggle={onTogglePings} compact />
       )}
       <button type="button" onClick={onCancel} className={cn(QUIET, 'mt-9')}>
         Stop looking
@@ -785,6 +1125,11 @@ function Connecting({ onLeave }: { onLeave: () => void }) {
       <p className="mt-3 text-[15px] text-white/60">
         Connecting your voices — the clock starts when you can hear each other.
       </p>
+      {isIOS() && (
+        <p className="mx-auto mt-2 max-w-xs text-[12px] text-white/40">
+          Keep this screen open — locking your iPhone ends the call.
+        </p>
+      )}
       <button type="button" onClick={onLeave} className={cn(QUIET, 'mt-9')}>
         Leave
       </button>
@@ -797,6 +1142,8 @@ function Live({
   call,
   voice,
   muted,
+  extend,
+  onExtend,
   onMute,
   onLeave,
   onReport,
@@ -805,6 +1152,8 @@ function Live({
   call: CallInfo;
   voice: React.RefObject<VoiceCall | null>;
   muted: boolean;
+  extend: Extend;
+  onExtend: () => void;
   onMute: () => void;
   onLeave: () => void;
   onReport: () => void;
@@ -883,7 +1232,34 @@ function Live({
           </div>
         ))}
       </div>
-      <div className="mt-10 flex flex-wrap justify-center gap-3">
+      <div className="mt-8 min-h-14">
+        {extend.extended ? (
+          <p className="font-mono text-[12px] uppercase tracking-[0.16em] text-[#5dcaa5]">
+            +1 minute added
+          </p>
+        ) : (
+          (seconds <= 20 || extend.theirs) && (
+            <button
+              type="button"
+              onClick={onExtend}
+              disabled={extend.mine}
+              className={cn(
+                SLAB,
+                extend.theirs && !extend.mine
+                  ? 'animate-pulse bg-[#5dcaa5] text-[#0b0a09]'
+                  : 'bg-[#161412] text-[#f4f2ee]',
+              )}
+            >
+              {extend.mine
+                ? 'Waiting for them…'
+                : extend.theirs
+                  ? 'They want 1 more minute · +1'
+                  : '+1 minute'}
+            </button>
+          )
+        )}
+      </div>
+      <div className="mt-6 flex flex-wrap justify-center gap-3">
         <button type="button" onClick={onMute} className={QUIET} aria-pressed={muted}>
           {muted ? 'Unmute' : 'Mute'}
         </button>

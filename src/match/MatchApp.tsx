@@ -250,8 +250,15 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
       mic.current ??= await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
-    } catch {
-      setNotice('Allow your microphone so the other person can hear you.');
+    } catch (error) {
+      const name = error instanceof DOMException ? error.name : '';
+      setNotice(
+        name === 'NotFoundError'
+          ? 'No microphone found. Plug one in or switch devices, then try again.'
+          : name === 'NotReadableError'
+            ? 'Your microphone is busy in another app. Close it there and try again.'
+            : 'Microphone blocked. Click the icon at the left of the address bar, allow Microphone, then press Find someone again.',
+      );
       return;
     }
     try {

@@ -139,6 +139,7 @@ const AdminAcquisitions = lazyNamed(
 const AdminCustom = lazyNamed(() => import('@/pages/admin/AdminCustom'), 'AdminCustom');
 const AdminGames = lazyNamed(() => import('@/pages/admin/AdminGames'), 'AdminGames');
 const AdminChallenges = lazyNamed(() => import('@/pages/admin/AdminChallenges'), 'AdminChallenges');
+const AdminMatch = lazyNamed(() => import('@/pages/admin/AdminMatch'), 'AdminMatch');
 const AdminAds = lazyNamed(() => import('@/pages/admin/AdminAds'), 'AdminAds');
 const AdminAudit = lazyNamed(() => import('@/pages/admin/AdminAudit'), 'AdminAudit');
 
@@ -311,6 +312,7 @@ export function App() {
           <Route path="custom" element={<AdminCustom />} />
           <Route path="games" element={<AdminGames />} />
           <Route path="challenges" element={<AdminChallenges />} />
+          <Route path="match" element={<AdminMatch />} />
           <Route path="ads" element={<AdminAds />} />
           <Route path="audit" element={<AdminAudit />} />
         </Route>

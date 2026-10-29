@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { GIFTS, naira, shrinkPhoto } from './credit';
 import type { MatchGift, MatchNight, MatchWallet } from './matchApi';
-import { CARD, EYEBROW, LABEL, LINK, PRIMARY, QUIET } from './styles';
+import { CARD, CHIP, EYEBROW, LABEL, LINK, PRIMARY, QUIET } from './styles';
 
 /**
  * Match's wallet on screen: the balance and top-ups, Match+, the Verified
@@ -37,6 +37,64 @@ export function VerifiedMark({ className }: { className?: string }) {
       </svg>
       Verified
     </span>
+  );
+}
+
+/** A small turning ring: something is on its way. */
+export function Spinner({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-current border-r-transparent',
+        className,
+      )}
+    />
+  );
+}
+
+/**
+ * A button that pays for something. Pressed, it turns into a spinner with
+ * `busyLabel` until the payment is done or checkout opens, and every other
+ * pay button waits — so a tap always visibly does something.
+ */
+export function PayButton({
+  busy,
+  locked = false,
+  busyLabel,
+  onClick,
+  submit = false,
+  className,
+  children,
+}: {
+  /** This button's payment is under way. */
+  busy: boolean;
+  /** Another payment is under way. */
+  locked?: boolean;
+  busyLabel?: string;
+  onClick: () => void;
+  /** Sends its form instead of only calling `onClick`. */
+  submit?: boolean;
+  className: string;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type={submit ? 'submit' : 'button'}
+      onClick={onClick}
+      disabled={busy || locked}
+      aria-busy={busy}
+      className={cn(className, busy && 'cursor-wait disabled:opacity-100')}
+    >
+      {busy ? (
+        <>
+          <Spinner />
+          {busyLabel ?? children}
+        </>
+      ) : (
+        children
+      )}
+    </button>
   );
 }
 
@@ -88,9 +146,12 @@ export function TonightBanner({
 /** The balance, the top-up amounts, and what credit was spent on lately. */
 export function WalletCard({
   wallet,
+  pending,
   onTopUp,
 }: {
   wallet: MatchWallet;
+  /** Which payment is under way, if any: `topup:50000`, `plus`, … */
+  pending: string | null;
   onTopUp: (amountMinor: number) => void;
 }) {
   const [history, setHistory] = useState(false);
@@ -113,14 +174,18 @@ export function WalletCard({
       {wallet.payments ? (
         <div className="mt-4 grid grid-cols-4 gap-2">
           {wallet.packs.map((pack) => (
-            <button
+            <PayButton
               key={pack}
-              type="button"
+              busy={pending === `topup:${pack}`}
+              locked={pending !== null}
               onClick={() => onTopUp(pack)}
-              className="rounded-full bg-white/[0.07] py-2.5 font-mono text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
+              className={cn(
+                CHIP,
+                'inline-flex items-center justify-center gap-1.5 py-2.5 text-[13px]',
+              )}
             >
               +{naira(pack)}
-            </button>
+            </PayButton>
           ))}
         </div>
       ) : (
@@ -155,11 +220,11 @@ export function WalletCard({
 export function PlusCard({
   wallet,
   onBuy,
-  busy,
+  pending,
 }: {
   wallet: MatchWallet;
   onBuy: () => void;
-  busy: boolean;
+  pending: string | null;
 }) {
   const member = Boolean(wallet.plusUntil);
   return (
@@ -188,16 +253,17 @@ export function PlusCard({
         <li>An extra hour — talk until midnight</li>
         <li>Pings whenever someone’s free, not just once a night</li>
       </ul>
-      <button
-        type="button"
+      <PayButton
+        busy={pending === 'plus'}
+        locked={pending !== null}
+        busyLabel="Paying…"
         onClick={onBuy}
-        disabled={busy}
         className={cn(member ? QUIET : PRIMARY, 'mt-4 w-full')}
       >
         {member
           ? `Add ${wallet.prices.plusDays} more days · ${naira(wallet.prices.plus)}`
           : `Get Match+ · ${naira(wallet.prices.plus)}`}
-      </button>
+      </PayButton>
       <p className="mt-2 text-center text-[11px] text-white/35">
         Paid from credit. It doesn’t renew by itself.
       </p>
@@ -299,14 +365,14 @@ export function VerifyCard({
               setBusy(false);
             }}
           />
-          <button
-            type="button"
-            disabled={busy}
+          <PayButton
+            busy={busy}
+            busyLabel="Sending…"
             onClick={() => input.current?.click()}
             className={cn(PRIMARY, 'w-full')}
           >
-            {busy ? 'Sending…' : `Take selfie · ${naira(wallet.prices.badge)}`}
-          </button>
+            Take selfie · {naira(wallet.prices.badge)}
+          </PayButton>
         </div>
       ) : (
         <button type="button" disabled={busy} onClick={choose} className={cn(QUIET, 'mt-4 w-full')}>
@@ -322,11 +388,11 @@ export function VerifyCard({
 export function EntryCard({
   night,
   onJoin,
-  busy,
+  pending,
 }: {
   night: MatchNight & { entered: boolean };
   onJoin: () => void;
-  busy: boolean;
+  pending: string | null;
 }) {
   if (!night.theme) return null;
   return (
@@ -344,14 +410,15 @@ export function EntryCard({
           You’re in for tonight
         </p>
       ) : (
-        <button
-          type="button"
+        <PayButton
+          busy={pending === 'night'}
+          locked={pending !== null}
+          busyLabel="Paying…"
           onClick={onJoin}
-          disabled={busy}
           className={cn(PRIMARY, 'mt-4 w-full')}
         >
           Join tonight · {naira(night.theme.entryMinor)}
-        </button>
+        </PayButton>
       )}
     </div>
   );
@@ -361,11 +428,13 @@ export function EntryCard({
 export function TopUpSheet({
   wallet,
   reason,
+  pending,
   onTopUp,
   onClose,
 }: {
   wallet: MatchWallet;
   reason: string;
+  pending: string | null;
   onTopUp: (amountMinor: number) => void;
   onClose: () => void;
 }) {
@@ -388,14 +457,19 @@ export function TopUpSheet({
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2">
           {wallet.packs.map((pack) => (
-            <button
+            <PayButton
               key={pack}
-              type="button"
+              busy={pending === `topup:${pack}`}
+              locked={pending !== null}
+              busyLabel="Opening…"
               onClick={() => onTopUp(pack)}
-              className="rounded-full bg-white/[0.07] py-3.5 font-mono text-[15px] font-medium transition-colors hover:bg-white/[0.12]"
+              className={cn(
+                CHIP,
+                'inline-flex items-center justify-center gap-2 py-3.5 text-[15px]',
+              )}
             >
               +{naira(pack)}
-            </button>
+            </PayButton>
           ))}
         </div>
         <button type="button" onClick={onClose} className={cn(QUIET, 'mt-4 w-full')}>
@@ -410,10 +484,13 @@ export function TopUpSheet({
 export function GiftBar({
   prices,
   gifts,
+  pending,
   onSend,
 }: {
   prices: Record<MatchGift, number>;
   gifts: { gift: MatchGift; mine: boolean }[];
+  /** `rose` or `drink` while that gift is being sent here; `other` while anything else is paid. */
+  pending: MatchGift | 'other' | null;
   onSend: (gift: MatchGift) => void;
 }) {
   const received = gifts.filter((gift) => !gift.mine);
@@ -430,14 +507,19 @@ export function GiftBar({
       )}
       <div className="flex flex-wrap gap-2">
         {(Object.keys(GIFTS) as MatchGift[]).map((gift) => (
-          <button
+          <PayButton
             key={gift}
-            type="button"
+            busy={pending === gift}
+            locked={pending !== null}
+            busyLabel="Sending…"
             onClick={() => onSend(gift)}
-            className="rounded-full bg-white/[0.07] px-3.5 py-2 text-[13px] font-medium text-white/85 transition-colors hover:bg-[#ff5c8a]/20 hover:text-white"
+            className={cn(
+              CHIP,
+              'inline-flex items-center gap-2 px-3.5 py-2 font-sans text-[13px] text-white/85 hover:bg-[#ff5c8a]/20 hover:text-white',
+            )}
           >
             Send a {GIFTS[gift].name} {GIFTS[gift].emoji} · {naira(prices[gift])}
-          </button>
+          </PayButton>
         ))}
       </div>
     </div>

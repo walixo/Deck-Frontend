@@ -31,3 +31,30 @@ export async function shrinkPhoto(file: File): Promise<string> {
   bitmap.close();
   return canvas.toDataURL('image/jpeg', 0.82);
 }
+
+const REDEEM_KEY = 'match-redeem';
+
+/** A gift card link's code, kept through sign-in and setup until it is claimed. */
+export function rememberRedeemCode(code: string): void {
+  try {
+    localStorage.setItem(REDEEM_KEY, code);
+  } catch {
+    /* Private windows: the code is still in the link they were sent. */
+  }
+}
+
+export function pendingRedeemCode(): string {
+  try {
+    return localStorage.getItem(REDEEM_KEY) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+export function forgetRedeemCode(): void {
+  try {
+    localStorage.removeItem(REDEEM_KEY);
+  } catch {
+    /* Nothing stored. */
+  }
+}

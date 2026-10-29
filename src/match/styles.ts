@@ -5,13 +5,16 @@
 
 /** A rounded button with no fill; add one of the fills below. */
 export const PILL =
-  'inline-flex items-center justify-center gap-2.5 rounded-full px-7 py-4 text-[15px] font-semibold tracking-[-0.01em] transition-[transform,filter,background-color,box-shadow] duration-150 hover:brightness-110 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50';
+  'inline-flex items-center justify-center gap-2.5 rounded-full px-7 py-4 text-[15px] font-semibold tracking-[-0.01em] transition-[transform,filter,background-color,box-shadow] duration-150 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 active:scale-[0.96] active:brightness-95 disabled:pointer-events-none disabled:opacity-50';
 /** The love gradient: pink through to violet. */
 export const LOVE = 'bg-[linear-gradient(120deg,#ff5c8a,#ff7a8f_45%,#b77cff)]';
 export const GLOW = 'shadow-[0_14px_40px_rgb(255_92_138_/_0.38)]';
-export const PRIMARY = `${PILL} ${LOVE} ${GLOW} text-white`;
+export const PRIMARY = `${PILL} ${LOVE} ${GLOW} text-white hover:shadow-[0_18px_50px_rgb(255_92_138_/_0.55)]`;
 export const QUIET = `${PILL} border border-white/10 bg-white/[0.07] text-[#f4f2ee] hover:bg-white/[0.11]`;
 export const EYEBROW = 'font-mono text-[11px] uppercase tracking-[0.2em] text-[#ff8fab]';
+/** A small rounded choice: top-up amounts, gifts. Add size and text. */
+export const CHIP =
+  'rounded-full bg-white/[0.07] font-mono font-medium transition-[transform,background-color] duration-150 hover:-translate-y-0.5 hover:bg-white/[0.13] active:translate-y-0 active:scale-[0.94] disabled:pointer-events-none disabled:opacity-40';
 /** A glass panel: the lobby's cards. */
 export const CARD =
   'rounded-[24px] border border-white/12 bg-white/[0.045] p-5 shadow-[0_24px_60px_rgb(0_0_0_/_0.3),inset_0_1px_0_rgb(255_255_255_/_0.07)] backdrop-blur-xl';

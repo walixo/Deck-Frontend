@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { MorphShape } from '@/components/deckgames/MorphShape';
 import { RequestError, setStoredToken, getStoredToken } from '@/lib/api';
 import { Wordmark } from '@/components/layout/Wordmark';
@@ -10,6 +10,8 @@ import {
   type Gender,
   type MatchEvent,
   type MatchGift,
+  type MatchGiftCard,
+  type MatchGiftCards,
   type MatchHandles,
   type MatchMatch,
   type MatchWallet,
@@ -17,7 +19,8 @@ import {
   type Online,
 } from './matchApi';
 import { setMusicMuted, useMusic, useMusicMuted } from './music';
-import { GIFTS, naira, paymentCode } from './credit';
+import { forgetRedeemCode, GIFTS, naira, paymentCode, pendingRedeemCode } from './credit';
+import { GiftCardBuySheet, GiftCardShowSheet, GiftCardsCard, RedeemSheet } from './giftcards';
 import {
   EntryCard,
   GiftBar,
@@ -51,6 +54,7 @@ import {
   useWakeLock,
 } from './device';
 import { VoiceCall } from './voiceCall';
+import { VoiceOrb } from './VoiceOrb';
 
 /**
  * Match — match.onedeck.africa. Two voices, two minutes.
@@ -128,15 +132,6 @@ const clock = new Intl.DateTimeFormat('en-NG', {
 });
 const timeOf = (ms: number) => clock.format(ms).toLowerCase().replace(':00', '').replace(/\s/g, '');
 
-function countdown(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(total / 3600);
-  const minutes = Math.floor((total % 3600) / 60);
-  const seconds = total % 60;
-  if (hours) return `${hours}h ${String(minutes).padStart(2, '0')}m`;
-  return `${minutes}m ${String(seconds).padStart(2, '0')}s`;
-}
-
 /** The header's one word on how Match is right now. */
 function status(online: Online): string {
   if (!online.hours.open) return `Opens ${timeOf(online.hours.opensAt)}`;
@@ -147,10 +142,13 @@ function status(online: Online): string {
 export function MatchApp({
   signInError = '',
   topup = null,
+  giftcard = null,
 }: {
   signInError?: string;
   /** Back from a top-up checkout: which one, and whether they backed out. */
   topup?: { reference: string; cancelled: boolean } | null;
+  /** Back from buying a gift card, the same way. */
+  giftcard?: { reference: string; cancelled: boolean } | null;
 }) {
   const [screen, setScreen] = useState<Screen>(() => (getStoredToken() ? 'loading' : 'signedOut'));
   const [profile, setProfile] = useState<MatchProfile | null>(null);
@@ -163,18 +161,30 @@ export function MatchApp({
   const [revealed, setRevealed] = useState<MatchHandles | null>(null);
   const [muted, setMuted] = useState(false);
   const [notice, setNotice] = useState(
-    signInError || (topup?.cancelled ? 'Top-up cancelled — nothing was charged.' : ''),
+    signInError ||
+      (topup?.cancelled
+        ? 'Top-up cancelled — nothing was charged.'
+        : giftcard?.cancelled
+          ? 'Gift card cancelled — nothing was charged.'
+          : ''),
   );
   const [reporting, setReporting] = useState(false);
   const [matches, setMatches] = useState<MatchMatch[]>([]);
   const [wallet, setWallet] = useState<MatchWallet | null>(null);
   /* Why the top-up sheet is open; null when it is closed. */
   const [topUpReason, setTopUpReason] = useState<string | null>(null);
-  const [paying, setPaying] = useState(false);
+  /* The payment under way, if any — `topup:50000`, `plus`, `gift:<call>:rose` —
+     so the button that started it can show a spinner. */
+  const [pending, setPending] = useState<string | null>(null);
+  const [giftCards, setGiftCards] = useState<MatchGiftCards | null>(null);
+  const [buyingGiftCard, setBuyingGiftCard] = useState(false);
+  /* A bought card being shown, ready to send. */
+  const [shownCard, setShownCard] = useState<MatchGiftCard | null>(null);
+  /* A code from a gift card link, waiting to be claimed. */
+  const [redeemCode, setRedeemCode] = useState(pendingRedeemCode);
   /* Gifts between the two people in the call that just ended. */
   const [callGifts, setCallGifts] = useState<{ gift: MatchGift; mine: boolean }[]>([]);
-  const closed = online ? !online.hours.open : false;
-  const now = useNow(screen === 'live' || screen === 'ended' || (screen === 'lobby' && closed));
+  const now = useNow(screen === 'live' || screen === 'ended');
   useWakeLock(screen === 'connecting' || screen === 'live');
   /* Music everywhere but a call — and not while a call is being set up. */
   useMusic(['signedOut', 'setup', 'lobby', 'waiting', 'ended'].includes(screen));
@@ -189,10 +199,19 @@ export function MatchApp({
     mic.current = null;
   };
 
+  const clearNotice = useCallback(() => setNotice(''), []);
+
   const refreshMatches = useCallback(() => {
     void matchApi
       .matches()
       .then(setMatches)
+      .catch(() => undefined);
+  }, []);
+
+  const refreshGiftCards = useCallback(() => {
+    void matchApi
+      .giftCards()
+      .then(setGiftCards)
       .catch(() => undefined);
   }, []);
 
@@ -369,8 +388,9 @@ export function MatchApp({
       openLine();
       refreshMatches();
       refreshWallet();
+      refreshGiftCards();
     },
-    [openLine, refreshMatches, refreshWallet],
+    [openLine, refreshMatches, refreshWallet, refreshGiftCards],
   );
 
   /* Start-up: who this is, if they are signed in. */
@@ -471,27 +491,42 @@ export function MatchApp({
   /* ------------------------------------------------------------ money --- */
 
   const topUp = async (amountMinor: number) => {
-    setTopUpReason(null);
+    setPending(`topup:${amountMinor}`);
     setNotice('');
     try {
       const result = await matchApi.topup(amountMinor);
       if (result.checkoutUrl) {
+        /* The spinner stays up: the page is about to change. */
         window.location.assign(result.checkoutUrl);
         return;
       }
+      setTopUpReason(null);
       setNotice(`${naira(amountMinor)} added${result.test ? ' (test — no money moved)' : ''}.`);
       refreshWallet();
     } catch (error) {
       setNotice(error instanceof Error ? error.message : 'Could not start a top-up.');
     }
+    setPending(null);
   };
+
+  /* Back from checkout with the browser's back button, the page is restored
+     as it was left — spinner and all. */
+  useEffect(() => {
+    const restored = (event: PageTransitionEvent) => event.persisted && setPending(null);
+    window.addEventListener('pageshow', restored);
+    return () => window.removeEventListener('pageshow', restored);
+  }, []);
 
   /**
    * Runs something paid for from credit. Short of credit, the top-up sheet
    * opens with the reason; anything else is said plainly.
    */
-  const spendOn = async (run: () => Promise<unknown>, needs: string): Promise<boolean> => {
-    setPaying(true);
+  const spendOn = async (
+    key: string,
+    run: () => Promise<unknown>,
+    needs: string,
+  ): Promise<boolean> => {
+    setPending(key);
     setNotice('');
     try {
       await run();
@@ -502,12 +537,13 @@ export function MatchApp({
       else setNotice(error instanceof Error ? error.message : 'That didn’t work just now.');
       return false;
     } finally {
-      setPaying(false);
+      setPending(null);
     }
   };
 
   const buyPlus = () =>
     void spendOn(
+      'plus',
       async () => {
         const { plusUntil } = await matchApi.buyPlus();
         setProfile((current) => current && { ...current, plusUntil });
@@ -518,12 +554,14 @@ export function MatchApp({
 
   const joinNight = () =>
     void spendOn(
+      'night',
       () => matchApi.joinNight(),
       `Tonight’s entry is ${naira(wallet?.tonight?.theme?.entryMinor ?? 0)}.`,
     );
 
   const sendGift = (callId: string, gift: MatchGift) =>
     void spendOn(
+      `gift:${callId}:${gift}`,
       async () => {
         await matchApi.gift(callId, gift);
         if (ended?.callId === callId) setCallGifts((current) => [...current, { gift, mine: true }]);
@@ -532,6 +570,51 @@ export function MatchApp({
       },
       `A ${GIFTS[gift].name} is ${naira(wallet?.prices.gift[gift] ?? 0)}.`,
     );
+
+  const buyGiftCard = async (draft: {
+    product: string;
+    toName: string;
+    fromName: string;
+    message: string;
+  }) => {
+    setPending('giftcard');
+    setNotice('');
+    try {
+      const result = await matchApi.buyGiftCard(draft);
+      if (result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl);
+        return;
+      }
+      setBuyingGiftCard(false);
+      if (result.card) setShownCard(result.card);
+      refreshGiftCards();
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not start the gift card.');
+    }
+    setPending(null);
+  };
+
+  const redeem = async (code: string): Promise<boolean> => {
+    setPending('redeem');
+    setNotice('');
+    try {
+      const result = await matchApi.redeemGiftCard(code);
+      forgetRedeemCode();
+      setRedeemCode('');
+      if (result.plusUntil) {
+        const plusUntil = result.plusUntil;
+        setProfile((current) => current && { ...current, plusUntil });
+      }
+      setNotice(`🎁 ${result.label} added${result.fromName ? ` — from ${result.fromName}` : ''}.`);
+      refreshWallet();
+      return true;
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not claim that code.');
+      return false;
+    } finally {
+      setPending(null);
+    }
+  };
 
   const startVerification = async (): Promise<string | null> => {
     try {
@@ -544,6 +627,7 @@ export function MatchApp({
 
   const submitVerification = (photo: string) =>
     spendOn(
+      'badge',
       async () => {
         await matchApi.submitVerification(photo);
         setNotice('Thanks — a person at Deck will check your photo soon.');
@@ -583,6 +667,37 @@ export function MatchApp({
       stop = true;
     };
   }, [topup, refreshWallet]);
+
+  /* Back from buying a gift card: the same check, then the card to send. */
+  useEffect(() => {
+    const reference = giftcard && !giftcard.cancelled ? giftcard.reference : null;
+    if (!reference || !getStoredToken()) return;
+    let stop = false;
+    const check = async (attempt: number) => {
+      try {
+        const { card } = await matchApi.verifyGiftCard(reference);
+        if (stop) return;
+        if (card.status === 'active') {
+          setShownCard(card);
+          refreshGiftCards();
+        } else if (card.status === 'pending' && attempt < 6) {
+          window.setTimeout(() => void check(attempt + 1), 2500);
+        } else if (card.status === 'pending') {
+          setNotice(
+            'Your gift card is still processing — it will appear under Gift cards shortly.',
+          );
+        } else {
+          setNotice('That payment didn’t go through. Nothing was charged.');
+        }
+      } catch {
+        if (!stop) setNotice('Could not confirm your gift card yet — it will appear shortly.');
+      }
+    };
+    void check(0);
+    return () => {
+      stop = true;
+    };
+  }, [giftcard, refreshGiftCards]);
 
   /* Pings: this browser's push subscription, on or off. */
   const togglePings = async () => {
@@ -665,18 +780,17 @@ export function MatchApp({
 
   let body: ReactNode = null;
   if (screen === 'loading') body = <Pulse />;
-  else if (screen === 'signedOut') body = <SignedOut online={online} />;
+  else if (screen === 'signedOut') body = <SignedOut online={online} gift={Boolean(redeemCode)} />;
   else if (screen === 'setup') body = <Setup onDone={enter} />;
   else if (screen === 'paused') body = <Paused onSignOut={signOut} />;
   else if (screen === 'lobby' && profile)
     body = (
       <Lobby
-        now={now}
         profile={profile}
         online={online}
         matches={matches}
         wallet={wallet}
-        paying={paying}
+        pending={pending}
         onFind={find}
         onSaveHandles={saveHandles}
         onTogglePings={togglePings}
@@ -686,6 +800,10 @@ export function MatchApp({
         onBuyPlus={buyPlus}
         onJoinNight={joinNight}
         onGift={sendGift}
+        giftCards={giftCards}
+        onBuyGiftCard={() => setBuyingGiftCard(true)}
+        onRedeem={redeem}
+        onShowGiftCard={setShownCard}
         onStartVerification={startVerification}
         onSubmitVerification={submitVerification}
       />
@@ -729,6 +847,7 @@ export function MatchApp({
         revealed={revealed}
         gifts={callGifts}
         giftPrices={wallet?.prices.gift ?? null}
+        giftPending={giftPending(pending, ended.callId)}
         onGift={(gift) => sendGift(ended.callId, gift)}
         onShare={share}
         onSaveHandles={saveHandles}
@@ -744,16 +863,33 @@ export function MatchApp({
       onHome={profile ? () => screen === 'ended' && setScreen('lobby') : undefined}
     >
       {body}
-      {notice && (
-        <p role="status" className="mt-6 text-center text-[14px] leading-relaxed text-[#ffb3c4]">
-          {notice}
-        </p>
-      )}
+      <Toast notice={notice} onDone={clearNotice} />
       {reporting && <ReportSheet onReport={report} onClose={() => setReporting(false)} />}
+      {buyingGiftCard && giftCards && (
+        <GiftCardBuySheet
+          data={giftCards}
+          pending={pending}
+          onBuy={buyGiftCard}
+          onClose={() => setBuyingGiftCard(false)}
+        />
+      )}
+      {shownCard && <GiftCardShowSheet card={shownCard} onClose={() => setShownCard(null)} />}
+      {redeemCode && screen === 'lobby' && !shownCard && (
+        <RedeemSheet
+          code={redeemCode}
+          pending={pending}
+          onRedeem={(code) => void redeem(code)}
+          onClose={() => {
+            forgetRedeemCode();
+            setRedeemCode('');
+          }}
+        />
+      )}
       {topUpReason && wallet && (
         <TopUpSheet
           wallet={wallet}
           reason={topUpReason}
+          pending={pending}
           onTopUp={topUp}
           onClose={() => setTopUpReason(null)}
         />
@@ -763,6 +899,42 @@ export function MatchApp({
 }
 
 /* -------------------------------------------------------------- pieces --- */
+
+/** What a gift bar for one call shows of the payment under way. */
+function giftPending(pending: string | null, callId: string): MatchGift | 'other' | null {
+  if (!pending) return null;
+  return pending.startsWith(`gift:${callId}:`) ? (pending.split(':')[2] as MatchGift) : 'other';
+}
+
+/**
+ * Messages float at the foot of the screen, over whatever is there, so a tap
+ * low in the lobby still shows its result. Each one goes after a few seconds.
+ */
+function Toast({ notice, onDone }: { notice: string; onDone: () => void }) {
+  useEffect(() => {
+    if (!notice) return;
+    const timer = window.setTimeout(onDone, Math.min(9000, 3500 + notice.length * 40));
+    return () => window.clearTimeout(timer);
+  }, [notice, onDone]);
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+    >
+      {notice && (
+        <button
+          key={notice}
+          type="button"
+          onClick={onDone}
+          className="pointer-events-auto max-w-sm animate-[match-toast_260ms_cubic-bezier(0.2,0.9,0.3,1.2)] rounded-[20px] border border-white/12 bg-[#1d181f]/95 px-5 py-3.5 text-left text-[14px] leading-relaxed text-[#f4f2ee] shadow-[0_20px_60px_rgb(0_0_0_/_0.5)] backdrop-blur-xl"
+        >
+          {notice}
+        </button>
+      )}
+    </div>
+  );
+}
 
 function Shell({
   online,
@@ -854,15 +1026,82 @@ function MusicToggle() {
   );
 }
 
+/**
+ * Hours, minutes and seconds until `to`, as three ticking tiles. It keeps its
+ * own one-second clock, so nothing else re-renders to drive it; when it
+ * reaches zero the line's "open" message takes the lobby over.
+ */
+function Countdown({ to }: { to: number }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    let timer = 0;
+    const tick = () => {
+      setNow(Date.now());
+      timer = window.setTimeout(tick, 1000 - (Date.now() % 1000) + 5);
+    };
+    timer = window.setTimeout(tick, 1000 - (Date.now() % 1000) + 5);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const left = Math.max(0, Math.floor((to - now) / 1000));
+  const units: [string, number][] = [
+    ['hours', Math.floor(left / 3600)],
+    ['minutes', Math.floor((left % 3600) / 60)],
+    ['seconds', left % 60],
+  ];
+  return (
+    <div
+      role="timer"
+      aria-label={`Opens in ${units.map(([name, value]) => `${value} ${name}`).join(', ')}`}
+      className="mt-4 flex items-start justify-center gap-2 min-[400px]:gap-3"
+    >
+      {units.map(([name, value], index) => (
+        <Fragment key={name}>
+          {index > 0 && (
+            <span
+              aria-hidden="true"
+              className="pt-[clamp(0.9rem,4vw,1.35rem)] font-mono text-[clamp(1.75rem,8vw,2.5rem)] font-medium text-white/30"
+            >
+              :
+            </span>
+          )}
+          <div aria-hidden="true" className="flex flex-col items-center">
+            <span
+              className={cn(
+                CARD,
+                'grid w-[clamp(4.75rem,22vw,6.5rem)] place-items-center overflow-hidden rounded-[22px] p-0 py-[clamp(0.6rem,3vw,0.9rem)]',
+              )}
+            >
+              <span
+                key={value}
+                className="animate-[match-tick_380ms_cubic-bezier(0.2,0.9,0.3,1)] font-mono text-[clamp(2.5rem,12vw,3.75rem)] font-medium leading-none tabular-nums tracking-[-0.04em]"
+              >
+                {String(value).padStart(2, '0')}
+              </span>
+            </span>
+            <span className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">
+              {name}
+            </span>
+          </div>
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
 function Pulse() {
   return (
     <div className="mx-auto size-10 animate-spin rounded-full border-2 border-white/15 border-t-[#ff5c8a]" />
   );
 }
 
-function SignedOut({ online }: { online: Online | null }) {
+function SignedOut({ online, gift }: { online: Online | null; gift: boolean }) {
   return (
     <div className="text-center">
+      {gift && (
+        <p className="mx-auto mb-2 w-fit rounded-full bg-[#ff5c8a]/[0.16] px-4 py-2 text-[14px] text-[#ffc2d2]">
+          🎁 Someone sent you a Match gift card — sign in to claim it.
+        </p>
+      )}
       <MorphShape set="love" className="mx-auto -mb-4 aspect-square w-full max-w-[19rem]" />
       <h1 className="text-[clamp(2.75rem,11vw,4.5rem)] font-semibold leading-[0.95] tracking-[-0.055em]">
         Two voices.
@@ -1092,12 +1331,11 @@ function HandlesEditor({
 }
 
 function Lobby({
-  now,
   profile,
   online,
   matches,
   wallet,
-  paying,
+  pending,
   onFind,
   onSaveHandles,
   onTogglePings,
@@ -1109,13 +1347,16 @@ function Lobby({
   onGift,
   onStartVerification,
   onSubmitVerification,
+  giftCards,
+  onBuyGiftCard,
+  onRedeem,
+  onShowGiftCard,
 }: {
-  now: number;
   profile: MatchProfile;
   online: Online | null;
   matches: MatchMatch[];
   wallet: MatchWallet | null;
-  paying: boolean;
+  pending: string | null;
   onFind: () => void;
   onSaveHandles: (handles: MatchHandles) => Promise<boolean>;
   onTogglePings: () => void;
@@ -1127,6 +1368,10 @@ function Lobby({
   onGift: (callId: string, gift: MatchGift) => void;
   onStartVerification: () => Promise<string | null>;
   onSubmitVerification: (photo: string) => Promise<boolean>;
+  giftCards: MatchGiftCards | null;
+  onBuyGiftCard: () => void;
+  onRedeem: (code: string) => Promise<boolean>;
+  onShowGiftCard: (card: MatchGiftCard) => void;
 }) {
   const [editing, setEditing] = useState(false);
   const them = other(profile.gender);
@@ -1177,7 +1422,7 @@ function Lobby({
               Find someone
             </button>
           )}
-          {entry && <EntryCard night={entry} onJoin={onJoinNight} busy={paying} />}
+          {entry && <EntryCard night={entry} onJoin={onJoinNight} pending={pending} />}
           <TonightBanner
             night={entry && online?.tonight ? { ...online.tonight, theme: null } : online?.tonight}
           />
@@ -1193,15 +1438,14 @@ function Lobby({
       ) : (
         <div className="text-center">
           <MorphShape set="love" className="mx-auto -mb-2 aspect-square w-full max-w-[12rem]" />
-          <p className={EYEBROW}>Closed right now</p>
-          <p className="mt-2 text-[clamp(4rem,20vw,7rem)] font-semibold leading-none tracking-[-0.06em]">
-            {online ? timeOf(online.hours.opensAt) : '8pm'}
+          <p className={EYEBROW}>
+            Opens {online ? timeOf(online.hours.opensAt) : '8pm'} · Lagos time
           </p>
-          <p className="mt-3 text-[15px] text-white/60">
+          {online && <Countdown to={online.hours.opensAt} />}
+          <p className="mt-5 text-[15px] text-white/60">
             Match is live every night{' '}
             {online ? `${timeOf(online.hours.opensAt)}–${timeOf(online.hours.closesAt)}` : '8–10pm'}
-            , Lagos time
-            {online ? ` · opens in ${countdown(online.hours.opensAt - now)}` : ''}.
+            , Lagos time.
           </p>
           {late && (
             <p className="mx-auto mt-3 max-w-xs text-[14px] text-white/70">
@@ -1214,13 +1458,22 @@ function Lobby({
 
       {wallet && (
         <div className="space-y-4">
-          <WalletCard wallet={wallet} onTopUp={onTopUp} />
-          <PlusCard wallet={wallet} onBuy={onBuyPlus} busy={paying} />
+          <WalletCard wallet={wallet} pending={pending} onTopUp={onTopUp} />
+          <PlusCard wallet={wallet} onBuy={onBuyPlus} pending={pending} />
           <VerifyCard
             wallet={wallet}
             onStart={onStartVerification}
             onSubmit={onSubmitVerification}
           />
+          {giftCards && (
+            <GiftCardsCard
+              data={giftCards}
+              pending={pending}
+              onBuy={onBuyGiftCard}
+              onRedeem={onRedeem}
+              onShow={onShowGiftCard}
+            />
+          )}
         </div>
       )}
 
@@ -1281,6 +1534,7 @@ function Lobby({
                   <GiftBar
                     prices={wallet.prices.gift}
                     gifts={match.gifts}
+                    pending={giftPending(pending, match.callId)}
                     onSend={(gift) => onGift(match.callId, gift)}
                   />
                 )}
@@ -1563,29 +1817,19 @@ function Live({
   onLeave: () => void;
   onReport: () => void;
 }) {
-  const mine = useRef<HTMLSpanElement>(null);
-  const theirs = useRef<HTMLSpanElement>(null);
-  /* The voice rings breathe with each side's volume, outside React. */
-  useEffect(() => {
-    let frame = 0;
-    const draw = () => {
-      const levels = voice.current?.levels() ?? { mine: 0, theirs: 0 };
-      if (mine.current) mine.current.style.transform = `scale(${1 + levels.mine * 0.6})`;
-      if (theirs.current) theirs.current.style.transform = `scale(${1 + levels.theirs * 0.6})`;
-      frame = requestAnimationFrame(draw);
-    };
-    frame = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(frame);
-  }, [voice]);
-
   const left = Math.max(0, (call.endsAt ?? now) - now);
   const seconds = Math.ceil(left / 1000);
-  const radius = 108;
+  const radius = 116;
   const around = 2 * Math.PI * radius;
   return (
     <div className="text-center">
-      <div className="relative mx-auto size-[15rem]">
-        <svg viewBox="0 0 240 240" className="size-full -rotate-90" aria-hidden="true">
+      {/* The voices, ringed by the time left. */}
+      <div className="relative mx-auto size-[min(17rem,72vw)]">
+        <svg
+          viewBox="0 0 240 240"
+          className="absolute inset-0 size-full -rotate-90"
+          aria-hidden="true"
+        >
           <defs>
             <linearGradient id="match-dial" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0" stopColor="#ff5c8a" />
@@ -1597,8 +1841,8 @@ function Live({
             cy="120"
             r={radius}
             fill="none"
-            stroke="rgb(255 255 255 / 0.09)"
-            strokeWidth="10"
+            stroke="rgb(255 255 255 / 0.07)"
+            strokeWidth="5"
           />
           <circle
             cx="120"
@@ -1606,45 +1850,30 @@ function Live({
             r={radius}
             fill="none"
             stroke={seconds <= 15 ? '#ff7a59' : 'url(#match-dial)'}
-            strokeWidth="10"
+            strokeWidth="5"
             strokeLinecap="round"
             strokeDasharray={around}
             strokeDashoffset={around * (1 - left / call.total)}
           />
         </svg>
-        <p
-          className="absolute inset-0 grid place-items-center font-mono text-[52px] font-medium tabular-nums"
-          aria-live="off"
-        >
-          {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
-        </p>
+        <VoiceOrb voice={voice} muted={muted} className="absolute inset-0 size-full" />
       </div>
-      <div className="mt-10 flex items-start justify-center gap-14">
-        {[
-          ['You', mine, muted ? 'Muted' : null],
-          ['Them', theirs, null],
-        ].map(([label, ref, note]) => (
-          <div key={label as string} className="flex flex-col items-center gap-3">
-            <span className="relative grid size-24 place-items-center">
-              <span
-                ref={ref as React.RefObject<HTMLSpanElement>}
-                className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgb(255_92_138_/_0.42)_30%,rgb(255_92_138_/_0.12)_60%,transparent_72%)] transition-transform duration-75"
-              />
-              <span
-                className={cn(
-                  'relative size-12 rounded-full',
-                  label === 'You'
-                    ? 'bg-[#1c1917] shadow-[inset_0_0_0_2px_rgb(255_255_255_/_0.5)]'
-                    : cn(LOVE, 'shadow-[0_0_24px_rgb(255_92_138_/_0.6)]'),
-                )}
-              />
-            </span>
-            <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/60">
-              {(note as string) ?? (label as string)}
-            </span>
-            {label === 'Them' && call.themVerified && <VerifiedMark />}
-          </div>
-        ))}
+      <p
+        className="mt-4 font-mono text-[44px] font-medium leading-none tabular-nums"
+        aria-live="off"
+      >
+        {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
+      </p>
+      <div className="mt-5 flex items-center justify-center gap-6 font-mono text-[11px] uppercase tracking-[0.16em] text-white/60">
+        <span className="inline-flex items-center gap-2">
+          <span className="size-2 rounded-full bg-[#7a98ff] shadow-[0_0_8px_#7a98ff]" />
+          {muted ? 'You · muted' : 'You'}
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="size-2 rounded-full bg-[#ff9c40] shadow-[0_0_8px_#ff9c40]" />
+          Them
+          {call.themVerified && <VerifiedMark className="ml-1" />}
+        </span>
       </div>
       <div className="mt-8 min-h-14">
         {extend.addedAt && now - extend.addedAt < 4000 ? (
@@ -1702,6 +1931,7 @@ function After({
   revealed,
   gifts,
   giftPrices,
+  giftPending,
   onGift,
   onShare,
   onSaveHandles,
@@ -1716,6 +1946,7 @@ function After({
   revealed: MatchHandles | null;
   gifts: { gift: MatchGift; mine: boolean }[];
   giftPrices: Record<MatchGift, number> | null;
+  giftPending: MatchGift | 'other' | null;
   onGift: (gift: MatchGift) => void;
   onShare: () => void;
   onSaveHandles: (handles: MatchHandles) => Promise<boolean>;
@@ -1759,7 +1990,7 @@ function After({
           </div>
           {giftPrices && (
             <div className="mt-5 border-t border-white/10 pt-4">
-              <GiftBar prices={giftPrices} gifts={gifts} onSend={onGift} />
+              <GiftBar prices={giftPrices} gifts={gifts} pending={giftPending} onSend={onGift} />
             </div>
           )}
         </div>

@@ -66,6 +66,44 @@ export interface MatchWallet {
   ledger: { kind: string; amountMinor: number; note: string; at: string }[];
 }
 
+/** A gift card on sale: credit, or days of Match+. */
+export interface MatchGiftCardProduct {
+  id: string;
+  kind: 'credit' | 'plus';
+  valueMinor: number;
+  plusDays: number;
+  priceMinor: number;
+  label: string;
+}
+
+/** A gift card someone bought; the code and link only once it is paid for. */
+export interface MatchGiftCard {
+  reference: string;
+  product: string;
+  kind: 'credit' | 'plus';
+  label: string;
+  valueMinor: number;
+  plusDays: number;
+  priceMinor: number;
+  status: 'pending' | 'active' | 'redeemed' | 'failed' | 'void';
+  toName: string;
+  fromName: string;
+  message: string;
+  code: string | null;
+  link: string | null;
+  expiresAt: string | null;
+  redeemedAt: string | null;
+  test: boolean;
+  createdAt: string;
+}
+
+export interface MatchGiftCards {
+  products: MatchGiftCardProduct[];
+  months: number;
+  payments: boolean;
+  cards: MatchGiftCard[];
+}
+
 /** Someone you swapped usernames with. */
 export interface MatchMatch {
   callId: string;
@@ -153,6 +191,23 @@ export const matchApi = {
   startVerification: () => request<{ prompt: string }>('post', '/match/verification/start'),
   submitVerification: (photo: string) =>
     request<{ status: string; creditMinor: number }>('post', '/match/verification', { photo }),
+  giftCards: () => request<MatchGiftCards>('get', '/match/giftcards'),
+  buyGiftCard: (input: { product: string; toName: string; fromName: string; message: string }) =>
+    request<{ checkoutUrl?: string; card?: MatchGiftCard }>('post', '/match/giftcards', input),
+  verifyGiftCard: (reference: string) =>
+    request<{ card: MatchGiftCard }>(
+      'post',
+      `/match/giftcards/${encodeURIComponent(reference)}/verify`,
+    ),
+  redeemGiftCard: (code: string) =>
+    request<{
+      label: string;
+      kind: 'credit' | 'plus';
+      fromName: string;
+      message: string;
+      creditMinor: number;
+      plusUntil: string | null;
+    }>('post', '/match/giftcards/redeem', { code }),
   requestSection: (note: string) =>
     request<MatchProfile>('post', '/match/me/section-request', { note }),
   subscribe: (subscription: PushSubscriptionJSON) =>

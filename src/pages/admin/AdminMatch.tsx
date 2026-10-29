@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Field';
+import { Input, Select } from '@/components/ui/Field';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/States';
 import {
   useMatchAction,
+  useMatchGiftCardAction,
+  useMatchGiftCards,
   useMatchMoneyAction,
   useMatchNights,
   useMatchReports,
@@ -13,6 +15,7 @@ import {
   useMatchSectionRequests,
   useMatchStats,
   useMatchVerifications,
+  type MatchGiftCardCodes,
   type MatchPerson,
   type MatchRates,
 } from '@/hooks/useMatchAdmin';
@@ -63,6 +66,7 @@ export function AdminMatch() {
       <Numbers />
       <Revenue />
       <Verifications />
+      <GiftCards />
       <Nights />
       <Reports />
       <SectionRequests />
@@ -389,12 +393,17 @@ function Revenue() {
           ))}
         </div>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <Kpi label="Earned" value={naira(data.spentMinor)} hint="Credit spent, after refunds" />
         <Kpi
           label="Top-ups"
           value={naira(data.topupsMinor)}
           hint={`${data.topups} paid · cash in`}
+        />
+        <Kpi
+          label="Gift cards"
+          value={naira(data.giftCardsMinor)}
+          hint={`${data.giftCards} sold · cash in`}
         />
         <Kpi
           label="Credit held"
@@ -501,6 +510,186 @@ function Verifications() {
         </ul>
       ) : (
         <EmptyState title="No checks waiting" description="New selfies appear here." />
+      )}
+    </section>
+  );
+}
+
+const GIFT_CARD_PRODUCTS = [
+  { value: 'credit-1000', label: '₦1,000 of credit' },
+  { value: 'credit-2000', label: '₦2,000 of credit' },
+  { value: 'credit-5000', label: '₦5,000 of credit' },
+  { value: 'plus-30', label: '30 days of Match+' },
+];
+
+/** A batch's codes as a spreadsheet, saved straight to the computer. */
+function downloadCodes({ batch, codes }: MatchGiftCardCodes) {
+  const rows = [
+    ['code', 'link', 'status'],
+    ...codes.map((c) => [c.code, c.link, c.status ?? 'active']),
+  ];
+  const csv = rows
+    .map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `match-gift-cards-${batch.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+/** Gift cards: what sold, what is unclaimed, free batches for sponsors, and cancelling one. */
+function GiftCards() {
+  const { data, isLoading } = useMatchGiftCards();
+  const act = useMatchGiftCardAction();
+  const [form, setForm] = useState({ product: 'credit-1000', count: '50', batch: '' });
+  if (isLoading || !data) return <Skeleton className="h-40 w-full" />;
+  const issue = (event: FormEvent) => {
+    event.preventDefault();
+    act.mutate(
+      { kind: 'issue', product: form.product, count: Number(form.count), batch: form.batch.trim() },
+      {
+        onSuccess: (result) => {
+          downloadCodes(result as MatchGiftCardCodes);
+          setForm({ ...form, batch: '' });
+        },
+      },
+    );
+  };
+  return (
+    <section className="space-y-4">
+      <SectionTitle>Gift cards</SectionTitle>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Kpi label="Sold" value={naira(data.soldMinor)} hint={`${data.sold} cards, all time`} />
+        <Kpi label="Claimed" value={String(data.redeemed)} hint="Bought or issued, then used" />
+        <Kpi
+          label="Unclaimed credit"
+          value={naira(data.unclaimedCreditMinor)}
+          hint={`${data.unclaimedCredit} live credit cards`}
+        />
+        <Kpi label="Unclaimed Match+" value={String(data.unclaimedPlus)} hint="Live 30-day cards" />
+      </div>
+      <Card className="p-5">
+        <p className="mb-4 text-[13px] text-muted">
+          Free cards for a sponsor or a giveaway. They are live at once for 12 months, and the codes
+          download as a spreadsheet — anyone holding a code can claim it, so share them carefully.
+        </p>
+        <form onSubmit={issue} className="grid gap-4 md:grid-cols-4">
+          <Select
+            label="Card"
+            options={GIFT_CARD_PRODUCTS}
+            value={form.product}
+            onChange={(event) => setForm({ ...form, product: event.target.value })}
+          />
+          <Input
+            label="How many"
+            type="number"
+            min={1}
+            max={500}
+            required
+            value={form.count}
+            onChange={(event) => setForm({ ...form, count: event.target.value })}
+          />
+          <Input
+            label="For"
+            placeholder="Zobo Co giveaway"
+            required
+            maxLength={80}
+            value={form.batch}
+            onChange={(event) => setForm({ ...form, batch: event.target.value })}
+          />
+          <div className="flex items-end">
+            <Button type="submit" loading={act.isPending}>
+              Issue and download
+            </Button>
+          </div>
+        </form>
+        {act.error && <p className="mt-3 text-sm text-danger">{act.error.message}</p>}
+      </Card>
+      {data.batches.length > 0 && (
+        <ul className="divide-y divide-line rounded-2xl border border-line">
+          {data.batches.map((batch) => (
+            <li key={batch.batch} className="flex flex-wrap items-center justify-between gap-3 p-4">
+              <div>
+                <p className="font-medium">{batch.batch}</p>
+                <p className="text-[13px] text-muted">
+                  {batch.count} × {batch.label} · {batch.redeemed} claimed ·{' '}
+                  {relativeTime(batch.createdAt)}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() =>
+                  act.mutate(
+                    { kind: 'batch', batch: batch.batch },
+                    { onSuccess: (result) => downloadCodes(result as MatchGiftCardCodes) },
+                  )
+                }
+              >
+                Download codes
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {data.cards.length ? (
+        <Card className="overflow-x-auto p-0">
+          <table className="w-full min-w-[40rem] text-sm">
+            <thead className="text-left font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+              <tr>
+                {['Card', 'From', 'Status', ''].map((h) => (
+                  <th key={h} className="px-4 py-2 font-medium">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.cards.map((card) => (
+                <tr key={card.reference} className="border-t border-line">
+                  <td className="px-4 py-2">
+                    {card.label}
+                    <span className="block font-mono text-[11px] text-muted">{card.reference}</span>
+                  </td>
+                  <td className="px-4 py-2 text-[13px]">
+                    {card.buyer}
+                    <span className="block text-muted">
+                      {card.mode === 'issued'
+                        ? 'Issued free'
+                        : card.mode === 'test'
+                          ? 'Test'
+                          : naira(card.priceMinor)}{' '}
+                      · {relativeTime(card.createdAt)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-[13px]">
+                    {card.status === 'redeemed'
+                      ? `Claimed by ${card.redeemedBy ?? 'someone'}${card.redeemedAt ? ` · ${relativeTime(card.redeemedAt)}` : ''}`
+                      : card.status === 'void'
+                        ? 'Cancelled'
+                        : 'Unclaimed'}
+                  </td>
+                  <td className="px-4 py-2 text-right">
+                    {card.status === 'active' && (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        loading={act.isPending}
+                        onClick={() => act.mutate({ kind: 'void', reference: card.reference })}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      ) : (
+        <EmptyState title="No gift cards yet" description="Bought and issued cards appear here." />
       )}
     </section>
   );

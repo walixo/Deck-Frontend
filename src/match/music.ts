@@ -40,18 +40,25 @@ const load = (ctx: AudioContext) =>
   (track ??= fetch(SRC)
     .then((res) => res.arrayBuffer())
     .then((bytes) => ctx.decodeAudioData(bytes))
-    .catch(() => null));
+    .catch(() => {
+      track = null;
+      return null;
+    }));
 
 async function start(): Promise<void> {
+  /* Before the first tap or key press the browser would refuse; wait for one. */
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+  context ??= new AudioContext();
+  /* Asked on every call, ahead of the guard below, so the call a tap makes is
+     the one that wakes it. Never awaited: a resume the browser refuses stays
+     pending for good, and waiting on one used to leave the music stuck off. */
+  if (context.state !== 'running') void context.resume().catch(() => undefined);
   if (source || starting) return;
   starting = true;
   try {
-    /* Created and resumed synchronously, so a gesture that calls this counts. */
-    context ??= new AudioContext();
-    const resumed = context.state === 'suspended' ? context.resume() : Promise.resolve();
     const data = await load(context);
-    await resumed.catch(() => undefined);
-    if (!data || context.state !== 'running' || !wanted || muted || source) return;
+    /* Started even if the context is still asleep: it plays once it wakes. */
+    if (!data || !wanted || muted || source) return;
     gain ??= context.createGain();
     gain.connect(context.destination);
     const now = context.currentTime;
@@ -114,12 +121,12 @@ export function useMusic(active: boolean): void {
     wanted = active;
     sync();
     if (!active) return;
+    /* Phones only allow sound from the end of a touch, not its start. */
     const unlock = () => sync();
-    window.addEventListener('pointerdown', unlock);
-    window.addEventListener('keydown', unlock);
+    const events = ['pointerdown', 'pointerup', 'touchend', 'keydown'] as const;
+    for (const name of events) window.addEventListener(name, unlock);
     return () => {
-      window.removeEventListener('pointerdown', unlock);
-      window.removeEventListener('keydown', unlock);
+      for (const name of events) window.removeEventListener(name, unlock);
     };
   }, [active]);
 }

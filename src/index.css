@@ -587,3 +587,29 @@
     box-shadow: 1px 1px 0 color-mix(in srgb, var(--slab-edge) 45%, transparent);
   }
 }
+
+/* Match's toast: rises into place with a little overshoot. */
+@keyframes match-toast {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Match's countdown: each new number drops into its tile. */
+@keyframes match-tick {
+  from {
+    opacity: 0;
+    transform: translateY(-40%);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}

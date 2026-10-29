@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { setStoredToken } from '@/lib/api';
 import { MatchApp } from './MatchApp';
+import { rememberRedeemCode } from './credit';
 import { MatchLegal } from './MatchLegal';
 import { registerWorker } from './device';
 
@@ -30,8 +31,9 @@ function claimTheHead() {
 
 /**
  * Starts Match. A Google sign-in comes back as `#token=…` (or `?error=…` on
- * the sign-in path), and a top-up as `?topup=…` (`&cancelled=1` if they backed
- * out); all are read and wiped from the address bar here, before the first
+ * the sign-in path), a top-up or a gift card purchase as `?topup=…` or
+ * `?giftcard=…` (`&cancelled=1` if they backed out), and a gift card link as
+ * `?redeem=CODE`; all are read and wiped from the address bar here, before the first
  * render, so the app starts knowing who is signed in and what just happened.
  */
 export function mountMatch(root: HTMLElement) {
@@ -52,15 +54,21 @@ export function mountMatch(root: HTMLElement) {
   const query = new URLSearchParams(window.location.search);
   const error = query.get('error') ?? '';
   const topup = query.get('topup');
+  const giftcard = query.get('giftcard');
+  const cancelled = query.get('cancelled') === '1';
+  /* A gift card link: kept until claimed, since signing in leaves the page. */
+  const redeem = query.get('redeem');
+  if (redeem) rememberRedeemCode(redeem);
   if (token) setStoredToken(token);
-  if (token || error || topup || window.location.pathname !== '/') {
+  if (token || error || topup || giftcard || redeem || window.location.pathname !== '/') {
     window.history.replaceState(null, '', '/');
   }
   createRoot(root).render(
     <StrictMode>
       <MatchApp
         signInError={error}
-        topup={topup ? { reference: topup, cancelled: query.get('cancelled') === '1' } : null}
+        topup={topup ? { reference: topup, cancelled } : null}
+        giftcard={giftcard ? { reference: giftcard, cancelled } : null}
       />
     </StrictMode>,
   );

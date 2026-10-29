@@ -591,6 +591,8 @@ export const AUDIT_ACTIONS = [
   'match.night.removed',
   'match.verification.approved',
   'match.verification.declined',
+  'match.giftcards.issued',
+  'match.giftcard.voided',
   'ad.approved',
   'ad.rejected',
   'ad.pulled',
@@ -622,7 +624,8 @@ export interface AuditEvent {
     | 'acquisition'
     | 'custom'
     | 'game'
-    | 'match_night';
+    | 'match_night'
+    | 'match_gift_card';
   targetId: string;
   targetLabel: string;
   summary: string;

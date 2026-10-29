@@ -27,11 +27,11 @@ export const MATCH_PRIVACY: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'Match (match.onedeck.africa) is a product of Deck, operated by {{Legal entity name}}, {{Registered address}}, registration number {{Company registration number}}. We decide how your data is used, so we are responsible for it under the Nigeria Data Protection Act 2023 and, where it applies, the GDPR.',
+          text: 'Match (match.onedeck.africa) is a product of Deck, operated by Rangeway Limited (RC1792283), 12 Ayo Ogunbiyi Street, Surulere, Lagos. We decide how your data is used, so we are responsible for it under the Nigeria Data Protection Act 2023 and, where it applies, the GDPR.',
         },
         {
           kind: 'p',
-          text: 'Questions, requests and complaints about your data go to {{Privacy contact email}}.',
+          text: 'Questions, requests and complaints about your data go to support@onedeck.africa.',
         },
       ],
     },
@@ -84,6 +84,10 @@ export const MATCH_PRIVACY: LegalDocument = {
             [
               'Match credit and purchases',
               'Your balance and a record of every top-up and every spend — extra minutes, gifts, themed-night entries, the Verified badge and Match+ — with its amount and date.',
+            ],
+            [
+              'Gift cards',
+              'If you buy one: what it holds, the names and note you put on it, its code, and when it was paid for. If you claim one: that you claimed it, and when. The buyer can see whether their card has been claimed, but not by whom.',
             ],
             ['Your verification selfie', 'Only if you apply for the Verified badge. See below.'],
           ],
@@ -194,9 +198,9 @@ export const MATCH_PRIVACY: LegalDocument = {
           kind: 'list',
           items: [
             'Your Match profile, credit balance and usernames: until you ask us to delete your account.',
-            'Call records: {{Call record retention}}.',
-            'Reports and bans: {{Report retention}}, so a banned person cannot simply come back.',
-            'Purchase and top-up records: {{Payment record retention}}.',
+            'Call records: 12 months.',
+            'Reports and bans: 2 years, so a banned person cannot simply come back.',
+            'Purchase and top-up records: 5 years.',
             'Your verification selfie: deleted at the decision, usually within a day.',
             'Ping delivery details: until you turn pings off, sign out of that browser, or the browser withdraws them.',
           ],
@@ -217,7 +221,7 @@ export const MATCH_PRIVACY: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'You can ask us for a copy of your data, to correct it, to delete it, to stop using it for a purpose, or to send it to you in a portable form. You can withdraw consent at any time — turn pings off, or ask us to delete a selfie that has not been checked yet. Write to {{Privacy contact email}}; we reply within 30 days.',
+          text: 'You can ask us for a copy of your data, to correct it, to delete it, to stop using it for a purpose, or to send it to you in a portable form. You can withdraw consent at any time — turn pings off, or ask us to delete a selfie that has not been checked yet. Write to support@onedeck.africa; we reply within 30 days.',
         },
         {
           kind: 'p',
@@ -259,7 +263,7 @@ export const MATCH_TERMS: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'Match is a product of Deck, operated by {{Legal entity name}}. By using Match you agree to these terms and to Deck’s terms of service (onedeck.africa/terms). Where the two disagree about Match, these terms apply.',
+          text: 'Match is a product of Deck, operated by Rangeway Limited. By using Match you agree to these terms and to Deck’s terms of service (onedeck.africa/terms). Where the two disagree about Match, these terms apply.',
         },
       ],
     },
@@ -365,6 +369,21 @@ export const MATCH_TERMS: LegalDocument = {
       ],
     },
     {
+      title: 'Gift cards',
+      blocks: [
+        {
+          kind: 'list',
+          items: [
+            'A Match gift card holds Match credit or days of Match+, behind a one-time code. You pay for it through Deck’s checkout, provided by Bachs.',
+            'A card can be claimed once, by anyone who has its code, for 12 months from when it was paid for. Keep the code private and send it only to the person it is for — we can’t replace a code someone else claimed.',
+            'Claimed credit becomes ordinary Match credit and follows the rules above. Claimed Match+ days are added on to any Match+ you already have.',
+            'Gift cards aren’t refundable as cash and can’t be exchanged for money. An unclaimed card that was paid for by mistake can be cancelled and refunded — write to support@onedeck.africa.',
+            'Cards Deck gives away, for a sponsor or a promotion, follow the same rules.',
+          ],
+        },
+      ],
+    },
+    {
       title: 'Sponsored nights',
       blocks: [
         {
@@ -378,7 +397,7 @@ export const MATCH_TERMS: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'Match is provided as it is. We don’t check who people are, beyond the Verified badge, and we aren’t responsible for what other people say on calls or do afterwards. As far as the law allows, our total liability to you for anything to do with Match is limited to {{Liability cap}}. Nothing in these terms limits liability that the law does not allow us to limit.',
+          text: 'Match is provided as it is. We don’t check who people are, beyond the Verified badge, and we aren’t responsible for what other people say on calls or do afterwards. As far as the law allows, our total liability to you for anything to do with Match is limited to ₦50,000. Nothing in these terms limits liability that the law does not allow us to limit.',
         },
       ],
     },
@@ -387,7 +406,7 @@ export const MATCH_TERMS: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'You can stop using Match at any time and ask us to delete your account at {{Support contact email}}. We can change or close Match; if we close it, we’ll give notice in Match first.',
+          text: 'You can stop using Match at any time and ask us to delete your account at support@onedeck.africa. We can change or close Match; if we close it, we’ll give notice in Match first.',
         },
       ],
     },
@@ -396,7 +415,7 @@ export const MATCH_TERMS: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'These terms are governed by {{Governing law}}, and disputes are settled by {{Courts and jurisdiction}}.',
+          text: 'These terms are governed by the laws of the Federal Republic of Nigeria, and disputes are settled by the Nigerian courts.',
         },
       ],
     },
@@ -405,7 +424,7 @@ export const MATCH_TERMS: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'Questions about Match: {{Support contact email}}.',
+          text: 'Questions about Match: support@onedeck.africa.',
         },
       ],
     },

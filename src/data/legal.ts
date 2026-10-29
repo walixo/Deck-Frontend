@@ -58,11 +58,11 @@ export const PRIVACY_POLICY: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'Deck is operated by {{Legal entity name}}, registered at {{Registered address}} ({{Company registration number}}). For the purposes of the UK and EU General Data Protection Regulation we are the controller of the personal data described here — meaning we decide what is collected and why.',
+          text: 'Deck is operated by Rangeway Limited, registered at 12 Ayo Ogunbiyi Street, Surulere, Lagos (RC1792283). For the purposes of the UK and EU General Data Protection Regulation we are the controller of the personal data described here — meaning we decide what is collected and why.',
         },
         {
           kind: 'p',
-          text: 'For anything in this policy, including a request to see or delete your data, write to {{Privacy contact email}}. Our representative in the European Union, appointed under Article 27, is {{EU representative}}.',
+          text: 'For anything in this policy, including a request to see or delete your data, write to support@onedeck.africa.',
         },
         {
           kind: 'p',
@@ -271,7 +271,7 @@ export const PRIVACY_POLICY: LegalDocument = {
           rows: [
             [
               'Your account and profile',
-              'Until you delete it, or after {{Dormant account period}} of inactivity, whichever comes first.',
+              'Until you delete it, or after two years of inactivity, whichever comes first.',
             ],
             [
               'What you posted publicly',
@@ -288,7 +288,7 @@ export const PRIVACY_POLICY: LegalDocument = {
             ],
             [
               'Moderation audit log',
-              '{{Audit log retention}}. It exists so staff decisions can be reviewed after the fact.',
+              'Two years, then deleted automatically. It exists so staff decisions can be reviewed after the fact.',
             ],
             ['Support correspondence', 'Two years from the last message.'],
           ],
@@ -301,7 +301,7 @@ export const PRIVACY_POLICY: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'Under the GDPR you can require us to do all of the following, free of charge. Write to {{Privacy contact email}} and we will answer within one month.',
+          text: 'Under the GDPR you can require us to do all of the following, free of charge. Write to support@onedeck.africa and we will answer within one month.',
         },
         {
           kind: 'list',
@@ -345,7 +345,7 @@ export const PRIVACY_POLICY: LegalDocument = {
         },
         {
           kind: 'p',
-          text: 'If you believe a child has given us personal data, tell us at {{Privacy contact email}} and we will delete it.',
+          text: 'If you believe a child has given us personal data, tell us at support@onedeck.africa and we will delete it.',
         },
       ],
     },
@@ -397,7 +397,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'Deck is operated by {{Legal entity name}}, registered at {{Registered address}} ({{Company registration number}}). By using Deck you agree to these terms. If you do not, please do not use it.',
+          text: 'Deck is operated by Rangeway Limited, registered at 12 Ayo Ogunbiyi Street, Surulere, Lagos (RC1792283). By using Deck you agree to these terms. If you do not, please do not use it.',
         },
         {
           kind: 'p',
@@ -515,7 +515,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
         },
         {
           kind: 'p',
-          text: 'If you are a consumer in the EU or UK you have a right to withdraw from a purchase within 14 days of receiving it, for any reason and without giving one. Tell us at {{Support contact email}} within that period and return the goods within 14 days of telling us. We refund what you paid, including standard outbound delivery, within 14 days of getting the goods back. Return postage is yours unless the item was faulty or wrong.',
+          text: 'If you are a consumer in the EU or UK you have a right to withdraw from a purchase within 14 days of receiving it, for any reason and without giving one. Tell us at support@onedeck.africa within that period and return the goods within 14 days of telling us. We refund what you paid, including standard outbound delivery, within 14 days of getting the goods back. Return postage is yours unless the item was faulty or wrong.',
         },
         {
           kind: 'p',
@@ -600,7 +600,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
         },
         {
           kind: 'p',
-          text: 'In-game purchases are paid to Deck, which passes 80% to the developer. If something you bought does not arrive, contact us at {{Support contact email}} with the purchase reference and we will chase it, and refund you if it cannot be delivered.',
+          text: 'In-game purchases are paid to Deck, which passes 80% to the developer. If something you bought does not arrive, contact us at support@onedeck.africa with the purchase reference and we will chase it, and refund you if it cannot be delivered.',
         },
       ],
     },
@@ -641,7 +641,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
         },
         {
           kind: 'p',
-          text: 'You can appeal any decision by writing to {{Support contact email}}, and a person who was not involved in the original decision will review it. Report content you think breaks these rules to the same address.',
+          text: 'You can appeal any decision by writing to support@onedeck.africa, and a person who was not involved in the original decision will review it. Report content you think breaks these rules to the same address.',
         },
         {
           kind: 'p',
@@ -663,7 +663,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
         },
         {
           kind: 'p',
-          text: 'Subject to that: if you are a consumer, we are liable for loss you suffer that is a foreseeable result of us breaking these terms or failing to use reasonable care, and not for anything unforeseeable. If you are using Deck for business purposes, we exclude liability for lost profits, lost revenue, lost data and indirect or consequential loss, and our total liability to you is capped at the greater of {{Liability cap}} or what you paid us in the twelve months before the claim.',
+          text: 'Subject to that: if you are a consumer, we are liable for loss you suffer that is a foreseeable result of us breaking these terms or failing to use reasonable care, and not for anything unforeseeable. If you are using Deck for business purposes, we exclude liability for lost profits, lost revenue, lost data and indirect or consequential loss, and our total liability to you is capped at the greater of ₦50,000 or what you paid us in the twelve months before the claim.',
         },
       ],
     },
@@ -683,7 +683,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'These terms are governed by the law of {{Governing law}}, and the courts of {{Courts and jurisdiction}} have jurisdiction.',
+          text: 'These terms are governed by the laws of the Federal Republic of Nigeria, and the Nigerian courts have jurisdiction.',
         },
         {
           kind: 'p',
@@ -691,7 +691,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
         },
         {
           kind: 'p',
-          text: 'Please come to us first at {{Support contact email}} — most things are settled that way. If we cannot resolve it, consumers in the EU may be able to use an approved alternative dispute resolution body in their own country; your national consumer authority can point you to one.',
+          text: 'Please come to us first at support@onedeck.africa — most things are settled that way. If we cannot resolve it, consumers in the EU may be able to use an approved alternative dispute resolution body in their own country; your national consumer authority can point you to one.',
         },
         {
           kind: 'note',
@@ -714,7 +714,7 @@ export const TERMS_OF_SERVICE: LegalDocument = {
         },
         {
           kind: 'p',
-          text: 'Questions about any of this: {{Support contact email}}.',
+          text: 'Questions about any of this: support@onedeck.africa.',
         },
       ],
     },

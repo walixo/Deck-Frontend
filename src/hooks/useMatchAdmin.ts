@@ -61,10 +61,39 @@ export interface MatchRevenue {
   >;
   topupsMinor: number;
   topups: number;
+  giftCardsMinor: number;
+  giftCards: number;
   outstandingMinor: number;
   plusMembers: number;
   verifiedPeople: number;
 }
+
+export interface MatchGiftCardAdmin {
+  soldMinor: number;
+  sold: number;
+  redeemed: number;
+  unclaimedCreditMinor: number;
+  unclaimedCredit: number;
+  unclaimedPlus: number;
+  batches: { batch: string; label: string; count: number; redeemed: number; createdAt: string }[];
+  cards: {
+    reference: string;
+    label: string;
+    status: 'active' | 'redeemed' | 'void';
+    mode: 'live' | 'test' | 'issued';
+    priceMinor: number;
+    buyer: string;
+    redeemedBy: string | null;
+    redeemedAt: string | null;
+    expiresAt: string | null;
+    createdAt: string;
+  }[];
+}
+
+export type MatchGiftCardCodes = {
+  batch: string;
+  codes: { code: string; link: string; status?: string }[];
+};
 
 export interface MatchNightRow {
   day: string;
@@ -91,7 +120,47 @@ const keys = {
   revenue: (days: number) => ['admin', 'match', 'revenue', days] as const,
   nights: ['admin', 'match', 'nights'] as const,
   verifications: ['admin', 'match', 'verifications'] as const,
+  giftCards: ['admin', 'match', 'giftcards'] as const,
 };
+
+export function useMatchGiftCards() {
+  return useQuery({
+    queryKey: keys.giftCards,
+    queryFn: () => request<MatchGiftCardAdmin>('get', '/admin/match/giftcards'),
+  });
+}
+
+/** Staff: issue a free batch (returns its codes), fetch a batch's codes, or cancel a card. */
+export function useMatchGiftCardAction() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (
+      action:
+        | { kind: 'issue'; product: string; count: number; batch: string }
+        | { kind: 'batch'; batch: string }
+        | { kind: 'void'; reference: string },
+    ): Promise<MatchGiftCardCodes | unknown> => {
+      if (action.kind === 'issue') {
+        return request<MatchGiftCardCodes>('post', '/admin/match/giftcards/issue', {
+          product: action.product,
+          count: action.count,
+          batch: action.batch,
+        });
+      }
+      if (action.kind === 'batch') {
+        return request<MatchGiftCardCodes>(
+          'get',
+          `/admin/match/giftcards/batch?batch=${encodeURIComponent(action.batch)}`,
+        );
+      }
+      return request('post', `/admin/match/giftcards/${encodeURIComponent(action.reference)}/void`);
+    },
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: keys.giftCards });
+      void client.invalidateQueries({ queryKey: ['admin', 'match', 'revenue'] });
+    },
+  });
+}
 
 export function useMatchRevenue(days: number) {
   return useQuery({

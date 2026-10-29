@@ -18,7 +18,9 @@ const TRENDING_LIMIT = 12;
  */
 export function Spotlight() {
   const spotlight = useSpotlight();
-  const trending = useItems({ sort: 'trending', limit: TRENDING_LIMIT });
+  /* Trending is a ranking, so it is a contest, and imported listings do not
+     enter contests. Discover still lists them. */
+  const trending = useItems({ sort: 'trending', limit: TRENDING_LIMIT, source: 'deck' });
 
   return (
     <div className="relative isolate mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">

@@ -51,7 +51,9 @@ const SHOW_HOW_IT_WORKS: boolean = false;
  */
 export function Home() {
   const { data: stats } = useStats();
-  const launches = useItems({ sort: 'newest', limit: 24 });
+  /* Maker launches only. The hero's "busiest today" and the ticker both talk
+     about these as launches somebody posted, which an imported listing is not. */
+  const launches = useItems({ sort: 'newest', limit: 24, source: 'deck' });
 
   return (
     <>

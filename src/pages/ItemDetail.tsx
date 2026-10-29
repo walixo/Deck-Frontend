@@ -6,6 +6,7 @@ import { FundraiseCard } from '@/components/items/FundraiseCard';
 import { FundraiseCta } from '@/components/items/FundraiseCta';
 import { FundraiseSettings } from '@/components/items/FundraiseSettings';
 import { SharePanel } from '@/components/items/SharePanel';
+import { UnclaimedListing } from '@/components/items/UnclaimedListing';
 import { CommentSection } from '@/components/items/CommentSection';
 import { RevisionHistory } from '@/components/items/RevisionHistory';
 import { VersionStrip } from '@/components/items/VersionStrip';
@@ -102,6 +103,9 @@ export function ItemDetail() {
               <div className="flex flex-wrap items-center gap-3">
                 <h1 className="display-tight text-3xl text-balance sm:text-4xl">{item.name}</h1>
                 {item.featured && <Badge tone="pop">★ Spotlight</Badge>}
+                {/* Said up top, before anyone reads the votes under it as a
+                    launch day: nobody from the team posted this. */}
+                {item.unclaimed && <Badge tone="outline">Listed by Deck</Badge>}
               </div>
 
               <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted text-pretty">
@@ -152,7 +156,7 @@ export function ItemDetail() {
                 {/* Conditions unchanged — the button only appears when the
                     server says the raise is open, or that the maker has the
                     traction to apply. See the component. */}
-                <FundraiseCta item={item} />
+                {!item.unclaimed && <FundraiseCta item={item} />}
 
                 {/* After the controls, not among them: this is something to
                     read, and the things you can act on should come first. */}
@@ -209,54 +213,90 @@ export function ItemDetail() {
           <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
             {/* The owner manages the raise; everyone else sees it. The id is
                 what the hero's raise button scrolls to, on both branches. */}
-            <div id="fundraise" className="scroll-mt-24">
-              <PaymentOutcome
-                confirmed="Thank you — your backing is confirmed and counted in the total."
-                pending="Payment received. It will show in the total as soon as the provider confirms it, usually within a minute."
-                cancelled="You left checkout before paying, so nothing was charged."
-              />
-              {isOwner ? <FundraiseSettings item={item} /> : <FundraiseCard item={item} />}
-            </div>
+            {/* A listing Deck made has no maker to raise money or share it, so
+                its sidebar explains itself instead — and offers the way to
+                claim it or have it taken down. */}
+            {item.unclaimed ? (
+              <UnclaimedListing item={item} />
+            ) : (
+              <div id="fundraise" className="scroll-mt-24">
+                <PaymentOutcome
+                  confirmed="Thank you — your backing is confirmed and counted in the total."
+                  pending="Payment received. It will show in the total as soon as the provider confirms it, usually within a minute."
+                  cancelled="You left checkout before paying, so nothing was charged."
+                />
+                {isOwner ? <FundraiseSettings item={item} /> : <FundraiseCard item={item} />}
+              </div>
+            )}
 
             {/* The share kit is for the person who made the thing. Everyone
                 else already has the URL in their address bar. */}
-            {isOwner && <SharePanel item={item} />}
+            {isOwner && !item.unclaimed && <SharePanel item={item} />}
 
             <Card className="p-5">
-              <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
-                Launched by
-              </h2>
-              <Link
-                to={profilePath(item.submittedBy.username)}
-                className="group mt-3 flex items-center gap-3"
-              >
-                <Avatar user={item.submittedBy} size="md" />
-                <span className="min-w-0">
-                  <span className="block truncate font-display text-sm group-hover:text-accent">
-                    {item.submittedBy.name}
-                    {item.submittedBy.verified && (
-                      <VerifiedMark name={item.submittedBy.name} className="ml-1" />
-                    )}
-                  </span>
-                  <span className="block truncate font-mono text-[11px] text-muted">
-                    @{item.submittedBy.username}
-                  </span>
-                </span>
-              </Link>
+              {/* An unclaimed listing was launched by nobody here — "Launched
+                  by Deck Index" would be true and misleading — so the card
+                  starts with the people behind the product instead. */}
+              {!item.unclaimed && (
+                <>
+                  <h2 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
+                    Launched by
+                  </h2>
+                  <Link
+                    to={profilePath(item.submittedBy.username)}
+                    className="group mt-3 flex items-center gap-3"
+                  >
+                    <Avatar user={item.submittedBy} size="md" />
+                    <span className="min-w-0">
+                      <span className="block truncate font-display text-sm group-hover:text-accent">
+                        {item.submittedBy.name}
+                        {item.submittedBy.verified && (
+                          <VerifiedMark name={item.submittedBy.name} className="ml-1" />
+                        )}
+                      </span>
+                      <span className="block truncate font-mono text-[11px] text-muted">
+                        @{item.submittedBy.username}
+                      </span>
+                    </span>
+                  </Link>
+                </>
+              )}
 
-              {item.makers.length > 0 && (
-                <div className="mt-5">
+              {item.founders.length > 0 ? (
+                <div className={item.unclaimed ? undefined : 'mt-5'}>
                   <h3 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
-                    Makers
+                    {item.founders.length === 1 ? 'Founder' : 'Founders'}
                   </h3>
-                  <ul className="mt-2.5 space-y-1.5">
-                    {item.makers.map((maker) => (
-                      <li key={maker} className="text-sm text-body">
-                        {maker}
+                  <ul className="mt-2.5 space-y-2">
+                    {item.founders.map((founder) => (
+                      <li key={founder.id}>
+                        <Link to={`/founders/${founder.slug}`} className="group block">
+                          <span className="block text-sm text-body group-hover:text-accent">
+                            {founder.name}
+                          </span>
+                          {founder.headline && (
+                            <span className="block text-xs text-muted">{founder.headline}</span>
+                          )}
+                        </Link>
                       </li>
                     ))}
                   </ul>
                 </div>
+              ) : (
+                item.makers.length > 0 && (
+                  <div className="mt-5">
+                    <h3 className="border-b border-line pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
+                      Makers
+                    </h3>
+                    <ul className="mt-2.5 space-y-1.5">
+                      {item.makers.map((maker) => (
+                        <li key={maker} className="text-sm text-body">
+                          {maker}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
               )}
 
               <dl className="mt-5 space-y-2 border-t border-line pt-4 font-mono text-[11px] font-medium uppercase">
@@ -287,7 +327,7 @@ export function ItemDetail() {
                   {/* Not gated on the edit window, unlike the button below it —
                       revenue is a measurement that has to stay current, not
                       part of the pitch people voted on. */}
-                  <ReportRevenue item={item} />
+                  {!item.unclaimed && <ReportRevenue item={item} />}
 
                   <ManageImages item={item} />
 
@@ -302,14 +342,18 @@ export function ItemDetail() {
                   )}
                   {/* The supported way to change what the product *is*. Ordinary
                       edits freeze the name and category once votes arrive. */}
-                  <ButtonLink
-                    to={`/item/${item.slug}/release`}
-                    variant="secondary"
-                    size="sm"
-                    className="w-full"
-                  >
-                    Ship a new version
-                  </ButtonLink>
+                  {/* Owner decisions wait for the owner: the server refuses a new
+                      version, a raise or a sale on an unclaimed listing. */}
+                  {!item.unclaimed && (
+                    <ButtonLink
+                      to={`/item/${item.slug}/release`}
+                      variant="secondary"
+                      size="sm"
+                      className="w-full"
+                    >
+                      Ship a new version
+                    </ButtonLink>
+                  )}
                   <Button
                     variant="danger"
                     size="sm"
@@ -330,7 +374,7 @@ export function ItemDetail() {
                   {/* Selling the whole thing. Under the owner controls rather
                       than beside "ship a new version", because it is the end of
                       the maker's involvement rather than a step in it. */}
-                  <ListForAcquisition item={item} />
+                  {!item.unclaimed && <ListForAcquisition item={item} />}
                 </div>
               )}
 

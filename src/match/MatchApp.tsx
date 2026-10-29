@@ -192,6 +192,8 @@ export function MatchApp({
   const line = useRef<MatchLine | null>(null);
   const voice = useRef<VoiceCall | null>(null);
   const mic = useRef<MediaStream | null>(null);
+  /* The STUN/TURN servers to call with, and when they were fetched. */
+  const ice = useRef<{ servers: RTCIceServer[]; at: number } | null>(null);
   const audio = useRef<AudioContext | null>(null);
 
   const dropMic = () => {
@@ -262,9 +264,16 @@ export function MatchApp({
           return;
         }
         voice.current?.close();
-        voice.current = new VoiceCall(callId, caller, mic.current, audio.current, (state) => {
-          if (state === 'failed') setNotice('Your voices could not reach each other.');
-        });
+        voice.current = new VoiceCall(
+          callId,
+          caller,
+          mic.current,
+          audio.current,
+          (state) => {
+            if (state === 'failed') setNotice('Your voices could not reach each other.');
+          },
+          ice.current?.servers,
+        );
         void voice.current.start().catch(() => undefined);
         setCall({
           callId,
@@ -450,6 +459,12 @@ export function MatchApp({
             : 'Microphone blocked. Click the icon at the left of the address bar, allow Microphone, then press Find someone again.',
       );
       return;
+    }
+    /* Where to call through, refreshed well inside the hour the relay's
+       pass lasts. Without it the call still goes direct. */
+    if (!ice.current || Date.now() - ice.current.at > 30 * 60_000) {
+      const got = await matchApi.ice().catch(() => null);
+      if (got) ice.current = { servers: got.iceServers, at: Date.now() };
     }
     try {
       const { position } = await matchApi.queue();
@@ -1226,8 +1241,8 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
           onChange={(event) => setAdult(event.target.checked)}
           className="mt-1 size-4 accent-[#ff5c8a]"
         />
-        I’m 18 or older. I understand calls connect my browser directly to the other person’s, so
-        each can see the other’s network address, and that calls are never recorded.
+        I’m 18 or older. I understand calls usually connect my browser directly to the other
+        person’s, so each can see the other’s network address, and that calls are never recorded.
       </label>
       {problem && <p className="text-[14px] text-[#ffb3c4]">{problem}</p>}
       <button type="submit" disabled={busy} className={cn(PRIMARY, 'w-full')}>

@@ -103,11 +103,11 @@ export const MATCH_PRIVACY: LegalDocument = {
       blocks: [
         {
           kind: 'p',
-          text: 'Calls connect your browser directly to the other person’s, encrypted, using the standard technology browsers use for video calls (WebRTC). Our server only passes the short messages that set the connection up. It never receives, hears or stores the audio, and neither does anyone at Deck.',
+          text: 'Calls connect your browser directly to the other person’s, encrypted, using the standard technology browsers use for video calls (WebRTC). Our server only passes the short messages that set the connection up. It never receives, hears or stores the audio, and neither does anyone at Deck. When the two networks can’t reach each other directly — common on mobile data — the encrypted audio passes through Cloudflare’s relay instead, which forwards it without being able to hear it and keeps none of it.',
         },
         {
           kind: 'p',
-          text: 'Because the connection is direct, each browser can see the other’s network (IP) address, which can show a rough location such as a city or an internet provider. You agree to this when you set up Match. To find a route between the two browsers, your browser also contacts Google’s public connection servers, which see your IP address for that lookup.',
+          text: 'When the connection is direct, each browser can see the other’s network (IP) address, which can show a rough location such as a city or an internet provider. You agree to this when you set up Match. To find a route between the two browsers, your browser also contacts public connection servers run by Cloudflare and Google, which see your IP address for that lookup.',
         },
       ],
     },
@@ -177,7 +177,11 @@ export const MATCH_PRIVACY: LegalDocument = {
             ['MongoDB Atlas', 'The database Match’s records are stored in.'],
             ['Render', 'Runs the Match server.'],
             ['Vercel', 'Serves the Match website.'],
-            ['Google', 'Sign-in, and the public servers that help two browsers find each other.'],
+            ['Google', 'Sign-in, and public servers that help two browsers find each other.'],
+            [
+              'Cloudflare',
+              'Public servers that help two browsers find each other, and a relay that carries a call’s audio when the two networks can’t connect directly. The audio stays encrypted and is never stored.',
+            ],
             ['Bachs', 'Top-up payments.'],
             [
               'Your browser’s notification service (Google, Apple or Mozilla)',

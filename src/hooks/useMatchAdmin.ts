@@ -7,6 +7,8 @@ export interface MatchRates {
   calls: number;
   connected: number;
   connectRate: number | null;
+  /** Of connected calls, how many went through the TURN relay. */
+  relayRate: number | null;
   shareRate: number | null;
   reportRate: number | null;
   earlyLeaveRate: number | null;

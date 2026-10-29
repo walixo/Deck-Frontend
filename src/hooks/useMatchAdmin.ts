@@ -52,11 +52,98 @@ export interface MatchSectionRequest {
   at: string | null;
 }
 
+export interface MatchRevenue {
+  days: number;
+  /** Credit spent, net of refunds: what Match earned. Kobo. */
+  spentMinor: number;
+  byKind: Partial<
+    Record<'minute' | 'gift' | 'entry' | 'badge' | 'plus', { minor: number; count: number }>
+  >;
+  topupsMinor: number;
+  topups: number;
+  outstandingMinor: number;
+  plusMembers: number;
+  verifiedPeople: number;
+}
+
+export interface MatchNightRow {
+  day: string;
+  sponsor: { name: string; line: string; url: string } | null;
+  theme: { title: string; blurb: string; entryMinor: number } | null;
+  entries: number;
+  entriesMinor: number;
+}
+
+export interface MatchVerificationRow {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  prompt: string;
+  photo: string | null;
+  submittedAt: string | null;
+}
+
 const keys = {
   stats: (days: number) => ['admin', 'match', 'stats', days] as const,
   reports: ['admin', 'match', 'reports'] as const,
   sections: ['admin', 'match', 'sections'] as const,
+  revenue: (days: number) => ['admin', 'match', 'revenue', days] as const,
+  nights: ['admin', 'match', 'nights'] as const,
+  verifications: ['admin', 'match', 'verifications'] as const,
 };
+
+export function useMatchRevenue(days: number) {
+  return useQuery({
+    queryKey: keys.revenue(days),
+    queryFn: () => request<MatchRevenue>('get', `/admin/match/revenue?days=${days}`),
+    refetchInterval: 60_000,
+  });
+}
+
+export function useMatchNights() {
+  return useQuery({
+    queryKey: keys.nights,
+    queryFn: () => request<MatchNightRow[]>('get', '/admin/match/nights'),
+  });
+}
+
+export function useMatchVerifications() {
+  return useQuery({
+    queryKey: keys.verifications,
+    queryFn: () => request<MatchVerificationRow[]>('get', '/admin/match/verifications'),
+  });
+}
+
+/** Staff: save or remove a night; approve or decline a selfie. */
+export function useMatchMoneyAction() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (
+      action:
+        | { kind: 'saveNight'; night: Omit<MatchNightRow, 'entries' | 'entriesMinor'> }
+        | { kind: 'removeNight'; day: string }
+        | { kind: 'approve'; id: string }
+        | { kind: 'decline'; id: string; note?: string; underage?: boolean },
+    ) => {
+      if (action.kind === 'saveNight') return request('put', '/admin/match/nights', action.night);
+      if (action.kind === 'removeNight')
+        return request('delete', `/admin/match/nights/${action.day}`);
+      if (action.kind === 'approve') {
+        return request('post', `/admin/match/verifications/${action.id}/approve`);
+      }
+      return request('post', `/admin/match/verifications/${action.id}/decline`, {
+        note: action.note,
+        underage: action.underage,
+      });
+    },
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: keys.nights });
+      void client.invalidateQueries({ queryKey: keys.verifications });
+      void client.invalidateQueries({ queryKey: ['admin', 'match', 'revenue'] });
+    },
+  });
+}
 
 export function useMatchStats(days: number) {
   return useQuery({

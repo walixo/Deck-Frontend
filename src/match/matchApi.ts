@@ -26,6 +26,53 @@ export interface MatchProfile extends MatchHandles {
   sectionRequested: boolean;
   /** This account gets "someone's free" pings on some device. */
   pings: boolean;
+  /** Prepaid Match credit, kobo. */
+  creditMinor: number;
+  /** Match+ runs until then; null when not a member. */
+  plusUntil: string | null;
+  verified: boolean;
+}
+
+/** One evening's sponsor and/or paid theme, set by Deck. */
+export interface MatchNight {
+  day: string;
+  sponsor: { name: string; line: string; url: string } | null;
+  theme: { title: string; blurb: string; entryMinor: number } | null;
+}
+
+export type MatchGift = 'rose' | 'drink';
+
+export interface MatchWallet {
+  creditMinor: number;
+  currency: string;
+  plusUntil: string | null;
+  verified: boolean;
+  verification: {
+    status: 'draft' | 'pending' | 'approved' | 'declined';
+    prompt: string;
+    note: string;
+  } | null;
+  tonight: (MatchNight & { entered: boolean }) | null;
+  prices: {
+    minute: number;
+    gift: Record<MatchGift, number>;
+    badge: number;
+    plus: number;
+    plusDays: number;
+  };
+  packs: number[];
+  /** False only where payments are switched off. */
+  payments: boolean;
+  ledger: { kind: string; amountMinor: number; note: string; at: string }[];
+}
+
+/** Someone you swapped usernames with. */
+export interface MatchMatch {
+  callId: string;
+  handles: MatchHandles;
+  verified: boolean;
+  gifts: { gift: MatchGift; mine: boolean }[];
+  at: string;
 }
 
 export interface MatchHours {
@@ -45,6 +92,10 @@ export interface Online {
   available: Record<Gender, boolean>;
   /** The Web Push key, when pings are switched on server-side. */
   pushKey: string | null;
+  /** The Match+ hour after closing: members only. */
+  late: { open: boolean; closesAt: number };
+  /** Tonight's sponsor and theme, if Deck set any. */
+  tonight: MatchNight | null;
 }
 
 export type MatchEvent =
@@ -59,6 +110,7 @@ export type MatchEvent =
   | 'ended'
   | 'revealed'
   | 'closed'
+  | 'gift'
   | 'banned';
 
 export const matchApi = {
@@ -67,7 +119,7 @@ export const matchApi = {
   create: (input: MatchHandles & { gender: Gender; adult: true }) =>
     request<MatchProfile>('post', '/match/me', input),
   setHandles: (handles: MatchHandles) => request<MatchProfile>('patch', '/match/me', handles),
-  matches: () => request<{ handles: MatchHandles; at: string }[]>('get', '/match/matches'),
+  matches: () => request<MatchMatch[]>('get', '/match/matches'),
   queue: () => request<{ position: number }>('post', '/match/queue'),
   unqueue: () => request<{ left: boolean }>('delete', '/match/queue'),
   signal: (callId: string, data: Record<string, unknown>) =>
@@ -77,7 +129,30 @@ export const matchApi = {
   share: (callId: string) => request<{ revealed: boolean }>('post', `/match/calls/${callId}/share`),
   report: (callId: string, reason: string) =>
     request('post', `/match/calls/${callId}/report`, { reason }),
-  extend: (callId: string) => request('post', `/match/calls/${callId}/extend`),
+  extend: (callId: string) => request<{ agreed: boolean }>('post', `/match/calls/${callId}/extend`),
+  gift: (callId: string, gift: MatchGift) =>
+    request<{ gift: MatchGift; creditMinor: number }>('post', `/match/calls/${callId}/gift`, {
+      gift,
+    }),
+  wallet: () => request<MatchWallet>('get', '/match/wallet'),
+  topup: (amountMinor: number) =>
+    request<{
+      reference: string;
+      status: string;
+      checkoutUrl?: string;
+      test?: boolean;
+      creditMinor?: number;
+    }>('post', '/match/wallet/topups', { amountMinor }),
+  verifyTopup: (reference: string) =>
+    request<{ status: 'pending' | 'paid' | 'failed'; amountMinor: number; creditMinor: number }>(
+      'post',
+      `/match/wallet/topups/${encodeURIComponent(reference)}/verify`,
+    ),
+  buyPlus: () => request<{ plusUntil: string; creditMinor: number }>('post', '/match/plus'),
+  joinNight: () => request<{ entered: boolean; creditMinor: number }>('post', '/match/night/entry'),
+  startVerification: () => request<{ prompt: string }>('post', '/match/verification/start'),
+  submitVerification: (photo: string) =>
+    request<{ status: string; creditMinor: number }>('post', '/match/verification', { photo }),
   requestSection: (note: string) =>
     request<MatchProfile>('post', '/match/me/section-request', { note }),
   subscribe: (subscription: PushSubscriptionJSON) =>

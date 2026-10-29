@@ -29,21 +29,27 @@ function claimTheHead() {
 
 /**
  * Starts Match. A Google sign-in comes back as `#token=…` (or `?error=…` on
- * the sign-in path); both are read and wiped from the address bar here,
- * before the first render, so the app starts knowing who is signed in.
+ * the sign-in path), and a top-up as `?topup=…` (`&cancelled=1` if they backed
+ * out); all are read and wiped from the address bar here, before the first
+ * render, so the app starts knowing who is signed in and what just happened.
  */
 export function mountMatch(root: HTMLElement) {
   claimTheHead();
   void registerWorker();
   const token = new URLSearchParams(window.location.hash.slice(1)).get('token');
-  const error = new URLSearchParams(window.location.search).get('error') ?? '';
+  const query = new URLSearchParams(window.location.search);
+  const error = query.get('error') ?? '';
+  const topup = query.get('topup');
   if (token) setStoredToken(token);
-  if (token || error || window.location.pathname !== '/') {
+  if (token || error || topup || window.location.pathname !== '/') {
     window.history.replaceState(null, '', '/');
   }
   createRoot(root).render(
     <StrictMode>
-      <MatchApp signInError={error} />
+      <MatchApp
+        signInError={error}
+        topup={topup ? { reference: topup, cancelled: query.get('cancelled') === '1' } : null}
+      />
     </StrictMode>,
   );
 }

@@ -1,8 +1,9 @@
 import { useEffect, useSyncExternalStore } from 'react';
 
 /**
- * Match's music: the first fifteen seconds of "Pulsing Shadows", looped
- * without a gap, under the landing page, the lobby and the wait.
+ * Match's music: the first sixteen seconds of "Pulsing Shadows" (two of its
+ * 8-second phrases), looped without a gap, under the landing page, the lobby
+ * and the wait.
  *
  * It is played through Web Audio rather than an <audio loop>, which leaves a
  * small gap at every turn; the file itself was cut so its end runs straight

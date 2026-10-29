@@ -8,9 +8,11 @@ import {
   MatchLine,
   type Gender,
   type MatchEvent,
+  type MatchHandles,
   type MatchProfile,
   type Online,
 } from './matchApi';
+import { setMusicMuted, useMusic, useMusicMuted } from './music';
 import {
   isInstalled,
   isIOS,
@@ -29,7 +31,7 @@ import { VoiceCall } from './voiceCall';
  * Find someone: men are matched only with women who are online and waiting,
  * and women only with men. The two talk, voice only, for two minutes. When
  * the time is up each may press Share; if both do, each sees the other's
- * LagosLife username and they carry on there.
+ * X or Instagram usernames and they carry on there.
  *
  * One screen at a time, driven by the live line (see `matchApi.ts`): the
  * server decides matches and keeps the clock; this page asks for the
@@ -116,14 +118,16 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
   const [call, setCall] = useState<CallInfo | null>(null);
   const [ended, setEnded] = useState<Ended | null>(null);
   const [shared, setShared] = useState(false);
-  const [revealed, setRevealed] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState<MatchHandles | null>(null);
   const [muted, setMuted] = useState(false);
   const [notice, setNotice] = useState(signInError);
   const [reporting, setReporting] = useState(false);
-  const [matches, setMatches] = useState<{ handle: string; at: string }[]>([]);
+  const [matches, setMatches] = useState<{ handles: MatchHandles; at: string }[]>([]);
   const closed = online ? !online.hours.open : false;
   const now = useNow(screen === 'live' || screen === 'ended' || (screen === 'lobby' && closed));
   useWakeLock(screen === 'connecting' || screen === 'live');
+  /* Music everywhere but a call — and not while a call is being set up. */
+  useMusic(['signedOut', 'setup', 'lobby', 'waiting', 'ended'].includes(screen));
 
   const line = useRef<MatchLine | null>(null);
   const voice = useRef<VoiceCall | null>(null);
@@ -238,7 +242,7 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         break;
       }
       case 'revealed':
-        setRevealed((raw as { handle: string }).handle);
+        setRevealed((raw as { handles: MatchHandles }).handles);
         refreshMatches();
         break;
       case 'banned':
@@ -406,15 +410,15 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
     }
   };
 
-  const saveHandle = async (handle: string) => {
+  const saveHandles = async (handles: MatchHandles) => {
     try {
-      setProfile(await matchApi.setHandle(handle));
+      setProfile(await matchApi.setHandles(handles));
       setNotice('');
       return true;
     } catch (error) {
       setNotice(
         error instanceof RequestError
-          ? (error.fieldError('lagosLife') ?? error.message)
+          ? (error.fieldError('x') ?? error.fieldError('instagram') ?? error.message)
           : 'Could not save.',
       );
       return false;
@@ -451,7 +455,7 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         online={online}
         matches={matches}
         onFind={find}
-        onSaveHandle={saveHandle}
+        onSaveHandles={saveHandles}
         onTogglePings={togglePings}
         onRequestSection={requestSection}
         onSignOut={signOut}
@@ -494,7 +498,7 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         shared={shared}
         revealed={revealed}
         onShare={share}
-        onSaveHandle={saveHandle}
+        onSaveHandles={saveHandles}
         onNext={find}
         onLobby={() => setScreen('lobby')}
         onReport={() => setReporting(true)}
@@ -553,17 +557,20 @@ function Shell({
             by Deck
           </span>
         </button>
-        {online && (
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em]">
-            <span
-              className={cn(
-                'size-2 rounded-full',
-                online.hours.open ? 'animate-pulse bg-[#5dcaa5]' : 'bg-white/35',
-              )}
-            />
-            {status(online)}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {online && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em]">
+              <span
+                className={cn(
+                  'size-2 rounded-full',
+                  online.hours.open ? 'animate-pulse bg-[#5dcaa5]' : 'bg-white/35',
+                )}
+              />
+              {status(online)}
+            </span>
+          )}
+          <MusicToggle />
+        </div>
       </header>
       <main className="mx-auto flex w-full max-w-[40rem] flex-1 flex-col justify-center px-5 pb-10">
         {children}
@@ -588,6 +595,30 @@ function Shell({
   );
 }
 
+/** Music on or off, remembered on this device. */
+function MusicToggle() {
+  const muted = useMusicMuted();
+  return (
+    <button
+      type="button"
+      onClick={() => setMusicMuted(!muted)}
+      aria-pressed={!muted}
+      aria-label={muted ? 'Turn music on' : 'Turn music off'}
+      title={muted ? 'Music off' : 'Music on'}
+      className="grid size-[34px] place-items-center rounded-full border border-white/15 bg-white/5 text-white/75 hover:text-white"
+    >
+      <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none" />
+        {muted ? (
+          <path d="M17 9l5 6M22 9l-5 6" strokeLinecap="round" />
+        ) : (
+          <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" strokeLinecap="round" />
+        )}
+      </svg>
+    </button>
+  );
+}
+
 function Pulse() {
   return (
     <div className="mx-auto size-10 animate-spin rounded-full border-2 border-white/15 border-t-[#ff5c8a]" />
@@ -603,8 +634,8 @@ function SignedOut({ online }: { online: Online | null }) {
         <span className="block text-white/45">Two minutes.</span>
       </h1>
       <p className="mx-auto mt-5 max-w-sm text-[16px] leading-relaxed text-white/65">
-        No photos, no profiles. Talk to someone online right now — and if you click, swap LagosLife
-        usernames.
+        No photos, no profiles. Talk to someone online right now — and if you click, swap X or
+        Instagram usernames.
       </p>
       <a
         href={googleSignInUrl()}
@@ -626,7 +657,7 @@ function SignedOut({ online }: { online: Online | null }) {
 
 function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
   const [gender, setGender] = useState<Gender | null>(null);
-  const [handle, setHandle] = useState('');
+  const [handles, setHandles] = useState<MatchHandles>({ x: '', instagram: '' });
   const [adult, setAdult] = useState(false);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
@@ -639,11 +670,18 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
         if (!adult) return setProblem('Match is for people 18 and over.');
         setBusy(true);
         try {
-          onDone(await matchApi.create({ gender, lagosLife: handle.trim(), adult: true }));
+          onDone(
+            await matchApi.create({
+              gender,
+              x: handles.x.trim(),
+              instagram: handles.instagram.trim(),
+              adult: true,
+            }),
+          );
         } catch (error) {
           setProblem(
             error instanceof RequestError
-              ? (error.fieldError('lagosLife') ?? error.message)
+              ? (error.fieldError('x') ?? error.fieldError('instagram') ?? error.message)
               : 'Something went wrong.',
           );
           setBusy(false);
@@ -686,20 +724,22 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
       <p className="-mt-3 text-[12px] text-white/45">
         You can’t switch this yourself later — if you choose wrong, ask us to change it.
       </p>
-      <label className="block">
-        <span className="text-[14px] font-medium">Your LagosLife username</span>
-        <span className="ml-2 text-[12px] text-white/45">optional — needed only to share</span>
-        <span className="mt-2 flex items-center rounded-[8px] border-2 border-white/20 bg-[#161412] focus-within:border-[#ff5c8a]">
-          <span className="pl-4 font-mono text-[16px] text-white/45">@</span>
-          <input
-            value={handle}
-            onChange={(event) => setHandle(event.target.value.replace(/^@/, ''))}
-            placeholder="username"
-            autoComplete="off"
-            className="w-full bg-transparent px-2 py-3.5 font-mono text-[16px] outline-none placeholder:text-white/25"
+      <div>
+        <p className="text-[14px] font-medium">
+          Your X and Instagram
+          <span className="ml-2 text-[12px] font-normal text-white/45">
+            optional — one is needed to share
+          </span>
+        </p>
+        <div className="mt-2 space-y-2">
+          <HandleInput site="x" value={handles.x} onChange={(x) => setHandles({ ...handles, x })} />
+          <HandleInput
+            site="instagram"
+            value={handles.instagram}
+            onChange={(instagram) => setHandles({ ...handles, instagram })}
           />
-        </span>
-      </label>
+        </div>
+      </div>
       <label className="flex items-start gap-3 text-[14px] leading-relaxed text-white/75">
         <input
           type="checkbox"
@@ -718,38 +758,93 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
   );
 }
 
-function HandleEditor({
+const SITES = {
+  x: { name: 'X', field: 'X username', url: (handle: string) => `https://x.com/${handle}` },
+  instagram: {
+    name: 'Instagram',
+    field: 'Instagram username',
+    url: (handle: string) => `https://www.instagram.com/${handle}/`,
+  },
+} as const;
+type Site = keyof typeof SITES;
+
+/** The usernames someone has, in a fixed order, with where each one lives. */
+const linksFor = (handles: MatchHandles) =>
+  (['x', 'instagram'] as const)
+    .filter((site) => handles[site])
+    .map((site) => ({
+      site,
+      handle: handles[site],
+      href: SITES[site].url(encodeURIComponent(handles[site])),
+    }));
+
+/** One username field: pasted links and a leading @ are tidied as you type. */
+function HandleInput({
+  site,
+  value,
+  onChange,
+}: {
+  site: Site;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <span className="flex items-center rounded-[8px] border-2 border-white/20 bg-[#161412] focus-within:border-[#ff5c8a]">
+      <span className="w-24 shrink-0 pl-4 font-mono text-[12px] uppercase tracking-[0.12em] text-white/45">
+        {SITES[site].name}
+      </span>
+      <span className="font-mono text-[16px] text-white/45">@</span>
+      <input
+        value={value}
+        onChange={(event) =>
+          onChange(
+            event.target.value
+              .replace(/^(https?:\/\/)?(www\.)?(x|twitter|instagram)\.com\//i, '')
+              .replace(/^@/, ''),
+          )
+        }
+        placeholder="username"
+        aria-label={SITES[site].field}
+        autoComplete="off"
+        autoCapitalize="none"
+        className="w-full bg-transparent px-2 py-3.5 font-mono text-[16px] outline-none placeholder:text-white/25"
+      />
+    </span>
+  );
+}
+
+function HandlesEditor({
   value,
   onSave,
   cta = 'Save',
 }: {
-  value: string;
-  onSave: (handle: string) => Promise<boolean>;
+  value: MatchHandles;
+  onSave: (handles: MatchHandles) => Promise<boolean>;
   cta?: string;
 }) {
   const [draft, setDraft] = useState(value);
   const [busy, setBusy] = useState(false);
   return (
     <form
-      className="flex gap-2"
+      className="space-y-2"
       onSubmit={async (event) => {
         event.preventDefault();
         setBusy(true);
-        await onSave(draft.trim());
+        await onSave({ x: draft.x.trim(), instagram: draft.instagram.trim() });
         setBusy(false);
       }}
     >
-      <span className="flex flex-1 items-center rounded-[8px] border-2 border-white/20 bg-[#161412] focus-within:border-[#ff5c8a]">
-        <span className="pl-3 font-mono text-[15px] text-white/45">@</span>
-        <input
-          value={draft}
-          onChange={(event) => setDraft(event.target.value.replace(/^@/, ''))}
-          placeholder="lagoslife username"
-          aria-label="LagosLife username"
-          className="w-full bg-transparent px-2 py-3 font-mono text-[15px] outline-none placeholder:text-white/25"
-        />
-      </span>
-      <button type="submit" disabled={busy || !draft.trim()} className={cn(QUIET, 'px-4 py-3')}>
+      <HandleInput site="x" value={draft.x} onChange={(x) => setDraft({ ...draft, x })} />
+      <HandleInput
+        site="instagram"
+        value={draft.instagram}
+        onChange={(instagram) => setDraft({ ...draft, instagram })}
+      />
+      <button
+        type="submit"
+        disabled={busy || (!draft.x.trim() && !draft.instagram.trim())}
+        className={cn(QUIET, 'w-full py-3')}
+      >
         {cta}
       </button>
     </form>
@@ -762,7 +857,7 @@ function Lobby({
   online,
   matches,
   onFind,
-  onSaveHandle,
+  onSaveHandles,
   onTogglePings,
   onRequestSection,
   onSignOut,
@@ -770,9 +865,9 @@ function Lobby({
   now: number;
   profile: MatchProfile;
   online: Online | null;
-  matches: { handle: string; at: string }[];
+  matches: { handles: MatchHandles; at: string }[];
   onFind: () => void;
-  onSaveHandle: (handle: string) => Promise<boolean>;
+  onSaveHandles: (handles: MatchHandles) => Promise<boolean>;
   onTogglePings: () => void;
   onRequestSection: (note: string) => Promise<boolean>;
   onSignOut: () => void;
@@ -844,35 +939,41 @@ function Lobby({
       <section className="rounded-[12px] border border-white/12 bg-white/[0.03] p-5">
         <div className="flex items-center justify-between gap-3">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
-            Your LagosLife
+            Your X and Instagram
           </p>
           <button
             type="button"
             onClick={() => setEditing(!editing)}
             className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#ff8fab] hover:underline"
           >
-            {editing ? 'Close' : profile.lagosLife ? 'Change' : 'Add'}
+            {editing ? 'Close' : profile.x || profile.instagram ? 'Change' : 'Add'}
           </button>
         </div>
         {editing ? (
           <div className="mt-3">
-            <HandleEditor
-              value={profile.lagosLife}
-              onSave={async (handle) => {
-                const saved = await onSaveHandle(handle);
+            <HandlesEditor
+              value={{ x: profile.x, instagram: profile.instagram }}
+              onSave={async (handles) => {
+                const saved = await onSaveHandles(handles);
                 if (saved) setEditing(false);
                 return saved;
               }}
             />
           </div>
         ) : (
-          <p className="mt-2 font-mono text-[18px]">
-            {profile.lagosLife ? (
-              `@${profile.lagosLife}`
-            ) : (
-              <span className="text-white/40">Not added — you’ll need it to share</span>
+          <div className="mt-2 space-y-1">
+            {linksFor(profile).map((link) => (
+              <p key={link.site} className="font-mono text-[17px]">
+                @{link.handle}{' '}
+                <span className="text-[12px] uppercase tracking-[0.12em] text-white/45">
+                  on {SITES[link.site].name}
+                </span>
+              </p>
+            ))}
+            {!profile.x && !profile.instagram && (
+              <p className="text-[15px] text-white/40">Not added — you’ll need one to share</p>
             )}
-          </p>
+          </div>
         )}
       </section>
 
@@ -883,12 +984,13 @@ function Lobby({
           </p>
           <ul className="mt-3 divide-y divide-white/10 rounded-[12px] border border-white/12">
             {matches.map((match) => (
-              <li
-                key={`${match.handle}-${match.at}`}
-                className="flex items-center justify-between gap-3 px-5 py-3.5"
-              >
-                <span className="font-mono text-[16px]">@{match.handle}</span>
-                <CopyButton text={`@${match.handle}`} />
+              <li key={match.at} className="space-y-2 px-5 py-3.5">
+                {linksFor(match.handles).map((link) => (
+                  <div key={link.site} className="flex items-center justify-between gap-3">
+                    <span className="min-w-0 truncate font-mono text-[16px]">@{link.handle}</span>
+                    <OpenLink href={link.href} site={link.site} />
+                  </div>
+                ))}
               </li>
             ))}
           </ul>
@@ -1281,7 +1383,7 @@ function After({
   shared,
   revealed,
   onShare,
-  onSaveHandle,
+  onSaveHandles,
   onNext,
   onLobby,
   onReport,
@@ -1290,9 +1392,9 @@ function After({
   ended: Ended;
   profile: MatchProfile;
   shared: boolean;
-  revealed: string | null;
+  revealed: MatchHandles | null;
   onShare: () => void;
-  onSaveHandle: (handle: string) => Promise<boolean>;
+  onSaveHandles: (handles: MatchHandles) => Promise<boolean>;
   onNext: () => void;
   onLobby: () => void;
   onReport: () => void;
@@ -1315,29 +1417,39 @@ function After({
       {revealed ? (
         <div className="mx-auto mt-8 max-w-sm rounded-[14px] border-2 border-[#f4f2ee] bg-[#ff5c8a] p-7 text-[#0b0a09] shadow-[6px_6px_0_#f4f2ee]">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em]">
-            It’s a match — find them on LagosLife
+            It’s a match — carry on here
           </p>
-          <p className="mt-3 break-all font-mono text-[32px] font-semibold">@{revealed}</p>
-          <div className="mt-4">
-            <CopyButton text={`@${revealed}`} dark />
+          <div className="mt-4 space-y-4">
+            {linksFor(revealed).map((link) => (
+              <div key={link.site}>
+                <p className="break-all font-mono text-[28px] font-semibold leading-tight">
+                  @{link.handle}
+                </p>
+                <div className="mt-2">
+                  <OpenLink href={link.href} site={link.site} dark />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ) : ended.canShare && left > 0 ? (
         <div className="mx-auto mt-6 max-w-sm space-y-4">
           <p className="text-[15px] leading-relaxed text-white/65">
-            Want to keep talking? Share your LagosLife username. You’ll only see theirs — and they
-            yours — if you both share.
+            Want to keep talking? Share your X or Instagram. You’ll only see theirs — and they yours
+            — if you both share.
           </p>
-          {!profile.lagosLife ? (
-            <HandleEditor value="" onSave={onSaveHandle} cta="Add" />
+          {!profile.x && !profile.instagram ? (
+            <HandlesEditor value={{ x: '', instagram: '' }} onSave={onSaveHandles} cta="Add" />
           ) : shared ? (
             <p className="rounded-[10px] border border-white/15 bg-white/5 px-4 py-4 text-[15px]">
-              Shared <b className="font-mono">@{profile.lagosLife}</b>. Waiting to see if they share
-              too…
+              Shared. Waiting to see if they share too…
             </p>
           ) : (
             <button type="button" onClick={onShare} className={cn(PRIMARY, 'w-full py-5')}>
-              Share my LagosLife
+              Share my{' '}
+              {linksFor(profile)
+                .map((link) => SITES[link.site].name)
+                .join(' & ')}
             </button>
           )}
           <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/45">
@@ -1445,26 +1557,22 @@ function ReportSheet({
   );
 }
 
-function CopyButton({ text, dark = false }: { text: string; dark?: boolean }) {
-  const [done, setDone] = useState(false);
+/** Opens their profile in the X or Instagram app, or the site. */
+function OpenLink({ href, site, dark = false }: { href: string; site: Site; dark?: boolean }) {
   return (
-    <button
-      type="button"
-      onClick={() => {
-        void navigator.clipboard?.writeText(text).then(() => {
-          setDone(true);
-          window.setTimeout(() => setDone(false), 1500);
-        });
-      }}
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       className={cn(
-        'rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em]',
+        'inline-block shrink-0 rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em]',
         dark
           ? 'bg-[#0b0a09] text-[#f4f2ee]'
           : 'border border-white/20 text-white/75 hover:text-white',
       )}
     >
-      {done ? 'Copied' : 'Copy'}
-    </button>
+      Open on {SITES[site].name}
+    </a>
   );
 }
 

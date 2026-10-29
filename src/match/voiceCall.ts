@@ -6,16 +6,19 @@ import { matchApi } from './matchApi';
  * WebRTC carries the audio directly between the two people; Deck only passes
  * the set-up across (the offer, the answer and the network candidates each
  * browser finds). The man's browser offers and the woman's answers, so
- * neither waits on the other to decide. Google's public STUN servers tell
- * each browser its public address; there is no relay, so the two browsers
- * learn each other's network address — the trade chosen for Match.
+ * neither waits on the other to decide. STUN servers tell each browser its
+ * public address and the two connect directly, so each learns the other's
+ * network address — the trade chosen for Match. Where the networks can't
+ * reach each other (common on mobile data), Cloudflare's TURN relay carries
+ * the still-encrypted audio instead, if Deck has it configured.
  *
  * When both can hear each other the call tells Deck, which starts the clock.
  * It also measures how loud each side is, for the voice rings on screen.
  */
 
-const ICE_SERVERS: RTCIceServer[] = [
-  { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
+/** Direct-only, for when the server's list couldn't be fetched. */
+const DIRECT_ONLY: RTCIceServer[] = [
+  { urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] },
 ];
 
 export type CallState = 'connecting' | 'connected' | 'failed';
@@ -38,8 +41,9 @@ export class VoiceCall {
     private readonly mic: MediaStream,
     private readonly context: AudioContext,
     private readonly onState: (state: CallState) => void,
+    iceServers: RTCIceServer[] = DIRECT_ONLY,
   ) {
-    this.pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    this.pc = new RTCPeerConnection({ iceServers });
     for (const track of mic.getTracks()) this.pc.addTrack(track, mic);
     this.localMeter = this.meter(mic);
 
@@ -59,13 +63,41 @@ export class VoiceCall {
       if (state === 'connected') {
         if (!this.told) {
           this.told = true;
-          void matchApi.connected(this.callId).catch(() => undefined);
+          void this.route().then((route) =>
+            matchApi.connected(this.callId, route).catch(() => undefined),
+          );
         }
         this.onState('connected');
       } else if (state === 'failed') {
         this.onState('failed');
       }
     };
+  }
+
+  /** Which way the audio went: straight across, or through the relay. */
+  private async route(): Promise<'direct' | 'relay'> {
+    try {
+      const stats = await this.pc.getStats();
+      let pairId = '';
+      stats.forEach((report) => {
+        if (report.type === 'transport' && report.selectedCandidatePairId) {
+          pairId = report.selectedCandidatePairId as string;
+        }
+      });
+      let relayed = false;
+      stats.forEach((report) => {
+        const chosen = pairId
+          ? report.id === pairId
+          : report.type === 'candidate-pair' && report.state === 'succeeded' && report.nominated;
+        if (!chosen || report.type !== 'candidate-pair') return;
+        for (const side of [report.localCandidateId, report.remoteCandidateId]) {
+          if (stats.get(side as string)?.candidateType === 'relay') relayed = true;
+        }
+      });
+      return relayed ? 'relay' : 'direct';
+    } catch {
+      return 'direct';
+    }
   }
 
   private meter(stream: MediaStream): AnalyserNode {

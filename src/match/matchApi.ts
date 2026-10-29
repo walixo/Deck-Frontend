@@ -162,7 +162,10 @@ export const matchApi = {
   unqueue: () => request<{ left: boolean }>('delete', '/match/queue'),
   signal: (callId: string, data: Record<string, unknown>) =>
     request('post', `/match/calls/${callId}/signal`, { data }),
-  connected: (callId: string) => request('post', `/match/calls/${callId}/connected`),
+  /** The STUN and TURN servers to call with; asked for just before joining the line. */
+  ice: () => request<{ iceServers: RTCIceServer[]; relay: boolean }>('get', '/match/ice'),
+  connected: (callId: string, route: 'direct' | 'relay') =>
+    request('post', `/match/calls/${callId}/connected`, { route }),
   leave: (callId: string) => request('post', `/match/calls/${callId}/leave`),
   share: (callId: string) => request<{ revealed: boolean }>('post', `/match/calls/${callId}/share`),
   report: (callId: string, reason: string) =>

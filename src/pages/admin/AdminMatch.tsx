@@ -116,7 +116,7 @@ function Numbers() {
         <Kpi
           label="Calls"
           value={t.calls.toLocaleString()}
-          hint={`${percent(t.connectRate)} connected`}
+          hint={`${percent(t.connectRate)} connected · ${percent(t.relayRate)} of those via relay`}
         />
         <Kpi
           label="Average wait"

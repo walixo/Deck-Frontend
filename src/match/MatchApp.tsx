@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { MorphShape } from '@/components/deckgames/MorphShape';
 import { RequestError, setStoredToken, getStoredToken } from '@/lib/api';
+import { Wordmark } from '@/components/layout/Wordmark';
 import { cn } from '@/lib/utils';
 import {
   googleSignInUrl,
@@ -27,7 +28,19 @@ import {
   VerifyCard,
   WalletCard,
 } from './money';
-import { EYEBROW, PRIMARY, QUIET, SLAB } from './styles';
+import {
+  CARD,
+  EYEBROW,
+  FIELD,
+  GLOW,
+  LABEL,
+  LINK,
+  LOVE,
+  PILL,
+  PRIMARY,
+  QUIET,
+  SOFT,
+} from './styles';
 import {
   isInstalled,
   isIOS,
@@ -764,7 +777,8 @@ function Shell({
     <div className="relative isolate flex min-h-dvh flex-col overflow-hidden bg-[#0b0a09] text-[#f4f2ee]">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -top-48 left-1/2 size-[44rem] -translate-x-1/2 rounded-full bg-[#ff5c8a]/12 blur-3xl" />
-        <div className="absolute -bottom-56 -right-32 size-[34rem] rounded-full bg-[#9d6bff]/10 blur-3xl" />
+        <div className="absolute -bottom-56 -right-32 size-[34rem] rounded-full bg-[#9d6bff]/12 blur-3xl" />
+        <div className="absolute -bottom-64 -left-40 size-[30rem] rounded-full bg-[#ff7a59]/[0.07] blur-3xl" />
       </div>
       <header className="mx-auto flex w-full max-w-[40rem] items-center justify-between px-5 py-5">
         <button
@@ -774,18 +788,23 @@ function Shell({
           aria-label="Match"
         >
           <span className="text-[26px] font-semibold tracking-[-0.06em]">match</span>
-          <span className="size-2 rounded-full bg-[#ff5c8a]" />
-          <span className="hidden font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 min-[400px]:inline">
-            by Deck
+          <span
+            className={cn('size-[7px] rounded-full shadow-[0_0_8px_rgb(255_92_138_/_0.8)]', LOVE)}
+          />
+          <span className="hidden items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 min-[400px]:inline-flex">
+            by
+            <Wordmark title="Deck" className="h-[9px] w-auto text-white/70" />
           </span>
         </button>
         <div className="flex items-center gap-2">
           {online && (
-            <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em]">
+            <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-white/[0.07] px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white/80">
               <span
                 className={cn(
                   'size-2 rounded-full',
-                  online.hours.open ? 'animate-pulse bg-[#5dcaa5]' : 'bg-white/35',
+                  online.hours.open
+                    ? 'animate-pulse bg-[#5dcaa5] shadow-[0_0_8px_#5dcaa5]'
+                    : 'bg-white/35',
                 )}
               />
               {status(online)}
@@ -799,17 +818,11 @@ function Shell({
       </main>
       <footer className="mx-auto w-full max-w-[40rem] px-5 pb-6 text-center text-[11px] leading-relaxed text-white/40">
         18+ only · Voice only, never recorded ·{' '}
-        <a
-          href="https://onedeck.africa/terms"
-          className="underline underline-offset-4 hover:text-white/70"
-        >
+        <a href="/terms" className="underline underline-offset-4 hover:text-white/70">
           Terms
         </a>{' '}
         ·{' '}
-        <a
-          href="https://onedeck.africa/privacy"
-          className="underline underline-offset-4 hover:text-white/70"
-        >
+        <a href="/privacy" className="underline underline-offset-4 hover:text-white/70">
           Privacy
         </a>
       </footer>
@@ -827,7 +840,7 @@ function MusicToggle() {
       aria-pressed={!muted}
       aria-label={muted ? 'Turn music on' : 'Turn music off'}
       title={muted ? 'Music off' : 'Music on'}
-      className="grid size-[34px] place-items-center rounded-full border border-white/15 bg-white/5 text-white/75 hover:text-white"
+      className="grid size-[34px] place-items-center rounded-full bg-white/[0.07] text-white/75 hover:text-white"
     >
       <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none" />
@@ -853,7 +866,7 @@ function SignedOut({ online }: { online: Online | null }) {
       <MorphShape set="love" className="mx-auto -mb-4 aspect-square w-full max-w-[19rem]" />
       <h1 className="text-[clamp(2.75rem,11vw,4.5rem)] font-semibold leading-[0.95] tracking-[-0.055em]">
         Two voices.
-        <span className="block text-white/45">Two minutes.</span>
+        <span className={cn('block', SOFT)}>Two minutes.</span>
       </h1>
       <p className="mx-auto mt-5 max-w-sm text-[16px] leading-relaxed text-white/65">
         No photos, no profiles. Talk to someone online right now — and if you click, swap X or
@@ -861,7 +874,10 @@ function SignedOut({ online }: { online: Online | null }) {
       </p>
       <a
         href={googleSignInUrl()}
-        className="mt-8 inline-flex items-center justify-center gap-3 rounded-[8px] border-2 border-[#f4f2ee] bg-[#f4f2ee] px-6 py-4 text-[15px] font-medium text-[#1f1f1f] shadow-[4px_4px_0_#ff5c8a] transition-[transform,box-shadow] duration-100 hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#ff5c8a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_#ff5c8a]"
+        className={cn(
+          PILL,
+          'mt-8 bg-[#f4f2ee] text-[#1f1f1f] shadow-[0_14px_40px_rgb(255_92_138_/_0.3)]',
+        )}
       >
         <GoogleG />
         Continue with Google
@@ -925,8 +941,10 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
             aria-checked={gender === value}
             onClick={() => setGender(value)}
             className={cn(
-              'rounded-[12px] border-2 border-[#f4f2ee] px-5 py-7 text-left shadow-[5px_5px_0_#f4f2ee] transition',
-              gender === value ? 'bg-[#ff5c8a] text-[#0b0a09]' : 'bg-[#161412] hover:bg-[#1f1c19]',
+              'rounded-[24px] border px-5 py-7 text-left transition-[background-color,box-shadow,transform] active:scale-[0.98]',
+              gender === value
+                ? cn(LOVE, GLOW, 'border-transparent text-white')
+                : 'border-white/12 bg-white/[0.045] hover:bg-white/[0.08]',
             )}
           >
             <span className="block text-[30px] font-semibold tracking-[-0.04em]">
@@ -935,7 +953,7 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
             <span
               className={cn(
                 'mt-1 block text-[13px]',
-                gender === value ? 'text-[#0b0a09]/70' : 'text-white/55',
+                gender === value ? 'text-white/80' : 'text-white/55',
               )}
             >
               Matched with {value === 'male' ? 'women' : 'men'}
@@ -1011,7 +1029,7 @@ function HandleInput({
   onChange: (value: string) => void;
 }) {
   return (
-    <span className="flex items-center rounded-[8px] border-2 border-white/20 bg-[#161412] focus-within:border-[#ff5c8a]">
+    <span className={cn('flex items-center', FIELD)}>
       <span className="w-24 shrink-0 pl-4 font-mono text-[12px] uppercase tracking-[0.12em] text-white/45">
         {SITES[site].name}
       </span>
@@ -1209,16 +1227,10 @@ function Lobby({
       <PingCard online={online} profile={profile} onToggle={onTogglePings} />
       <InstallCard />
 
-      <section className="rounded-[12px] border border-white/12 bg-white/[0.03] p-5">
+      <section className={CARD}>
         <div className="flex items-center justify-between gap-3">
-          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
-            Your X and Instagram
-          </p>
-          <button
-            type="button"
-            onClick={() => setEditing(!editing)}
-            className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#ff8fab] hover:underline"
-          >
+          <p className={LABEL}>Your X and Instagram</p>
+          <button type="button" onClick={() => setEditing(!editing)} className={LINK}>
             {editing ? 'Close' : profile.x || profile.instagram ? 'Change' : 'Add'}
           </button>
         </div>
@@ -1252,10 +1264,8 @@ function Lobby({
 
       {matches.length > 0 && (
         <section>
-          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/55">
-            Your matches
-          </p>
-          <ul className="mt-3 divide-y divide-white/10 rounded-[12px] border border-white/12">
+          <p className={LABEL}>Your matches</p>
+          <ul className={cn(CARD, 'mt-3 divide-y divide-white/10 p-0')}>
             {matches.map((match) => (
               <li key={match.callId} className="space-y-2.5 px-5 py-4">
                 {linksFor(match.handles).map((link, index) => (
@@ -1321,8 +1331,9 @@ function PingCard({
   return (
     <section
       className={cn(
-        'flex items-center justify-between gap-4 rounded-[12px] border border-white/12 bg-white/[0.03]',
-        compact ? 'mx-auto mt-6 max-w-sm p-4 text-left' : 'p-5',
+        CARD,
+        'flex items-center justify-between gap-4',
+        compact && 'mx-auto mt-6 max-w-sm p-4 text-left',
       )}
     >
       <div>
@@ -1338,14 +1349,14 @@ function PingCard({
         aria-label="Ping me when someone’s free"
         onClick={onToggle}
         className={cn(
-          'relative h-7 w-12 shrink-0 rounded-full border-2 border-[#f4f2ee] transition-colors',
-          profile.pings ? 'bg-[#ff5c8a]' : 'bg-[#161412]',
+          'relative h-8 w-[52px] shrink-0 rounded-full transition-colors',
+          profile.pings ? LOVE : 'bg-white/[0.12]',
         )}
       >
         <span
           className={cn(
-            'absolute top-0.5 size-5 rounded-full bg-[#f4f2ee] transition-[left]',
-            profile.pings ? 'left-[22px]' : 'left-0.5',
+            'absolute top-1 size-6 rounded-full bg-[#f4f2ee] shadow-[0_2px_8px_rgb(0_0_0_/_0.3)] transition-[left]',
+            profile.pings ? 'left-6' : 'left-1',
           )}
         />
       </button>
@@ -1359,14 +1370,14 @@ function InstallCard() {
   if (isInstalled()) return null;
   if (canInstall) {
     return (
-      <section className="flex items-center justify-between gap-4 rounded-[12px] border border-white/12 bg-white/[0.03] p-5">
+      <section className={cn(CARD, 'flex items-center justify-between gap-4')}>
         <div>
           <p className="text-[15px] font-medium">Get Match on your home screen</p>
           <p className="mt-0.5 text-[13px] text-white/50">
             Opens like an app, straight to the lobby.
           </p>
         </div>
-        <button type="button" onClick={() => void install()} className={cn(QUIET, 'px-4 py-3')}>
+        <button type="button" onClick={() => void install()} className={cn(QUIET, 'px-5 py-3')}>
           Install
         </button>
       </section>
@@ -1374,7 +1385,7 @@ function InstallCard() {
   }
   if (isIOS()) {
     return (
-      <section className="rounded-[12px] border border-white/12 bg-white/[0.03] p-5">
+      <section className={CARD}>
         <p className="text-[15px] font-medium">Get Match on your home screen</p>
         <p className="mt-1 text-[13px] leading-relaxed text-white/55">
           In Safari, tap <b className="text-white">Share</b>, then{' '}
@@ -1431,10 +1442,13 @@ function SectionCard({
             maxLength={300}
             rows={2}
             placeholder="Anything we should know? (optional)"
-            className="w-full rounded-[8px] border-2 border-white/20 bg-[#161412] px-3 py-2 text-[14px] text-white outline-none placeholder:text-white/30 focus:border-[#ff5c8a]"
+            className={cn(
+              FIELD,
+              'w-full px-4 py-3 text-[14px] text-white placeholder:text-white/30',
+            )}
           />
           <div className="flex gap-2">
-            <button type="submit" disabled={busy} className={cn(QUIET, 'px-4 py-2.5')}>
+            <button type="submit" disabled={busy} className={cn(QUIET, 'px-5 py-2.5')}>
               Send request
             </button>
             <button
@@ -1503,7 +1517,9 @@ function Connecting({ onLeave }: { onLeave: () => void }) {
     <div className="text-center">
       <div className="relative mx-auto grid size-40 place-items-center">
         <span className="absolute inset-0 animate-ping rounded-full bg-[#ff5c8a]/25" />
-        <span className="size-24 rounded-full bg-[#ff5c8a]" />
+        <span
+          className={cn('size-24 rounded-full shadow-[0_0_40px_rgb(255_92_138_/_0.6)]', LOVE)}
+        />
       </div>
       <h1 className="mt-10 text-[clamp(2rem,8vw,3rem)] font-semibold tracking-[-0.05em]">
         Matched.
@@ -1570,12 +1586,18 @@ function Live({
     <div className="text-center">
       <div className="relative mx-auto size-[15rem]">
         <svg viewBox="0 0 240 240" className="size-full -rotate-90" aria-hidden="true">
+          <defs>
+            <linearGradient id="match-dial" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#ff5c8a" />
+              <stop offset="1" stopColor="#b77cff" />
+            </linearGradient>
+          </defs>
           <circle
             cx="120"
             cy="120"
             r={radius}
             fill="none"
-            stroke="rgb(255 255 255 / 0.1)"
+            stroke="rgb(255 255 255 / 0.09)"
             strokeWidth="10"
           />
           <circle
@@ -1583,7 +1605,7 @@ function Live({
             cy="120"
             r={radius}
             fill="none"
-            stroke={seconds <= 15 ? '#ff7a59' : '#ff5c8a'}
+            stroke={seconds <= 15 ? '#ff7a59' : 'url(#match-dial)'}
             strokeWidth="10"
             strokeLinecap="round"
             strokeDasharray={around}
@@ -1591,27 +1613,29 @@ function Live({
           />
         </svg>
         <p
-          className="absolute inset-0 grid place-items-center font-mono text-[52px] font-semibold tabular-nums"
+          className="absolute inset-0 grid place-items-center font-mono text-[52px] font-medium tabular-nums"
           aria-live="off"
         >
           {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
         </p>
       </div>
-      <div className="mt-10 flex items-center justify-center gap-14">
+      <div className="mt-10 flex items-start justify-center gap-14">
         {[
           ['You', mine, muted ? 'Muted' : null],
           ['Them', theirs, null],
         ].map(([label, ref, note]) => (
           <div key={label as string} className="flex flex-col items-center gap-3">
-            <span className="relative grid size-20 place-items-center">
+            <span className="relative grid size-24 place-items-center">
               <span
                 ref={ref as React.RefObject<HTMLSpanElement>}
-                className="absolute inset-0 rounded-full bg-[#ff5c8a]/30 transition-transform duration-75"
+                className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgb(255_92_138_/_0.42)_30%,rgb(255_92_138_/_0.12)_60%,transparent_72%)] transition-transform duration-75"
               />
               <span
                 className={cn(
-                  'relative size-14 rounded-full border-2 border-[#f4f2ee]',
-                  label === 'You' ? 'bg-[#161412]' : 'bg-[#ff5c8a]',
+                  'relative size-12 rounded-full',
+                  label === 'You'
+                    ? 'bg-[#1c1917] shadow-[inset_0_0_0_2px_rgb(255_255_255_/_0.5)]'
+                    : cn(LOVE, 'shadow-[0_0_24px_rgb(255_92_138_/_0.6)]'),
                 )}
               />
             </span>
@@ -1624,7 +1648,7 @@ function Live({
       </div>
       <div className="mt-8 min-h-14">
         {extend.addedAt && now - extend.addedAt < 4000 ? (
-          <p className="font-mono text-[12px] uppercase tracking-[0.16em] text-[#5dcaa5]">
+          <p className="inline-flex rounded-full bg-[#5dcaa5]/[0.14] px-6 py-3.5 text-[15px] font-semibold text-[#5dcaa5]">
             +1 minute added
           </p>
         ) : (
@@ -1634,10 +1658,12 @@ function Live({
               onClick={onExtend}
               disabled={extend.mine}
               className={cn(
-                SLAB,
-                extend.theirs && !extend.mine
-                  ? 'animate-pulse bg-[#5dcaa5] text-[#0b0a09]'
-                  : 'bg-[#161412] text-[#f4f2ee]',
+                PILL,
+                extend.mine
+                  ? 'bg-white/[0.08] text-[#f4f2ee]'
+                  : extend.theirs
+                    ? 'animate-pulse bg-[linear-gradient(120deg,#5dcaa5,#7fe0bf)] text-[#06261c] shadow-[0_14px_36px_rgb(93_202_165_/_0.35)]'
+                    : 'border border-white/10 bg-white/[0.07] text-[#f4f2ee]',
               )}
             >
               {extend.mine
@@ -1653,7 +1679,11 @@ function Live({
         <button type="button" onClick={onMute} className={QUIET} aria-pressed={muted}>
           {muted ? 'Unmute' : 'Mute'}
         </button>
-        <button type="button" onClick={onLeave} className={cn(SLAB, 'bg-[#ff7a59] text-[#0b0a09]')}>
+        <button
+          type="button"
+          onClick={onLeave}
+          className={cn(PILL, 'bg-[#ff7a59]/[0.22] text-[#f4f2ee] hover:bg-[#ff7a59]/[0.32]')}
+        >
           End call
         </button>
         <button type="button" onClick={onReport} className={QUIET}>
@@ -1709,25 +1739,27 @@ function After({
       </h1>
 
       {revealed ? (
-        <div className="mx-auto mt-8 max-w-sm rounded-[14px] border-2 border-[#f4f2ee] bg-[#ff5c8a] p-7 text-[#0b0a09] shadow-[6px_6px_0_#f4f2ee]">
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em]">
-            It’s a match — carry on here
-          </p>
-          <div className="mt-4 space-y-4">
+        <div className={cn(CARD, 'mx-auto mt-8 max-w-sm p-6 text-left')}>
+          <p className={EYEBROW}>It’s a match — carry on here</p>
+          <div className="mt-4 space-y-2.5">
             {linksFor(revealed).map((link) => (
-              <div key={link.site}>
-                <p className="break-all font-mono text-[28px] font-semibold leading-tight">
-                  @{link.handle}
-                </p>
-                <div className="mt-2">
-                  <OpenLink href={link.href} site={link.site} dark />
+              <div
+                key={link.site}
+                className="flex items-center justify-between gap-3 rounded-[18px] bg-white/[0.07] px-4 py-3.5"
+              >
+                <div className="min-w-0">
+                  <p className={LABEL}>{SITES[link.site].name}</p>
+                  <p className="mt-1 break-all font-mono text-[22px] font-semibold leading-tight tracking-[-0.02em]">
+                    @{link.handle}
+                  </p>
                 </div>
+                <OpenLink href={link.href} site={link.site} solid />
               </div>
             ))}
           </div>
           {giftPrices && (
-            <div className="mt-5 border-t border-[#0b0a09]/20 pt-4">
-              <GiftBar prices={giftPrices} gifts={gifts} onSend={onGift} dark />
+            <div className="mt-5 border-t border-white/10 pt-4">
+              <GiftBar prices={giftPrices} gifts={gifts} onSend={onGift} />
             </div>
           )}
         </div>
@@ -1740,7 +1772,7 @@ function After({
           {!profile.x && !profile.instagram ? (
             <HandlesEditor value={{ x: '', instagram: '' }} onSave={onSaveHandles} cta="Add" />
           ) : shared ? (
-            <p className="rounded-[10px] border border-white/15 bg-white/5 px-4 py-4 text-[15px]">
+            <p className="rounded-[18px] bg-white/[0.07] px-4 py-4 text-[15px] text-[#ff8fab]">
               Shared. Waiting to see if they share too…
             </p>
           ) : (
@@ -1822,12 +1854,12 @@ function ReportSheet({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 grid place-items-end bg-black/60 p-4 sm:place-items-center"
+      className="fixed inset-0 z-50 grid place-items-end bg-black/60 p-4 backdrop-blur-sm sm:place-items-center"
       role="dialog"
       aria-modal="true"
       aria-label="Report"
     >
-      <div className="w-full max-w-sm rounded-[14px] border-2 border-[#f4f2ee] bg-[#161412] p-6 shadow-[6px_6px_0_#f4f2ee]">
+      <div className="w-full max-w-sm rounded-[28px] border border-white/12 bg-[#18141a]/95 p-6 shadow-[0_40px_100px_rgb(0_0_0_/_0.5)]">
         <h2 className="text-[22px] font-semibold tracking-[-0.03em]">What happened?</h2>
         <p className="mt-1 text-[13px] text-white/55">
           They’ll be blocked and the call ends. They won’t know who reported them.
@@ -1838,7 +1870,7 @@ function ReportSheet({
               key={value}
               type="button"
               onClick={() => onReport(value)}
-              className="rounded-[8px] border border-white/15 px-4 py-3 text-left text-[15px] hover:border-[#ff5c8a] hover:bg-white/5"
+              className="rounded-[16px] bg-white/[0.06] px-4 py-3.5 text-left text-[15px] transition-colors hover:bg-white/[0.11]"
             >
               {label}
             </button>
@@ -1857,17 +1889,17 @@ function ReportSheet({
 }
 
 /** Opens their profile in the X or Instagram app, or the site. */
-function OpenLink({ href, site, dark = false }: { href: string; site: Site; dark?: boolean }) {
+function OpenLink({ href, site, solid = false }: { href: string; site: Site; solid?: boolean }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        'inline-block shrink-0 rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em]',
-        dark
-          ? 'bg-[#0b0a09] text-[#f4f2ee]'
-          : 'border border-white/20 text-white/75 hover:text-white',
+        'inline-block shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-[13px] font-semibold',
+        solid
+          ? 'bg-[#f4f2ee] text-[#0b0a09] hover:bg-white'
+          : 'bg-white/[0.08] text-white/85 hover:bg-white/[0.13] hover:text-white',
       )}
     >
       Open on {SITES[site].name}

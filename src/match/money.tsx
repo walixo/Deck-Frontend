@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { GIFTS, naira, shrinkPhoto } from './credit';
 import type { MatchGift, MatchNight, MatchWallet } from './matchApi';
-import { CARD, EYEBROW, LABEL, PRIMARY, QUIET } from './styles';
+import { CARD, EYEBROW, LABEL, LINK, PRIMARY, QUIET } from './styles';
 
 /**
  * Match's wallet on screen: the balance and top-ups, Match+, the Verified
@@ -99,11 +99,7 @@ export function WalletCard({
       <div className="flex items-baseline justify-between gap-3">
         <p className={LABEL}>Match credit</p>
         {wallet.ledger.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setHistory(!history)}
-            className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#ff8fab] hover:underline"
-          >
+          <button type="button" onClick={() => setHistory(!history)} className={LINK}>
             {history ? 'Hide' : 'History'}
           </button>
         )}
@@ -121,7 +117,7 @@ export function WalletCard({
               key={pack}
               type="button"
               onClick={() => onTopUp(pack)}
-              className="rounded-[8px] border border-white/20 bg-white/[0.04] py-2.5 font-mono text-[13px] hover:border-[#ff5c8a]"
+              className="rounded-full bg-white/[0.07] py-2.5 font-mono text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
             >
               +{naira(pack)}
             </button>
@@ -167,10 +163,19 @@ export function PlusCard({
 }) {
   const member = Boolean(wallet.plusUntil);
   return (
-    <section className={cn(CARD, member && 'border-[#ff5c8a]/40 bg-[#ff5c8a]/[0.06]')}>
+    <section
+      className={cn(
+        CARD,
+        'bg-[linear-gradient(140deg,rgb(255_92_138_/_0.1),rgb(183_124_255_/_0.06))]',
+        member && 'border-[#ff5c8a]/35',
+      )}
+    >
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-[20px] font-semibold tracking-[-0.03em]">
-          Match<span className="text-[#ff5c8a]">+</span>
+          Match
+          <span className="bg-[linear-gradient(120deg,#ff5c8a,#b77cff)] bg-clip-text text-transparent">
+            +
+          </span>
         </p>
         <p className="font-mono text-[12px] text-white/60">
           {member
@@ -270,7 +275,7 @@ export function VerifyCard({
       )}
       {prompt ? (
         <div className="mt-4 space-y-3">
-          <p className="rounded-[10px] bg-white/[0.06] px-4 py-3 text-[15px]">
+          <p className="rounded-[18px] bg-white/[0.07] px-4 py-3 text-[15px]">
             Take a selfie making <b className="font-semibold text-white">{prompt}</b>, with your
             face clearly in view.
           </p>
@@ -325,7 +330,12 @@ export function EntryCard({
 }) {
   if (!night.theme) return null;
   return (
-    <div className="mx-auto mt-6 max-w-sm rounded-[12px] border border-[#ff5c8a]/40 bg-[#ff5c8a]/[0.07] p-5 text-left">
+    <div
+      className={cn(
+        CARD,
+        'mx-auto mt-6 max-w-sm border-[#ff5c8a]/30 bg-[linear-gradient(140deg,rgb(255_92_138_/_0.14),rgb(183_124_255_/_0.08))] text-left',
+      )}
+    >
       <p className={EYEBROW}>Tonight only</p>
       <p className="mt-1 text-[20px] font-semibold tracking-[-0.03em]">{night.theme.title}</p>
       {night.theme.blurb && <p className="mt-1 text-[14px] text-white/65">{night.theme.blurb}</p>}
@@ -361,14 +371,14 @@ export function TopUpSheet({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-label="Top up Match credit"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm rounded-[16px] border border-white/15 bg-[#161412] p-6"
+        className="w-full max-w-sm rounded-[28px] border border-white/12 bg-[#18141a]/95 p-6 shadow-[0_40px_100px_rgb(0_0_0_/_0.5)]"
         onClick={(event) => event.stopPropagation()}
       >
         <p className="text-[20px] font-semibold tracking-[-0.03em]">Top up Match credit</p>
@@ -382,7 +392,7 @@ export function TopUpSheet({
               key={pack}
               type="button"
               onClick={() => onTopUp(pack)}
-              className="rounded-[10px] border border-white/20 bg-white/[0.04] py-3.5 font-mono text-[15px] hover:border-[#ff5c8a]"
+              className="rounded-full bg-white/[0.07] py-3.5 font-mono text-[15px] font-medium transition-colors hover:bg-white/[0.12]"
             >
               +{naira(pack)}
             </button>
@@ -401,19 +411,17 @@ export function GiftBar({
   prices,
   gifts,
   onSend,
-  dark = false,
 }: {
   prices: Record<MatchGift, number>;
   gifts: { gift: MatchGift; mine: boolean }[];
   onSend: (gift: MatchGift) => void;
-  dark?: boolean;
 }) {
   const received = gifts.filter((gift) => !gift.mine);
   const sent = gifts.filter((gift) => gift.mine);
   return (
     <div className="space-y-2">
       {(received.length > 0 || sent.length > 0) && (
-        <p className={cn('text-[13px]', dark ? 'text-[#0b0a09]/75' : 'text-white/60')}>
+        <p className="text-[13px] text-white/60">
           {received.length > 0 &&
             `They sent you ${received.map((g) => `a ${GIFTS[g.gift].name} ${GIFTS[g.gift].emoji}`).join(' and ')}. `}
           {sent.length > 0 &&
@@ -426,12 +434,7 @@ export function GiftBar({
             key={gift}
             type="button"
             onClick={() => onSend(gift)}
-            className={cn(
-              'rounded-full px-3.5 py-1.5 text-[13px]',
-              dark
-                ? 'bg-[#0b0a09] text-[#f4f2ee]'
-                : 'border border-white/20 text-white/80 hover:border-[#ff5c8a]',
-            )}
+            className="rounded-full bg-white/[0.07] px-3.5 py-2 text-[13px] font-medium text-white/85 transition-colors hover:bg-[#ff5c8a]/20 hover:text-white"
           >
             Send a {GIFTS[gift].name} {GIFTS[gift].emoji} · {naira(prices[gift])}
           </button>

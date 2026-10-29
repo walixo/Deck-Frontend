@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { setStoredToken } from '@/lib/api';
 import { MatchApp } from './MatchApp';
+import { MatchLegal } from './MatchLegal';
 import { registerWorker } from './device';
 
 /** Match installs as its own app: its manifest, icons and colour, not Deck's. */
@@ -36,6 +37,17 @@ function claimTheHead() {
 export function mountMatch(root: HTMLElement) {
   claimTheHead();
   void registerWorker();
+  /* The terms and privacy policy are pages of their own, with their own address. */
+  const page = window.location.pathname.replace(/\/+$/, '').slice(1);
+  if (page === 'terms' || page === 'privacy') {
+    document.title = page === 'terms' ? 'Terms · Match' : 'Privacy · Match';
+    createRoot(root).render(
+      <StrictMode>
+        <MatchLegal page={page} />
+      </StrictMode>,
+    );
+    return;
+  }
   const token = new URLSearchParams(window.location.hash.slice(1)).get('token');
   const query = new URLSearchParams(window.location.search);
   const error = query.get('error') ?? '';

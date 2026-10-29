@@ -54,6 +54,21 @@ export interface Item {
   videoUrl?: string;
   gallery: string[];
   makers: string[];
+  /**
+   * Who put this on Deck: a maker (`deck`), or Deck listing a product on its
+   * founders' behalf (`imported`). Imported listings never compete — no board,
+   * no podium — and say so on their page.
+   */
+  source: ItemSource;
+  /** An imported listing no founder has claimed yet. Owned by Deck Index. */
+  unclaimed: boolean;
+  claimedAt: string | null;
+  /** ISO 3166-1 alpha-2, when declared. */
+  country?: string;
+  /** Where an imported listing's facts came from. Empty for maker launches. */
+  sourceUrls: string[];
+  /** Founder records behind an imported listing. Sent on the detail page only. */
+  founders: FounderRef[];
   launchDate: string;
   launchDateKey: string;
   featured: boolean;
@@ -356,8 +371,32 @@ export interface Paginated<T> {
   };
 }
 
+export type ItemSource = 'deck' | 'imported';
+
+export interface FounderRef {
+  id: string;
+  name: string;
+  slug: string;
+  headline?: string;
+  claimed: boolean;
+}
+
+export interface FounderLink {
+  label: string;
+  url: string;
+}
+
+/** A founder page: the person as Deck lists them, and their products. */
+export interface FounderProfile {
+  founder: FounderRef & { country?: string; links: FounderLink[]; sourceUrls: string[] };
+  items: Item[];
+}
+
 export interface ItemFilters {
   category?: Category;
+  /** `deck` keeps to launches makers posted — for feeds that call every name a launch. */
+  source?: ItemSource;
+  country?: string;
   sort?: SortOption;
   search?: string;
   pricing?: PricingModel;
@@ -596,6 +635,10 @@ export const AUDIT_ACTIONS = [
   'ad.approved',
   'ad.rejected',
   'ad.pulled',
+  'import.published',
+  'import.rejected',
+  'listing.resolved',
+  'listing.dismissed',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];

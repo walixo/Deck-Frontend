@@ -45,6 +45,7 @@ const Handbook = lazyNamed(() => import('@/pages/Handbook'), 'Handbook');
 const Privacy = lazyNamed(() => import('@/pages/Legal'), 'Privacy');
 const Terms = lazyNamed(() => import('@/pages/Legal'), 'Terms');
 const Profile = lazyNamed(() => import('@/pages/Profile'), 'Profile');
+const Founder = lazyNamed(() => import('@/pages/Founder'), 'Founder');
 
 /*
  * Deck Games — its own world under `/games`, with its own shell rather than
@@ -141,6 +142,7 @@ const AdminGames = lazyNamed(() => import('@/pages/admin/AdminGames'), 'AdminGam
 const AdminChallenges = lazyNamed(() => import('@/pages/admin/AdminChallenges'), 'AdminChallenges');
 const AdminMatch = lazyNamed(() => import('@/pages/admin/AdminMatch'), 'AdminMatch');
 const AdminAds = lazyNamed(() => import('@/pages/admin/AdminAds'), 'AdminAds');
+const AdminImports = lazyNamed(() => import('@/pages/admin/AdminImports'), 'AdminImports');
 const AdminAudit = lazyNamed(() => import('@/pages/admin/AdminAudit'), 'AdminAudit');
 
 /* Tools. */
@@ -241,6 +243,9 @@ export function App() {
         <Route path="/future-gen" element={<FutureGen />} />
         <Route path="/acquisitions" element={<Acquisitions />} />
         <Route path="/acquisitions/:slug" element={<AcquisitionDetail />} />
+        {/* Founders Deck lists on their behalf. A page about a person, not an
+            account — see the page for why the difference matters. */}
+        <Route path="/founders/:slug" element={<Founder />} />
         <Route path="/forum" element={<Forum />} />
         <Route path="/forum/:slug" element={<TopicDetail />} />
         <Route path="/shop" element={<Shop />} />
@@ -314,6 +319,7 @@ export function App() {
           <Route path="challenges" element={<AdminChallenges />} />
           <Route path="match" element={<AdminMatch />} />
           <Route path="ads" element={<AdminAds />} />
+          <Route path="imports" element={<AdminImports />} />
           <Route path="audit" element={<AdminAudit />} />
         </Route>
 

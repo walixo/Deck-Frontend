@@ -185,7 +185,8 @@ function History({ person }: { person: MatchPerson }) {
     <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
       {section(person.gender)} · {person.history.calls} calls · {person.history.leftEarly} left
       early · {person.history.reports} reports all-time
-      {person.lagosLife ? ` · @${person.lagosLife}` : ''}
+      {person.x ? ` · @${person.x} on X` : ''}
+      {person.instagram ? ` · @${person.instagram} on Instagram` : ''}
     </p>
   );
 }

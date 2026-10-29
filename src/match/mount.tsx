@@ -17,7 +17,9 @@ function claimTheHead() {
     document.head.appendChild(el);
   };
   add('link', { rel: 'manifest', href: '/match.webmanifest' });
-  add('link', { rel: 'icon', href: '/match-icon-192.png', type: 'image/png' });
+  /* The heart from the love morph, drawn by the same shader. */
+  add('link', { rel: 'icon', href: '/match-favicon-32.png', type: 'image/png', sizes: '32x32' });
+  add('link', { rel: 'icon', href: '/match-icon-192.png', type: 'image/png', sizes: '192x192' });
   add('link', { rel: 'apple-touch-icon', href: '/match-apple-touch-icon.png' });
   add('meta', { name: 'theme-color', content: '#0b0a09' });
   add('meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });

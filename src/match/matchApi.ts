@@ -13,9 +13,14 @@ import { api, apiUrl, getStoredToken, request } from '@/lib/api';
 
 export type Gender = 'male' | 'female';
 
-export interface MatchProfile {
+/** Where two people carry on after a call: usernames without the @. */
+export interface MatchHandles {
+  x: string;
+  instagram: string;
+}
+
+export interface MatchProfile extends MatchHandles {
   gender: Gender;
-  lagosLife: string;
   bannedUntil: string | null;
   /** Asked staff to switch section; waiting on them. */
   sectionRequested: boolean;
@@ -59,10 +64,10 @@ export type MatchEvent =
 export const matchApi = {
   online: () => request<Online>('get', '/match/online'),
   me: () => request<MatchProfile | null>('get', '/match/me'),
-  create: (input: { gender: Gender; lagosLife: string; adult: true }) =>
+  create: (input: MatchHandles & { gender: Gender; adult: true }) =>
     request<MatchProfile>('post', '/match/me', input),
-  setHandle: (lagosLife: string) => request<MatchProfile>('patch', '/match/me', { lagosLife }),
-  matches: () => request<{ handle: string; at: string }[]>('get', '/match/matches'),
+  setHandles: (handles: MatchHandles) => request<MatchProfile>('patch', '/match/me', handles),
+  matches: () => request<{ handles: MatchHandles; at: string }[]>('get', '/match/matches'),
   queue: () => request<{ position: number }>('post', '/match/queue'),
   unqueue: () => request<{ left: boolean }>('delete', '/match/queue'),
   signal: (callId: string, data: Record<string, unknown>) =>

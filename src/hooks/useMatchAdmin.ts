@@ -32,7 +32,8 @@ export interface MatchPerson {
   email: string;
   username: string;
   gender: 'male' | 'female' | null;
-  lagosLife: string;
+  x: string;
+  instagram: string;
   pausedUntil: string | null;
   history: { calls: number; leftEarly: number; reports: number };
 }

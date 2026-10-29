@@ -8,11 +8,26 @@ import {
   MatchLine,
   type Gender,
   type MatchEvent,
+  type MatchGift,
   type MatchHandles,
+  type MatchMatch,
+  type MatchWallet,
   type MatchProfile,
   type Online,
 } from './matchApi';
 import { setMusicMuted, useMusic, useMusicMuted } from './music';
+import { GIFTS, naira, paymentCode } from './credit';
+import {
+  EntryCard,
+  GiftBar,
+  PlusCard,
+  TonightBanner,
+  TopUpSheet,
+  VerifiedMark,
+  VerifyCard,
+  WalletCard,
+} from './money';
+import { EYEBROW, PRIMARY, QUIET, SLAB } from './styles';
 import {
   isInstalled,
   isIOS,
@@ -58,6 +73,8 @@ interface CallInfo {
   caller: boolean;
   endsAt: number | null;
   total: number;
+  /** The person on the other end has the Verified badge. */
+  themVerified: boolean;
 }
 
 interface Ended {
@@ -76,8 +93,13 @@ interface Queue {
 interface Extend {
   mine: boolean;
   theirs: boolean;
-  extended: boolean;
+  /** Minutes added so far; the first is free, later ones cost credit. */
+  round: number;
+  /** When the last minute was added, to say so for a moment. */
+  addedAt: number | null;
 }
+
+const NO_EXTEND: Extend = { mine: false, theirs: false, round: 0, addedAt: null };
 
 const other = (gender: Gender): Gender => (gender === 'male' ? 'female' : 'male');
 const people = (gender: Gender, count: number) =>
@@ -109,20 +131,35 @@ function status(online: Online): string {
   return online.available.male && online.available.female ? 'Busy' : 'Quiet right now';
 }
 
-export function MatchApp({ signInError = '' }: { signInError?: string }) {
+export function MatchApp({
+  signInError = '',
+  topup = null,
+}: {
+  signInError?: string;
+  /** Back from a top-up checkout: which one, and whether they backed out. */
+  topup?: { reference: string; cancelled: boolean } | null;
+}) {
   const [screen, setScreen] = useState<Screen>(() => (getStoredToken() ? 'loading' : 'signedOut'));
   const [profile, setProfile] = useState<MatchProfile | null>(null);
   const [online, setOnline] = useState<Online | null>(null);
   const [queue, setQueue] = useState<Queue | null>(null);
-  const [extend, setExtend] = useState<Extend>({ mine: false, theirs: false, extended: false });
+  const [extend, setExtend] = useState<Extend>(NO_EXTEND);
   const [call, setCall] = useState<CallInfo | null>(null);
   const [ended, setEnded] = useState<Ended | null>(null);
   const [shared, setShared] = useState(false);
   const [revealed, setRevealed] = useState<MatchHandles | null>(null);
   const [muted, setMuted] = useState(false);
-  const [notice, setNotice] = useState(signInError);
+  const [notice, setNotice] = useState(
+    signInError || (topup?.cancelled ? 'Top-up cancelled — nothing was charged.' : ''),
+  );
   const [reporting, setReporting] = useState(false);
-  const [matches, setMatches] = useState<{ handles: MatchHandles; at: string }[]>([]);
+  const [matches, setMatches] = useState<MatchMatch[]>([]);
+  const [wallet, setWallet] = useState<MatchWallet | null>(null);
+  /* Why the top-up sheet is open; null when it is closed. */
+  const [topUpReason, setTopUpReason] = useState<string | null>(null);
+  const [paying, setPaying] = useState(false);
+  /* Gifts between the two people in the call that just ended. */
+  const [callGifts, setCallGifts] = useState<{ gift: MatchGift; mine: boolean }[]>([]);
   const closed = online ? !online.hours.open : false;
   const now = useNow(screen === 'live' || screen === 'ended' || (screen === 'lobby' && closed));
   useWakeLock(screen === 'connecting' || screen === 'live');
@@ -143,6 +180,13 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
     void matchApi
       .matches()
       .then(setMatches)
+      .catch(() => undefined);
+  }, []);
+
+  const refreshWallet = useCallback(() => {
+    void matchApi
+      .wallet()
+      .then(setWallet)
       .catch(() => undefined);
   }, []);
 
@@ -176,7 +220,11 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         setNotice('Match has closed for tonight. Back tomorrow at 8pm.');
         break;
       case 'matched': {
-        const { callId, caller } = raw as { callId: string; caller: boolean };
+        const { callId, caller, them } = raw as {
+          callId: string;
+          caller: boolean;
+          them?: { verified: boolean };
+        };
         if (!mic.current || !audio.current) {
           void matchApi.leave(callId).catch(() => undefined);
           return;
@@ -186,8 +234,14 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
           if (state === 'failed') setNotice('Your voices could not reach each other.');
         });
         void voice.current.start().catch(() => undefined);
-        setCall({ callId, caller, endsAt: null, total: 120_000 });
-        setExtend({ mine: false, theirs: false, extended: false });
+        setCall({
+          callId,
+          caller,
+          endsAt: null,
+          total: 120_000,
+          themVerified: Boolean(them?.verified),
+        });
+        setExtend(NO_EXTEND);
         setMuted(false);
         setNotice('');
         setScreen('connecting');
@@ -211,12 +265,24 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         break;
       }
       case 'extend': {
-        const votes = raw as { mine: boolean; theirs: boolean };
-        setExtend((current) => ({ ...current, mine: votes.mine, theirs: votes.theirs }));
+        const votes = raw as {
+          mine: boolean;
+          theirs: boolean;
+          round: number;
+          refused?: 'you' | 'them';
+        };
+        setExtend((current) => ({
+          ...current,
+          mine: votes.mine,
+          theirs: votes.theirs,
+          round: votes.round,
+        }));
+        if (votes.refused === 'you') setNotice('Not enough credit for another minute.');
+        if (votes.refused === 'them') setNotice('They didn’t have credit for another minute.');
         break;
       }
       case 'extended': {
-        const more = raw as { endsAt: number; serverNow: number };
+        const more = raw as { endsAt: number; serverNow: number; extensions: number };
         const offset = more.serverNow - Date.now();
         setCall(
           (current) =>
@@ -226,7 +292,8 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
               total: current.total + 60_000,
             },
         );
-        setExtend({ mine: true, theirs: true, extended: true });
+        setExtend({ mine: false, theirs: false, round: more.extensions, addedAt: Date.now() });
+        if (more.extensions > 1) refreshWallet();
         break;
       }
       case 'ended': {
@@ -237,6 +304,7 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         setEnded({ ...end, shareUntil: end.shareUntil - (end.serverNow - Date.now()) });
         setShared(false);
         setRevealed(null);
+        setCallGifts([]);
         setReporting(false);
         setScreen('ended');
         break;
@@ -245,6 +313,14 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         setRevealed((raw as { handles: MatchHandles }).handles);
         refreshMatches();
         break;
+      case 'gift': {
+        const { callId, gift } = raw as { callId: string; gift: MatchGift };
+        if (ended?.callId === callId)
+          setCallGifts((current) => [...current, { gift, mine: false }]);
+        setNotice(`They sent you a ${GIFTS[gift].name} ${GIFTS[gift].emoji}`);
+        refreshMatches();
+        break;
+      }
       case 'banned':
         setScreen('paused');
         break;
@@ -279,8 +355,9 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
       setScreen('lobby');
       openLine();
       refreshMatches();
+      refreshWallet();
     },
-    [openLine, refreshMatches],
+    [openLine, refreshMatches, refreshWallet],
   );
 
   /* Start-up: who this is, if they are signed in. */
@@ -350,6 +427,7 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
     } catch (error) {
       dropMic();
       setNotice(error instanceof Error ? error.message : 'Could not join the line.');
+      if (paymentCode(error) === 'entry') refreshWallet();
     }
   };
 
@@ -364,8 +442,134 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
   const askForMore = () => {
     if (!call) return;
     setExtend((current) => ({ ...current, mine: true }));
-    void matchApi.extend(call.callId).catch(() => undefined);
+    void matchApi.extend(call.callId).catch((error) => {
+      setExtend((current) => ({ ...current, mine: false }));
+      /* No checkout mid-call: leaving the page would end it. */
+      setNotice(
+        paymentCode(error) === 'credit'
+          ? `Another minute needs ${naira(wallet?.prices.minute ?? 10_000)} credit — top up after this call.`
+          : error instanceof Error
+            ? error.message
+            : 'Could not add a minute.',
+      );
+    });
   };
+
+  /* ------------------------------------------------------------ money --- */
+
+  const topUp = async (amountMinor: number) => {
+    setTopUpReason(null);
+    setNotice('');
+    try {
+      const result = await matchApi.topup(amountMinor);
+      if (result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl);
+        return;
+      }
+      setNotice(`${naira(amountMinor)} added${result.test ? ' (test — no money moved)' : ''}.`);
+      refreshWallet();
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not start a top-up.');
+    }
+  };
+
+  /**
+   * Runs something paid for from credit. Short of credit, the top-up sheet
+   * opens with the reason; anything else is said plainly.
+   */
+  const spendOn = async (run: () => Promise<unknown>, needs: string): Promise<boolean> => {
+    setPaying(true);
+    setNotice('');
+    try {
+      await run();
+      refreshWallet();
+      return true;
+    } catch (error) {
+      if (paymentCode(error) === 'credit') setTopUpReason(needs);
+      else setNotice(error instanceof Error ? error.message : 'That didn’t work just now.');
+      return false;
+    } finally {
+      setPaying(false);
+    }
+  };
+
+  const buyPlus = () =>
+    void spendOn(
+      async () => {
+        const { plusUntil } = await matchApi.buyPlus();
+        setProfile((current) => current && { ...current, plusUntil });
+        setNotice('Welcome to Match+.');
+      },
+      `Match+ is ${naira(wallet?.prices.plus ?? 150_000)} for ${wallet?.prices.plusDays ?? 30} days.`,
+    );
+
+  const joinNight = () =>
+    void spendOn(
+      () => matchApi.joinNight(),
+      `Tonight’s entry is ${naira(wallet?.tonight?.theme?.entryMinor ?? 0)}.`,
+    );
+
+  const sendGift = (callId: string, gift: MatchGift) =>
+    void spendOn(
+      async () => {
+        await matchApi.gift(callId, gift);
+        if (ended?.callId === callId) setCallGifts((current) => [...current, { gift, mine: true }]);
+        refreshMatches();
+        setNotice(`${GIFTS[gift].emoji} Sent.`);
+      },
+      `A ${GIFTS[gift].name} is ${naira(wallet?.prices.gift[gift] ?? 0)}.`,
+    );
+
+  const startVerification = async (): Promise<string | null> => {
+    try {
+      return (await matchApi.startVerification()).prompt;
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not start the check.');
+      return null;
+    }
+  };
+
+  const submitVerification = (photo: string) =>
+    spendOn(
+      async () => {
+        await matchApi.submitVerification(photo);
+        setNotice('Thanks — a person at Deck will check your photo soon.');
+      },
+      `The Verified badge is ${naira(wallet?.prices.badge ?? 50_000)}, once.`,
+    );
+
+  /*
+   * Back from checkout with ?topup=: ask the server, which asks the provider.
+   * The webhook can lag the redirect by a few seconds, so a pending answer is
+   * asked again a few times before giving up quietly.
+   */
+  useEffect(() => {
+    const reference = topup && !topup.cancelled ? topup.reference : null;
+    if (!reference || !getStoredToken()) return;
+    let stop = false;
+    const check = async (attempt: number) => {
+      try {
+        const result = await matchApi.verifyTopup(reference);
+        if (stop) return;
+        if (result.status === 'paid') {
+          setNotice(`${naira(result.amountMinor)} added to your Match credit.`);
+          refreshWallet();
+        } else if (result.status === 'pending' && attempt < 6) {
+          window.setTimeout(() => void check(attempt + 1), 2500);
+        } else if (result.status === 'pending') {
+          setNotice('Your top-up is still processing — it will appear shortly.');
+        } else {
+          setNotice('That top-up didn’t go through. Nothing was charged.');
+        }
+      } catch {
+        if (!stop) setNotice('Could not confirm your top-up yet — it will appear shortly.');
+      }
+    };
+    void check(0);
+    return () => {
+      stop = true;
+    };
+  }, [topup, refreshWallet]);
 
   /* Pings: this browser's push subscription, on or off. */
   const togglePings = async () => {
@@ -442,6 +646,10 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
 
   /* ---------------------------------------------------------- screens --- */
 
+  const plusActive = Boolean(wallet?.plusUntil ?? profile?.plusUntil);
+  /* What this person pays for the next minute: the first is free for all. */
+  const minutePrice = extend.round === 0 || plusActive ? 0 : (wallet?.prices.minute ?? 10_000);
+
   let body: ReactNode = null;
   if (screen === 'loading') body = <Pulse />;
   else if (screen === 'signedOut') body = <SignedOut online={online} />;
@@ -454,11 +662,19 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         profile={profile}
         online={online}
         matches={matches}
+        wallet={wallet}
+        paying={paying}
         onFind={find}
         onSaveHandles={saveHandles}
         onTogglePings={togglePings}
         onRequestSection={requestSection}
         onSignOut={signOut}
+        onTopUp={topUp}
+        onBuyPlus={buyPlus}
+        onJoinNight={joinNight}
+        onGift={sendGift}
+        onStartVerification={startVerification}
+        onSubmitVerification={submitVerification}
       />
     );
   else if (screen === 'waiting' && profile)
@@ -480,6 +696,7 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         voice={voice}
         muted={muted}
         extend={extend}
+        minutePrice={minutePrice}
         onExtend={askForMore}
         onMute={() => {
           voice.current?.setMuted(!muted);
@@ -497,6 +714,9 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         profile={profile}
         shared={shared}
         revealed={revealed}
+        gifts={callGifts}
+        giftPrices={wallet?.prices.gift ?? null}
+        onGift={(gift) => sendGift(ended.callId, gift)}
         onShare={share}
         onSaveHandles={saveHandles}
         onNext={find}
@@ -517,17 +737,19 @@ export function MatchApp({ signInError = '' }: { signInError?: string }) {
         </p>
       )}
       {reporting && <ReportSheet onReport={report} onClose={() => setReporting(false)} />}
+      {topUpReason && wallet && (
+        <TopUpSheet
+          wallet={wallet}
+          reason={topUpReason}
+          onTopUp={topUp}
+          onClose={() => setTopUpReason(null)}
+        />
+      )}
     </Shell>
   );
 }
 
 /* -------------------------------------------------------------- pieces --- */
-
-const SLAB =
-  'inline-flex items-center justify-center gap-3 rounded-[8px] border-2 border-[#f4f2ee] px-6 py-4 font-mono text-[12px] font-semibold uppercase tracking-[0.16em] shadow-[4px_4px_0_#f4f2ee] transition-[transform,box-shadow] duration-100 hover:-translate-x-px hover:-translate-y-px hover:shadow-[5px_5px_0_#f4f2ee] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_#f4f2ee] disabled:opacity-50';
-const PRIMARY = `${SLAB} bg-[#ff5c8a] text-[#0b0a09]`;
-const QUIET = `${SLAB} bg-[#161412] text-[#f4f2ee]`;
-const EYEBROW = 'font-mono text-[11px] uppercase tracking-[0.2em] text-[#ff8fab]';
 
 function Shell({
   online,
@@ -553,13 +775,13 @@ function Shell({
         >
           <span className="text-[26px] font-semibold tracking-[-0.06em]">match</span>
           <span className="size-2 rounded-full bg-[#ff5c8a]" />
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/45">
+          <span className="hidden font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 min-[400px]:inline">
             by Deck
           </span>
         </button>
         <div className="flex items-center gap-2">
           {online && (
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em]">
+            <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em]">
               <span
                 className={cn(
                   'size-2 rounded-full',
@@ -856,31 +1078,58 @@ function Lobby({
   profile,
   online,
   matches,
+  wallet,
+  paying,
   onFind,
   onSaveHandles,
   onTogglePings,
   onRequestSection,
   onSignOut,
+  onTopUp,
+  onBuyPlus,
+  onJoinNight,
+  onGift,
+  onStartVerification,
+  onSubmitVerification,
 }: {
   now: number;
   profile: MatchProfile;
   online: Online | null;
-  matches: { handles: MatchHandles; at: string }[];
+  matches: MatchMatch[];
+  wallet: MatchWallet | null;
+  paying: boolean;
   onFind: () => void;
   onSaveHandles: (handles: MatchHandles) => Promise<boolean>;
   onTogglePings: () => void;
   onRequestSection: (note: string) => Promise<boolean>;
   onSignOut: () => void;
+  onTopUp: (amountMinor: number) => void;
+  onBuyPlus: () => void;
+  onJoinNight: () => void;
+  onGift: (callId: string, gift: MatchGift) => void;
+  onStartVerification: () => Promise<string | null>;
+  onSubmitVerification: (photo: string) => Promise<boolean>;
 }) {
   const [editing, setEditing] = useState(false);
   const them = other(profile.gender);
-  const open = online?.hours.open ?? true;
+  const plus = Boolean(wallet?.plusUntil ?? profile.plusUntil);
+  /* The Match+ hour after closing counts as open, for members. */
+  const late = Boolean(online && !online.hours.open && online.late.open);
+  const open = (online?.hours.open ?? true) || (late && plus);
+  /* A paid themed night: the way in replaces Find until they have joined. */
+  const entry =
+    online?.hours.open && wallet?.tonight?.theme && wallet.tonight.theme.entryMinor > 0
+      ? wallet.tonight
+      : null;
+  const mustJoin = Boolean(entry && !entry.entered);
   return (
     <div className="space-y-10">
       {open ? (
         <div className="text-center">
           <p className={EYEBROW}>
-            Live now{online ? ` · until ${timeOf(online.hours.closesAt)}` : ''}
+            {late
+              ? `Match+ hour · until ${timeOf(online!.late.closesAt)}`
+              : `Live now${online ? ` · until ${timeOf(online.hours.closesAt)}` : ''}`}
           </p>
           <p className="mt-2 text-[clamp(4.5rem,22vw,8rem)] font-semibold leading-none tracking-[-0.06em] tabular-nums">
             {online?.live
@@ -901,13 +1150,19 @@ function Lobby({
               'Quiet right now — nobody on the other side yet. Press Find someone and you’ll be first in line.'
             )}
           </p>
-          <button
-            type="button"
-            onClick={onFind}
-            className={cn(PRIMARY, 'mt-9 w-full max-w-xs py-5 text-[13px]')}
-          >
-            Find someone
-          </button>
+          {!mustJoin && (
+            <button
+              type="button"
+              onClick={onFind}
+              className={cn(PRIMARY, 'mt-9 w-full max-w-xs py-5 text-[13px]')}
+            >
+              Find someone
+            </button>
+          )}
+          {entry && <EntryCard night={entry} onJoin={onJoinNight} busy={paying} />}
+          <TonightBanner
+            night={entry && online?.tonight ? { ...online.tonight, theme: null } : online?.tonight}
+          />
           <p className="mt-4 text-[13px] text-white/45">
             Two minutes, voice only. Leave whenever you like.
           </p>
@@ -930,6 +1185,24 @@ function Lobby({
             , Lagos time
             {online ? ` · opens in ${countdown(online.hours.opensAt - now)}` : ''}.
           </p>
+          {late && (
+            <p className="mx-auto mt-3 max-w-xs text-[14px] text-white/70">
+              Match+ members are still talking until {timeOf(online!.late.closesAt)}.
+            </p>
+          )}
+          <TonightBanner night={online?.tonight} />
+        </div>
+      )}
+
+      {wallet && (
+        <div className="space-y-4">
+          <WalletCard wallet={wallet} onTopUp={onTopUp} />
+          <PlusCard wallet={wallet} onBuy={onBuyPlus} busy={paying} />
+          <VerifyCard
+            wallet={wallet}
+            onStart={onStartVerification}
+            onSubmit={onSubmitVerification}
+          />
         </div>
       )}
 
@@ -984,13 +1257,23 @@ function Lobby({
           </p>
           <ul className="mt-3 divide-y divide-white/10 rounded-[12px] border border-white/12">
             {matches.map((match) => (
-              <li key={match.at} className="space-y-2 px-5 py-3.5">
-                {linksFor(match.handles).map((link) => (
+              <li key={match.callId} className="space-y-2.5 px-5 py-4">
+                {linksFor(match.handles).map((link, index) => (
                   <div key={link.site} className="flex items-center justify-between gap-3">
-                    <span className="min-w-0 truncate font-mono text-[16px]">@{link.handle}</span>
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="truncate font-mono text-[16px]">@{link.handle}</span>
+                      {index === 0 && match.verified && <VerifiedMark />}
+                    </span>
                     <OpenLink href={link.href} site={link.site} />
                   </div>
                 ))}
+                {wallet && (
+                  <GiftBar
+                    prices={wallet.prices.gift}
+                    gifts={match.gifts}
+                    onSend={(gift) => onGift(match.callId, gift)}
+                  />
+                )}
               </li>
             ))}
           </ul>
@@ -1207,6 +1490,7 @@ function Waiting({
       {queue && !queue.otherWaiting && !profile.pings && (
         <PingCard online={online} profile={profile} onToggle={onTogglePings} compact />
       )}
+      <TonightBanner night={online?.tonight} compact />
       <button type="button" onClick={onCancel} className={cn(QUIET, 'mt-9')}>
         Stop looking
       </button>
@@ -1245,6 +1529,7 @@ function Live({
   voice,
   muted,
   extend,
+  minutePrice,
   onExtend,
   onMute,
   onLeave,
@@ -1255,6 +1540,8 @@ function Live({
   voice: React.RefObject<VoiceCall | null>;
   muted: boolean;
   extend: Extend;
+  /** What this person pays for the next minute, kobo; 0 when it is free. */
+  minutePrice: number;
   onExtend: () => void;
   onMute: () => void;
   onLeave: () => void;
@@ -1331,11 +1618,12 @@ function Live({
             <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-white/60">
               {(note as string) ?? (label as string)}
             </span>
+            {label === 'Them' && call.themVerified && <VerifiedMark />}
           </div>
         ))}
       </div>
       <div className="mt-8 min-h-14">
-        {extend.extended ? (
+        {extend.addedAt && now - extend.addedAt < 4000 ? (
           <p className="font-mono text-[12px] uppercase tracking-[0.16em] text-[#5dcaa5]">
             +1 minute added
           </p>
@@ -1354,9 +1642,9 @@ function Live({
             >
               {extend.mine
                 ? 'Waiting for them…'
-                : extend.theirs
-                  ? 'They want 1 more minute · +1'
-                  : '+1 minute'}
+                : `${extend.theirs ? 'They want 1 more minute · +1' : '+1 minute'}${
+                    minutePrice ? ` · ${naira(minutePrice)}` : ''
+                  }`}
             </button>
           )
         )}
@@ -1382,6 +1670,9 @@ function After({
   profile,
   shared,
   revealed,
+  gifts,
+  giftPrices,
+  onGift,
   onShare,
   onSaveHandles,
   onNext,
@@ -1393,6 +1684,9 @@ function After({
   profile: MatchProfile;
   shared: boolean;
   revealed: MatchHandles | null;
+  gifts: { gift: MatchGift; mine: boolean }[];
+  giftPrices: Record<MatchGift, number> | null;
+  onGift: (gift: MatchGift) => void;
   onShare: () => void;
   onSaveHandles: (handles: MatchHandles) => Promise<boolean>;
   onNext: () => void;
@@ -1431,6 +1725,11 @@ function After({
               </div>
             ))}
           </div>
+          {giftPrices && (
+            <div className="mt-5 border-t border-[#0b0a09]/20 pt-4">
+              <GiftBar prices={giftPrices} gifts={gifts} onSend={onGift} dark />
+            </div>
+          )}
         </div>
       ) : ended.canShare && left > 0 ? (
         <div className="mx-auto mt-6 max-w-sm space-y-4">

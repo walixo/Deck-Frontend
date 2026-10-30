@@ -11,6 +11,11 @@ interface HeroProps {
   stats?: PlatformStats;
   /** The newest launches; the three with the most votes are dealt on the right. */
   launches?: Item[];
+  /**
+   * A hand-picked hand, left to right. Used instead of the busiest launches
+   * when all three are there; see HERO_PICKS on the landing page.
+   */
+  picks?: Item[];
 }
 
 /*
@@ -28,10 +33,11 @@ const SHOW_FOUNDING_BOARD: boolean = false;
  * The landing page's hero, on the front-door standard every Deck hero shares.
  *
  * The starfield stays — it is the launch board's sky — and the headline stands
- * still on top of it. On the right, a deck of today's busiest launches, fanned
- * like cards in a hand: the product named after the thing it shows.
+ * still on top of it. On the right, a hand of three launches, fanned like
+ * cards: the product named after the thing it shows. The hand is picked by
+ * staff when a pick is set, and otherwise the board's busiest launches.
  */
-export function Hero({ stats, launches = [] }: HeroProps) {
+export function Hero({ stats, launches = [], picks = [] }: HeroProps) {
   const today = stats?.todayLaunches;
   return (
     <FrontHero
@@ -47,7 +53,7 @@ export function Hero({ stats, launches = [] }: HeroProps) {
       primary={{ label: 'Launch your product', to: '/submit' }}
       secondary={{ label: 'Explore launches →', to: '/discover' }}
       backdrop={<PixelSky className="absolute inset-0 h-full w-full" />}
-      visual={<LaunchDeck launches={launches} />}
+      visual={<LaunchDeck launches={launches} picks={picks} />}
     >
       {stats &&
         (stats.launches >= STATS_SHOWN_FROM.launches && stats.makers >= STATS_SHOWN_FROM.makers ? (
@@ -71,10 +77,12 @@ const FAN = [
 ];
 
 /** Three launches, fanned. Placeholders stand in until there are three to show. */
-function LaunchDeck({ launches }: { launches: Item[] }) {
+function LaunchDeck({ launches, picks }: { launches: Item[]; picks: Item[] }) {
   const top = [...launches].sort((a, b) => b.voteCount - a.voteCount).slice(0, 3);
-  /* The busiest card goes in the middle, on top. */
-  const hand = top.length === 3 ? [top[1], top[0], top[2]] : top;
+  /* A full hand of picks is dealt exactly as written. Otherwise the busiest
+     launch goes in the middle, on top — and a partial pick is not used, so
+     the hand never mixes a curated card with a ranked one. */
+  const hand = picks.length === 3 ? picks : top.length === 3 ? [top[1], top[0], top[2]] : top;
   return (
     <div className="relative mx-auto aspect-[5/4] w-full max-w-[36rem]">
       {FAN.map((place, index) => {

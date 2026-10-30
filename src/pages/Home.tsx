@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { useItems } from '@/hooks/useItems';
 import { useStats } from '@/hooks/useMeta';
 import { lazyNamed } from '@/lib/lazy';
+import type { Item } from '@/types';
 
 /*
  * Split off the entry bundle, like the arcade game further down. The reel is
@@ -49,15 +50,29 @@ const SHOW_HOW_IT_WORKS: boolean = false;
  * and the sections that depend on data hide themselves until there is some.
  * The page has to make its whole argument on day one without them.
  */
+/*
+ * The three cards dealt in the hero, left to right — the middle one sits on
+ * top. Picked by hand, so the first thing a visitor sees is a set of products
+ * they will recognise rather than whatever happened to get votes this morning.
+ * Change the slugs to change the hand. If any of them stops being published,
+ * the hero falls back to the busiest launches on the board.
+ */
+const HERO_PICKS = ['carbon', 'chowdeck', 'bamboo'];
+
 export function Home() {
   const { data: stats } = useStats();
   /* Maker launches only. The hero's "busiest today" and the ticker both talk
      about these as launches somebody posted, which an imported listing is not. */
   const launches = useItems({ sort: 'newest', limit: 24, source: 'deck' });
+  const picked = useItems({ slugs: HERO_PICKS.join(','), limit: HERO_PICKS.length });
+  /* Back in the order written above; the list endpoint sorts its own way. */
+  const picks = HERO_PICKS.map((slug) =>
+    picked.data?.data.find((item) => item.slug === slug),
+  ).filter((item): item is Item => Boolean(item));
 
   return (
     <>
-      <Hero stats={stats} launches={launches.data?.data ?? []} />
+      <Hero stats={stats} launches={launches.data?.data ?? []} picks={picks} />
 
       {/*
        * The thirty-second film, straight off the hero.

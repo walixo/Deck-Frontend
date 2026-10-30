@@ -397,6 +397,8 @@ export interface ItemFilters {
   /** `deck` keeps to launches makers posted — for feeds that call every name a launch. */
   source?: ItemSource;
   country?: string;
+  /** Specific launches, comma-separated slugs (at most six). */
+  slugs?: string;
   sort?: SortOption;
   search?: string;
   pricing?: PricingModel;

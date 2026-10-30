@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Input, Select, Textarea } from '@/components/ui/Field';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState, InlineAlert } from '@/components/ui/States';
 import { useCategories } from '@/hooks/useCategories';
@@ -162,6 +163,23 @@ function CandidateCard({ candidate }: { candidate: ImportCandidate }) {
     <article className="rounded-slab border border-line bg-surface shadow-hard">
       <div className="p-4">
         <div className="flex flex-wrap items-center gap-2">
+          {/* The logo, or a dashed gap where one is missing — so the queue
+              shows at a glance which listings still need one before they go
+              out with a monogram. */}
+          {candidate.logoUrl ? (
+            <img
+              src={candidate.logoUrl}
+              alt=""
+              className="size-9 shrink-0 rounded-slab border border-line object-contain"
+            />
+          ) : (
+            <span
+              title="No logo yet"
+              className="flex size-9 shrink-0 items-center justify-center rounded-slab border border-dashed border-line font-mono text-[9px] uppercase text-muted"
+            >
+              logo
+            </span>
+          )}
           <h3 className="font-display text-base">{candidate.name}</h3>
           <Chip>{categoryLabel}</Chip>
           {candidate.country && <Chip>{countryName(candidate.country)}</Chip>}
@@ -483,14 +501,13 @@ function CandidateForm({ candidate, onDone }: { candidate?: ImportCandidate; onD
           options={PRICING.map((value) => ({ value, label: PRICING_LABELS[value] }))}
         />
       </div>
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Input
           label="Tags"
           placeholder="payments, fintech"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
         />
-        <Input label="Logo URL" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
         <Input
           label="Launched"
           type="date"
@@ -498,6 +515,16 @@ function CandidateForm({ candidate, onDone }: { candidate?: ImportCandidate; onD
           onChange={(e) => setLaunchedAt(e.target.value)}
         />
       </div>
+      {/* Uploaded into Deck's own storage, the same as a maker's logo. Most
+          imports get theirs from `npm run fetch-logos`; this is for the ones
+          whose sites only publish a tiny or unusable icon. */}
+      <ImageUpload
+        label="Logo"
+        aspect="square"
+        value={logoUrl ? [logoUrl] : []}
+        onChange={(urls) => setLogoUrl(urls[0] ?? '')}
+        hint="Square, at least 256px. Use the company’s own logo — from its press kit if it has one."
+      />
 
       <fieldset className="space-y-3">
         <legend className="font-mono text-[11px] font-medium uppercase tracking-[0.12em]">

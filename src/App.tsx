@@ -4,7 +4,8 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Layout } from '@/components/layout/Layout';
 import { lazyNamed } from '@/lib/lazy';
 import { profilePath } from '@/lib/utils';
-import { Home } from '@/pages/Home';
+import { LaunchesOnly } from '@/components/site/LaunchesOnly';
+import { Landing } from '@/pages/Landing';
 import { ItemDetail } from '@/pages/ItemDetail';
 import { NotFound } from '@/pages/NotFound';
 
@@ -141,6 +142,7 @@ const AdminCustom = lazyNamed(() => import('@/pages/admin/AdminCustom'), 'AdminC
 const AdminGames = lazyNamed(() => import('@/pages/admin/AdminGames'), 'AdminGames');
 const AdminChallenges = lazyNamed(() => import('@/pages/admin/AdminChallenges'), 'AdminChallenges');
 const AdminMatch = lazyNamed(() => import('@/pages/admin/AdminMatch'), 'AdminMatch');
+const AdminSite = lazyNamed(() => import('@/pages/admin/AdminSite'), 'AdminSite');
 const AdminAds = lazyNamed(() => import('@/pages/admin/AdminAds'), 'AdminAds');
 const AdminImports = lazyNamed(() => import('@/pages/admin/AdminImports'), 'AdminImports');
 const AdminAudit = lazyNamed(() => import('@/pages/admin/AdminAudit'), 'AdminAudit');
@@ -235,17 +237,20 @@ export function App() {
       </Route>
 
       <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/discover" element={<Discover />} />
-        <Route path="/spotlight" element={<Spotlight />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/item/:slug" element={<ItemDetail />} />
-        <Route path="/future-gen" element={<FutureGen />} />
-        <Route path="/acquisitions" element={<Acquisitions />} />
-        <Route path="/acquisitions/:slug" element={<AcquisitionDetail />} />
-        {/* Founders Deck lists on their behalf. A page about a person, not an
-            account — see the page for why the difference matters. */}
-        <Route path="/founders/:slug" element={<Founder />} />
+        <Route path="/" element={<Landing />} />
+        {/* The launch product, behind the Launches switch (Admin → Site). */}
+        <Route element={<LaunchesOnly />}>
+          <Route path="/discover" element={<Discover />} />
+          <Route path="/spotlight" element={<Spotlight />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/item/:slug" element={<ItemDetail />} />
+          <Route path="/future-gen" element={<FutureGen />} />
+          <Route path="/acquisitions" element={<Acquisitions />} />
+          <Route path="/acquisitions/:slug" element={<AcquisitionDetail />} />
+          {/* Founders Deck lists on their behalf. A page about a person, not an
+              account — see the page for why the difference matters. */}
+          <Route path="/founders/:slug" element={<Founder />} />
+        </Route>
         <Route path="/forum" element={<Forum />} />
         <Route path="/forum/:slug" element={<TopicDetail />} />
         <Route path="/shop" element={<Shop />} />
@@ -275,7 +280,14 @@ export function App() {
             <Route index element={<AccountOverview />} />
             <Route path="profile" element={<AccountProfile />} />
             <Route path="password" element={<AccountPassword />} />
-            <Route path="launches" element={<AccountLaunches />} />
+            <Route
+              path="launches"
+              element={
+                <LaunchesOnly>
+                  <AccountLaunches />
+                </LaunchesOnly>
+              }
+            />
             <Route path="writing" element={<AccountWriting />} />
             {/* Games moved to Deck Games' developer area. */}
             <Route path="games" element={<Navigate to="/games/developers" replace />} />
@@ -284,17 +296,20 @@ export function App() {
                 than growing a second list of the same rows. */}
             <Route path="orders" element={<Orders />} />
           </Route>
-          <Route path="/submit" element={<Submit />} />
-          {/* Shipping a new version is owner-gated, so it sits behind the same
-              auth boundary as posting one. */}
-          <Route path="/item/:slug/release" element={<ReleaseVersion />} />
-          <Route path="/item/:slug/edit" element={<EditLaunch />} />
+          <Route element={<LaunchesOnly />}>
+            <Route path="/submit" element={<Submit />} />
+            {/* Shipping a new version is owner-gated, so it sits behind the same
+                auth boundary as posting one. */}
+            <Route path="/item/:slug/release" element={<ReleaseVersion />} />
+            <Route path="/item/:slug/edit" element={<EditLaunch />} />
+            {/* Ads only run on launch pages. */}
+            <Route path="/advertise" element={<Advertise />} />
+          </Route>
           {/* Checkout and order history need an account. */}
           <Route path="/checkout" element={<Checkout />} />
           {/* Selling: everything here needs an account, and all but the payout
               page needs a payout account, which each page checks for itself. */}
           <Route path="/sell" element={<SellerDashboard />} />
-          <Route path="/advertise" element={<Advertise />} />
 
           <Route path="/sell/new" element={<ListingForm />} />
           <Route path="/sell/:id" element={<ListingForm />} />
@@ -318,6 +333,7 @@ export function App() {
           <Route path="games" element={<AdminGames />} />
           <Route path="challenges" element={<AdminChallenges />} />
           <Route path="match" element={<AdminMatch />} />
+          <Route path="site" element={<AdminSite />} />
           <Route path="ads" element={<AdminAds />} />
           <Route path="imports" element={<AdminImports />} />
           <Route path="audit" element={<AdminAudit />} />

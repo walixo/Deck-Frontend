@@ -52,6 +52,7 @@ const ACTION_STYLE: Record<AuditAction, { label: string; tone: string }> = {
   },
   'match.giftcards.issued': { label: 'Match gift cards issued', tone: 'bg-surface-2 text-body' },
   'match.giftcard.voided': { label: 'Match gift card cancelled', tone: 'bg-surface-2 text-body' },
+  'site.settings.changed': { label: 'Site settings changed', tone: 'bg-surface-2 text-body' },
   'game.edited': { label: 'Game edited', tone: 'bg-surface-2 text-body' },
   'game.removed': { label: 'Game removed', tone: 'bg-edge text-canvas' },
   'ad.approved': { label: 'Ad approved', tone: 'bg-deep text-on-deep' },

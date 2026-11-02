@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { ItemCardSkeletonList, Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useAuth } from '@/hooks/useAuth';
+import { useLaunches } from '@/hooks/useSite';
 import { useProfile } from '@/hooks/useMeta';
 import { formatFullDate, formatNumber, prettyUrl } from '@/lib/utils';
 import { VerifiedMark } from '@/components/ui/VerifiedMark';
@@ -17,6 +18,7 @@ export function Profile() {
      which is also what guarantees the sigil is there before this renders. */
   const { handle = '' } = useParams();
   const username = handle.slice(1);
+  const launches = useLaunches();
   const { data, isLoading, isError, error, refetch } = useProfile(username);
   const { user: viewer } = useAuth();
 
@@ -98,7 +100,7 @@ export function Profile() {
                 {user.createdAt && <span>Joined {formatFullDate(user.createdAt)}</span>}
               </div>
 
-              {isSelf && (
+              {isSelf && launches && (
                 <div className="mt-5">
                   <ButtonLink to="/submit" size="sm">
                     Launch something new
@@ -108,12 +110,14 @@ export function Profile() {
             </div>
           </div>
 
-          <dl className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatTile label="Launches" value={formatNumber(stats.launches)} />
-            <StatTile label="Votes received" value={formatNumber(stats.votesReceived)} />
-            <StatTile label="Votes given" value={formatNumber(stats.votesGiven)} />
-            <StatTile label="Comments" value={formatNumber(stats.commentsWritten)} />
-          </dl>
+          {launches && (
+            <dl className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatTile label="Launches" value={formatNumber(stats.launches)} />
+              <StatTile label="Votes received" value={formatNumber(stats.votesReceived)} />
+              <StatTile label="Votes given" value={formatNumber(stats.votesGiven)} />
+              <StatTile label="Comments" value={formatNumber(stats.commentsWritten)} />
+            </dl>
+          )}
         </div>
       </header>
 
@@ -124,38 +128,44 @@ export function Profile() {
           <BadgeCase badges={data.badges} />
         </div>
 
-        <h2 className="mb-5 text-xl">
-          {isSelf ? 'Your launches' : `Launches by ${user.name}`}
-          {items.length > 0 && (
-            <span className="ml-2 font-mono text-sm font-medium tabular-nums text-muted">
-              {items.length}
-            </span>
-          )}
-        </h2>
+        {launches && (
+          <>
+            <h2 className="mb-5 text-xl">
+              {isSelf ? 'Your launches' : `Launches by ${user.name}`}
+              {items.length > 0 && (
+                <span className="ml-2 font-mono text-sm font-medium tabular-nums text-muted">
+                  {items.length}
+                </span>
+              )}
+            </h2>
 
-        {items.length === 0 ? (
-          <EmptyState
-            title={isSelf ? 'You have not launched anything yet' : 'No launches yet'}
-            description={
-              isSelf
-                ? 'Your first launch takes about two minutes to write up.'
-                : `${user.name} has not posted a launch on Deck yet.`
-            }
-            action={
-              isSelf ? <ButtonLink to="/submit">Launch your first product</ButtonLink> : undefined
-            }
-          />
-        ) : (
-          <div className="space-y-3">
-            {items.map((item, index) => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                className="animate-[var(--animate-slide-up)]"
-                style={{ animationDelay: `${Math.min(index, 8) * 50}ms` }}
+            {items.length === 0 ? (
+              <EmptyState
+                title={isSelf ? 'You have not launched anything yet' : 'No launches yet'}
+                description={
+                  isSelf
+                    ? 'Your first launch takes about two minutes to write up.'
+                    : `${user.name} has not posted a launch on Deck yet.`
+                }
+                action={
+                  isSelf ? (
+                    <ButtonLink to="/submit">Launch your first product</ButtonLink>
+                  ) : undefined
+                }
               />
-            ))}
-          </div>
+            ) : (
+              <div className="space-y-3">
+                {items.map((item, index) => (
+                  <ItemCard
+                    key={item.id}
+                    item={item}
+                    className="animate-[var(--animate-slide-up)]"
+                    style={{ animationDelay: `${Math.min(index, 8) * 50}ms` }}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

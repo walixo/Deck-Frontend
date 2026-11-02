@@ -40,7 +40,7 @@ const SkyRun = lazyNamed(() => import('@/components/games/SkyRun'), 'SkyRun');
  * The games are exempt from the palette rules, so the board keeps its own
  * colours; everything around it here is ordinary Deck.
  */
-export function ArcadeCoda() {
+export function ArcadeCoda({ eyebrow = 'While you wait for midnight UTC' }: { eyebrow?: string }) {
   const [playing, setPlaying] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
 
@@ -64,7 +64,7 @@ export function ArcadeCoda() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted">
-              While you wait for midnight UTC
+              {eyebrow}
             </p>
             <h2 id="arcade-heading" className="display-tight mt-2 text-2xl sm:text-3xl">
               Play Sky Run

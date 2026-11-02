@@ -5,6 +5,8 @@ import { Star } from '@/components/ui/Star';
 import { useCart } from '@/hooks/useCart';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
+import { useLaunches } from '@/hooks/useSite';
+import { matchUrl } from '@/lib/matchUrl';
 import { cn, profilePath } from '@/lib/utils';
 import { Logo } from './Logo';
 import { NotificationBell } from './NotificationBell';
@@ -29,7 +31,11 @@ interface NavItem {
   to: string;
   label: string;
   star?: boolean;
-  children?: { to: string; label: string; blurb: string }[];
+  /** Part of the launch product: shown only while launches are on. */
+  launch?: boolean;
+  /** Somewhere off this site (Match); `to` is then only a key. */
+  external?: () => string;
+  children?: { to: string; label: string; blurb: string; launch?: boolean }[];
 }
 
 const NAV_LINKS: NavItem[] = [
@@ -37,6 +43,7 @@ const NAV_LINKS: NavItem[] = [
   {
     to: '/discover',
     label: 'Discover',
+    launch: true,
     children: [
       {
         to: '/discover',
@@ -46,8 +53,10 @@ const NAV_LINKS: NavItem[] = [
       { to: '/spotlight', label: 'Picks', blurb: 'The handful Deck is pointing at this week' },
     ],
   },
-  { to: '/leaderboard', label: 'Board' },
-  { to: '/future-gen', label: 'Future Gen', star: true },
+  { to: '/leaderboard', label: 'Board', launch: true },
+  { to: '/future-gen', label: 'Future Gen', star: true, launch: true },
+  { to: '/games', label: 'Games' },
+  { to: 'match', label: 'Match', external: matchUrl },
   { to: '/forum', label: 'Forum' },
   {
     to: '/shop',
@@ -63,16 +72,28 @@ const NAV_LINKS: NavItem[] = [
         to: '/acquisitions',
         label: 'Acquisitions',
         blurb: 'Whole products and tools, for sale outright',
+        launch: true,
       },
     ],
   },
-  { to: '/games', label: 'Games' },
   { to: '/blog', label: 'Blog' },
 ];
+
+/** The menu with the launch product taken out while launches are off. */
+const linksFor = (launches: boolean): NavItem[] =>
+  launches
+    ? NAV_LINKS
+    : NAV_LINKS.filter((link) => !link.launch).map((link) =>
+        link.children
+          ? { ...link, children: link.children.filter((child) => !child.launch) }
+          : link,
+      );
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { count: cartCount } = useCart();
+  const launches = useLaunches();
+  const links = linksFor(launches);
   const [search, setSearch] = useState('');
   const accountRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -134,8 +155,12 @@ export function Navbar() {
          * is the breakpoint doing the squeezing.
          */}
         <nav aria-label="Main" className="ml-2 hidden items-center gap-1 lg:flex lg:ml-4">
-          {NAV_LINKS.map((link) =>
-            link.children ? (
+          {links.map((link) =>
+            link.external ? (
+              <a key={link.to} href={link.external()} className={navClass({ isActive: false })}>
+                {link.label}
+              </a>
+            ) : link.children ? (
               <NavDropdown key={link.to} item={link} />
             ) : (
               <NavLink key={link.to} to={link.to} end={link.to === '/'} className={navClass}>
@@ -200,9 +225,11 @@ export function Navbar() {
 
           {isAuthenticated && user ? (
             <>
-              <ButtonLink to="/submit" size="sm" className="hidden sm:inline-flex">
-                + Launch
-              </ButtonLink>
+              {launches && (
+                <ButtonLink to="/submit" size="sm" className="hidden sm:inline-flex">
+                  + Launch
+                </ButtonLink>
+              )}
 
               <div className="relative" ref={accountRef}>
                 <button
@@ -229,10 +256,10 @@ export function Navbar() {
                         click their own avatar — "how do I look to everyone else". */}
                     <MenuLink to={profilePath(user.username)}>Public page</MenuLink>
                     <MenuLink to="/settings">Your profile</MenuLink>
-                    <MenuLink to="/submit">Launch something</MenuLink>
+                    {launches && <MenuLink to="/submit">Launch something</MenuLink>}
                     <MenuLink to="/orders">Your orders</MenuLink>
                     <MenuLink to="/sell">Sell on Deck</MenuLink>
-                    <MenuLink to="/advertise">Advertise</MenuLink>
+                    {launches && <MenuLink to="/advertise">Advertise</MenuLink>}
                     {user.role === 'admin' && <MenuLink to="/admin">Admin</MenuLink>}
                     <button
                       type="button"
@@ -291,21 +318,30 @@ export function Navbar() {
               a menu that hides two links behind a tap is worse than a menu that
               is two rows longer. */}
           <nav aria-label="Mobile" className="flex flex-col">
-            {NAV_LINKS.map((link) => (
+            {links.map((link) => (
               <div key={link.to} className="contents">
-                <NavLink
-                  to={link.to}
-                  end={link.to === '/'}
-                  className={({ isActive }) =>
-                    cn(
-                      'flex items-center gap-1.5 border-b border-line py-3.5 text-2xl font-medium tracking-[-0.03em]',
-                      isActive ? 'text-accent' : 'text-body',
-                    )
-                  }
-                >
-                  {link.label}
-                  {link.star && <Star className="size-2.5 shrink-0" spin={-8} />}
-                </NavLink>
+                {link.external ? (
+                  <a
+                    href={link.external()}
+                    className="flex items-center gap-1.5 border-b border-line py-3.5 text-2xl font-medium tracking-[-0.03em] text-body"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <NavLink
+                    to={link.to}
+                    end={link.to === '/'}
+                    className={({ isActive }) =>
+                      cn(
+                        'flex items-center gap-1.5 border-b border-line py-3.5 text-2xl font-medium tracking-[-0.03em]',
+                        isActive ? 'text-accent' : 'text-body',
+                      )
+                    }
+                  >
+                    {link.label}
+                    {link.star && <Star className="size-2.5 shrink-0" spin={-8} />}
+                  </NavLink>
+                )}
 
                 {link.children
                   ?.filter((child) => child.to !== link.to)
@@ -329,9 +365,11 @@ export function Navbar() {
 
           <div className="mt-5 flex flex-col gap-2">
             {isAuthenticated ? (
-              <ButtonLink to="/submit" variant="accent" size="md" className="w-full">
-                Launch something
-              </ButtonLink>
+              launches && (
+                <ButtonLink to="/submit" variant="accent" size="md" className="w-full">
+                  Launch something
+                </ButtonLink>
+              )
             ) : (
               <>
                 <ButtonLink to="/register" size="md" className="w-full">

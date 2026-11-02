@@ -1,8 +1,10 @@
 import { Backdrop } from '@/components/ui/Ambient';
 import { ToppledBricks } from '@/components/ui/Bricks';
 import { ButtonLink } from '@/components/ui/Button';
+import { useLaunches } from '@/hooks/useSite';
 
 export function NotFound() {
+  const launches = useLaunches();
   return (
     <div className="relative isolate overflow-hidden">
       <Backdrop pattern="stripes" />
@@ -19,13 +21,21 @@ export function NotFound() {
           This page never launched
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-muted text-pretty">
-          The link may be broken, or the launch it pointed to was removed.
+          {launches
+            ? 'The link may be broken, or the launch it pointed to was removed.'
+            : 'The link may be broken, or the page it pointed to has moved.'}
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <ButtonLink to="/">Back home</ButtonLink>
-          <ButtonLink to="/discover" variant="secondary">
-            Browse launches
-          </ButtonLink>
+          {launches ? (
+            <ButtonLink to="/discover" variant="secondary">
+              Browse launches
+            </ButtonLink>
+          ) : (
+            <ButtonLink to="/games" variant="secondary">
+              Play Deck Games
+            </ButtonLink>
+          )}
         </div>
       </div>
     </div>

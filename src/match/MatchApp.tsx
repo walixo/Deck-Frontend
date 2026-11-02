@@ -339,8 +339,16 @@ export function MatchApp({
       }
       case 'ended': {
         const end = raw as Ended & { serverNow: number };
-        voice.current?.close();
+        /* How it sounded from here, read before the call closes. */
+        const finished = voice.current;
         voice.current = null;
+        if (finished) {
+          void finished
+            .quality()
+            .then((quality) => matchApi.quality(end.callId, quality))
+            .catch(() => undefined)
+            .finally(() => finished.close());
+        }
         mic.current = null;
         setEnded({ ...end, shareUntil: end.shareUntil - (end.serverNow - Date.now()) });
         setShared(false);
@@ -444,8 +452,6 @@ export function MatchApp({
   const find = async () => {
     setNotice('');
     try {
-      audio.current ??= new AudioContext();
-      await audio.current.resume();
       mic.current ??= await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
@@ -460,6 +466,20 @@ export function MatchApp({
       );
       return;
     }
+    /* Made after the microphone opens and at its sample rate: a context made
+       first, at the speaker's rate, is what turned calls to static on some
+       phones. Only a fallback level meter uses it; never awaited, since a
+       browser that won't start it must not hold up the call. */
+    const rate = mic.current.getAudioTracks()[0]?.getSettings().sampleRate;
+    if (!audio.current || (rate && audio.current.sampleRate !== rate)) {
+      void audio.current?.close().catch(() => undefined);
+      try {
+        audio.current = new AudioContext(rate ? { sampleRate: rate } : undefined);
+      } catch {
+        audio.current = new AudioContext();
+      }
+    }
+    void audio.current.resume().catch(() => undefined);
     /* Where to call through, refreshed well inside the hour the relay's
        pass lasts. Without it the call still goes direct. */
     if (!ice.current || Date.now() - ice.current.at > 30 * 60_000) {

@@ -10,6 +10,7 @@ import {
   useMatchGiftCards,
   useMatchMoneyAction,
   useMatchNights,
+  useMatchQuality,
   useMatchReports,
   useMatchRevenue,
   useMatchSectionRequests,
@@ -17,6 +18,7 @@ import {
   useMatchVerifications,
   type MatchGiftCardCodes,
   type MatchPerson,
+  type MatchQualitySide,
   type MatchRates,
 } from '@/hooks/useMatchAdmin';
 import { relativeTime } from '@/lib/utils';
@@ -64,6 +66,7 @@ export function AdminMatch() {
         </p>
       </header>
       <Numbers />
+      <CallQuality />
       <Revenue />
       <Verifications />
       <GiftCards />
@@ -372,6 +375,116 @@ function SectionRequests() {
 }
 
 /** What Match earned: credit spent by kind, cash in, and credit still held. */
+/** One side of a call, in a line: device, route, and what went wrong. */
+function SideLine({ who, side }: { who: string; side: MatchQualitySide | null }) {
+  if (!side) return <p className="text-[13px] text-muted">{who}: no report</p>;
+  return (
+    <p className={side.rough || !side.connected ? 'text-[13px] text-danger' : 'text-[13px]'}>
+      <b className="font-medium text-body">{who}</b> · {side.device} ·{' '}
+      {side.connected
+        ? `${side.route === 'relay' ? 'via relay' : 'direct'} · ${side.concealedPct ?? 0}% patched · ${side.lossPct ?? 0}% lost${side.rttMs !== null ? ` · ${side.rttMs}ms` : ''}`
+        : 'never connected'}
+    </p>
+  );
+}
+
+/**
+ * How calls sounded, as each browser reported when its call ended: audio
+ * that was mostly lost or patched over ("rough" — what static sounds like),
+ * calls that never connected, and which phones and browsers they happen on.
+ */
+function CallQuality() {
+  const [days, setDays] = useState(7);
+  const { data, isLoading } = useMatchQuality(days);
+  if (isLoading || !data) return <Skeleton className="h-40 w-full" />;
+  return (
+    <section className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <SectionTitle>{`Call quality · last ${days} days`}</SectionTitle>
+        <div className="flex gap-1">
+          {[1, 7, 30].map((n) => (
+            <Button
+              key={n}
+              size="sm"
+              variant={n === days ? 'primary' : 'secondary'}
+              onClick={() => setDays(n)}
+            >
+              {n}d
+            </Button>
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Kpi label="Reports" value={data.reports.toLocaleString()} hint="One per person per call" />
+        <Kpi
+          label="Rough audio"
+          value={percent(data.roughRate)}
+          hint="Over 5% of the audio lost or patched over"
+        />
+        <Kpi label="Never connected" value={percent(data.failRate)} hint="Of all reports" />
+      </div>
+      {data.devices.length ? (
+        <Card className="overflow-x-auto p-0">
+          <table className="w-full min-w-[34rem] text-sm">
+            <thead className="text-left font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+              <tr>
+                {['Phone · browser', 'Reports', 'Rough', 'Never connected', 'Via relay'].map(
+                  (h) => (
+                    <th key={h} className="px-4 py-2 font-medium">
+                      {h}
+                    </th>
+                  ),
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {data.devices.map((row) => (
+                <tr key={row.device} className="border-t border-line">
+                  <td className="px-4 py-2">{row.device}</td>
+                  <td className="px-4 py-2 tabular-nums">{row.reports}</td>
+                  <td className="px-4 py-2 tabular-nums">
+                    {row.rough} · {percent(row.roughRate)}
+                  </td>
+                  <td className="px-4 py-2 tabular-nums">
+                    {row.failed} · {percent(row.failRate)}
+                  </td>
+                  <td className="px-4 py-2 tabular-nums">{row.relayed}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      ) : (
+        <EmptyState
+          title="No reports yet"
+          description="Each browser reports how its call sounded when the call ends."
+        />
+      )}
+      {data.calls.length > 0 && (
+        <div>
+          <p className="mb-2 text-[13px] text-muted">
+            Recent calls that sounded rough or never connected
+          </p>
+          <ul className="divide-y divide-line rounded-2xl border border-line">
+            {data.calls.map((call) => (
+              <li key={call.callId} className="space-y-0.5 p-4">
+                <p className="font-mono text-[11px] text-muted">
+                  {relativeTime(call.matchedAt)} ·{' '}
+                  {call.endReason === 'no-connection'
+                    ? 'couldn’t connect'
+                    : (call.endReason ?? 'ended')}
+                </p>
+                <SideLine who="Man" side={call.man} />
+                <SideLine who="Woman" side={call.woman} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function Revenue() {
   const [days, setDays] = useState(30);
   const { data, isLoading } = useMatchRevenue(days);

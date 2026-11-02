@@ -73,6 +73,10 @@ export const MATCH_PRIVACY: LegalDocument = {
               'For every call: who you were matched with, when, how long each of you waited, when the call started and ended, why it ended and who ended it, extra minutes, and who tapped share. Never the audio.',
             ],
             [
+              'Call quality',
+              'When a call ends, your browser reports how it sounded: whether it connected, whether it went through the relay, how much audio was lost or delayed, and your phone’s system and browser in broad terms (for example “iOS 17 · Safari”). We use it to find and fix calls that sound bad. Never the audio.',
+            ],
+            [
               'Reports and blocks',
               'Who reported whom, the reason, any note, and what we decided. The person reported is never told who reported them. People you report are blocked from being matched with you again.',
             ],

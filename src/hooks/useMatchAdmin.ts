@@ -70,6 +70,40 @@ export interface MatchRevenue {
   verifiedPeople: number;
 }
 
+export interface MatchQualitySide {
+  device: string;
+  connected: boolean;
+  route: 'direct' | 'relay' | 'none';
+  lossPct: number | null;
+  concealedPct: number | null;
+  jitterMs: number | null;
+  rttMs: number | null;
+  rough: boolean;
+}
+
+export interface MatchQuality {
+  days: number;
+  reports: number;
+  roughRate: number | null;
+  failRate: number | null;
+  devices: {
+    device: string;
+    reports: number;
+    failed: number;
+    rough: number;
+    relayed: number;
+    roughRate: number | null;
+    failRate: number | null;
+  }[];
+  calls: {
+    callId: string;
+    matchedAt: string;
+    endReason: string | null;
+    man: MatchQualitySide | null;
+    woman: MatchQualitySide | null;
+  }[];
+}
+
 export interface MatchGiftCardAdmin {
   soldMinor: number;
   sold: number;
@@ -124,6 +158,14 @@ const keys = {
   verifications: ['admin', 'match', 'verifications'] as const,
   giftCards: ['admin', 'match', 'giftcards'] as const,
 };
+
+export function useMatchQuality(days: number) {
+  return useQuery({
+    queryKey: ['admin', 'match', 'quality', days] as const,
+    queryFn: () => request<MatchQuality>('get', `/admin/match/quality?days=${days}`),
+    refetchInterval: 60_000,
+  });
+}
 
 export function useMatchGiftCards() {
   return useQuery({

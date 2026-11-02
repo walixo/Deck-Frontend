@@ -84,6 +84,12 @@ function stop(): void {
   gain.gain.setValueAtTime(gain.gain.value, now);
   gain.gain.linearRampToValueAtTime(0, now + 0.5);
   playing.stop(now + 0.55);
+  /* Then let go of the phone's audio entirely, so a call's microphone never
+     shares the hardware with a sleeping music context. */
+  const ctx = context;
+  window.setTimeout(() => {
+    if (!source && ctx.state === 'running') void ctx.suspend().catch(() => undefined);
+  }, 700);
 }
 
 function sync(): void {

@@ -1,4 +1,5 @@
 import { api, apiUrl, getStoredToken, request } from '@/lib/api';
+import type { CallQuality } from './voiceCall';
 
 /**
  * Match's line to Deck: plain calls for what a person does, and one live
@@ -164,6 +165,8 @@ export const matchApi = {
     request('post', `/match/calls/${callId}/signal`, { data }),
   /** The STUN and TURN servers to call with; asked for just before joining the line. */
   ice: () => request<{ iceServers: RTCIceServer[]; relay: boolean }>('get', '/match/ice'),
+  quality: (callId: string, quality: CallQuality) =>
+    request('post', `/match/calls/${callId}/quality`, quality),
   connected: (callId: string, route: 'direct' | 'relay') =>
     request('post', `/match/calls/${callId}/connected`, { route }),
   leave: (callId: string) => request('post', `/match/calls/${callId}/leave`),

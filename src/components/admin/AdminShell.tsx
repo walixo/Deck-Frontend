@@ -1,4 +1,5 @@
 import {
+  AdjustmentsHorizontalIcon,
   BanknotesIcon,
   BuildingStorefrontIcon,
   PaintBrushIcon,
@@ -76,6 +77,7 @@ const GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: 'Workspace',
     items: [
+      { to: '/admin/site', label: 'Site', icon: AdjustmentsHorizontalIcon },
       { to: '/admin/categories', label: 'Categories', icon: SquaresPlusIcon },
       { to: '/admin/users', label: 'People', icon: UsersIcon },
     ],

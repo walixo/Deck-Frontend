@@ -1,7 +1,7 @@
 import { FrontHero } from '@/components/ui/FrontHero';
 
 /**
- * The way in: warm amber light and a silhouette, the way a phone screen lights
+ * The way in: cold blue light and a silhouette, the way a phone screen lights
  * a face in a dark room — on the front-door standard every Deck hero shares.
  *
  * The silhouette is a controller rather than a person — this is a room for
@@ -18,18 +18,18 @@ export function Hero() {
       body="Games made across Africa and the world, ready in a tap. Portrait on your phone, landscape on your laptop."
       primary={{ label: 'Play now', href: '#library' }}
       secondary={{ label: 'Build a game →', to: '/games/developers' }}
-      backdrop={<AmberLight />}
+      backdrop={<BlueLight />}
       visual={<Silhouette />}
     />
   );
 }
 
-/** The light: a hot amber core low on the right, falling off into the dark. */
-function AmberLight() {
+/** The light: a hot blue core low on the right, falling off into the dark. */
+function BlueLight() {
   return (
     <>
-      <div className="absolute inset-0 bg-[radial-gradient(80%_75%_at_78%_45%,var(--color-g-amber-1)_0%,var(--color-g-amber-2)_18%,var(--color-g-amber-3)_38%,var(--color-g-amber-4)_62%,#050505_92%)]" />
-      <div className="absolute -right-[10%] top-[10%] size-[60vmax] animate-g-breathe rounded-full bg-[radial-gradient(circle,rgb(255_220_150/0.4),transparent_60%)] blur-3xl" />
+      <div className="absolute inset-0 bg-[radial-gradient(80%_75%_at_78%_45%,var(--color-g-light-1)_0%,var(--color-g-light-2)_18%,var(--color-g-light-3)_38%,var(--color-g-light-4)_62%,#050505_92%)]" />
+      <div className="absolute -right-[10%] top-[10%] size-[60vmax] animate-g-breathe rounded-full bg-[radial-gradient(circle,rgb(150_170_255/0.42),transparent_60%)] blur-3xl" />
       {/* Film grain, so the gradient reads as light rather than as a fill. */}
       <svg className="absolute inset-0 size-full opacity-[0.18] mix-blend-overlay">
         <filter id="games-grain">
@@ -58,7 +58,7 @@ function Silhouette() {
       <defs>
         <filter id="games-rim" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="blur" />
-          <feFlood floodColor="#ffd27a" floodOpacity="0.85" />
+          <feFlood floodColor="#c7d4ff" floodOpacity="0.85" />
           <feComposite in2="blur" operator="in" result="glow" />
           <feMerge>
             <feMergeNode in="glow" />
@@ -66,9 +66,9 @@ function Silhouette() {
           </feMerge>
         </filter>
         <linearGradient id="games-body" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3a1406" />
-          <stop offset="0.5" stopColor="#1a0703" />
-          <stop offset="1" stopColor="#0a0301" />
+          <stop offset="0" stopColor="#141a3f" />
+          <stop offset="0.5" stopColor="#0b0e24" />
+          <stop offset="1" stopColor="#05060f" />
         </linearGradient>
       </defs>
 
@@ -79,7 +79,7 @@ function Silhouette() {
         />
       </g>
       {/* Detail in the shadow: the shapes you only see once your eyes adjust. */}
-      <g fill="#2c0f05" opacity="0.9">
+      <g fill="#101640" opacity="0.9">
         <rect x="172" y="168" width="22" height="66" rx="4" />
         <rect x="150" y="190" width="66" height="22" rx="4" />
         <circle cx="408" cy="174" r="13" />

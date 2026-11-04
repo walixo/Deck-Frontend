@@ -52,19 +52,36 @@
 }
 
 @theme {
-  /* Fixed: the night section and the light itself. */
-  --color-g-night: #050505;
-  --color-g-night-2: #111110;
-  --color-g-night-ink: #f4f2ee;
-  --color-g-night-mute: #8a8883;
-  --color-g-glow: #ff6a3d;
-  --color-g-amber-1: #ffd27a;
-  --color-g-amber-2: #f7a531;
-  --color-g-amber-3: #e8641b;
-  --color-g-amber-4: #8c2a07;
-  --color-g-amber-5: #2a0c02;
-  --color-g-teal: #3fd1c1;
-  --color-g-violet: #9b7bff;
+  /*
+   * Fixed: the night section and the light itself.
+   *
+   * The light ramp is the blue end of the MorphShape sweep. `light-3` is
+   * morph's own first stop (#5769f7) unchanged — everything else is that hue
+   * carried up to a pale rim and down to a near-black indigo, so the arcade's
+   * light and the shader on the developers' hero are demonstrably the same
+   * blue rather than two blues that nearly match.
+   *
+   * The five stops were retuned to hold the *luminance* steps of the amber
+   * ramp they replaced, because every consumer is a gradient or a glow that
+   * was tuned against those steps. Swapping hue while keeping brightness means
+   * none of the scenes need their stop positions touched.
+   *
+   * Named `light-*` rather than by hue: they were `amber-*`, and a hue name
+   * that no longer matches is exactly the invisible wrongness CONTRACT rule 4
+   * is about — the class still compiles, it just renders the wrong intent.
+   */
+  --color-g-night: #05060d;
+  --color-g-night-2: #101119;
+  --color-g-night-ink: #eef0f6;
+  --color-g-night-mute: #838792;
+  --color-g-glow: #6a7cff;
+  --color-g-light-1: #c7d4ff;
+  --color-g-light-2: #9aabff;
+  --color-g-light-3: #5769f7;
+  --color-g-light-4: #2b3199;
+  --color-g-light-5: #090b1f;
+  --color-g-teal: #3fc3e8;
+  --color-g-violet: #a366f0;
 
   --ease-glide: cubic-bezier(0.22, 1, 0.36, 1);
 

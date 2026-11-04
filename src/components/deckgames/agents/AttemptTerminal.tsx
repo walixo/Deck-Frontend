@@ -32,7 +32,7 @@ const RUN: { text: string; tone: Tone; wait: number }[] = [
 const TONES: Record<Tone, string> = {
   cmd: 'text-g-night-ink',
   dim: 'text-g-night-mute',
-  work: 'text-g-amber-1/80',
+  work: 'text-g-light-1/80',
   ok: 'text-g-teal',
   score: 'text-g-glow',
 };

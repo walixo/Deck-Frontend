@@ -73,7 +73,7 @@ export function DeviceShowcase() {
         <div className="grid h-[min(78vw,520px)] w-full max-w-[900px] place-items-center">
           <div
             className={cn(
-              'relative rounded-[34px] bg-[#0b0b0b] p-[10px] shadow-[0_40px_80px_-20px_rgb(0_0_0/0.35),0_0_0_1px_rgb(255_255_255/0.06)_inset] transition-[width,height] duration-700 ease-glide dark:shadow-[0_40px_90px_-20px_rgb(255_106_61/0.18)]',
+              'relative rounded-[34px] bg-[#0b0b0b] p-[10px] shadow-[0_40px_80px_-20px_rgb(0_0_0/0.35),0_0_0_1px_rgb(255_255_255/0.06)_inset] transition-[width,height] duration-700 ease-glide dark:shadow-[0_40px_90px_-20px_rgb(106_124_255/0.18)]',
               landscape
                 ? 'h-[min(46vw,330px)] w-[min(88vw,640px)]'
                 : 'h-[min(76vw,510px)] w-[min(40vw,270px)] min-w-[180px]',
@@ -146,7 +146,7 @@ function Hud({ left, right, light }: { left: string; right: string; light?: bool
 /** A three-lane runner, seen from above. */
 function PortraitGame() {
   return (
-    <div className="absolute inset-0 bg-[linear-gradient(180deg,#1d1030,#3b1d4a_45%,#e8641b)]">
+    <div className="absolute inset-0 bg-[linear-gradient(180deg,#0d1030,#1d2a6b_45%,#5769f7)]">
       <Hud left="Lagos Rush" right="2,480" light />
       <div className="absolute inset-x-[18%] bottom-0 top-[18%] grid grid-cols-3 border-x border-white/15">
         {['top-[18%]', 'top-[40%] [animation-delay:-3s]', 'top-[62%] [animation-delay:-6s]'].map(
@@ -157,7 +157,7 @@ function PortraitGame() {
             >
               <span
                 className={cn(
-                  'absolute left-1/2 size-3 -translate-x-1/2 animate-g-drift rounded-full bg-g-amber-1 shadow-[0_0_14px_2px] shadow-g-amber-2',
+                  'absolute left-1/2 size-3 -translate-x-1/2 animate-g-drift rounded-full bg-g-light-1 shadow-[0_0_14px_2px] shadow-g-light-2',
                   place,
                 )}
               />
@@ -173,7 +173,7 @@ function PortraitGame() {
 /** A side-scroller at dusk. */
 function LandscapeGame() {
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[linear-gradient(180deg,#7cc4ff,#ffd27a_70%,#f7a531)]">
+    <div className="absolute inset-0 overflow-hidden bg-[linear-gradient(180deg,#7cc4ff,#c7d4ff_70%,#9aabff)]">
       <Hud left="Sky Run" right="Best 1,204" />
       <div className="absolute right-[18%] top-[22%] size-14 rounded-full bg-white/80 blur-[1px]" />
       <svg
@@ -183,10 +183,10 @@ function LandscapeGame() {
       >
         <path
           d="M0 120 C 100 60 180 140 300 90 S 520 60 640 110 V200 H0Z"
-          fill="#e8641b"
+          fill="#5769f7"
           opacity="0.6"
         />
-        <path d="M0 150 C 120 110 220 170 360 130 S 560 120 640 150 V200 H0Z" fill="#8c2a07" />
+        <path d="M0 150 C 120 110 220 170 360 130 S 560 120 640 150 V200 H0Z" fill="#2b3199" />
       </svg>
       <div className="absolute left-[28%] top-[42%] h-4 w-6 animate-g-drift rounded-full bg-g-ink [--g-tilt:-8deg]" />
     </div>
@@ -237,7 +237,7 @@ function Store() {
       <ul className="space-y-2">
         {products.map(([name, blurb, price]) => (
           <li key={name} className="flex items-center gap-3 rounded-xl bg-g-paper-2 p-2.5">
-            <span className="size-9 shrink-0 rounded-lg bg-[linear-gradient(135deg,var(--color-g-amber-1),var(--color-g-amber-3))]" />
+            <span className="size-9 shrink-0 rounded-lg bg-[linear-gradient(135deg,var(--color-g-light-1),var(--color-g-light-3))]" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[12px] font-medium">{name}</span>
               <span className="block truncate text-[10px] text-g-mute">{blurb}</span>
@@ -273,11 +273,11 @@ function Code() {
       <p>
         <span className="text-g-violet">await</span> DeckGames.
         <span className="text-g-teal">purchase</span>(
-        <span className="text-g-amber-1">&apos;suya.pack&apos;</span>);
+        <span className="text-g-light-1">&apos;suya.pack&apos;</span>);
       </p>
       <p>
         DeckGames.<span className="text-g-teal">submitScore</span>(
-        <span className="text-g-amber-2">2480</span>);
+        <span className="text-g-light-2">2480</span>);
       </p>
     </div>
   );

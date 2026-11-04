@@ -5,8 +5,8 @@
 export const PALETTE = {
   canvas: '#ffffff',
   ink: '#111111',
-  pop: '#c93a0c',
+  pop: '#4f5ff0',
   onPop: '#ffffff',
-  deep: '#141413',
+  deep: '#11142e',
   onDeep: '#ffffff',
 } as const;

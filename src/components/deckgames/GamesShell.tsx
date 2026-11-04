@@ -147,7 +147,7 @@ export function GamesShell() {
             <div
               className={cn(
                 'grid place-items-center',
-                pathname === '/games' ? 'min-h-[100svh] bg-g-amber-5' : 'min-h-[70svh]',
+                pathname === '/games' ? 'min-h-[100svh] bg-g-light-5' : 'min-h-[70svh]',
               )}
             >
               <span className="size-8 animate-spin rounded-full border-2 border-g-line border-t-g-ember" />

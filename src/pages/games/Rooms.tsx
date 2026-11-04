@@ -91,7 +91,7 @@ function CodeCard({ directory }: { directory?: RoomDirectory }) {
   return (
     <form
       onSubmit={submit}
-      className="mx-auto w-full max-w-[30rem] rounded-[10px] border-2 border-[#f4f2ee] bg-[#0d0d0d] p-6 shadow-[8px_8px_0_#f4f2ee] sm:p-8"
+      className="mx-auto w-full max-w-[30rem] rounded-[10px] border-2 border-g-night-ink bg-g-night-2 p-6 shadow-[8px_8px_0_var(--color-g-night-ink)] sm:p-8"
     >
       <label htmlFor="room-code" className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/60">
         Have a code?
@@ -104,7 +104,7 @@ function CodeCard({ directory }: { directory?: RoomDirectory }) {
         autoComplete="off"
         spellCheck={false}
         placeholder="K7Q2XM"
-        className="mt-3 w-full rounded-[6px] border-2 border-[#f4f2ee] bg-[#050505] px-4 py-3 font-mono text-[clamp(2rem,6vw,2.75rem)] font-semibold uppercase tracking-[0.22em] text-white outline-none placeholder:text-white/20 focus-visible:border-g-glow"
+        className="mt-3 w-full rounded-[6px] border-2 border-g-night-ink bg-g-night px-4 py-3 font-mono text-[clamp(2rem,6vw,2.75rem)] font-semibold uppercase tracking-[0.22em] text-white outline-none placeholder:text-white/20 focus-visible:border-g-glow"
       />
       <p role="status" className="mt-3 min-h-5 text-[13px] text-g-glow">
         {problem}
@@ -121,7 +121,7 @@ function CodeCard({ directory }: { directory?: RoomDirectory }) {
           [open, open === 1 ? 'room waiting' : 'rooms waiting'],
           [playing, playing === 1 ? 'game in progress' : 'games in progress'],
         ].map(([figure, label]) => (
-          <div key={label} className="bg-[#0d0d0d] px-4 py-3">
+          <div key={label} className="bg-g-night-2 px-4 py-3">
             <dt className="font-mono text-2xl font-semibold tabular-nums">{figure}</dt>
             <dd className="text-[12px] text-white/55">{label}</dd>
           </div>

@@ -12,12 +12,12 @@
     --muted-ink: #6b6a66;
     /* The accent as a *mark* — link text, focus rings, progress fills. Themed,
        because no fixed colour clears 4.5:1 against both canvases. */
-    --accent: #c93a0c;
-    --pop: #c93a0c;
-    --pop-hover: #b3330a;
+    --accent: #3a44c4;
+    --pop: #4f5ff0;
+    --pop-hover: #3f4fe0;
     --on-pop: #ffffff;
-    --deep: #141413;
-    --deep-hover: #2a2a28;
+    --deep: #11142e;
+    --deep-hover: #1e2450;
     --on-deep: #ffffff;
   }
 
@@ -29,7 +29,7 @@
     --line: #2a2927;
     --body-ink: #f4f2ee;
     --muted-ink: #9a9893;
-    --accent: #ff7a4d;
+    --accent: #93a0ff;
     --color-canvas: var(--canvas);
     --color-surface: var(--surface);
     --color-surface-2: var(--surface-2);
@@ -38,6 +38,30 @@
     --color-accent: var(--accent);
     --color-body: var(--body-ink);
     --color-muted: var(--muted-ink);
+  }
+
+  /* Morph Indigo */
+  [data-palette='morph-indigo'] {
+    --accent: #3a44c4;
+    --pop: #4f5ff0;
+    --pop-hover: #3f4fe0;
+    --on-pop: #ffffff;
+    --deep: #11142e;
+    --deep-hover: #1e2450;
+    --on-deep: #ffffff;
+    --color-accent: var(--accent);
+    --color-pop: var(--pop);
+    --color-pop-hover: var(--pop-hover);
+    --color-on-pop: var(--on-pop);
+    --color-deep: var(--deep);
+    --color-deep-hover: var(--deep-hover);
+    --color-on-deep: var(--on-deep);
+  }
+
+  .dark [data-palette='morph-indigo'],
+  [data-palette='morph-indigo'].dark {
+    --accent: #93a0ff;
+    --color-accent: var(--accent);
   }
 
   /* Ember / Ink */
@@ -275,9 +299,9 @@
  * holding a hex that nothing would notice going stale.
  */
 @layer components {
-  /* Ember / Ink */
+  /* Morph Indigo */
   .select-chevron {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23c93a0c'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233a44c4'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.7rem center;
     background-size: 1rem;
@@ -285,6 +309,19 @@
 
   .dark .select-chevron,
   .dark .select-chevron {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2393a0ff'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
+  }
+
+  /* Ember / Ink */
+  [data-palette='ember-ink'] .select-chevron {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23c93a0c'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1rem;
+  }
+
+  .dark [data-palette='ember-ink'] .select-chevron,
+  [data-palette='ember-ink'] .dark .select-chevron {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff7a4d'%3E%3Cpath d='M3 5.5h10L8 11.5z'/%3E%3C/svg%3E");
   }
 

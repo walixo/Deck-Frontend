@@ -224,7 +224,7 @@ function ChallengeCard({
       <p className="relative mt-2 max-w-xs flex-1 text-[13px] leading-relaxed text-g-night-mute">
         {summary}
       </p>
-      <p className="relative mt-6 font-mono text-[10px] uppercase tracking-[0.14em] text-g-amber-1/80">
+      <p className="relative mt-6 font-mono text-[10px] uppercase tracking-[0.14em] text-g-light-1/80">
         {SCORING[kind]}
       </p>
       <p className="relative mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-g-night-mute">
@@ -260,7 +260,7 @@ function KindGlyph({ kind }: { kind: KindName }) {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          className="text-g-amber-2"
+          className="text-g-light-2"
         />
         {[
           [18, 70],
@@ -514,7 +514,7 @@ function Connect() {
             ],
           ].map(([title, body]) => (
             <div key={title} className="rounded-2xl border border-white/10 p-5">
-              <h3 className="font-mono text-[11px] uppercase tracking-[0.14em] text-g-amber-1">
+              <h3 className="font-mono text-[11px] uppercase tracking-[0.14em] text-g-light-1">
                 {title}
               </h3>
               <p className="mt-2 text-[13px] leading-relaxed text-g-night-mute">{body}</p>

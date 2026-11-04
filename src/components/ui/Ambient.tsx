@@ -46,7 +46,7 @@ export function PageBanner({ className }: { className?: string }) {
         className,
       )}
     >
-      <div className="absolute -top-40 left-1/2 h-80 w-[min(1100px,140%)] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(247_165_49/0.16),transparent)] blur-2xl dark:bg-[radial-gradient(closest-side,rgb(255_106_61/0.12),transparent)]" />
+      <div className="absolute -top-40 left-1/2 h-80 w-[min(1100px,140%)] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--pop)_16%,transparent),transparent)] blur-2xl dark:bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--pop)_20%,transparent),transparent)]" />
     </div>
   );
 }

@@ -122,7 +122,7 @@ export function FrontHero({
             >
               <span
                 aria-hidden="true"
-                className="size-1.5 rounded-full bg-[#ff6a3d] shadow-[0_0_10px_1px_rgb(255_106_61/0.7)]"
+                className="size-1.5 rounded-full bg-pop shadow-[0_0_10px_1px_color-mix(in_srgb,var(--pop)_70%,transparent)]"
               />
             </ActionLink>
           )}

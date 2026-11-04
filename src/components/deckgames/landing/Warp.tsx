@@ -41,7 +41,7 @@ export function Warp() {
   );
 }
 
-const COLOURS = ['#3fd1c1', '#9b7bff', '#ff6a3d', '#ffd27a', '#ff4f9a', '#7cc4ff'];
+const COLOURS = ['#3fc3e8', '#a366f0', '#5769f7', '#c7d4ff', '#6a7cff', '#7cc4ff'];
 
 interface Streak {
   angle: number;

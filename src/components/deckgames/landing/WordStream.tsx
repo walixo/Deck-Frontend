@@ -33,7 +33,7 @@ const ROW_TWO = [
 const TONE = {
   ink: 'text-g-ink',
   ember: 'text-g-ember-ink',
-  teal: 'text-[#0f8f84] dark:text-g-teal',
+  teal: 'text-[#1668a8] dark:text-g-teal',
 };
 
 export function WordStream() {

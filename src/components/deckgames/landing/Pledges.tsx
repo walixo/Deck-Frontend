@@ -101,7 +101,7 @@ function Marker({ index, side }: { index: number; side: 'left' | 'right' }) {
 
 /** Rows of dots settling into colour — a game loading. */
 function Spectrum() {
-  const rows = ['bg-g-teal', 'bg-g-amber-2', 'bg-g-violet', 'bg-g-glow'];
+  const rows = ['bg-g-teal', 'bg-g-light-2', 'bg-g-violet', 'bg-g-glow'];
   return (
     <div className="absolute inset-0 flex flex-col justify-center gap-3 bg-[radial-gradient(120%_120%_at_30%_100%,rgb(155_123_255/0.25),transparent_60%)] px-8">
       {rows.map((colour, row) => (
@@ -161,7 +161,7 @@ function Split() {
         <span className="w-1/5 bg-white/20" />
       </div>
       <div className="flex justify-between font-mono text-[10px] uppercase tracking-[0.14em]">
-        <span className="text-g-amber-1">80% · Developer</span>
+        <span className="text-g-light-1">80% · Developer</span>
         <span className="text-g-night-mute">20% · Deck</span>
       </div>
     </div>

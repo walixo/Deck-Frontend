@@ -281,7 +281,7 @@ function StoreList({ slug, enabled }: { slug: string; enabled: boolean }) {
             key={product.productId}
             className="flex items-center gap-3 rounded-2xl bg-g-paper-2 p-3"
           >
-            <span className="size-10 shrink-0 rounded-xl bg-[linear-gradient(135deg,var(--color-g-amber-1),var(--color-g-amber-3))]" />
+            <span className="size-10 shrink-0 rounded-xl bg-[linear-gradient(135deg,var(--color-g-light-1),var(--color-g-light-3))]" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[14px] font-medium tracking-[-0.02em]">
                 {product.name}

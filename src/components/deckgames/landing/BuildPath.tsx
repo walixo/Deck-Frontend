@@ -88,7 +88,7 @@ export function BuildPath() {
         />
         <div
           aria-hidden="true"
-          className="absolute -right-[22vw] bottom-0 size-[55vw] rounded-full bg-[radial-gradient(circle,rgb(255_106_61/0.45),transparent_65%)] blur-3xl"
+          className="absolute -right-[22vw] bottom-0 size-[55vw] rounded-full bg-[radial-gradient(circle,rgb(106_124_255/0.45),transparent_65%)] blur-3xl"
           style={{ opacity: flare * 0.6 }}
         />
 
@@ -123,7 +123,7 @@ export function BuildPath() {
             <path
               d={PATH}
               fill="none"
-              stroke="#ff6a3d"
+              stroke="#6a7cff"
               strokeWidth="10"
               strokeLinecap="round"
               pathLength={1}
@@ -147,8 +147,8 @@ export function BuildPath() {
             />
             <linearGradient id="path-ink" x1="0" x2="1" y1="0" y2="0">
               <stop offset="0" stopColor="#ffffff" />
-              <stop offset="0.55" stopColor="#ffd27a" />
-              <stop offset="1" stopColor="#ff6a3d" />
+              <stop offset="0.55" stopColor="#c7d4ff" />
+              <stop offset="1" stopColor="#5769f7" />
             </linearGradient>
           </svg>
 

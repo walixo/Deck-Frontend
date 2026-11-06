@@ -6,6 +6,8 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/States';
 import {
   useMatchAction,
+  useMatchBrandAction,
+  useMatchBrandCards,
   useMatchGiftCardAction,
   useMatchGiftCards,
   useMatchMoneyAction,
@@ -70,6 +72,7 @@ export function AdminMatch() {
       <Revenue />
       <Verifications />
       <GiftCards />
+      <BrandCards />
       <Nights />
       <Reports />
       <SectionRequests />
@@ -803,6 +806,187 @@ function GiftCards() {
         </Card>
       ) : (
         <EmptyState title="No gift cards yet" description="Bought and issued cards appear here." />
+      )}
+    </section>
+  );
+}
+
+/**
+ * Other brands' gift cards (Chowdeck, Jumia…), through Reloadly: the wallet
+ * Deck buys them from, which brands are on sale and at what markup, and any
+ * paid order Reloadly hasn't filled yet.
+ */
+function BrandCards() {
+  const { data, isLoading } = useMatchBrandCards();
+  const act = useMatchBrandAction();
+  const [filter, setFilter] = useState('');
+  if (isLoading || !data) return <Skeleton className="h-40 w-full" />;
+  const shown = data.products.filter(
+    (product) => product.enabled || product.brand.toLowerCase().includes(filter.toLowerCase()),
+  );
+  const stuck = data.orders.filter((order) => order.status === 'stuck' || order.status === 'paid');
+  return (
+    <section className="space-y-4">
+      <SectionTitle>Brand gift cards</SectionTitle>
+      {!data.configured ? (
+        <p className="text-[13px] text-muted">
+          Add RELOADLY_CLIENT_ID and RELOADLY_CLIENT_SECRET on Render to sell other brands’ cards.
+          Until then nothing is offered.
+        </p>
+      ) : (
+        <>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Kpi
+              label="Reloadly wallet"
+              value={
+                data.wallet
+                  ? `${data.wallet.balance.toLocaleString()} ${data.wallet.currencyCode}`
+                  : '—'
+              }
+              hint={data.environment === 'live' ? 'Live' : 'Sandbox — test money'}
+            />
+            <Kpi
+              label="On sale"
+              value={String(data.products.filter((p) => p.enabled).length)}
+              hint={`${data.products.length} synced`}
+            />
+            <Kpi
+              label="Waiting on Reloadly"
+              value={String(stuck.length)}
+              hint="Paid, no code yet"
+            />
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <Button loading={act.isPending} onClick={() => act.mutate({ kind: 'sync' })}>
+              Sync catalogue
+            </Button>
+            <Input
+              label="Find a brand"
+              placeholder="Chowdeck"
+              value={filter}
+              onChange={(event) => setFilter(event.target.value)}
+            />
+          </div>
+          {act.error && <p className="text-sm text-danger">{act.error.message}</p>}
+          {shown.length > 0 && (
+            <Card className="overflow-x-auto p-0">
+              <table className="w-full min-w-[40rem] text-sm">
+                <thead className="text-left font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
+                  <tr>
+                    {['Brand', 'Prices', 'Reloadly discount', 'Markup %', 'On sale'].map((h) => (
+                      <th key={h} className="px-4 py-2 font-medium">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {shown.slice(0, 60).map((product) => (
+                    <tr key={product.productId} className="border-t border-line">
+                      <td className="px-4 py-2">
+                        {product.brand}
+                        <span className="block text-[12px] text-muted">{product.name}</span>
+                      </td>
+                      <td className="px-4 py-2 text-[12px]">
+                        {product.sellable
+                          ? product.amounts
+                              .filter((a) => a.priceMinor !== null)
+                              .slice(0, 3)
+                              .map(
+                                (a) =>
+                                  `${a.face.toLocaleString()} ${product.currency} → ${naira(a.priceMinor!)}`,
+                              )
+                              .join(' · ')
+                          : 'Not priced in naira — can’t be sold'}
+                      </td>
+                      <td className="px-4 py-2 tabular-nums">{product.discountPct}%</td>
+                      <td className="px-4 py-2">
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          defaultValue={product.markupPct}
+                          aria-label={`Markup for ${product.brand}`}
+                          className="w-20 rounded-md border border-line bg-surface px-2 py-1 tabular-nums"
+                          onBlur={(event) => {
+                            const markupPct = Number(event.target.value);
+                            if (markupPct !== product.markupPct) {
+                              act.mutate({
+                                kind: 'product',
+                                productId: product.productId,
+                                markupPct,
+                              });
+                            }
+                          }}
+                        />
+                      </td>
+                      <td className="px-4 py-2">
+                        <Button
+                          size="sm"
+                          variant={product.enabled ? 'primary' : 'secondary'}
+                          disabled={!product.sellable}
+                          onClick={() =>
+                            act.mutate({
+                              kind: 'product',
+                              productId: product.productId,
+                              enabled: !product.enabled,
+                            })
+                          }
+                        >
+                          {product.enabled ? 'On sale' : 'Off'}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+          )}
+        </>
+      )}
+      {data.orders.length > 0 && (
+        <ul className="divide-y divide-line rounded-2xl border border-line">
+          {data.orders.map((order) => (
+            <li
+              key={order.reference}
+              className="flex flex-wrap items-center justify-between gap-3 p-4"
+            >
+              <div>
+                <p className="font-medium">
+                  {order.faceValue.toLocaleString()} {order.faceCurrency} {order.brand} ·{' '}
+                  {naira(order.priceMinor)}
+                  {order.mode === 'test' && <span className="text-muted"> · test</span>}
+                </p>
+                <p className="text-[13px] text-muted">
+                  {order.buyer} · {relativeTime(order.createdAt)} ·{' '}
+                  {order.status === 'fulfilled'
+                    ? `filled${order.costAmount !== null ? ` (cost ${order.costAmount.toLocaleString()} ${order.costCurrency})` : ''}`
+                    : order.status}
+                </p>
+                {order.problem && <p className="text-[13px] text-danger">{order.problem}</p>}
+              </div>
+              {(order.status === 'stuck' || order.status === 'paid') && (
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    loading={act.isPending}
+                    onClick={() => act.mutate({ kind: 'retry', reference: order.reference })}
+                  >
+                    Retry
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    loading={act.isPending}
+                    onClick={() => act.mutate({ kind: 'refund', reference: order.reference })}
+                  >
+                    Refund as credit
+                  </Button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
       )}
     </section>
   );

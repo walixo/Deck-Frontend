@@ -3,7 +3,9 @@ import type { MatchGift } from './matchApi';
 
 /** Match credit's small helpers: money as text, gifts, payment refusals, photos. */
 
-export const naira = (minor: number) => `₦${(minor / 100).toLocaleString('en-NG')}`;
+/** Naira from kobo: whole amounts as ₦1,500, anything with kobo as ₦5,197.50. */
+export const naira = (minor: number) =>
+  `₦${(minor / 100).toLocaleString('en-NG', minor % 100 ? { minimumFractionDigits: 2, maximumFractionDigits: 2 } : {})}`;
 
 export const GIFTS: Record<MatchGift, { name: string; emoji: string }> = {
   rose: { name: 'rose', emoji: '🌹' },

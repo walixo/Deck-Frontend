@@ -1,8 +1,9 @@
 import { useRef, useState, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { GIFTS, naira, shrinkPhoto } from './credit';
-import type { MatchGift, MatchNight, MatchWallet } from './matchApi';
-import { CARD, CHIP, EYEBROW, LABEL, LINK, PRIMARY, QUIET } from './styles';
+import type { MatchBilling, MatchGift, MatchNight, MatchWallet } from './matchApi';
+import { COUNTRIES, countryName, guessCountry } from './countries';
+import { CARD, CHIP, EYEBROW, FIELD, LABEL, LINK, PRIMARY, QUIET } from './styles';
 
 /**
  * Match's wallet on screen: the balance and top-ups, Match+, the Verified
@@ -169,7 +170,7 @@ export function WalletCard({
         {naira(wallet.creditMinor)}
       </p>
       <p className="text-[13px] text-white/50">
-        For extra minutes, gifts, themed nights, the Verified badge and Match+.
+        For extra time, gifts, themed nights, the Verified badge and Match+.
       </p>
       {wallet.payments ? (
         <div className="mt-4 grid grid-cols-4 gap-2">
@@ -249,7 +250,7 @@ export function PlusCard({
         </p>
       </div>
       <ul className="mt-3 space-y-1.5 text-[14px] text-white/75">
-        <li>Unlimited +1 minutes, free</li>
+        <li>Extra time free — talk as long as you both like</li>
         <li>An extra hour — talk until midnight</li>
         <li>Pings whenever someone’s free, not just once a night</li>
       </ul>
@@ -523,5 +524,141 @@ export function GiftBar({
         ))}
       </div>
     </div>
+  );
+}
+
+/**
+ * How someone pays for time past the free minutes: by the second (₦2, about
+ * ₦120 a minute, for only what they use) or by the whole minute (₦100).
+ */
+export function BillingCard({
+  billing,
+  prices,
+  plus,
+  onChange,
+}: {
+  billing: MatchBilling;
+  prices: { second: number; minute: number };
+  plus: boolean;
+  onChange: (billing: MatchBilling) => void;
+}) {
+  const options: [MatchBilling, string, string][] = [
+    [
+      'second',
+      `Per second · ${naira(prices.second)}`,
+      `About ${naira(prices.second * 60)} a minute. Pay only for what you use.`,
+    ],
+    ['minute', `Per minute · ${naira(prices.minute)}`, 'Cheaper if you talk for longer.'],
+  ];
+  return (
+    <section className={CARD}>
+      <p className={LABEL}>Extra time</p>
+      <p className="mt-1 text-[13px] text-white/55">
+        Every call has a free minute, and either of you can add one more free. After that, whoever
+        taps Keep talking pays — for both of you.
+        {plus && ' With Match+ your extra time is free.'}
+      </p>
+      <div className="mt-4 grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Extra time">
+        {options.map(([value, title, body]) => (
+          <button
+            key={value}
+            type="button"
+            role="radio"
+            aria-checked={billing === value}
+            onClick={() => onChange(value)}
+            className={cn(
+              'rounded-[18px] border px-4 py-3 text-left transition-[transform,background-color,border-color] duration-150 active:scale-[0.98]',
+              billing === value
+                ? 'border-[#ff5c8a]/70 bg-[#ff5c8a]/[0.14]'
+                : 'border-white/10 bg-white/[0.05] hover:bg-white/[0.09]',
+            )}
+          >
+            <span className="block text-[15px] font-semibold">{title}</span>
+            <span className="mt-0.5 block text-[12px] text-white/55">{body}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** "Where are you?": just a country, to match people nearby first. */
+export function CountryCard({
+  country,
+  onSave,
+}: {
+  country: string;
+  onSave: (country: string) => Promise<boolean>;
+}) {
+  const [editing, setEditing] = useState(!country);
+  const [choice, setChoice] = useState(country || guessCountry());
+  const [busy, setBusy] = useState(false);
+  if (!editing) {
+    return (
+      <section className={cn(CARD, 'flex items-center justify-between gap-3')}>
+        <div>
+          <p className={LABEL}>Country</p>
+          <p className="mt-1 text-[15px]">{countryName(country)}</p>
+        </div>
+        <button type="button" onClick={() => setEditing(true)} className={LINK}>
+          Change
+        </button>
+      </section>
+    );
+  }
+  return (
+    <section className={CARD}>
+      <p className="text-[15px] font-medium">Where are you?</p>
+      <p className="mt-1 text-[13px] text-white/55">
+        We match you with people in your country first. Only the country is kept — never your
+        location.
+      </p>
+      <div className="mt-4 flex gap-2">
+        <CountrySelect value={choice} onChange={setChoice} className="min-w-0 flex-1" />
+        <PayButton
+          busy={busy}
+          locked={!choice}
+          onClick={async () => {
+            setBusy(true);
+            if (await onSave(choice)) setEditing(false);
+            setBusy(false);
+          }}
+          className={cn(QUIET, 'px-5 py-3 text-[14px]')}
+        >
+          Save
+        </PayButton>
+      </div>
+    </section>
+  );
+}
+
+/** A country dropdown in Match's style. */
+export function CountrySelect({
+  value,
+  onChange,
+  className,
+}: {
+  value: string;
+  onChange: (code: string) => void;
+  className?: string;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      aria-label="Country"
+      className={cn(
+        FIELD,
+        'appearance-none bg-[#161214] px-4 py-3 text-[15px] text-white [color-scheme:dark]',
+        className,
+      )}
+    >
+      <option value="">Choose your country</option>
+      {COUNTRIES.map((country) => (
+        <option key={country.code} value={country.code}>
+          {country.name}
+        </option>
+      ))}
+    </select>
   );
 }

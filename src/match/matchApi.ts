@@ -32,6 +32,25 @@ export interface MatchProfile extends MatchHandles {
   /** Match+ runs until then; null when not a member. */
   plusUntil: string | null;
   verified: boolean;
+  /** How they pay for time past the free minutes. */
+  billing: MatchBilling;
+  /** ISO country code they chose; empty until asked. */
+  country: string;
+}
+
+export type MatchBilling = 'second' | 'minute';
+
+/** One side's view of a call's clock, from the server. */
+export interface MatchTime {
+  /** The one free extra minute has been added (by either person). */
+  freeAdded: boolean;
+  /** When the free time runs out, on the server's clock. */
+  freeEndsAt: number | null;
+  paying: { you: boolean; them: boolean };
+  /** This person's billing, while they pay. */
+  mode: MatchBilling | null;
+  /** What this person has spent on this call's extra time, kobo. */
+  spentMinor: number;
 }
 
 /** One evening's sponsor and/or paid theme, set by Deck. */
@@ -56,6 +75,8 @@ export interface MatchWallet {
   tonight: (MatchNight & { entered: boolean }) | null;
   prices: {
     minute: number;
+    /** Paid time per second, kobo. */
+    second: number;
     gift: Record<MatchGift, number>;
     badge: number;
     plus: number;
@@ -105,6 +126,41 @@ export interface MatchGiftCards {
   cards: MatchGiftCard[];
 }
 
+/** Another brand's gift card on sale (Chowdeck, Jumia…), priced in naira. */
+export interface MatchBrandProduct {
+  productId: number;
+  brand: string;
+  name: string;
+  logoUrl: string;
+  /** The card's own currency. */
+  currency: string;
+  redeemInstruction: string;
+  amounts: { face: number; priceMinor: number }[];
+}
+
+/** A brand card bought; the code once Reloadly has issued it. */
+export interface MatchBrandOrder {
+  reference: string;
+  brand: string;
+  productName: string;
+  logoUrl: string;
+  faceValue: number;
+  faceCurrency: string;
+  priceMinor: number;
+  toName: string;
+  status: 'paid' | 'fulfilled' | 'stuck' | 'refunded';
+  code: { cardNumber: string; pinCode: string; redemptionUrl: string } | null;
+  redeemInstruction: string;
+  test: boolean;
+  createdAt: string;
+}
+
+export interface MatchBrandCards {
+  available: boolean;
+  products: MatchBrandProduct[];
+  orders: MatchBrandOrder[];
+}
+
 /** Someone you swapped usernames with. */
 export interface MatchMatch {
   callId: string;
@@ -144,8 +200,7 @@ export type MatchEvent =
   | 'matched'
   | 'signal'
   | 'started'
-  | 'extend'
-  | 'extended'
+  | 'time'
   | 'ended'
   | 'revealed'
   | 'closed'
@@ -155,7 +210,7 @@ export type MatchEvent =
 export const matchApi = {
   online: () => request<Online>('get', '/match/online'),
   me: () => request<MatchProfile | null>('get', '/match/me'),
-  create: (input: MatchHandles & { gender: Gender; adult: true }) =>
+  create: (input: MatchHandles & { gender: Gender; adult: true; country?: string }) =>
     request<MatchProfile>('post', '/match/me', input),
   setHandles: (handles: MatchHandles) => request<MatchProfile>('patch', '/match/me', handles),
   matches: () => request<MatchMatch[]>('get', '/match/matches'),
@@ -173,7 +228,15 @@ export const matchApi = {
   share: (callId: string) => request<{ revealed: boolean }>('post', `/match/calls/${callId}/share`),
   report: (callId: string, reason: string) =>
     request('post', `/match/calls/${callId}/report`, { reason }),
-  extend: (callId: string) => request<{ agreed: boolean }>('post', `/match/calls/${callId}/extend`),
+  /** The free extra minute, for both: either person's tap adds it. */
+  extend: (callId: string) => request<{ added: boolean }>('post', `/match/calls/${callId}/extend`),
+  /** Pay to keep the call going for both once the free time is up. */
+  keepTalking: (callId: string) =>
+    request<{ paying: boolean }>('post', `/match/calls/${callId}/pay`),
+  stopPaying: (callId: string) =>
+    request<{ paying: boolean }>('delete', `/match/calls/${callId}/pay`),
+  updateMe: (change: Partial<MatchHandles & { billing: MatchBilling; country: string }>) =>
+    request<MatchProfile>('patch', '/match/me', change),
   gift: (callId: string, gift: MatchGift) =>
     request<{ gift: MatchGift; creditMinor: number }>('post', `/match/calls/${callId}/gift`, {
       gift,
@@ -214,6 +277,14 @@ export const matchApi = {
       creditMinor: number;
       plusUntil: string | null;
     }>('post', '/match/giftcards/redeem', { code }),
+  brandCards: () => request<MatchBrandCards>('get', '/match/brand-cards'),
+  buyBrandCard: (input: { productId: number; faceValue: number; toName: string }) =>
+    request<{ checkoutUrl?: string; order?: MatchBrandOrder }>('post', '/match/brand-cards', input),
+  verifyBrandCard: (reference: string) =>
+    request<{ order: MatchBrandOrder }>(
+      'post',
+      `/match/brand-cards/${encodeURIComponent(reference)}/verify`,
+    ),
   requestSection: (note: string) =>
     request<MatchProfile>('post', '/match/me/section-request', { note }),
   subscribe: (subscription: PushSubscriptionJSON) =>

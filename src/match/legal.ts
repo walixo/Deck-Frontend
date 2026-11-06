@@ -65,6 +65,10 @@ export const MATCH_PRIVACY: LegalDocument = {
               'When you set up Match. We use your section to match you with the other one.',
             ],
             [
+              'Your country',
+              'Only if you choose one. We use it to match you with people in the same country first. We never ask for or keep your location — just the country you pick.',
+            ],
+            [
               'Your X and Instagram usernames',
               'Only if you add them. They are shown only to people you both chose to share with.',
             ],
@@ -186,7 +190,11 @@ export const MATCH_PRIVACY: LegalDocument = {
               'Cloudflare',
               'Public servers that help two browsers find each other, and a relay that carries a call’s audio when the two networks can’t connect directly. The audio stays encrypted and is never stored.',
             ],
-            ['Bachs', 'Top-up payments.'],
+            ['Bachs', 'Top-up and gift card payments.'],
+            [
+              'Reloadly',
+              'Supplies other brands’ gift cards. When you buy one we send Reloadly the card, the amount and an order reference — not your name, email or anything else about you.',
+            ],
             [
               'Your browser’s notification service (Google, Apple or Mozilla)',
               'Delivers pings, if you turn them on. A ping says only that someone is on Match.',
@@ -353,8 +361,8 @@ export const MATCH_TERMS: LegalDocument = {
           head: ['Feature', 'How it works'],
           rows: [
             [
-              'Extra minutes',
-              'The first +1 minute in a call is free. After that each extra minute is ₦100 for each of you, and only charged if you both tap. If the call ends before the minute is added, you’re refunded.',
+              'Extra time',
+              'Every call has a free minute, and either of you can add one more free minute for both. After that, whoever taps Keep talking pays to carry the call on for both of you: by the second at ₦2 (about ₦120 a minute), or by the minute at ₦100 — you choose which in the lobby. Per second, time is bought ten seconds ahead and any unused seconds come back when the call ends; a minute paid for is kept even if the call ends early. If you both tap, each of you pays your own. With Match+ your extra time is free.',
             ],
             [
               'Gifts',
@@ -370,7 +378,7 @@ export const MATCH_TERMS: LegalDocument = {
             ],
             [
               'Match+',
-              '₦1,500 for 30 days: free extra minutes, talking until midnight, and pings whenever someone’s free. It doesn’t renew by itself; buying it again adds 30 days.',
+              '₦1,500 for 30 days: free extra time, talking until midnight, and pings whenever someone’s free. It doesn’t renew by itself; buying it again adds 30 days.',
             ],
           ],
         },
@@ -387,6 +395,20 @@ export const MATCH_TERMS: LegalDocument = {
             'Claimed credit becomes ordinary Match credit and follows the rules above. Claimed Match+ days are added on to any Match+ you already have.',
             'Gift cards aren’t refundable as cash and can’t be exchanged for money. An unclaimed card that was paid for by mistake can be cancelled and refunded — write to support@onedeck.africa.',
             'Cards Deck gives away, for a sponsor or a promotion, follow the same rules.',
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Other brands’ gift cards',
+      blocks: [
+        {
+          kind: 'list',
+          items: [
+            'Match also sells other companies’ gift cards — food, shopping and more — supplied through Reloadly, a gift card wholesaler. Deck sells them; the brand issues them.',
+            'You pay through Deck’s checkout. Once your payment is confirmed we buy the card and show its code in Match, usually within moments. If the brand can’t issue it, we keep trying, and if it still can’t be issued we refund you — as Match credit, or to your card if you ask.',
+            'Once a code has been shown it can’t be returned or refunded: anyone holding it can use it, so keep it private.',
+            'The brand’s own terms decide how and where the card can be used, and when it expires. Questions about using a card go to that brand; questions about buying it come to us.',
           ],
         },
       ],

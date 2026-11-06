@@ -55,12 +55,21 @@ export function mountMatch(root: HTMLElement) {
   const error = query.get('error') ?? '';
   const topup = query.get('topup');
   const giftcard = query.get('giftcard');
+  const brandcard = query.get('brandcard');
   const cancelled = query.get('cancelled') === '1';
   /* A gift card link: kept until claimed, since signing in leaves the page. */
   const redeem = query.get('redeem');
   if (redeem) rememberRedeemCode(redeem);
   if (token) setStoredToken(token);
-  if (token || error || topup || giftcard || redeem || window.location.pathname !== '/') {
+  if (
+    token ||
+    error ||
+    topup ||
+    giftcard ||
+    brandcard ||
+    redeem ||
+    window.location.pathname !== '/'
+  ) {
     window.history.replaceState(null, '', '/');
   }
   createRoot(root).render(
@@ -69,6 +78,7 @@ export function mountMatch(root: HTMLElement) {
         signInError={error}
         topup={topup ? { reference: topup, cancelled } : null}
         giftcard={giftcard ? { reference: giftcard, cancelled } : null}
+        brandcard={brandcard ? { reference: brandcard, cancelled } : null}
       />
     </StrictMode>,
   );

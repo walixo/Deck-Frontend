@@ -159,6 +159,71 @@ const keys = {
   giftCards: ['admin', 'match', 'giftcards'] as const,
 };
 
+export interface MatchBrandAdmin {
+  configured: boolean;
+  environment: 'live' | 'sandbox';
+  wallet: { balance: number; currencyCode: string } | null;
+  products: {
+    productId: number;
+    brand: string;
+    name: string;
+    logoUrl: string;
+    currency: string;
+    sellable: boolean;
+    discountPct: number;
+    enabled: boolean;
+    markupPct: number;
+    amounts: { face: number; priceMinor: number | null }[];
+    syncedAt: string;
+  }[];
+  orders: {
+    reference: string;
+    brand: string;
+    faceValue: number;
+    faceCurrency: string;
+    priceMinor: number;
+    costAmount: number | null;
+    costCurrency: string;
+    status: 'paid' | 'fulfilled' | 'failed' | 'stuck' | 'refunded';
+    problem: string;
+    attempts: number;
+    mode: 'live' | 'test';
+    buyer: string;
+    createdAt: string;
+  }[];
+}
+
+export function useMatchBrandCards() {
+  return useQuery({
+    queryKey: ['admin', 'match', 'brand-cards'] as const,
+    queryFn: () => request<MatchBrandAdmin>('get', '/admin/match/brand-cards'),
+  });
+}
+
+/** Staff: sync Reloadly's catalogue, put a brand on sale, or settle a stuck order. */
+export function useMatchBrandAction() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (
+      action:
+        | { kind: 'sync' }
+        | { kind: 'product'; productId: number; enabled?: boolean; markupPct?: number }
+        | { kind: 'retry' | 'refund'; reference: string },
+    ) => {
+      if (action.kind === 'sync') return request('post', '/admin/match/brand-cards/sync');
+      if (action.kind === 'product') {
+        const { productId, kind: _kind, ...change } = action;
+        return request('patch', `/admin/match/brand-cards/${productId}`, change);
+      }
+      return request(
+        'post',
+        `/admin/match/brand-cards/orders/${encodeURIComponent(action.reference)}/${action.kind}`,
+      );
+    },
+    onSuccess: () => void client.invalidateQueries({ queryKey: ['admin', 'match', 'brand-cards'] }),
+  });
+}
+
 export function useMatchQuality(days: number) {
   return useQuery({
     queryKey: ['admin', 'match', 'quality', days] as const,

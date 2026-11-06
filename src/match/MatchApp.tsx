@@ -12,6 +12,10 @@ import {
   type MatchGift,
   type MatchGiftCard,
   type MatchGiftCards,
+  type MatchBrandCards,
+  type MatchBrandOrder,
+  type MatchBilling,
+  type MatchTime,
   type MatchHandles,
   type MatchMatch,
   type MatchWallet,
@@ -21,6 +25,7 @@ import {
 import { setMusicMuted, useMusic, useMusicMuted } from './music';
 import { forgetRedeemCode, GIFTS, naira, paymentCode, pendingRedeemCode } from './credit';
 import { GiftCardBuySheet, GiftCardShowSheet, GiftCardsCard, RedeemSheet } from './giftcards';
+import { BrandCardShowSheet, BrandCardsRow, BrandCardsSheet } from './brandcards';
 import {
   EntryCard,
   GiftBar,
@@ -30,7 +35,12 @@ import {
   VerifiedMark,
   VerifyCard,
   WalletCard,
+  BillingCard,
+  CountryCard,
+  CountrySelect,
+  PayButton,
 } from './money';
+import { guessCountry } from './countries';
 import {
   CARD,
   EYEBROW,
@@ -88,6 +98,8 @@ type Screen =
 interface CallInfo {
   callId: string;
   caller: boolean;
+  /** When the clock started, on this device's clock. */
+  startedAt: number | null;
   endsAt: number | null;
   total: number;
   /** The person on the other end has the Verified badge. */
@@ -107,16 +119,40 @@ interface Queue {
   otherWaiting: boolean;
 }
 
-interface Extend {
-  mine: boolean;
-  theirs: boolean;
-  /** Minutes added so far; the first is free, later ones cost credit. */
-  round: number;
-  /** When the last minute was added, to say so for a moment. */
-  addedAt: number | null;
+/** The call's clock as this side sees it: free time, then whoever pays. */
+interface CallTime extends MatchTime {
+  /** What just changed, said for a moment under the clock. */
+  flash: { text: string; at: number } | null;
 }
 
-const NO_EXTEND: Extend = { mine: false, theirs: false, round: 0, addedAt: null };
+const NO_TIME: CallTime = {
+  freeAdded: false,
+  freeEndsAt: null,
+  paying: { you: false, them: false },
+  mode: null,
+  spentMinor: 0,
+  flash: null,
+};
+
+/** What a change to the clock means, for the person it's shown to. */
+function timeNote(note: { kind: string; by: 'you' | 'them' } | null): string | null {
+  if (!note) return null;
+  const mine = note.by === 'you';
+  switch (note.kind) {
+    case 'free':
+      return mine ? 'A free minute added for you both' : 'They added a free minute for you both';
+    case 'paying':
+      return mine
+        ? 'You’re keeping the call going'
+        : 'They’re keeping the call going — free for you';
+    case 'stopped':
+      return mine ? 'You stopped paying' : 'They stopped paying';
+    case 'out-of-credit':
+      return mine ? 'Your credit ran out' : 'Their credit ran out';
+    default:
+      return null;
+  }
+}
 
 const other = (gender: Gender): Gender => (gender === 'male' ? 'female' : 'male');
 const people = (gender: Gender, count: number) =>
@@ -143,18 +179,21 @@ export function MatchApp({
   signInError = '',
   topup = null,
   giftcard = null,
+  brandcard = null,
 }: {
   signInError?: string;
   /** Back from a top-up checkout: which one, and whether they backed out. */
   topup?: { reference: string; cancelled: boolean } | null;
   /** Back from buying a gift card, the same way. */
   giftcard?: { reference: string; cancelled: boolean } | null;
+  /** Back from buying another brand's gift card. */
+  brandcard?: { reference: string; cancelled: boolean } | null;
 }) {
   const [screen, setScreen] = useState<Screen>(() => (getStoredToken() ? 'loading' : 'signedOut'));
   const [profile, setProfile] = useState<MatchProfile | null>(null);
   const [online, setOnline] = useState<Online | null>(null);
   const [queue, setQueue] = useState<Queue | null>(null);
-  const [extend, setExtend] = useState<Extend>(NO_EXTEND);
+  const [time, setTime] = useState<CallTime>(NO_TIME);
   const [call, setCall] = useState<CallInfo | null>(null);
   const [ended, setEnded] = useState<Ended | null>(null);
   const [shared, setShared] = useState(false);
@@ -164,7 +203,7 @@ export function MatchApp({
     signInError ||
       (topup?.cancelled
         ? 'Top-up cancelled — nothing was charged.'
-        : giftcard?.cancelled
+        : giftcard?.cancelled || brandcard?.cancelled
           ? 'Gift card cancelled — nothing was charged.'
           : ''),
   );
@@ -177,6 +216,9 @@ export function MatchApp({
      so the button that started it can show a spinner. */
   const [pending, setPending] = useState<string | null>(null);
   const [giftCards, setGiftCards] = useState<MatchGiftCards | null>(null);
+  const [brandCards, setBrandCards] = useState<MatchBrandCards | null>(null);
+  const [browsingBrands, setBrowsingBrands] = useState(false);
+  const [shownBrand, setShownBrand] = useState<MatchBrandOrder | null>(null);
   const [buyingGiftCard, setBuyingGiftCard] = useState(false);
   /* A bought card being shown, ready to send. */
   const [shownCard, setShownCard] = useState<MatchGiftCard | null>(null);
@@ -207,6 +249,13 @@ export function MatchApp({
     void matchApi
       .matches()
       .then(setMatches)
+      .catch(() => undefined);
+  }, []);
+
+  const refreshBrandCards = useCallback(() => {
+    void matchApi
+      .brandCards()
+      .then(setBrandCards)
       .catch(() => undefined);
   }, []);
 
@@ -278,11 +327,12 @@ export function MatchApp({
         setCall({
           callId,
           caller,
+          startedAt: null,
           endsAt: null,
           total: 120_000,
           themVerified: Boolean(them?.verified),
         });
-        setExtend(NO_EXTEND);
+        setTime(NO_TIME);
         setMuted(false);
         setNotice('');
         setScreen('connecting');
@@ -298,43 +348,38 @@ export function MatchApp({
           (current) =>
             current && {
               ...current,
+              startedAt: started.startedAt - offset,
               endsAt: started.endsAt - offset,
               total: started.endsAt - started.startedAt,
             },
         );
+        setTime({ ...NO_TIME, freeEndsAt: started.endsAt - offset });
         setScreen('live');
         break;
       }
-      case 'extend': {
-        const votes = raw as {
-          mine: boolean;
-          theirs: boolean;
-          round: number;
-          refused?: 'you' | 'them';
+      case 'time': {
+        const clock = raw as {
+          endsAt: number | null;
+          time: MatchTime;
+          note: { kind: string; by: 'you' | 'them' } | null;
+          serverNow: number;
         };
-        setExtend((current) => ({
-          ...current,
-          mine: votes.mine,
-          theirs: votes.theirs,
-          round: votes.round,
-        }));
-        if (votes.refused === 'you') setNotice('Not enough credit for another minute.');
-        if (votes.refused === 'them') setNotice('They didn’t have credit for another minute.');
-        break;
-      }
-      case 'extended': {
-        const more = raw as { endsAt: number; serverNow: number; extensions: number };
-        const offset = more.serverNow - Date.now();
+        const offset = clock.serverNow - Date.now();
         setCall(
           (current) =>
             current && {
               ...current,
-              endsAt: more.endsAt - offset,
-              total: current.total + 60_000,
+              endsAt: clock.endsAt ? clock.endsAt - offset : current.endsAt,
             },
         );
-        setExtend({ mine: false, theirs: false, round: more.extensions, addedAt: Date.now() });
-        if (more.extensions > 1) refreshWallet();
+        const text = timeNote(clock.note);
+        setTime((current) => ({
+          ...clock.time,
+          freeEndsAt: clock.time.freeEndsAt ? clock.time.freeEndsAt - offset : null,
+          flash: text ? { text, at: Date.now() } : current.flash,
+        }));
+        /* Money moved for this person: their balance changed. */
+        if (clock.note?.by === 'you' && clock.note.kind !== 'free') refreshWallet();
         break;
       }
       case 'ended': {
@@ -406,8 +451,9 @@ export function MatchApp({
       refreshMatches();
       refreshWallet();
       refreshGiftCards();
+      refreshBrandCards();
     },
-    [openLine, refreshMatches, refreshWallet, refreshGiftCards],
+    [openLine, refreshMatches, refreshWallet, refreshGiftCards, refreshBrandCards],
   );
 
   /* Start-up: who this is, if they are signed in. */
@@ -507,20 +553,40 @@ export function MatchApp({
 
   const hangUp = () => call && void matchApi.leave(call.callId).catch(() => undefined);
 
-  const askForMore = () => {
+  /** The free extra minute: one tap from either side adds it for both. */
+  const addFreeMinute = () => {
     if (!call) return;
-    setExtend((current) => ({ ...current, mine: true }));
     void matchApi.extend(call.callId).catch((error) => {
-      setExtend((current) => ({ ...current, mine: false }));
-      /* No checkout mid-call: leaving the page would end it. */
-      setNotice(
-        paymentCode(error) === 'credit'
-          ? `Another minute needs ${naira(wallet?.prices.minute ?? 10_000)} credit — top up after this call.`
-          : error instanceof Error
-            ? error.message
-            : 'Could not add a minute.',
-      );
+      setNotice(error instanceof Error ? error.message : 'Could not add a minute.');
     });
+  };
+
+  /** Pay to keep the call going for both, at this person's chosen billing. */
+  const keepTalking = () => {
+    if (!call) return;
+    setPending('keep-talking');
+    void matchApi
+      .keepTalking(call.callId)
+      .catch((error) => {
+        /* No checkout mid-call: leaving the page would end it. */
+        const block =
+          (profile?.billing ?? 'second') === 'second'
+            ? (wallet?.prices.second ?? 200) * 10
+            : (wallet?.prices.minute ?? 10_000);
+        setNotice(
+          paymentCode(error) === 'credit'
+            ? `Keeping the call going needs at least ${naira(block)} of credit — top up after this call.`
+            : error instanceof Error
+              ? error.message
+              : 'Could not keep the call going.',
+        );
+      })
+      .finally(() => setPending(null));
+  };
+
+  const stopPaying = () => {
+    if (!call) return;
+    void matchApi.stopPaying(call.callId).catch(() => undefined);
   };
 
   /* ------------------------------------------------------------ money --- */
@@ -629,6 +695,24 @@ export function MatchApp({
     setPending(null);
   };
 
+  const buyBrandCard = async (input: { productId: number; faceValue: number; toName: string }) => {
+    setPending('brandcard');
+    setNotice('');
+    try {
+      const result = await matchApi.buyBrandCard(input);
+      if (result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl);
+        return;
+      }
+      setBrowsingBrands(false);
+      if (result.order) setShownBrand(result.order);
+      refreshBrandCards();
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not start that gift card.');
+    }
+    setPending(null);
+  };
+
   const redeem = async (code: string): Promise<boolean> => {
     setPending('redeem');
     setNotice('');
@@ -702,6 +786,32 @@ export function MatchApp({
       stop = true;
     };
   }, [topup, refreshWallet]);
+
+  /* Back from buying a brand card: settle it, then show the code (or where it's up to). */
+  useEffect(() => {
+    const reference = brandcard && !brandcard.cancelled ? brandcard.reference : null;
+    if (!reference || !getStoredToken()) return;
+    let stop = false;
+    const check = async (attempt: number) => {
+      try {
+        const { order } = await matchApi.verifyBrandCard(reference);
+        if (stop) return;
+        if (order.status === 'fulfilled' || attempt >= 5) {
+          setShownBrand(order);
+          refreshBrandCards();
+        } else {
+          window.setTimeout(() => void check(attempt + 1), 3000);
+        }
+      } catch {
+        if (!stop)
+          setNotice('Could not confirm your gift card yet — it will appear under Other brands.');
+      }
+    };
+    void check(0);
+    return () => {
+      stop = true;
+    };
+  }, [brandcard, refreshBrandCards]);
 
   /* Back from buying a gift card: the same check, then the card to send. */
   useEffect(() => {
@@ -777,6 +887,17 @@ export function MatchApp({
     }
   };
 
+  /** Billing for extra time, or country: saved on the profile. */
+  const saveSetting = async (change: { billing?: MatchBilling; country?: string }) => {
+    try {
+      setProfile(await matchApi.updateMe(change));
+      return true;
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not save that.');
+      return false;
+    }
+  };
+
   const saveHandles = async (handles: MatchHandles) => {
     try {
       setProfile(await matchApi.setHandles(handles));
@@ -810,8 +931,6 @@ export function MatchApp({
   /* ---------------------------------------------------------- screens --- */
 
   const plusActive = Boolean(wallet?.plusUntil ?? profile?.plusUntil);
-  /* What this person pays for the next minute: the first is free for all. */
-  const minutePrice = extend.round === 0 || plusActive ? 0 : (wallet?.prices.minute ?? 10_000);
 
   let body: ReactNode = null;
   if (screen === 'loading') body = <Pulse />;
@@ -839,8 +958,12 @@ export function MatchApp({
         onBuyGiftCard={() => setBuyingGiftCard(true)}
         onRedeem={redeem}
         onShowGiftCard={setShownCard}
+        brandCards={brandCards}
+        onBrowseBrands={() => setBrowsingBrands(true)}
+        onShowBrand={setShownBrand}
         onStartVerification={startVerification}
         onSubmitVerification={submitVerification}
+        onSaveSetting={saveSetting}
       />
     );
   else if (screen === 'waiting' && profile)
@@ -861,9 +984,14 @@ export function MatchApp({
         call={call}
         voice={voice}
         muted={muted}
-        extend={extend}
-        minutePrice={minutePrice}
-        onExtend={askForMore}
+        time={time}
+        billing={profile?.billing ?? 'second'}
+        prices={wallet?.prices ?? { second: 200, minute: 10_000 }}
+        plus={plusActive}
+        paying={pending === 'keep-talking'}
+        onFreeMinute={addFreeMinute}
+        onKeepTalking={keepTalking}
+        onStopPaying={stopPaying}
         onMute={() => {
           voice.current?.setMuted(!muted);
           setMuted(!muted);
@@ -909,6 +1037,15 @@ export function MatchApp({
         />
       )}
       {shownCard && <GiftCardShowSheet card={shownCard} onClose={() => setShownCard(null)} />}
+      {browsingBrands && brandCards && (
+        <BrandCardsSheet
+          data={brandCards}
+          pending={pending}
+          onBuy={buyBrandCard}
+          onClose={() => setBrowsingBrands(false)}
+        />
+      )}
+      {shownBrand && <BrandCardShowSheet order={shownBrand} onClose={() => setShownBrand(null)} />}
       {redeemCode && screen === 'lobby' && !shownCard && (
         <RedeemSheet
           code={redeemCode}
@@ -1170,6 +1307,7 @@ function SignedOut({ online, gift }: { online: Online | null; gift: boolean }) {
 function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
   const [gender, setGender] = useState<Gender | null>(null);
   const [handles, setHandles] = useState<MatchHandles>({ x: '', instagram: '' });
+  const [country, setCountry] = useState(guessCountry);
   const [adult, setAdult] = useState(false);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
@@ -1187,6 +1325,7 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
               gender,
               x: handles.x.trim(),
               instagram: handles.instagram.trim(),
+              country,
               adult: true,
             }),
           );
@@ -1238,6 +1377,15 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
       <p className="-mt-3 text-[12px] text-white/45">
         You can’t switch this yourself later — if you choose wrong, ask us to change it.
       </p>
+      <div>
+        <p className="text-[14px] font-medium">
+          Where are you?
+          <span className="ml-2 text-[12px] font-normal text-white/45">
+            we match you within your country first
+          </span>
+        </p>
+        <CountrySelect value={country} onChange={setCountry} className="mt-2 w-full" />
+      </div>
       <div>
         <p className="text-[14px] font-medium">
           Your X and Instagram
@@ -1386,6 +1534,10 @@ function Lobby({
   onBuyGiftCard,
   onRedeem,
   onShowGiftCard,
+  brandCards,
+  onBrowseBrands,
+  onShowBrand,
+  onSaveSetting,
 }: {
   profile: MatchProfile;
   online: Online | null;
@@ -1407,6 +1559,10 @@ function Lobby({
   onBuyGiftCard: () => void;
   onRedeem: (code: string) => Promise<boolean>;
   onShowGiftCard: (card: MatchGiftCard) => void;
+  brandCards: MatchBrandCards | null;
+  onBrowseBrands: () => void;
+  onShowBrand: (order: MatchBrandOrder) => void;
+  onSaveSetting: (change: { billing?: MatchBilling; country?: string }) => Promise<boolean>;
 }) {
   const [editing, setEditing] = useState(false);
   const them = other(profile.gender);
@@ -1462,7 +1618,7 @@ function Lobby({
             night={entry && online?.tonight ? { ...online.tonight, theme: null } : online?.tonight}
           />
           <p className="mt-4 text-[13px] text-white/45">
-            Two minutes, voice only. Leave whenever you like.
+            A free minute, and one more if you want it. Voice only — leave whenever you like.
           </p>
           {isIOS() && (
             <p className="mx-auto mt-3 max-w-xs text-[12px] text-white/40">
@@ -1495,6 +1651,12 @@ function Lobby({
         <div className="space-y-4">
           <WalletCard wallet={wallet} pending={pending} onTopUp={onTopUp} />
           <PlusCard wallet={wallet} onBuy={onBuyPlus} pending={pending} />
+          <BillingCard
+            billing={profile.billing ?? 'second'}
+            prices={wallet.prices}
+            plus={plus}
+            onChange={(billing) => void onSaveSetting({ billing })}
+          />
           <VerifyCard
             wallet={wallet}
             onStart={onStartVerification}
@@ -1509,9 +1671,17 @@ function Lobby({
               onShow={onShowGiftCard}
             />
           )}
+          {brandCards && (
+            <BrandCardsRow data={brandCards} onOpen={onBrowseBrands} onShow={onShowBrand} />
+          )}
         </div>
       )}
 
+      <CountryCard
+        key={profile.country}
+        country={profile.country}
+        onSave={(country) => onSaveSetting({ country })}
+      />
       <PingCard online={online} profile={profile} onToggle={onTogglePings} />
       <InstallCard />
 
@@ -1833,9 +2003,14 @@ function Live({
   call,
   voice,
   muted,
-  extend,
-  minutePrice,
-  onExtend,
+  time,
+  billing,
+  prices,
+  plus,
+  paying,
+  onFreeMinute,
+  onKeepTalking,
+  onStopPaying,
   onMute,
   onLeave,
   onReport,
@@ -1844,21 +2019,38 @@ function Live({
   call: CallInfo;
   voice: React.RefObject<VoiceCall | null>;
   muted: boolean;
-  extend: Extend;
-  /** What this person pays for the next minute, kobo; 0 when it is free. */
-  minutePrice: number;
-  onExtend: () => void;
+  time: CallTime;
+  billing: MatchBilling;
+  prices: { second: number; minute: number };
+  plus: boolean;
+  /** Keep talking was just tapped and is being paid for. */
+  paying: boolean;
+  onFreeMinute: () => void;
+  onKeepTalking: () => void;
+  onStopPaying: () => void;
   onMute: () => void;
   onLeave: () => void;
   onReport: () => void;
 }) {
-  const left = Math.max(0, (call.endsAt ?? now) - now);
-  const seconds = Math.ceil(left / 1000);
+  const freeEndsAt = time.freeEndsAt ?? call.endsAt ?? now;
+  const free = now < freeEndsAt;
+  const started = call.startedAt ?? freeEndsAt - call.total;
+  /* Free time counts down; paid time counts up from where the free time ended. */
+  const shown = Math.max(0, free ? freeEndsAt - now : now - freeEndsAt);
+  const seconds = free ? Math.ceil(shown / 1000) : Math.floor(shown / 1000);
+  const fraction = free ? shown / Math.max(1, freeEndsAt - started) : 1;
   const radius = 116;
   const around = 2 * Math.PI * radius;
+  const someonePays = time.paying.you || time.paying.them;
+  const rate = plus
+    ? 'free with Match+'
+    : billing === 'second'
+      ? `${naira(prices.second)}/sec`
+      : `${naira(prices.minute)}/min`;
+  const flash = time.flash && now - time.flash.at < 4000 ? time.flash.text : null;
   return (
     <div className="text-center">
-      {/* The voices, ringed by the time left. */}
+      {/* The voices, ringed by the free time left. */}
       <div className="relative mx-auto size-[min(17rem,72vw)]">
         <svg
           viewBox="0 0 240 240"
@@ -1884,11 +2076,14 @@ function Live({
             cy="120"
             r={radius}
             fill="none"
-            stroke={seconds <= 15 ? '#ff7a59' : 'url(#match-dial)'}
+            stroke={
+              !free ? '#5dcaa5' : seconds <= 15 && !someonePays ? '#ff7a59' : 'url(#match-dial)'
+            }
             strokeWidth="5"
             strokeLinecap="round"
             strokeDasharray={around}
-            strokeDashoffset={around * (1 - left / call.total)}
+            strokeDashoffset={around * (1 - fraction)}
+            className={free ? undefined : 'animate-pulse'}
           />
         </svg>
         <VoiceOrb voice={voice} muted={muted} className="absolute inset-0 size-full" />
@@ -1897,9 +2092,19 @@ function Live({
         className="mt-4 font-mono text-[44px] font-medium leading-none tabular-nums"
         aria-live="off"
       >
+        {free ? '' : '+'}
         {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
       </p>
-      <div className="mt-5 flex items-center justify-center gap-6 font-mono text-[11px] uppercase tracking-[0.16em] text-white/60">
+      <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-white/50">
+        {free
+          ? time.freeAdded
+            ? 'Free time · extra minute added'
+            : 'Free time'
+          : time.paying.you
+            ? `Extra time · you’ve paid ${naira(time.spentMinor)}`
+            : 'Extra time · they’re paying'}
+      </p>
+      <div className="mt-4 flex items-center justify-center gap-6 font-mono text-[11px] uppercase tracking-[0.16em] text-white/60">
         <span className="inline-flex items-center gap-2">
           <span className="size-2 rounded-full bg-[#7a98ff] shadow-[0_0_8px_#7a98ff]" />
           {muted ? 'You · muted' : 'You'}
@@ -1910,32 +2115,41 @@ function Live({
           {call.themVerified && <VerifiedMark className="ml-1" />}
         </span>
       </div>
-      <div className="mt-8 min-h-14">
-        {extend.addedAt && now - extend.addedAt < 4000 ? (
-          <p className="inline-flex rounded-full bg-[#5dcaa5]/[0.14] px-6 py-3.5 text-[15px] font-semibold text-[#5dcaa5]">
-            +1 minute added
+      <div className="mt-7 flex min-h-14 flex-col items-center gap-2">
+        {flash && (
+          <p className="inline-flex rounded-full bg-[#5dcaa5]/[0.14] px-5 py-2.5 text-[14px] font-semibold text-[#5dcaa5]">
+            {flash}
           </p>
+        )}
+        {!time.freeAdded ? (
+          <button
+            type="button"
+            onClick={onFreeMinute}
+            className={cn(
+              PILL,
+              seconds <= 20
+                ? 'bg-[linear-gradient(120deg,#5dcaa5,#7fe0bf)] text-[#06261c] shadow-[0_14px_36px_rgb(93_202_165_/_0.35)]'
+                : 'border border-white/10 bg-white/[0.07] text-[#f4f2ee]',
+            )}
+          >
+            +1 free minute
+          </button>
+        ) : time.paying.you ? (
+          <button type="button" onClick={onStopPaying} className={cn(QUIET, 'py-3 text-[14px]')}>
+            {free
+              ? `Stop · your paid time starts in ${seconds}s`
+              : `Stop paying · ${naira(time.spentMinor)} so far`}
+          </button>
         ) : (
-          (seconds <= 20 || extend.theirs) && (
-            <button
-              type="button"
-              onClick={onExtend}
-              disabled={extend.mine}
-              className={cn(
-                PILL,
-                extend.mine
-                  ? 'bg-white/[0.08] text-[#f4f2ee]'
-                  : extend.theirs
-                    ? 'animate-pulse bg-[linear-gradient(120deg,#5dcaa5,#7fe0bf)] text-[#06261c] shadow-[0_14px_36px_rgb(93_202_165_/_0.35)]'
-                    : 'border border-white/10 bg-white/[0.07] text-[#f4f2ee]',
-              )}
+          (!free || seconds <= 30 || time.paying.them) && (
+            <PayButton
+              busy={paying}
+              busyLabel="Paying…"
+              onClick={onKeepTalking}
+              className={cn(PRIMARY, !free && !time.paying.them && 'animate-pulse')}
             >
-              {extend.mine
-                ? 'Waiting for them…'
-                : `${extend.theirs ? 'They want 1 more minute · +1' : '+1 minute'}${
-                    minutePrice ? ` · ${naira(minutePrice)}` : ''
-                  }`}
-            </button>
+              Keep talking · {rate}
+            </PayButton>
           )
         )}
       </div>
@@ -2061,7 +2275,7 @@ function After({
               : 'The time to share has passed.'
             : ended.reason === 'no-connection'
               ? 'Your voices couldn’t reach each other. Try someone new.'
-              : 'Sharing opens only after a full two minutes.'}
+              : 'Sharing opens only when a call runs its full time.'}
         </p>
       )}
 

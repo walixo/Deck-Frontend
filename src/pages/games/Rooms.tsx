@@ -91,7 +91,7 @@ function CodeCard({ directory }: { directory?: RoomDirectory }) {
   return (
     <form
       onSubmit={submit}
-      className="mx-auto w-full max-w-[30rem] rounded-[10px] border-2 border-g-night-ink bg-g-night-2 p-6 shadow-[8px_8px_0_var(--color-g-night-ink)] sm:p-8"
+      className="mx-auto w-full max-w-[30rem] rounded-[24px] border border-white/12 bg-g-night-2/80 p-6 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_26px_70px_-28px_rgb(0_0_0/0.75)] backdrop-blur-xl sm:p-8"
     >
       <label htmlFor="room-code" className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/60">
         Have a code?
@@ -104,7 +104,7 @@ function CodeCard({ directory }: { directory?: RoomDirectory }) {
         autoComplete="off"
         spellCheck={false}
         placeholder="K7Q2XM"
-        className="mt-3 w-full rounded-[6px] border-2 border-g-night-ink bg-g-night px-4 py-3 font-mono text-[clamp(2rem,6vw,2.75rem)] font-semibold uppercase tracking-[0.22em] text-white outline-none placeholder:text-white/20 focus-visible:border-g-glow"
+        className="mt-3 w-full rounded-2xl border border-white/12 bg-white/[0.05] px-4 py-3 font-mono text-[clamp(2rem,6vw,2.75rem)] font-semibold uppercase tracking-[0.22em] text-white outline-none transition-colors placeholder:text-white/20 focus-visible:border-g-glow/70"
       />
       <p role="status" className="mt-3 min-h-5 text-[13px] text-g-glow">
         {problem}
@@ -173,7 +173,7 @@ function OpenRooms({ rooms, loading }: { rooms?: RoomCard[]; loading: boolean })
           ))}
         </ul>
       ) : (
-        <div className="rounded-[10px] border-2 border-dashed border-g-line px-6 py-12 text-center">
+        <div className="rounded-[24px] border border-dashed border-g-line px-6 py-12 text-center">
           <p className="text-xl font-medium tracking-[-0.03em]">No open rooms right now</p>
           <p className="mx-auto mt-2 max-w-sm text-[13px] leading-relaxed text-g-mute">
             Start one below and the first seat is yours. A public room shows up here for anyone
@@ -190,11 +190,11 @@ function RoomTile({ room, action }: { room: RoomCard; action: string }) {
   return (
     <Link
       to={roomUrl(room.game.slug, room.code)}
-      className="group flex h-full gap-4 rounded-[10px] border-2 border-g-ink bg-g-paper p-4 shadow-[5px_5px_0_var(--g-ink)] transition-[transform,box-shadow] duration-150 hover:-translate-x-px hover:-translate-y-px hover:shadow-[6px_6px_0_var(--g-ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_var(--g-ink)]"
+      className="group flex h-full gap-4 rounded-[24px] border border-g-ink/15 bg-g-paper p-4 shadow-[inset_0_1px_0_rgb(255_255_255/0.5)] transition-[transform,box-shadow,border-color] duration-300 ease-[var(--ease-snap)] hover:-translate-y-1 hover:border-g-ink/25 hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.5),0_20px_52px_-24px_var(--g-ink)] active:translate-y-0 active:scale-[0.99]"
     >
       <CoverArt
         game={{ ...room.game, kind: 'external', component: null }}
-        className="aspect-[3/4] w-20 shrink-0 rounded-[6px]"
+        className="aspect-[3/4] w-20 shrink-0 rounded-2xl"
       />
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
@@ -283,7 +283,7 @@ function StartRoom({ games, loading }: { games?: RoomDirectory['games']; loading
             return (
               <li
                 key={game.slug}
-                className="flex flex-col overflow-hidden rounded-[10px] border-2 border-g-ink bg-g-paper shadow-[5px_5px_0_var(--g-ink)]"
+                className="flex flex-col overflow-hidden rounded-[24px] border border-g-ink/15 bg-g-paper shadow-[inset_0_1px_0_rgb(255_255_255/0.5),0_18px_48px_-26px_var(--g-ink)]"
               >
                 <CoverArt
                   game={{ ...game, kind: 'external', component: null }}

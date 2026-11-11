@@ -513,78 +513,107 @@
 }
 
 /*
- * Buttons, site-wide: hard-edged slabs.
+ * Buttons, site-wide: Match's glass.
  *
- * A solid block with a 1px ink edge and a 3px offset shadow in the same ink —
- * Deck's original voice, back on every button. Hover lifts the block toward
- * its shadow's origin and lengthens the shadow; pressing pushes it into the
- * shadow, so a click lands like a key going down.
- *   glass-primary   — the ember slab, for the one action on a screen to press
- *   glass-secondary — the paper slab, for everything else
- *   glass-ink       — the ink slab, the strong neutral
+ * Match had been the one corner of Deck still speaking the soft voice from the
+ * launch film — full-round pills, a translucent fill over blur, a coloured
+ * glow instead of a shadow, and motion that floats rather than slams. That is
+ * now the voice everywhere, and these three utilities are where it lives:
  *
- * The names are kept from the glass era so the eighty-odd buttons that ask
- * for them change in one place. The edge is the themed ink, so it is near
- * black on the light canvas and near white on the dark one — including the
- * night heroes, which are `.dark` islands. The corner is set with !important
- * because these classes sit beside older rounded-xl utilities that would
- * otherwise win by order.
+ *   glass-primary   — the accent pill, for the one action on a screen to press
+ *   glass-secondary — the quiet pill, for everything else
+ *   glass-ink       — the ink pill, the strong neutral
+ *
+ * The names are finally literal again. They were kept through the slab era
+ * precisely so that a change of voice would be a change to three rules rather
+ * than to the ninety-odd buttons that ask for them.
+ *
+ * ## Making a dark-only idiom work on both canvases
+ *
+ * Match is dark and nothing else, so it could write `bg-white/[0.07]` and be
+ * done. Copying that here would produce an invisible button on the light
+ * canvas. Every translucency below is instead mixed from `--body-ink`, which
+ * is already near-black on light and near-white on dark — so one declaration
+ * gives a dark veil over paper and a light veil over ink, and the `.dark`
+ * islands (the night heroes) get the right one without being special-cased.
+ *
+ * The glow is mixed from `--pop`, so it stays in the accent's family through
+ * a palette change rather than being a hardcoded pink.
  */
 @layer base {
   :root {
-    --slab-edge: var(--body-ink);
+    /* Hairline on glass. Low enough to read as an edge, not a border. */
+    --glass-edge: color-mix(in srgb, var(--body-ink) 14%, transparent);
+    --glass-edge-strong: color-mix(in srgb, var(--body-ink) 22%, transparent);
+    /* The veil itself, and what it becomes under the pointer. */
+    --glass-fill: color-mix(in srgb, var(--body-ink) 5%, transparent);
+    --glass-fill-hover: color-mix(in srgb, var(--body-ink) 9%, transparent);
+    /* The top-edge catch-light that makes a translucent panel read as glass. */
+    --glass-sheen: inset 0 1px 0 color-mix(in srgb, var(--canvas) 70%, transparent);
+    /* Elevation, and the accent's own glow for the primary action. */
+    --glass-lift: 0 18px 50px -22px color-mix(in srgb, var(--body-ink) 55%, transparent);
+    --glow-pop: 0 14px 40px -12px color-mix(in srgb, var(--pop) 55%, transparent);
+    --glow-pop-strong: 0 18px 50px -12px color-mix(in srgb, var(--pop) 72%, transparent);
   }
 }
 
+/*
+ * `!important` on the corner, as before: these sit beside older `rounded-xl`
+ * utilities in the same class list that would otherwise win on order.
+ */
 @utility glass-primary {
   color: var(--on-pop);
   background-color: var(--pop);
-  border: 1px solid var(--slab-edge);
-  border-radius: 6px !important;
-  box-shadow: 3px 3px 0 var(--slab-edge);
-  transition-property: transform, box-shadow, background-color, color;
+  border: 1px solid transparent;
+  border-radius: 9999px !important;
+  box-shadow: var(--glow-pop);
+  transition-property: transform, box-shadow, background-color, color, filter;
   &:hover {
     background-color: var(--pop-hover);
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--slab-edge);
+    transform: translateY(-2px);
+    box-shadow: var(--glow-pop-strong);
+    filter: brightness(1.06);
   }
   &:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--slab-edge);
+    transform: translateY(0) scale(0.96);
+    filter: brightness(0.96);
   }
 }
 
 @utility glass-secondary {
   color: var(--body-ink);
-  background-color: var(--canvas);
-  border: 1px solid var(--slab-edge);
-  border-radius: 6px !important;
-  box-shadow: 3px 3px 0 var(--slab-edge);
-  transition-property: transform, box-shadow, background-color, color;
+  background-color: var(--glass-fill);
+  border: 1px solid var(--glass-edge);
+  border-radius: 9999px !important;
+  box-shadow: var(--glass-sheen);
+  backdrop-filter: blur(16px);
+  transition-property: transform, box-shadow, background-color, color, border-color;
   &:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--slab-edge);
+    background-color: var(--glass-fill-hover);
+    border-color: var(--glass-edge-strong);
+    transform: translateY(-2px);
+    box-shadow: var(--glass-sheen), var(--glass-lift);
   }
   &:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--slab-edge);
+    transform: translateY(0) scale(0.96);
   }
 }
 
 @utility glass-ink {
   color: var(--canvas);
   background-color: var(--body-ink);
-  border: 1px solid var(--slab-edge);
-  border-radius: 6px !important;
-  box-shadow: 3px 3px 0 color-mix(in srgb, var(--slab-edge) 45%, transparent);
-  transition-property: transform, box-shadow, background-color, color;
+  border: 1px solid transparent;
+  border-radius: 9999px !important;
+  box-shadow: var(--glass-lift);
+  transition-property: transform, box-shadow, background-color, color, filter;
   &:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--slab-edge) 45%, transparent);
+    transform: translateY(-2px);
+    box-shadow: 0 22px 56px -20px color-mix(in srgb, var(--body-ink) 65%, transparent);
+    filter: brightness(1.12);
   }
   &:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 color-mix(in srgb, var(--slab-edge) 45%, transparent);
+    transform: translateY(0) scale(0.96);
+    filter: brightness(0.94);
   }
 }
 

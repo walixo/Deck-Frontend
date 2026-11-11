@@ -8,14 +8,15 @@ import {
 import { cn } from '@/lib/utils';
 
 /*
- * Inputs are inset blocks: 2px edge, no radius softening, and an inner hard
- * shadow so the field reads as a cut-out rather than a raised surface. On focus
- * the edge turns the accent colour and the inset shadow snaps off.
+ * Fields are glass too: the same translucent veil and hairline edge as a
+ * panel, rounded to 16px rather than the panel's 24 so a row of inputs does
+ * not read as a stack of cards. Focus brings the accent to the edge and puts a
+ * soft ring around it, which is the one moment a field is allowed to glow.
  */
 const CONTROL =
-  'w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-[14px] text-body ' +
-  'transition-[box-shadow,border-color] duration-300 ease-[var(--ease-snap)] ' +
-  'placeholder:text-muted/70 focus:border-edge focus:outline-none focus:ring-4 focus:ring-accent/15';
+  'w-full rounded-2xl border border-[var(--glass-edge)] bg-[var(--glass-fill)] px-4 py-2.5 text-[14px] text-body ' +
+  'transition-[box-shadow,border-color,background-color] duration-200 ease-[var(--ease-snap)] ' +
+  'placeholder:text-muted/70 focus:border-accent/70 focus:bg-[var(--glass-fill-hover)] focus:outline-none focus:ring-4 focus:ring-accent/15';
 
 // Invalid fields take the danger edge; the message below says what to fix.
 const INVALID = 'border-danger/60 focus:border-danger focus:ring-danger/15';

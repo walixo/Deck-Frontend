@@ -101,7 +101,7 @@ function HowItWorks() {
           {STEPS.map((step, index) => (
             <Reveal key={step.title} delay={index * 90}>
               <div className="flex h-full flex-col rounded-3xl border border-g-line bg-g-paper p-6">
-                <span className="grid size-7 place-items-center rounded-[6px] border border-g-line font-mono text-[11px] text-g-mute">
+                <span className="grid size-7 place-items-center rounded-full border border-g-line font-mono text-[11px] text-g-mute">
                   {index + 1}
                 </span>
                 <h3 className="mt-6 text-[clamp(1.2rem,2vw,1.45rem)] font-medium leading-tight tracking-[-0.035em]">

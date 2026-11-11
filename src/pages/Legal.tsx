@@ -181,7 +181,7 @@ function LegalPage({ document }: { document: LegalDocument }) {
       {pending.length > 0 && (
         <div
           role="status"
-          className="mt-8 max-w-3xl border-2 border-danger bg-danger/10 p-4 sm:p-5"
+          className="mt-8 max-w-3xl rounded-2xl border border-danger/50 bg-danger/10 p-4 sm:p-5"
         >
           <p className="font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-danger">
             Draft — {pending.length} {pending.length === 1 ? 'detail' : 'details'} still to fill in

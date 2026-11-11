@@ -6,30 +6,37 @@ type Variant = 'primary' | 'secondary' | 'accent' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
 
 /*
- * Every button is a solid block with a 1px ink edge and a hard offset shadow.
- * Hover nudges the block toward its shadow's origin and lengthens the shadow;
- * the active state pushes it into the shadow, so a press feels physical.
+ * Every button is a full-round pill that floats: it rises a couple of pixels
+ * under the pointer and its glow spreads, then settles and shrinks slightly on
+ * the press. Match's motion, now everywhere.
+ *
+ * The duration is shorter than the 300ms the slabs used. A lift wants to feel
+ * responsive rather than considered, and at 300ms the rise reads as lag.
  */
 const BASE =
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-mono font-medium uppercase ' +
-  'transition-[background-color,color,border-color,box-shadow,transform,filter] duration-300 ease-[var(--ease-snap)] ' +
-  'active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40';
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-mono font-medium uppercase ' +
+  'transition-[background-color,color,border-color,box-shadow,transform,filter] duration-200 ease-[var(--ease-snap)] ' +
+  'disabled:pointer-events-none disabled:opacity-40';
 
 /*
- * The slabs are defined once as utilities in index.css (`glass-primary`,
- * `glass-secondary`, `glass-ink` — names kept from the glass era) so every
- * button on the site, this component or hand-written, is the same block.
- * Ember for the one action on a screen to press, paper for the rest, ink for
- * the strong neutral.
+ * The pills are defined once as utilities in index.css (`glass-primary`,
+ * `glass-secondary`, `glass-ink`) so every button on the site — this component
+ * or hand-written — moves and catches light the same way. The accent for the
+ * one action on a screen to press, glass for the rest, ink for the strong
+ * neutral.
  */
 const VARIANTS: Record<Variant, string> = {
   primary: 'glass-primary',
   secondary: 'glass-secondary',
   accent: 'glass-ink',
-  /* The red slab, and it still carries its word. See CONTRACT rule 6. */
+  /* Red carries its own glow rather than the accent's, and still carries its
+     word — see CONTRACT rule 6. */
   danger:
-    'rounded-[6px] border border-body bg-danger text-bone shadow-[3px_3px_0_var(--body-ink)] hover:-translate-x-px hover:-translate-y-px hover:shadow-[4px_4px_0_var(--body-ink)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--body-ink)]',
-  ghost: 'border border-transparent text-muted hover:glass-secondary hover:text-body',
+    'border border-transparent bg-danger text-bone shadow-[0_14px_40px_-12px_color-mix(in_srgb,var(--color-danger)_55%,transparent)] ' +
+    'hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_18px_50px_-12px_color-mix(in_srgb,var(--color-danger)_72%,transparent)] ' +
+    'active:translate-y-0 active:scale-[0.96]',
+  ghost:
+    'border border-transparent text-muted hover:bg-[var(--glass-fill)] hover:text-body active:scale-[0.96]',
 };
 
 const SIZES: Record<Size, string> = {

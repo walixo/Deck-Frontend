@@ -191,7 +191,7 @@ export function GameForm({
                   <span
                     aria-hidden="true"
                     className={cn(
-                      'rounded-[6px] border-2 transition-colors',
+                      'rounded-lg border transition-colors',
                       option.shape,
                       form.orientation === option.value
                         ? 'border-g-ember bg-g-ember/10'

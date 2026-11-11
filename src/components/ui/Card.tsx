@@ -8,13 +8,24 @@ interface CardProps {
   interactive?: boolean;
 }
 
+/*
+ * A glass panel: a translucent veil over blur, a hairline edge, and a
+ * catch-light along the top so it reads as a pane rather than a painted box.
+ *
+ * The fill has to be translucent for any of that to mean anything — a blur
+ * behind an opaque surface costs compositing and shows nothing. `--glass-fill`
+ * is a 5% ink veil, which is close enough to the canvas that body text keeps
+ * the contrast it had on `bg-surface`.
+ */
 export function Card({ children, className, interactive = false }: CardProps) {
   return (
     <div
       className={cn(
-        'rounded-3xl border border-line bg-surface',
+        'rounded-[24px] border border-[var(--glass-edge)] bg-[var(--glass-fill)] shadow-[var(--glass-sheen)] backdrop-blur-xl',
         interactive &&
-          'transition-[transform,box-shadow,border-color] duration-500 ease-[var(--ease-snap)] hover:-translate-y-0.5 hover:border-edge/20 hover:shadow-hard-lg',
+          'transition-[transform,box-shadow,border-color,background-color] duration-300 ease-[var(--ease-snap)] ' +
+            'hover:-translate-y-1 hover:border-[var(--glass-edge-strong)] hover:bg-[var(--glass-fill-hover)] ' +
+            'hover:shadow-[var(--glass-sheen),var(--glass-lift)]',
         className,
       )}
     >

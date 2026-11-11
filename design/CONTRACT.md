@@ -2,13 +2,30 @@
 
 Rules a palette must satisfy **before** anyone edits a component.
 
-> **The look, since the restyle.** Deck now speaks the Deck Games voice
-> everywhere: warm neutrals, hairline borders (`line`), soft shadows, generous
-> rounding, Geist headings set tight in mixed case, small mono capitals for
-> labels and buttons, eased motion — and one accent, ember, kept for the action
-> on a screen that should be pressed. Selected filters and tabs are ink pills;
-> ember is not spent on them. The rules below are about colour and still hold
-> as written.
+> **The look, since the restyle.** Deck now speaks Match's voice everywhere:
+> glass. Full-round pills, a translucent veil over blur rather than an opaque
+> fill, hairline edges (`line`, `--glass-edge`), a catch-light along the top of
+> a panel, and a coloured glow where there used to be a shadow. Motion floats —
+> a button rises two pixels under the pointer and its glow spreads, then
+> settles and shrinks slightly on the press; nothing slams. Geist headings set
+> tight in mixed case, small mono capitals for labels and buttons, and one
+> accent kept for the action on a screen that should be pressed. Selected
+> filters and tabs are ink pills; the accent is not spent on them.
+>
+> Match had been the only corner still speaking this way — the rest of the site
+> had moved to hard-edged slabs with 3px offset shadows. The three
+> `glass-*` utilities in `index.css` are where the voice lives, which is why
+> swapping it back was three rules rather than ninety buttons. Their names were
+> kept literal through the slab era for exactly this reason.
+>
+> **Translucency has to be mixed, not hardcoded.** Match is dark and nothing
+> else, so it could write `bg-white/[0.07]`. Deck has two canvases, and that
+> declaration is invisible on paper. Every veil, edge and sheen is mixed from
+> `--body-ink` or `--canvas`, both of which already flip with the theme, so one
+> declaration gives a dark veil over paper and a light veil over ink — and the
+> `.dark` islands get the right one without being special-cased.
+>
+> The rules below are about colour and still hold as written.
 
 This file exists because Deck went through five full palette sweeps in one
 build — cobalt, lavender+amber, violet, back to lavender+amber, lime+slate —

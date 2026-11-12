@@ -216,6 +216,7 @@ export const gameid: DocProduct = {
         {
           slug: 'introduction',
           title: 'Introduction',
+          icon: 'intro',
           lead: 'Add “Sign in with GameID”: standard OAuth 2.0 with PKCE, and OpenID Connect on top.',
           body: () => (
             <>
@@ -274,6 +275,7 @@ export const gameid: DocProduct = {
         {
           slug: 'quickstart',
           title: 'Quick start',
+          icon: 'start',
           lead: 'Register your app, then send a player through sign-in.',
           body: () => (
             <>
@@ -321,6 +323,7 @@ export const gameid: DocProduct = {
         {
           slug: 'flow',
           title: 'The sign-in flow',
+          icon: 'flow',
           lead: 'Authorization code with PKCE, step by step, and a complete browser example.',
           body: () => (
             <>
@@ -391,6 +394,7 @@ async function finishSignIn() {
         {
           slug: 'tokens',
           title: 'Tokens and claims',
+          icon: 'token',
           lead: 'What each token is for, how long it lasts, and what the ID token says.',
           body: () => (
             <>
@@ -442,6 +446,7 @@ async function finishSignIn() {
         {
           slug: 'button',
           title: 'The button',
+          icon: 'button',
           lead: 'The “Sign in with GameID” button, in plain HTML.',
           body: () => (
             <>
@@ -463,6 +468,7 @@ async function finishSignIn() {
           slug: 'api',
           wide: true,
           title: 'API reference',
+          icon: 'code',
           lead: 'Discovery, authorize, token, userinfo, revoke and signing keys.',
           body: () => (
             <>
@@ -480,6 +486,7 @@ async function finishSignIn() {
         {
           slug: 'errors',
           title: 'Errors',
+          icon: 'errors',
           lead: 'OAuth errors at the endpoints, and errors that come back to your redirect URI.',
           body: () => (
             <>
@@ -519,6 +526,7 @@ async function finishSignIn() {
         {
           slug: 'security',
           title: 'Security notes',
+          icon: 'shield',
           lead: 'The handful of things that keep a GameID integration safe.',
           body: () => (
             <List

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { DocIcon } from '@/components/docs/DocIcon';
 import { LangProvider, type DocPage, type DocProduct } from '@/components/docs/kit';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
@@ -332,12 +333,21 @@ function Sidebar({
                   to={hrefFor(product.id, page.slug)}
                   aria-current={page.slug === current.slug ? 'page' : undefined}
                   className={cn(
-                    'block rounded-lg px-3 py-2 text-[15px] transition-colors',
+                    'flex items-center gap-2.5 rounded-lg px-3 py-2 text-[15px] transition-colors',
                     page.slug === current.slug
                       ? 'bg-g-paper-2 font-medium text-g-ink'
                       : 'text-g-ink/70 hover:bg-g-paper-2/60 hover:text-g-ink',
                   )}
                 >
+                  {page.icon && (
+                    /* Dimmer than the words at rest, full strength on the page
+                       you are reading: the mark helps you find a row again, it
+                       is not competing with the title for the first read. */
+                    <DocIcon
+                      name={page.icon}
+                      className={page.slug === current.slug ? 'text-g-ember' : 'text-g-mute'}
+                    />
+                  )}
                   {page.title}
                 </Link>
               </li>
@@ -536,15 +546,22 @@ function SearchPalette({
                 onMouseEnter={() => setCursor(i)}
                 onClick={() => go(entry)}
                 className={cn(
-                  'w-full rounded-xl px-3 py-2.5 text-left',
+                  'flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left',
                   i === cursor ? 'bg-g-paper-2' : '',
                 )}
               >
-                <p className="text-[12px] text-g-mute">
-                  {products.length > 1 ? `${entry.product.name} · ${entry.group}` : entry.group}
-                </p>
-                <p className="mt-0.5 text-[15px] font-medium">{entry.page.title}</p>
-                <p className="mt-0.5 truncate text-[13px] text-g-mute">{entry.page.lead}</p>
+                {entry.page.icon && (
+                  <DocIcon name={entry.page.icon} className="mt-[3px] text-g-mute" />
+                )}
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[12px] text-g-mute">
+                    {products.length > 1 ? `${entry.product.name} · ${entry.group}` : entry.group}
+                  </span>
+                  <span className="mt-0.5 block text-[15px] font-medium">{entry.page.title}</span>
+                  <span className="mt-0.5 block truncate text-[13px] text-g-mute">
+                    {entry.page.lead}
+                  </span>
+                </span>
               </button>
             </li>
           ))}

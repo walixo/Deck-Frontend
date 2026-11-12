@@ -351,6 +351,7 @@ export const vault: DocProduct = {
         {
           slug: 'overview',
           title: 'Vault',
+          icon: 'intro',
           lead: 'Gift card infrastructure for Africa. Merchants list a card and are selling it the same day; businesses connect once and can buy from every merchant through a single API.',
           body: () => (
             <>
@@ -457,6 +458,7 @@ export const vault: DocProduct = {
         {
           slug: 'quick-start',
           title: 'Quick start',
+          icon: 'start',
           lead: 'From nothing to a card code in about five minutes, on sandbox money.',
           body: () => (
             <>
@@ -529,6 +531,7 @@ export const vault: DocProduct = {
         {
           slug: 'authentication',
           title: 'Authentication',
+          icon: 'key',
           lead: 'One base URL, two kinds of key. The prefix decides what a key can do, so a key is never ambiguous about which side of Vault it belongs to.',
           body: () => (
             <>
@@ -599,6 +602,7 @@ export const vault: DocProduct = {
         {
           slug: 'amounts',
           title: 'Amounts and currency',
+          icon: 'money',
           lead: 'Every amount in this API is an integer number of minor units. There are no decimals anywhere, in either direction.',
           body: () => (
             <>
@@ -657,6 +661,7 @@ export const vault: DocProduct = {
         {
           slug: 'catalogue',
           title: 'The catalogue',
+          icon: 'catalogue',
           lead: 'Every live merchant, every card they have on sale, and the price you actually pay.',
           body: () => (
             <>
@@ -718,6 +723,7 @@ chowdeck-gift-card            ← fine until somebody else uses the name`}</Pre>
         {
           slug: 'orders',
           title: 'Placing an order',
+          icon: 'order',
           lead: 'Buy cards, get the codes back in the same response, and make sure a retry can never buy them twice.',
           body: () => (
             <>
@@ -792,6 +798,7 @@ chowdeck-gift-card            ← fine until somebody else uses the name`}</Pre>
         {
           slug: 'webhooks',
           title: 'Webhooks',
+          icon: 'webhook',
           lead: 'Vault tells you when an order is fulfilled, signed the way Stripe signs, over a timestamp as well as a body.',
           body: () => (
             <>
@@ -867,6 +874,7 @@ function verify(rawBody, header, secret) {
         {
           slug: 'issuing',
           title: 'Issuing cards',
+          icon: 'card',
           lead: 'What a merchant sets up, and the one decision that actually matters: who generates the code.',
           body: () => (
             <>
@@ -937,6 +945,7 @@ function verify(rawBody, header, secret) {
         {
           slug: 'redeeming',
           title: 'Checking and redeeming',
+          icon: 'redeem',
           lead: 'Look a card up, then spend part or all of it. Cards carry a balance, not a used flag.',
           body: () => (
             <>
@@ -1001,6 +1010,7 @@ function verify(rawBody, header, secret) {
         {
           slug: 'minting',
           title: 'Minting your own codes',
+          icon: 'mint',
           lead: 'Have Vault call your system instead of generating codes itself, so a card is native to your wallet from the moment it exists.',
           body: () => (
             <>
@@ -1093,6 +1103,7 @@ user-agent: Deck-Vault/1.0
         {
           slug: 'api',
           title: 'API reference',
+          icon: 'code',
           wide: true,
           lead: 'Eight endpoints. Every amount is an integer number of minor units; every response is wrapped in { success, data }.',
           body: () => (
@@ -1111,6 +1122,7 @@ user-agent: Deck-Vault/1.0
         {
           slug: 'errors',
           title: 'Errors',
+          icon: 'errors',
           lead: 'One shape for every failure, and a meaningful status beside it.',
           body: () => (
             <>

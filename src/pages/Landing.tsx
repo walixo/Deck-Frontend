@@ -7,8 +7,8 @@ import { ProductsHome } from '@/pages/ProductsHome';
 const Home = lazyNamed(() => import('@/pages/Home'), 'Home');
 
 /**
- * The home page staff picked under Admin → Site: Deck's products (Match and
- * Deck Games), or the launch board's own. The launch one shows only while
+ * The home page staff picked under Admin → Site: Deck's products (Match, Deck
+ * Games and Vault), or the launch board's own. The launch one shows only while
  * launches are on.
  */
 export function Landing() {
@@ -17,7 +17,7 @@ export function Landing() {
   useEffect(() => {
     document.title = launchLanding
       ? 'Deck — launch, share and discover new tech'
-      : 'Deck — Match and Deck Games';
+      : 'Deck — Match, Deck Games and Vault';
   }, [launchLanding]);
   return launchLanding ? <Home /> : <ProductsHome />;
 }

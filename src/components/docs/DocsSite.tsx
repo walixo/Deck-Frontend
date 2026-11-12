@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { DocIcon } from '@/components/docs/DocIcon';
+import { DeckLink } from '@/components/ui/DeckLink';
+import { isExternal } from '@/lib/siblings';
 import { LangProvider, type DocPage, type DocProduct } from '@/components/docs/kit';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
@@ -39,6 +41,19 @@ export interface DocsSiteProps {
   searchPlaceholder: string;
   /** Closes every page title, e.g. `Vault · Deck`. */
   titleSuffix: string;
+  /**
+   * The product these pages document, and where it lives.
+   *
+   * Documentation is read *about* something, and the thing it is about is
+   * usually on another host now — Deck Games moved to its own, Vault was
+   * always on its own. Without this a reader who arrives on a deep link from
+   * a search engine has the whole docs site to navigate and no way at all back
+   * to the product, which is the one place they were heading.
+   *
+   * `href` may be a path or a URL; it is a path whenever the product happens
+   * to be on the host already serving the docs.
+   */
+  parent?: (product: DocProduct) => { label: string; href: string };
 }
 
 const flatten = (product: DocProduct) =>
@@ -54,6 +69,7 @@ export function DocsSite({
   actions,
   searchPlaceholder,
   titleSuffix,
+  parent,
 }: DocsSiteProps) {
   const product = products.find((p) => p.id === productId) ?? (products.length === 1 ? products[0] : undefined);
   const pages = useMemo(() => (product ? flatten(product) : []), [product]);
@@ -132,6 +148,7 @@ export function DocsSite({
               product={product}
               current={current.page}
               hrefFor={hrefFor}
+              parent={parent?.(product)}
               onSearch={() => setSearchOpen(true)}
             />
           </aside>
@@ -213,10 +230,21 @@ function DocsHeader({
   const { theme, toggleTheme } = useTheme();
   return (
     <header className="sticky top-0 z-50 border-b border-g-line bg-g-paper">
-      <div className="mx-auto flex h-16 max-w-[1500px] items-center gap-6 px-5 sm:px-8">
+      <div className="mx-auto flex h-16 max-w-[1500px] items-center gap-4 px-5 sm:px-8">
         <Link to={home} className="flex shrink-0 items-center gap-2 leading-none">
           {brand}
         </Link>
+
+        {/* Back to Deck. On Deck's own docs this is the home page; from the
+            Games or Vault subdomain it leaves the origin, which `DeckLink`
+            handles. Hidden on a phone, where the sidebar's own back link is
+            one tap away in the menu. */}
+        <DeckLink
+          to="/"
+          className="hidden shrink-0 text-[14px] font-medium text-g-mute transition-colors hover:text-g-ink md:inline"
+        >
+          ← Deck
+        </DeckLink>
 
         {products.length > 1 && (
           <nav aria-label="Products" className="hidden items-center gap-1 md:flex">
@@ -286,15 +314,41 @@ function SearchIcon() {
 
 /* -------------------------------------------------------------- sidebar --- */
 
+/** `← Deck Games` — a path stays in the router, a URL leaves the origin. */
+function BackLink({ label, href }: { label: string; href: string }) {
+  const className =
+    'mb-4 flex items-center gap-1.5 text-[13px] font-medium text-g-mute transition-colors hover:text-g-ink';
+  const inner = (
+    <>
+      <span aria-hidden="true">←</span> {label}
+    </>
+  );
+  return isExternal(href) ? (
+    <a href={href} className={className}>
+      {inner}
+    </a>
+  ) : (
+    <Link to={href} className={className}>
+      {inner}
+    </Link>
+  );
+}
+
 function Sidebar({
   products,
   product,
   current,
   hrefFor,
+  parent,
   onSearch,
-}: ChromeProps & { current: DocPage; onSearch: () => void }) {
+}: ChromeProps & {
+  current: DocPage;
+  parent?: { label: string; href: string };
+  onSearch: () => void;
+}) {
   return (
     <div className="px-4 pb-10 pt-6">
+      {parent && <BackLink {...parent} />}
       <button
         type="button"
         onClick={onSearch}

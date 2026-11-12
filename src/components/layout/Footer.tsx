@@ -3,7 +3,7 @@ import { CategoryLabel } from '@/components/illustrations/CategoryIcon';
 import { CurrencyPicker } from '@/components/ui/Money';
 import { useConsent } from '@/hooks/useConsent';
 import { useLaunches } from '@/hooks/useSite';
-import { matchUrl } from '@/lib/matchUrl';
+import { gamesUrl, matchUrl, vaultUrl } from '@/lib/siblings';
 import type { Category } from '@/types';
 import { Logo } from './Logo';
 import { Wordmark } from './Wordmark';
@@ -103,14 +103,19 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <Link to="/games" className={LINK}>
+                  <a href={gamesUrl()} className={LINK}>
                     Deck Games
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link to="/games/rooms" className={LINK}>
+                  <a href={vaultUrl()} className={LINK}>
+                    Vault
+                  </a>
+                </li>
+                <li>
+                  <a href={`${gamesUrl()}/games/rooms`} className={LINK}>
                     Rooms
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <Link to="/gameid" className={LINK}>

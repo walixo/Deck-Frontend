@@ -37,6 +37,8 @@ export function VaultDocs() {
       }
       searchPlaceholder="Search the Vault docs"
       titleSuffix="Vault docs · Deck"
+      /* Same origin: Vault's own front page is one router hop away. */
+      parent={() => ({ label: 'Vault', href: '/' })}
     />
   );
 }

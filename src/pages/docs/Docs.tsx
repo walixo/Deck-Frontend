@@ -3,6 +3,7 @@ import { DocsSite } from '@/components/docs/DocsSite';
 import type { DocProduct } from '@/components/docs/kit';
 import { Wordmark } from '@/components/layout/Wordmark';
 import { useAuth } from '@/hooks/useAuth';
+import { gamesHref, isExternal } from '@/lib/siblings';
 import { circuit } from './content/circuit';
 import { developers } from './content/developers';
 import { gameid } from './content/gameid';
@@ -17,11 +18,26 @@ import { gameid } from './content/gameid';
 
 const PRODUCTS: DocProduct[] = [developers, circuit, gameid];
 
-/* Where each product's own dashboard lives, for the header's main action. */
-const DASHBOARD: Partial<Record<DocProduct['id'], { label: string; to: string }>> = {
-  developers: { label: 'Your games', to: '/games/developers' },
-  circuit: { label: 'Your agents', to: '/gameid#agents' },
-  gameid: { label: 'Your apps', to: '/gameid/developers' },
+/*
+ * The product each set of pages documents, for the way back out of the docs.
+ *
+ * All three live on the Games subdomain now, so these are URLs from Deck and
+ * plain paths from the subdomain — `gamesHref` decides which, so a reader who
+ * came from Deck Games is handed back to it without a page load.
+ */
+const PARENT: Record<DocProduct['id'], { label: string; href: string }> = {
+  developers: { label: 'Deck Games developers', href: gamesHref('/games/developers') },
+  circuit: { label: 'Deck Circuit', href: gamesHref('/games/agents') },
+  gameid: { label: 'GameID', href: gamesHref('/gameid') },
+  vault: { label: 'Vault', href: '/' },
+};
+
+/* Where each product's own dashboard lives, for the header's main action. On
+   the Games subdomain too, for the same reason `PARENT` is. */
+const DASHBOARD: Partial<Record<DocProduct['id'], { label: string; href: string }>> = {
+  developers: { label: 'Your games', href: gamesHref('/games/developers') },
+  circuit: { label: 'Your agents', href: gamesHref('/gameid#agents') },
+  gameid: { label: 'Your apps', href: gamesHref('/gameid/developers') },
 };
 
 export function Docs() {
@@ -44,13 +60,16 @@ export function Docs() {
       actions={<HeaderActions dashboard={DASHBOARD[product.id] ?? DASHBOARD.developers!} />}
       searchPlaceholder="Search Developers, Circuit and GameID"
       titleSuffix={`${product.name} docs · Deck`}
+      parent={(current) => PARENT[current.id]}
     />
   );
 }
 
-function HeaderActions({ dashboard }: { dashboard: { label: string; to: string } }) {
+function HeaderActions({ dashboard }: { dashboard: { label: string; href: string } }) {
   const { user } = useAuth();
   const { pathname } = useLocation();
+  const dashboardClass =
+    'hidden rounded-lg bg-g-ink px-3 py-2 text-[14px] font-medium text-g-paper sm:inline-flex';
   return (
     <>
       {!user && (
@@ -62,12 +81,15 @@ function HeaderActions({ dashboard }: { dashboard: { label: string; to: string }
           Sign in
         </Link>
       )}
-      <Link
-        to={dashboard.to}
-        className="hidden rounded-lg bg-g-ink px-3 py-2 text-[14px] font-medium text-g-paper sm:inline-flex"
-      >
-        {dashboard.label}
-      </Link>
+      {isExternal(dashboard.href) ? (
+        <a href={dashboard.href} className={dashboardClass}>
+          {dashboard.label}
+        </a>
+      ) : (
+        <Link to={dashboard.href} className={dashboardClass}>
+          {dashboard.label}
+        </Link>
+      )}
     </>
   );
 }

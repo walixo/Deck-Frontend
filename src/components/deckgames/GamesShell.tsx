@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { DeckLink } from '@/components/ui/DeckLink';
 import { Wordmark } from '@/components/layout/Wordmark';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
@@ -68,12 +69,12 @@ export function GamesShell() {
             <TopLink to="/games/developers">Developers</TopLink>
             <TopLink to="/docs">Docs</TopLink>
             <TopLink to="/gameid">GameID</TopLink>
-            <Link
+            <DeckLink
               to="/"
               className="font-mono text-[12px] font-semibold uppercase tracking-[0.12em] opacity-75 transition-opacity hover:opacity-100"
             >
               ← Deck
-            </Link>
+            </DeckLink>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -123,7 +124,6 @@ export function GamesShell() {
             ['/games/developers', 'Developers'],
             ['/docs', 'Docs'],
             ['/gameid', 'GameID'],
-            ['/', 'Back to Deck'],
           ].map(([to, label]) => (
             <Link
               key={to}
@@ -133,6 +133,12 @@ export function GamesShell() {
               {label}
             </Link>
           ))}
+          <DeckLink
+            to="/"
+            className="block border-b border-g-line py-4 text-2xl font-medium tracking-[-0.03em]"
+          >
+            Back to Deck
+          </DeckLink>
         </div>
       </header>
 
@@ -272,9 +278,9 @@ function GamesFooter() {
           </p>
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-g-mute">
             Games made across Africa and beyond, played in the browser. A world inside{' '}
-            <Link to="/" className="text-g-ink underline underline-offset-4">
+            <DeckLink to="/" className="text-g-ink underline underline-offset-4">
               Deck
-            </Link>
+            </DeckLink>
             .
           </p>
         </div>
@@ -297,15 +303,15 @@ function GamesFooter() {
           <Link to="/docs" className="hover:text-g-ink">
             Docs
           </Link>
-          <Link to="/terms" className="hover:text-g-ink">
+          <DeckLink to="/terms" className="hover:text-g-ink">
             Terms
-          </Link>
-          <Link to="/privacy" className="hover:text-g-ink">
+          </DeckLink>
+          <DeckLink to="/privacy" className="hover:text-g-ink">
             Privacy
-          </Link>
-          <Link to="/" className="hover:text-g-ink">
+          </DeckLink>
+          <DeckLink to="/" className="hover:text-g-ink">
             Deck →
-          </Link>
+          </DeckLink>
         </nav>
       </div>
     </footer>

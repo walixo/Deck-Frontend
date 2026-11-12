@@ -22,6 +22,12 @@ export interface DocPage {
   /** One line under the title, and what search matches against. */
   lead: string;
   body: () => ReactNode;
+  /**
+   * Drops "On this page" and widens the article. For reference pages, whose
+   * `Endpoint` rows are two columns of their own and have nowhere to go in a
+   * 48rem measure.
+   */
+  wide?: boolean;
 }
 
 export interface DocGroup {
@@ -30,7 +36,7 @@ export interface DocGroup {
 }
 
 export interface DocProduct {
-  id: 'developers' | 'circuit' | 'gameid';
+  id: 'developers' | 'circuit' | 'gameid' | 'vault';
   name: string;
   /** Where its API lives, for the endpoint panels. */
   apiBase: string;

@@ -9,6 +9,7 @@ import { BrowserRouter } from 'react-router-dom';
    API instead of a framework router. */
 import { Analytics } from '@vercel/analytics/react';
 import { App } from './App';
+import { GamesApp } from './games/GamesApp';
 import { VaultApp } from './vault/VaultApp';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -17,41 +18,21 @@ import { CurrencyProvider } from '@/context/CurrencyContext';
 import { ThemeProvider } from './context/ThemeContext';
 import './index.css';
 import { RequestError } from './lib/api';
+import { APP } from './lib/host';
 import { restoreFontset } from './lib/fontset';
 import { installClickSound } from './lib/sound';
 
-/* match.onedeck.africa is Match — two voices, two minutes — served by this same
-   deployment. It loads its own small app and none of Deck's providers. */
-const isMatch = window.location.hostname.startsWith('match.');
-
 /*
- * vault.onedeck.africa is Vault — gift card infrastructure — also served by
- * this deployment, but unlike Match it runs *inside* Deck's provider stack.
+ * Which site this is — see `lib/host`, which is where the hostnames live.
  *
  * Match is its own world with its own visual language, so it takes none of
- * them. Vault is a business product wearing Deck's design system and signing
- * people in with their Deck account, so it wants the query client, the theme
- * and the session — it only swaps the route tree underneath them. Duplicating
- * those providers for it would mean a second session that logs out separately.
- *
- * `?app=vault` is the development door: `vault.localhost` works in most
- * browsers but not all, and a demo should not rest on which one is open. The
- * choice is remembered for the tab so a router navigation does not drop it.
+ * Deck's providers and mounts itself. Vault and Deck Games are Deck's own
+ * products on their own domains: they wear the design system, sign people in
+ * with a Deck account and want the query client, the theme and the session.
+ * They swap the route tree underneath those and nothing else — duplicating the
+ * providers for either would mean a second session that logs out separately.
  */
-function wantsVault(): boolean {
-  if (window.location.hostname.startsWith('vault.')) return true;
-  try {
-    if (new URLSearchParams(window.location.search).get('app') === 'vault') {
-      sessionStorage.setItem('deck-app', 'vault');
-      return true;
-    }
-    return sessionStorage.getItem('deck-app') === 'vault';
-  } catch {
-    return false;
-  }
-}
-
-const isVault = !isMatch && wantsVault();
+const isMatch = APP === 'match';
 
 if (!isMatch) {
   /* Before the first render, not in an effect: restoring the font preview one
@@ -96,7 +77,7 @@ if (isMatch) {
               <BrowserRouter>
                 <AuthProvider>
                   <CartProvider>
-                    {isVault ? <VaultApp /> : <App />}
+                    {APP === 'vault' ? <VaultApp /> : APP === 'games' ? <GamesApp /> : <App />}
                     <Analytics />
                   </CartProvider>
                 </AuthProvider>

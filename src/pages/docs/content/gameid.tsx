@@ -461,6 +461,7 @@ async function finishSignIn() {
       pages: [
         {
           slug: 'api',
+          wide: true,
           title: 'API reference',
           lead: 'Discovery, authorize, token, userinfo, revoke and signing keys.',
           body: () => (

@@ -792,6 +792,7 @@ function move(col) {
       pages: [
         {
           slug: 'api',
+          wide: true,
           title: 'Server API',
           lead: 'Verify players, read purchases and run multiplayer rooms from your own server.',
           body: () => (

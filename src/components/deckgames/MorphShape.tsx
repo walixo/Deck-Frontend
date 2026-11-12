@@ -5,7 +5,8 @@ import { cn } from '@/lib/utils';
 /**
  * One soft, glowing solid that turns slowly and becomes the next, every
  * twelve seconds: a rounded cube, a pyramid, a naira sign and a dollar sign
- * (the `money` set), or a heart, two linked rings and a speech bubble (`love`).
+ * (the `money` set), a heart, two linked rings and a speech bubble (`love`),
+ * or a gift card, a wrapped box and a Christmas tree (`gift`).
  *
  * A single fragment shader on a plain WebGL canvas — no library. Each pixel
  * marches a ray into the set's signed-distance shapes and blends between them, so
@@ -154,11 +155,17 @@ void main() {
 /**
  * The sequences a MorphShape can run. `money` (cube, pyramid, naira, dollar)
  * stands beside the developers' hero; `love` (heart, linked rings, a speech
- * bubble) belongs to Match.
+ * bubble) belongs to Match; `gift` (a gift card, a wrapped box, a Christmas
+ * tree) belongs to Vault.
  */
-export type MorphSet = 'money' | 'love';
+export type MorphSet = 'money' | 'love' | 'gift';
 
-const SETS: Record<MorphSet, { shape: string; palette: string }> = {
+/**
+ * Each set brings its own shapes, its own five-colour light, and the gradient
+ * that stands in for it where WebGL is unavailable — so the fallback is the
+ * set's own colours rather than one set's colours under every shape.
+ */
+const SETS: Record<MorphSet, { shape: string; palette: string; fallback: string }> = {
   money: {
     shape: `/* Cube, pyramid, naira, dollar, cube: a hold on each and a second to become
    the next. The solids are measured in the spinning frame, the signs in the
@@ -177,6 +184,7 @@ float shape(vec3 spun, vec3 swayed) {
   vec3 c2 = vec3(0.94, 0.32, 0.56);
   vec3 c3 = vec3(0.99, 0.45, 0.28);
   vec3 c4 = vec3(0.99, 0.70, 0.36);`,
+    fallback: '#5769f7,#a366f0,#f0528f,#fc7347,#fcb35c,#5769f7',
   },
   love: {
     shape: `/* A puffed heart, point down: Inigo Quilez's 2D heart, given depth and rounded. */
@@ -247,6 +255,116 @@ float shape(vec3 spun, vec3 swayed) {
   vec3 c2 = vec3(0.99, 0.66, 0.52);
   vec3 c3 = vec3(0.88, 0.40, 0.78);
   vec3 c4 = vec3(0.62, 0.42, 0.96);`,
+    fallback: '#fa5c8c,#fc7a6b,#fca885,#e166c7,#9e6bf5,#fa5c8c',
+  },
+  gift: {
+    shape: `/* A gift card, a wrapped box and a Christmas tree, all built from rounded
+   solids so that one can become the next without a crease anywhere. */
+float smin(float a, float b, float k) {
+  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+float sdRoundBox(vec3 p, vec3 b, float r) {
+  vec3 q = abs(p) - b + r;
+  return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0) - r;
+}
+/* A ring lying in the xz plane, tube radius t.y. */
+float sdTorus(vec3 p, vec2 t) {
+  return length(vec2(length(p.xz) - t.x, p.y)) - t.y;
+}
+mat3 rotZ(float a) { float c = cos(a), s = sin(a); return mat3(c, s, 0., -s, c, 0., 0., 0., 1.); }
+
+/* The card: a slab, a chip proud of its face, and a ribbon round the whole
+   thing — the chip says card, the ribbon says gift.
+   The ribbon sits well off centre and stands proud of both faces: down the
+   middle and flush it reads as the fold of a wallet instead. */
+float sdGiftCard(vec3 p) {
+  float card = sdRoundBox(p, vec3(0.8, 0.5, 0.08), 0.1);
+  float chip = sdRoundBox(p - vec3(-0.46, 0.19, 0.08), vec3(0.13, 0.1, 0.035), 0.035);
+  float band = sdRoundBox(p - vec3(0.34, 0.0, 0.0), vec3(0.085, 0.57, 0.145), 0.04);
+  return smin(min(card, chip), band, 0.03);
+}
+
+/* The bow: two upright loops either side of a knot. The loops are tori turned
+   to stand on edge, so they read as a bow from the front and from above. */
+float sdBow(vec3 p) {
+  vec3 q = rotX(1.5708) * p;
+  float loops = min(
+    sdTorus(q - vec3(-0.19, 0.0, 0.0), vec2(0.16, 0.045)),
+    sdTorus(q - vec3(0.19, 0.0, 0.0), vec2(0.16, 0.045))
+  );
+  return smin(length(p) - 0.1, loops, 0.06);
+}
+
+/* The box: a cube under a ribbon that crosses every face, tied on top. The
+   ribbon reaches a little past the cube on each axis, which is the only reason
+   it is visible at all — inside, the union swallows it. */
+float sdGiftBox(vec3 p) {
+  float box = sdRoundBox(p, vec3(0.52, 0.46, 0.52), 0.1);
+  float ribbon = min(
+    sdRoundBox(p, vec3(0.1, 0.5, 0.56), 0.04),
+    sdRoundBox(p, vec3(0.56, 0.5, 0.1), 0.04)
+  );
+  return smin(min(box, ribbon), sdBow(p - vec3(0.0, 0.62, 0.0)), 0.07);
+}
+
+/* A cone standing on its base: exact along the side, cut flat underneath, and
+   inflated slightly so the rim is soft rather than sharp. */
+float sdCone(vec3 p, float h, float r) {
+  vec2 q = vec2(length(p.xz), p.y - h);
+  return max(dot(q, normalize(vec2(h, r))), -p.y) - 0.04;
+}
+
+/* The star: four long arms and four short ones between them, over a core. A
+   plain cross on top of a tree is a cross, which is why the second pair is
+   there at all. */
+float sdStar(vec3 p) {
+  float d = smin(
+    sdRoundBox(p, vec3(0.055, 0.2, 0.05), 0.035),
+    sdRoundBox(p, vec3(0.2, 0.055, 0.05), 0.035),
+    0.07
+  );
+  vec3 q = rotZ(0.7854) * p;
+  d = smin(d, smin(
+    sdRoundBox(q, vec3(0.045, 0.13, 0.045), 0.03),
+    sdRoundBox(q, vec3(0.13, 0.045, 0.045), 0.03),
+    0.06
+  ), 0.06);
+  return smin(d, length(p) - 0.075, 0.05);
+}
+
+/* The tree: three tiers grown into one another rather than stacked, a trunk, a
+   couple of baubles and the star. */
+float sdTree(vec3 p) {
+  float d = sdCone(p - vec3(0.0, -0.74, 0.0), 0.62, 0.56);
+  d = smin(d, sdCone(p - vec3(0.0, -0.34, 0.0), 0.6, 0.43), 0.1);
+  d = smin(d, sdCone(p - vec3(0.0, 0.02, 0.0), 0.58, 0.3), 0.1);
+  d = smin(d, sdRoundBox(p - vec3(0.0, -0.86, 0.0), vec3(0.1, 0.14, 0.1), 0.05), 0.05);
+  d = min(d, length(p - vec3(0.3, -0.52, 0.18)) - 0.085);
+  d = min(d, length(p - vec3(-0.24, -0.14, 0.16)) - 0.075);
+  return min(d, sdStar(p - vec3(0.0, 0.78, 0.0)));
+}
+
+/* Card, box, tree, card: a hold on each and a second to become the next.
+   The box is the only solid that turns right round. The card would vanish edge
+   on and the tree would end up on its side, so both of those only sway.
+   Everything is measured at 0.88, which keeps the tree inside the frame. */
+float shape(vec3 spun, vec3 swayed) {
+  float c = mod(uTime, 12.0);
+  float card = sdGiftCard(swayed / 0.88);
+  float d = mix(card, sdGiftBox(spun / 0.88), smoothstep(3.0, 4.0, c));
+  d = mix(d, sdTree(swayed / 0.88), smoothstep(7.0, 8.0, c));
+  return mix(d, card, smoothstep(11.0, 12.0, c)) * 0.88;
+}
+`,
+    /* Indigo, violet, rose, gold, pine — Deck's own sweep with the two
+       colours Christmas is actually kept in folded into the end of it. */
+    palette: `  vec3 c0 = vec3(0.34, 0.41, 0.97);
+  vec3 c1 = vec3(0.64, 0.40, 0.94);
+  vec3 c2 = vec3(0.94, 0.32, 0.56);
+  vec3 c3 = vec3(1.00, 0.77, 0.36);
+  vec3 c4 = vec3(0.18, 0.75, 0.50);`,
+    fallback: '#5769f7,#a366f0,#f0528f,#ffc45c,#2fbf7f,#5769f7',
   },
 };
 
@@ -352,7 +470,10 @@ export function MorphShape({ className, set = 'money' }: { className?: string; s
   return (
     <div aria-hidden="true" className={cn('relative', className)}>
       {failed ? (
-        <div className="absolute inset-[18%] rounded-[30%] bg-[conic-gradient(from_200deg,#5769f7,#a366f0,#f0528f,#fc7347,#fcb35c,#5769f7)] opacity-90 blur-md" />
+        <div
+          className="absolute inset-[18%] rounded-[30%] opacity-90 blur-md"
+          style={{ backgroundImage: `conic-gradient(from 200deg, ${SETS[set].fallback})` }}
+        />
       ) : (
         <canvas ref={canvasRef} className="size-full" />
       )}

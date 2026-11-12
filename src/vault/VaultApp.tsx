@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { lazyNamed } from '@/lib/lazy';
 import { VaultLayout } from './VaultLayout';
@@ -20,6 +21,26 @@ const PartnerDashboard = lazyNamed(() => import('./pages/PartnerDashboard'), 'Pa
 export function VaultApp() {
   return (
     <Routes>
+      {/* The docs carry their own header, sidebar and footer — the same frame
+          Deck's own docs are read in — so they sit outside the Vault shell
+          rather than inside it under a second header. */}
+      <Route
+        path="/docs"
+        element={
+          <Suspense fallback={null}>
+            <VaultDocs />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/docs/:page"
+        element={
+          <Suspense fallback={null}>
+            <VaultDocs />
+          </Suspense>
+        }
+      />
+
       <Route element={<VaultLayout />}>
         <Route path="/" element={<VaultLanding />} />
         <Route path="/shop" element={<VaultShop />} />
@@ -27,7 +48,6 @@ export function VaultApp() {
         <Route path="/cards" element={<VaultCards />} />
         <Route path="/issue" element={<IssuerDashboard />} />
         <Route path="/distribute" element={<PartnerDashboard />} />
-        <Route path="/docs" element={<VaultDocs />} />
         {/* Vault has no 404 of its own: anything unknown is the overview. */}
         <Route path="*" element={<VaultLanding />} />
       </Route>

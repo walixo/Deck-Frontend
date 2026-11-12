@@ -7,9 +7,10 @@ import {
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
-import { Backdrop } from '@/components/ui/Ambient';
+import { MorphShape } from '@/components/deckgames/MorphShape';
 import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { FrontHero } from '@/components/ui/FrontHero';
 import { useVaultStats } from '../useVault';
 
 /**
@@ -19,51 +20,35 @@ import { useVaultStats } from '../useVault';
  * arrives asking "can I buy other people's through one API". The page answers
  * both without making either read the other's half first — hence two columns
  * rather than one argument.
+ *
+ * The hero is Deck's front-door standard, the same one Games and Circuit open
+ * on, so Vault reads as a room in the same building rather than a second
+ * website. Its picture is the morph in its `gift` set: a gift card that turns
+ * and becomes a wrapped box, and then a tree.
  */
 export function VaultLanding() {
   const { data: stats } = useVaultStats();
 
   return (
     <>
-      <section className="relative isolate overflow-hidden border-b border-line">
-        <Backdrop pattern="grid" />
-
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.1em] text-muted">
-              <BoltIcon aria-hidden="true" className="size-3.5" />
-              Gift card infrastructure
-            </p>
-
-            <h1 className="display-tight mt-6 text-4xl text-balance sm:text-6xl">
-              Your gift cards, everywhere your customers already are.
-            </h1>
-
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted text-pretty">
-              Vault is two things at once. Merchants list a gift card and are selling it the same
-              day. Businesses connect once and can buy from every merchant on the platform through
-              a single API.
-            </p>
-
-            <div className="mt-9 flex flex-wrap gap-3">
-              <ButtonLink to="/issue" size="lg">
-                Issue your cards
-              </ButtonLink>
-              <ButtonLink to="/distribute" variant="secondary" size="lg">
-                Start distributing
-              </ButtonLink>
-            </div>
-
-            {stats && (
-              <dl className="mt-14 flex flex-wrap gap-x-10 gap-y-4">
-                <Stat label="Merchants issuing" value={stats.issuers} />
-                <Stat label="Cards on sale" value={stats.products} />
-                <Stat label="Orders fulfilled" value={stats.orders} />
-              </dl>
-            )}
-          </div>
-        </div>
-      </section>
+      <FrontHero
+        tall={false}
+        pill={{ label: 'Gift card infrastructure · Read the docs →', to: '/docs' }}
+        title="Your gift cards,"
+        fade="everywhere they already are."
+        body="Vault is two things at once. Merchants list a gift card and are selling it the same day. Businesses connect once and can buy from every merchant on the platform through a single API."
+        primary={{ label: 'Issue your cards', to: '/issue' }}
+        secondary={{ label: 'Start distributing →', to: '/distribute' }}
+        visual={<MorphShape set="gift" className="mx-auto aspect-square w-full max-w-[34rem]" />}
+      >
+        {stats && (
+          <dl className="mt-12 flex flex-wrap gap-x-10 gap-y-4">
+            <Stat label="Merchants issuing" value={stats.issuers} />
+            <Stat label="Cards on sale" value={stats.products} />
+            <Stat label="Orders fulfilled" value={stats.orders} />
+          </dl>
+        )}
+      </FrontHero>
 
       {/* The two sides, side by side. */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
@@ -160,11 +145,17 @@ export function VaultLanding() {
   );
 }
 
+/* Written against the hero's own night values rather than themed tokens, for
+   the reason FrontHero gives: light mode must not turn a hero to day. */
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div>
-      <dd className="font-display text-3xl tabular-nums">{value}</dd>
-      <dt className="mt-1 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">{label}</dt>
+      <dd className="text-[32px] font-semibold leading-none tracking-[-0.04em] tabular-nums">
+        {value}
+      </dd>
+      <dt className="mt-2 font-mono text-[11px] uppercase tracking-[0.08em] text-white/50">
+        {label}
+      </dt>
     </div>
   );
 }

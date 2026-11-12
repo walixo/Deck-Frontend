@@ -1179,6 +1179,7 @@ console.log(call('generate', { seed: 42 }));`}</Pre>
       pages: [
         {
           slug: 'api',
+          wide: true,
           title: 'API reference',
           lead: 'Every Deck Circuit endpoint, with requests in cURL, Node and Python, and responses.',
           body: () => (

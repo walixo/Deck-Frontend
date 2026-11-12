@@ -310,6 +310,7 @@ export const developers: DocProduct = {
         {
           slug: 'introduction',
           title: 'Introduction',
+          icon: 'intro',
           lead: 'Host your web game anywhere, add one script, and Deck brings the players, sign-in, store and payouts.',
           body: () => (
             <>
@@ -383,6 +384,7 @@ export const developers: DocProduct = {
         {
           slug: 'quickstart',
           title: 'Quick start',
+          icon: 'start',
           lead: 'From a web game to a game on Deck: register, add the SDK, test, and submit.',
           body: () => (
             <>
@@ -436,6 +438,7 @@ export const developers: DocProduct = {
         {
           slug: 'orientation',
           title: 'Portrait, landscape and full screen',
+          icon: 'screen',
           lead: 'How the player frames your game on every screen, and how full screen works.',
           body: () => (
             <>
@@ -490,6 +493,7 @@ export const developers: DocProduct = {
         {
           slug: 'sdk',
           title: 'SDK reference',
+          icon: 'sdk',
           lead: 'Every call your game makes in the browser. Each one returns a promise; errors carry a code.',
           body: () => (
             <>
@@ -566,6 +570,7 @@ export const developers: DocProduct = {
         {
           slug: 'multiplayer',
           title: 'Multiplayer',
+          icon: 'players',
           lead: 'Rooms, invite links and quick match, run by Deck — no game server of your own.',
           body: () => (
             <>
@@ -672,6 +677,7 @@ DeckGames.multiplayer.send({ move: 'e4' });`}</Pre>
         {
           slug: 'sample',
           title: 'Sample: Four in a Row',
+          icon: 'challenge',
           lead: 'A complete two-player game on Deck rooms — one HTML file, nothing in it special to Deck.',
           body: () => (
             <>
@@ -747,6 +753,7 @@ function move(col) {
         {
           slug: 'test-mode',
           title: 'Test mode and the sandbox',
+          icon: 'sandbox',
           lead: 'Build against simulated purchases and real webhooks, and test multiplayer on your own.',
           body: () => (
             <>
@@ -794,6 +801,7 @@ function move(col) {
           slug: 'api',
           wide: true,
           title: 'Server API',
+          icon: 'code',
           lead: 'Verify players, read purchases and run multiplayer rooms from your own server.',
           body: () => (
             <>
@@ -816,6 +824,7 @@ function move(col) {
         {
           slug: 'webhooks',
           title: 'Webhooks',
+          icon: 'webhook',
           lead: 'Signed events the moment a purchase is paid, and when multiplayer rooms start and end.',
           body: () => (
             <>
@@ -898,6 +907,7 @@ app.post('/deck/webhook', express.raw({ type: 'application/json' }), (req, res) 
         {
           slug: 'payouts',
           title: 'Money and payouts',
+          icon: 'money',
           lead: 'The 80/20 split, the 14-day hold, and how your share reaches your bank.',
           body: () => (
             <>
@@ -923,6 +933,7 @@ app.post('/deck/webhook', express.raw({ type: 'application/json' }), (req, res) 
         {
           slug: 'review',
           title: 'Review and rules',
+          icon: 'review',
           lead: 'What a game needs to pass review, and what stays yours to change afterwards.',
           body: () => (
             <>

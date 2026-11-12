@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import type { DocIconName } from '@/components/docs/DocIcon';
 import { cn } from '@/lib/utils';
 
 /**
@@ -19,6 +20,8 @@ import { cn } from '@/lib/utils';
 export interface DocPage {
   slug: string;
   title: string;
+  /** The mark beside it in the sidebar. See `DocIcon` for the roles. */
+  icon?: DocIconName;
   /** One line under the title, and what search matches against. */
   lead: string;
   body: () => ReactNode;

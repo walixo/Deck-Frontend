@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { GameLogo } from '@/components/games/GameLogo';
-import { Button, ButtonLink } from '@/components/ui/Button';
+import { gamesUrl } from '@/lib/siblings';
+import { Button, ExternalButtonLink } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { lazyNamed } from '@/lib/lazy';
 
@@ -77,9 +78,9 @@ export function ArcadeCoda({ eyebrow = 'While you wait for midnight UTC' }: { ey
                 Close game
               </Button>
             )}
-            <ButtonLink to="/games" variant="ghost">
+            <ExternalButtonLink href={gamesUrl()} variant="ghost">
               All four games →
-            </ButtonLink>
+            </ExternalButtonLink>
           </div>
         </div>
 

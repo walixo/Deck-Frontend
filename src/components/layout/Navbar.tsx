@@ -6,7 +6,7 @@ import { useCart } from '@/hooks/useCart';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { useAuth } from '@/hooks/useAuth';
 import { useLaunches } from '@/hooks/useSite';
-import { matchUrl } from '@/lib/matchUrl';
+import { gamesUrl, matchUrl, vaultUrl } from '@/lib/siblings';
 import { cn, profilePath } from '@/lib/utils';
 import { Logo } from './Logo';
 import { NotificationBell } from './NotificationBell';
@@ -55,8 +55,9 @@ const NAV_LINKS: NavItem[] = [
   },
   { to: '/leaderboard', label: 'Board', launch: true },
   { to: '/future-gen', label: 'Future Gen', star: true, launch: true },
-  { to: '/games', label: 'Games' },
+  { to: 'games', label: 'Games', external: gamesUrl },
   { to: 'match', label: 'Match', external: matchUrl },
+  { to: 'vault', label: 'Vault', external: vaultUrl },
   { to: '/forum', label: 'Forum' },
   {
     to: '/shop',

@@ -60,3 +60,30 @@ export function forgetRedeemCode(): void {
     /* Nothing stored. */
   }
 }
+
+const INVITE_KEY = 'match-invite';
+
+/** A friend's invite code from their link, kept through sign-in until setup uses it. */
+export function rememberInviteCode(code: string): void {
+  try {
+    localStorage.setItem(INVITE_KEY, code);
+  } catch {
+    /* Private windows: they can still sign up, just without the bonus. */
+  }
+}
+
+export function pendingInviteCode(): string {
+  try {
+    return localStorage.getItem(INVITE_KEY) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+export function forgetInviteCode(): void {
+  try {
+    localStorage.removeItem(INVITE_KEY);
+  } catch {
+    /* Nothing stored. */
+  }
+}

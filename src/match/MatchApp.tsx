@@ -15,6 +15,8 @@ import {
   type MatchBrandCards,
   type MatchBrandOrder,
   type MatchBilling,
+  type MatchInvite,
+  type MatchRecap,
   type MatchTime,
   type MatchHandles,
   type MatchMatch,
@@ -23,7 +25,16 @@ import {
   type Online,
 } from './matchApi';
 import { setMusicMuted, useMusic, useMusicMuted } from './music';
-import { forgetRedeemCode, GIFTS, naira, paymentCode, pendingRedeemCode } from './credit';
+import {
+  forgetInviteCode,
+  forgetRedeemCode,
+  GIFTS,
+  naira,
+  paymentCode,
+  pendingInviteCode,
+  pendingRedeemCode,
+} from './credit';
+import { AgainButton, InviteCard, PromptCard, RecapCard } from './habits';
 import { GiftCardBuySheet, GiftCardShowSheet, GiftCardsCard, RedeemSheet } from './giftcards';
 import { BrandCardShowSheet, BrandCardsRow, BrandCardsSheet } from './brandcards';
 import {
@@ -104,6 +115,9 @@ interface CallInfo {
   total: number;
   /** The person on the other end has the Verified badge. */
   themVerified: boolean;
+  /** The icebreaker both see, and how many more either may ask for. */
+  prompt: string;
+  promptsLeft: number;
 }
 
 interface Ended {
@@ -112,7 +126,12 @@ interface Ended {
   by: 'you' | 'them' | null;
   canShare: boolean;
   shareUntil: number;
+  /** Until when "talk again" can be said, on this device's clock; 0 if it can't. */
+  againUntil: number;
 }
+
+/** How many more icebreakers a call may ask for after the first. */
+const PROMPT_SWAPS = 3;
 
 interface Queue {
   position: number;
@@ -226,6 +245,10 @@ export function MatchApp({
   const [redeemCode, setRedeemCode] = useState(pendingRedeemCode);
   /* Gifts between the two people in the call that just ended. */
   const [callGifts, setCallGifts] = useState<{ gift: MatchGift; mine: boolean }[]>([]);
+  /* "Talk again" for the call that just ended: said by this person, and by both. */
+  const [again, setAgain] = useState({ said: false, mutual: false });
+  const [invite, setInvite] = useState<MatchInvite | null>(null);
+  const [recap, setRecap] = useState<MatchRecap | null>(null);
   const now = useNow(screen === 'live' || screen === 'ended');
   useWakeLock(screen === 'connecting' || screen === 'live');
   /* Music everywhere but a call — and not while a call is being set up. */
@@ -266,6 +289,23 @@ export function MatchApp({
       .catch(() => undefined);
   }, []);
 
+  const refreshInvite = useCallback(() => {
+    void matchApi
+      .invite()
+      .then(setInvite)
+      .catch(() => undefined);
+  }, []);
+
+  const refreshRecap = useCallback(() => {
+    void matchApi
+      .recap()
+      .then((next) => {
+        setRecap(next);
+        setProfile((current) => current && { ...current, streak: next.streak });
+      })
+      .catch(() => undefined);
+  }, []);
+
   const refreshWallet = useCallback(() => {
     void matchApi
       .wallet()
@@ -303,10 +343,12 @@ export function MatchApp({
         setNotice('Match has closed for tonight. Back tomorrow at 8pm.');
         break;
       case 'matched': {
-        const { callId, caller, them } = raw as {
+        const { callId, caller, them, prompt, reunion } = raw as {
           callId: string;
           caller: boolean;
           them?: { verified: boolean };
+          prompt?: string;
+          reunion?: boolean;
         };
         if (!mic.current || !audio.current) {
           void matchApi.leave(callId).catch(() => undefined);
@@ -331,10 +373,12 @@ export function MatchApp({
           endsAt: null,
           total: 120_000,
           themVerified: Boolean(them?.verified),
+          prompt: prompt ?? '',
+          promptsLeft: PROMPT_SWAPS,
         });
         setTime(NO_TIME);
         setMuted(false);
-        setNotice('');
+        setNotice(reunion ? 'You both wanted to talk again — here they are.' : '');
         setScreen('connecting');
         break;
       }
@@ -395,7 +439,13 @@ export function MatchApp({
             .finally(() => finished.close());
         }
         mic.current = null;
-        setEnded({ ...end, shareUntil: end.shareUntil - (end.serverNow - Date.now()) });
+        const skew = end.serverNow - Date.now();
+        setEnded({
+          ...end,
+          shareUntil: end.shareUntil - skew,
+          againUntil: end.againUntil ? end.againUntil - skew : 0,
+        });
+        setAgain({ said: false, mutual: false });
         setShared(false);
         setRevealed(null);
         setCallGifts([]);
@@ -418,6 +468,29 @@ export function MatchApp({
       case 'banned':
         setScreen('paused');
         break;
+      case 'prompt': {
+        const next = raw as { callId: string; prompt: string; by: 'you' | 'them'; left: number };
+        setCall((current) =>
+          current?.callId === next.callId
+            ? { ...current, prompt: next.prompt, promptsLeft: next.left }
+            : current,
+        );
+        break;
+      }
+      case 'again': {
+        const { callId } = raw as { callId: string };
+        if (ended?.callId === callId) setAgain({ said: true, mutual: true });
+        setNotice('You both want to talk again 💞');
+        refreshRecap();
+        break;
+      }
+      case 'invite': {
+        const bonus = raw as { message: string };
+        setNotice(`🎉 ${bonus.message}`);
+        refreshWallet();
+        refreshInvite();
+        break;
+      }
     }
   };
   useEffect(() => {
@@ -452,9 +525,15 @@ export function MatchApp({
       refreshWallet();
       refreshGiftCards();
       refreshBrandCards();
+      refreshInvite();
     },
-    [openLine, refreshMatches, refreshWallet, refreshGiftCards, refreshBrandCards],
+    [openLine, refreshMatches, refreshWallet, refreshGiftCards, refreshBrandCards, refreshInvite],
   );
+
+  /* The streak and the evening's numbers, fresh each time the lobby shows. */
+  useEffect(() => {
+    if (screen === 'lobby') refreshRecap();
+  }, [screen, refreshRecap]);
 
   /* Start-up: who this is, if they are signed in. */
   useEffect(() => {
@@ -582,6 +661,29 @@ export function MatchApp({
         );
       })
       .finally(() => setPending(null));
+  };
+
+  /** Another icebreaker, for both. */
+  const nextPrompt = () => {
+    if (!call) return;
+    void matchApi.nextPrompt(call.callId).catch((error) => {
+      setNotice(error instanceof Error ? error.message : 'Could not get another question.');
+    });
+  };
+
+  /** "I'd talk to them again" — they only hear of it if they said it too. */
+  const sayAgain = async () => {
+    if (!ended) return;
+    setPending('again');
+    try {
+      const { mutual } = await matchApi.again(ended.callId);
+      setAgain({ said: true, mutual });
+      if (mutual) refreshRecap();
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Could not save that.');
+    } finally {
+      setPending(null);
+    }
   };
 
   const stopPaying = () => {
@@ -964,6 +1066,9 @@ export function MatchApp({
         onStartVerification={startVerification}
         onSubmitVerification={submitVerification}
         onSaveSetting={saveSetting}
+        recap={recap}
+        invite={invite}
+        onNotice={setNotice}
       />
     );
   else if (screen === 'waiting' && profile)
@@ -990,6 +1095,7 @@ export function MatchApp({
         plus={plusActive}
         paying={pending === 'keep-talking'}
         onFreeMinute={addFreeMinute}
+        onNextPrompt={nextPrompt}
         onKeepTalking={keepTalking}
         onStopPaying={stopPaying}
         onMute={() => {
@@ -1012,6 +1118,9 @@ export function MatchApp({
         giftPrices={wallet?.prices.gift ?? null}
         giftPending={giftPending(pending, ended.callId)}
         onGift={(gift) => sendGift(ended.callId, gift)}
+        again={again}
+        againBusy={pending === 'again'}
+        onAgain={() => void sayAgain()}
         onShare={share}
         onSaveHandles={saveHandles}
         onNext={find}
@@ -1309,6 +1418,8 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
   const [handles, setHandles] = useState<MatchHandles>({ x: '', instagram: '' });
   const [country, setCountry] = useState(guessCountry);
   const [adult, setAdult] = useState(false);
+  /* A friend's invite link, opened before signing in. */
+  const [invite] = useState(pendingInviteCode);
   const [problem, setProblem] = useState('');
   const [busy, setBusy] = useState(false);
   return (
@@ -1327,8 +1438,10 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
               instagram: handles.instagram.trim(),
               country,
               adult: true,
+              invite: invite || undefined,
             }),
           );
+          forgetInviteCode();
         } catch (error) {
           setProblem(
             error instanceof RequestError
@@ -1344,6 +1457,11 @@ function Setup({ onDone }: { onDone: (profile: MatchProfile) => void }) {
         <h1 className="mt-3 text-[clamp(2.25rem,9vw,3.5rem)] font-semibold leading-[1] tracking-[-0.05em]">
           I am a…
         </h1>
+        {invite && (
+          <p className="mt-3 text-[14px] text-[#5dcaa5]">
+            A friend invited you — you’ll both get free credit after your first call.
+          </p>
+        )}
       </div>
       <div className="grid grid-cols-2 gap-4" role="radiogroup" aria-label="I am a">
         {(['male', 'female'] as const).map((value) => (
@@ -1538,6 +1656,9 @@ function Lobby({
   onBrowseBrands,
   onShowBrand,
   onSaveSetting,
+  recap,
+  invite,
+  onNotice,
 }: {
   profile: MatchProfile;
   online: Online | null;
@@ -1563,6 +1684,9 @@ function Lobby({
   onBrowseBrands: () => void;
   onShowBrand: (order: MatchBrandOrder) => void;
   onSaveSetting: (change: { billing?: MatchBilling; country?: string }) => Promise<boolean>;
+  recap: MatchRecap | null;
+  invite: MatchInvite | null;
+  onNotice: (text: string) => void;
 }) {
   const [editing, setEditing] = useState(false);
   const them = other(profile.gender);
@@ -1647,6 +1771,8 @@ function Lobby({
         </div>
       )}
 
+      {recap && <RecapCard recap={recap} />}
+
       {wallet && (
         <div className="space-y-4">
           <WalletCard wallet={wallet} pending={pending} onTopUp={onTopUp} />
@@ -1676,6 +1802,8 @@ function Lobby({
           )}
         </div>
       )}
+
+      {invite && <InviteCard invite={invite} onNotice={onNotice} />}
 
       <CountryCard
         key={profile.country}
@@ -2009,6 +2137,7 @@ function Live({
   plus,
   paying,
   onFreeMinute,
+  onNextPrompt,
   onKeepTalking,
   onStopPaying,
   onMute,
@@ -2026,6 +2155,7 @@ function Live({
   /** Keep talking was just tapped and is being paid for. */
   paying: boolean;
   onFreeMinute: () => void;
+  onNextPrompt: () => void;
   onKeepTalking: () => void;
   onStopPaying: () => void;
   onMute: () => void;
@@ -2115,6 +2245,9 @@ function Live({
           {call.themVerified && <VerifiedMark className="ml-1" />}
         </span>
       </div>
+      {call.prompt && (
+        <PromptCard prompt={call.prompt} left={call.promptsLeft} onNext={onNextPrompt} />
+      )}
       <div className="mt-7 flex min-h-14 flex-col items-center gap-2">
         {flash && (
           <p className="inline-flex rounded-full bg-[#5dcaa5]/[0.14] px-5 py-2.5 text-[14px] font-semibold text-[#5dcaa5]">
@@ -2182,6 +2315,9 @@ function After({
   giftPrices,
   giftPending,
   onGift,
+  again,
+  againBusy,
+  onAgain,
   onShare,
   onSaveHandles,
   onNext,
@@ -2197,6 +2333,9 @@ function After({
   giftPrices: Record<MatchGift, number> | null;
   giftPending: MatchGift | 'other' | null;
   onGift: (gift: MatchGift) => void;
+  again: { said: boolean; mutual: boolean };
+  againBusy: boolean;
+  onAgain: () => void;
   onShare: () => void;
   onSaveHandles: (handles: MatchHandles) => Promise<boolean>;
   onNext: () => void;
@@ -2277,6 +2416,10 @@ function After({
               ? 'Your voices couldn’t reach each other. Try someone new.'
               : 'Sharing opens only when a call runs its full time.'}
         </p>
+      )}
+
+      {(again.said || again.mutual || now < ended.againUntil) && (
+        <AgainButton said={again.said} mutual={again.mutual} busy={againBusy} onSay={onAgain} />
       )}
 
       <div className="mt-10 flex flex-wrap justify-center gap-3">

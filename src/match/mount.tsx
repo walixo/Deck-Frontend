@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { setStoredToken } from '@/lib/api';
 import { MatchApp } from './MatchApp';
-import { rememberRedeemCode } from './credit';
+import { rememberInviteCode, rememberRedeemCode } from './credit';
 import { MatchLegal } from './MatchLegal';
 import { registerWorker } from './device';
 
@@ -33,7 +33,7 @@ function claimTheHead() {
  * Starts Match. A Google sign-in comes back as `#token=…` (or `?error=…` on
  * the sign-in path), a top-up or a gift card purchase as `?topup=…` or
  * `?giftcard=…` (`&cancelled=1` if they backed out), and a gift card link as
- * `?redeem=CODE`; all are read and wiped from the address bar here, before the first
+ * `?redeem=CODE` and a friend's invite as `?invite=CODE`; all are read and wiped from the address bar here, before the first
  * render, so the app starts knowing who is signed in and what just happened.
  */
 export function mountMatch(root: HTMLElement) {
@@ -60,6 +60,9 @@ export function mountMatch(root: HTMLElement) {
   /* A gift card link: kept until claimed, since signing in leaves the page. */
   const redeem = query.get('redeem');
   if (redeem) rememberRedeemCode(redeem);
+  /* A friend's invite link: kept until setup, which happens after signing in. */
+  const invite = query.get('invite');
+  if (invite) rememberInviteCode(invite);
   if (token) setStoredToken(token);
   if (
     token ||
@@ -68,6 +71,7 @@ export function mountMatch(root: HTMLElement) {
     giftcard ||
     brandcard ||
     redeem ||
+    invite ||
     window.location.pathname !== '/'
   ) {
     window.history.replaceState(null, '', '/');

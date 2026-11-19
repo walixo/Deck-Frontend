@@ -36,6 +36,42 @@ export interface MatchProfile extends MatchHandles {
   billing: MatchBilling;
   /** ISO country code they chose; empty until asked. */
   country: string;
+  streak: MatchStreak;
+}
+
+/** Evenings in a row with at least one call that connected. */
+export interface MatchStreak {
+  /** The current run; 0 once it has lapsed. */
+  count: number;
+  best: number;
+  /** This evening already counts. */
+  tonight: boolean;
+  /** Still alive, but needs a call this evening to carry on. */
+  atRisk: boolean;
+}
+
+/** One evening in numbers: tonight's, or the last one's while Match is closed. */
+export interface MatchRecap {
+  day: string;
+  calls: number;
+  minutes: number;
+  swapped: number;
+  again: number;
+  streak: MatchStreak;
+}
+
+/** Someone's invite code, and what their invites have brought them. */
+export interface MatchInvite {
+  code: string;
+  link: string;
+  /** Free credit each side gets, kobo; 0 when the bonus is off. */
+  bonusMinor: number;
+  cap: number;
+  joined: number;
+  talked: number;
+  earnedMinor: number;
+  /** They came through an invite and get their bonus after their first call. */
+  owed: boolean;
 }
 
 export type MatchBilling = 'second' | 'minute';
@@ -205,13 +241,17 @@ export type MatchEvent =
   | 'revealed'
   | 'closed'
   | 'gift'
-  | 'banned';
+  | 'banned'
+  | 'prompt'
+  | 'again'
+  | 'invite';
 
 export const matchApi = {
   online: () => request<Online>('get', '/match/online'),
   me: () => request<MatchProfile | null>('get', '/match/me'),
-  create: (input: MatchHandles & { gender: Gender; adult: true; country?: string }) =>
-    request<MatchProfile>('post', '/match/me', input),
+  create: (
+    input: MatchHandles & { gender: Gender; adult: true; country?: string; invite?: string },
+  ) => request<MatchProfile>('post', '/match/me', input),
   setHandles: (handles: MatchHandles) => request<MatchProfile>('patch', '/match/me', handles),
   matches: () => request<MatchMatch[]>('get', '/match/matches'),
   queue: () => request<{ position: number }>('post', '/match/queue'),
@@ -225,6 +265,13 @@ export const matchApi = {
   connected: (callId: string, route: 'direct' | 'relay') =>
     request('post', `/match/calls/${callId}/connected`, { route }),
   leave: (callId: string) => request('post', `/match/calls/${callId}/leave`),
+  /** Another icebreaker, for both; a few per call. */
+  nextPrompt: (callId: string) =>
+    request<{ prompt: string }>('post', `/match/calls/${callId}/prompt`),
+  /** "I'd talk to them again" — mutual only if they said it too. */
+  again: (callId: string) => request<{ mutual: boolean }>('post', `/match/calls/${callId}/again`),
+  invite: () => request<MatchInvite>('get', '/match/invite'),
+  recap: () => request<MatchRecap>('get', '/match/recap'),
   share: (callId: string) => request<{ revealed: boolean }>('post', `/match/calls/${callId}/share`),
   report: (callId: string, reason: string) =>
     request('post', `/match/calls/${callId}/report`, { reason }),
